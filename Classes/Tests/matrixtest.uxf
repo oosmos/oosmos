@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="13.1">
+  <zoom_level>10</zoom_level>
+  <element>
+    <type>com.baselet.element.old.element.State</type>
+    <coordinates>
+      <x>30</x>
+      <y>80</y>
+      <w>410</w>
+      <h>150</h>
+    </coordinates>
+    <panel_attributes>State
+--
+ 
+PressedEvent:	
+  return prtFormatted("Pressed %s\n", pString);	
+ReleasedEvent:	
+  return prtFormatted("Released %s\n", pString);	
+SpecialPressedEvent:	
+  return prtFormatted("Pressed special %s\n", pString);	
+SpecialReleasedEvent:	
+  return prtFormatted("Released special %s\n", pString);</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.InitialState</type>
+    <coordinates>
+      <x>40</x>
+      <y>30</y>
+      <w>20</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Relation</type>
+    <coordinates>
+      <x>20</x>
+      <y>10</y>
+      <w>50</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+</panel_attributes>
+    <additional_attributes>30;70;30;30</additional_attributes>
+  </element>
+</diagram>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="13.0">
+  <zoom_level>10</zoom_level>
+  <element>
+    <type>com.umlet.element.custom.InitialState</type>
+    <coordinates>
+      <x>80</x>
+      <y>50</y>
+      <w>20</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>60</x>
+      <y>20</y>
+      <w>50</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>30;70;30;30</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.custom.State</type>
+    <coordinates>
+      <x>60</x>
+      <y>90</y>
+      <w>60</w>
+      <h>210</h>
+    </coordinates>
+    <panel_attributes>Idle
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.custom.State</type>
+    <coordinates>
+      <x>220</x>
+      <y>90</y>
+      <w>350</w>
+      <h>210</h>
+    </coordinates>
+    <panel_attributes>Pumping
+--
+INSTATE:
+  oosmos_SyncBegin(pRegion);
+    while (true) {
+      printf("pump: PUMPING...\n");
+      oosmos_SyncDelayMS(pRegion, (10-pPump-&gt;PumpSpeed) * 200);
+    }
+  oosmos_SyncEnd(pRegion);
+ 
+UpPressedEvent: 
+  pPump-&gt;PumpSpeed = oosmos_Min(10, pPump-&gt;PumpSpeed+1);
+ 
+DownPressedEvent:
+  pPump-&gt;PumpSpeed = oosmos_Max(1, pPump-&gt;PumpSpeed-1);
+ 
+
+ 
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>90</x>
+      <y>150</y>
+      <w>150</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+StopEvent</panel_attributes>
+    <additional_attributes>30;40;130;40</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>90</x>
+      <y>100</y>
+      <w>150</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+StartEvent</panel_attributes>
+    <additional_attributes>130;40;30;40</additional_attributes>
+  </element>
+</diagram>

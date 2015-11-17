@@ -1,0 +1,9 @@
+main
+oosmos.h
+oosmos.c
+prt.h
+prt.c
+reg.h
+reg.c
+regtest.h
+regtest.c

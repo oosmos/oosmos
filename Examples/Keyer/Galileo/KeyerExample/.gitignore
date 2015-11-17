@@ -1,0 +1,10 @@
+# We don't actually need any files tracked in this directory.  All the
+# files are copied in by 'distribute.py'.  But Git cannot track an
+# empty directory, so we create this one file and track that.
+
+
+# Ignore everything in this directory
+*
+
+# Except this file
+!.gitignore
