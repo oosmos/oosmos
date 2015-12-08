@@ -1,0 +1,7 @@
+**/*.mk
+**/Makefile
+**/*.exe
+**/*.obj
+**/*.pdb
+**/*.ilk
+**/*.suo
