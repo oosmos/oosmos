@@ -11,7 +11,7 @@ After cloning or pulling OOSMOS from Github, you'll need to run the
 will copy common source files from their master locations (where 
 they are source code controlled) into the appropriate `Examples` 
 directory locations.  Most files are mastered in the `Classes` 
-and `Classes/Tests` directory but many of the Linux examples 
+and `Classes/Tests` directory but many of the `Linux` examples 
 are mastered in the `Windows` examples directories.  Refer 
 to `populate.py` for a roadmap.
 
