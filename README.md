@@ -15,7 +15,7 @@ and `Classes/Tests` directory but many of the `Linux` examples
 are mastered in the `Windows` examples directories.  Refer 
 to `populate.py` for a roadmap.
 
-If you'd rather, the `.zip` or `.tar.gzip` available from 
+If you'd rather, the `.zip` or `.tar.gz` available from 
 the [Download Page](http://oosmos.com/download) have all the files
 pre-populated. 
 
