@@ -17,7 +17,7 @@ to `populate.py` for a roadmap.
 
 If you'd rather, the `.zip` or `.tar.gz` available from 
 the [Download Page](http://oosmos.com/download) have all the files
-pre-populated. 
+already pre-populated. 
 
 ### Contributing to OOSMOS
 We'd love to have you contribute to the OOSMOS code base.  See the
