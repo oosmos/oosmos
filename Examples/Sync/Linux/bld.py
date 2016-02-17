@@ -1,8 +1,16 @@
 #!/usr/bin/env python
 
-import sys
+oosmos_dir = '../../..'
 
-sys.path.append('../../..')
+import sys
+sys.path.append(oosmos_dir)
 import oosmos
 
-oosmos.cLinux.Compile('main', 'main.c synctest.c prt.c')
+tests_dir = oosmos_dir+'/Classes/Tests'
+
+classes_dir = oosmos_dir+'/Classes'
+prt_c       = classes_dir+'/prt.c'
+oosmos_c    = oosmos_dir+'/Source/oosmos.c'
+synctest_c  = oosmos_dir+'/Classes/Tests/synctest.c'
+
+oosmos.cLinux.Compile(oosmos_dir, 'main', ['main.c',synctest_c,prt_c,oosmos_c])

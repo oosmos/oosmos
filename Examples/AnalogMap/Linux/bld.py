@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 
-import sys
 
-sys.path.append('../../..')
+oosmos_dir = '../../..'
+
+import sys
+sys.path.append(oosmos_dir)
 import oosmos
 
-oosmos.cLinux.Compile('AnalogMap', 'AnalogMap.c')
+oosmos_c = oosmos_dir+'/Source/oosmos.c'
+
+oosmos.cLinux.Compile(oosmos_dir, 'AnalogMap', ['../Windows/AnalogMap.c', oosmos_c])

@@ -1,6 +1,11 @@
-import sys
+oosmos_dir = r'..\..\..'
 
-sys.path.append('../../..')
+import sys
+sys.path.append(oosmos_dir)
 import oosmos
 
-oosmos.cWindows.Compile('main.c syncyieldtest.c prt.c')
+oosmos_c        = oosmos_dir+r'\Source\oosmos.c'
+prt_c           = oosmos_dir+r'\Classes\prt.c'
+syncyieldtest_c = oosmos_dir+r'\Classes\Tests\syncyieldtest.c'
+
+oosmos.cWindows.Compile(oosmos_dir, ['main.c',syncyieldtest_c,prt_c,oosmos_c])

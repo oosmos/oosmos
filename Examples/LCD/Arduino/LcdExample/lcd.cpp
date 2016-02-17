@@ -1,7 +1,7 @@
-/*
+//
 // OOSMOS lcd Class
 //
-// Copyright (C) 2014-2015  OOSMOS, LLC
+// Copyright (C) 2014-2016  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+//
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -264,11 +264,11 @@ extern lcd * lcdNew(pin * pRS, pin * pRW, pin * pE,
   CommandFunctionSetInit(pLCD, bits8);
   oosmos_DelayUS(4100);
   
-  /*
+  //
   // The data sheet does not say one needs to do this twice.  However, 
   // the Arduino does it twice, and it definitely makes the display 
   // more stable when reloading new code without a cold reset.  
-  */
+  //
   CommandFunctionSetInit(pLCD, bits8);
   oosmos_DelayUS(4100);
 

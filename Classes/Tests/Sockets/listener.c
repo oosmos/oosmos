@@ -1,7 +1,7 @@
-/*
+//
 // OOSMOS listener Class
 //
-// Copyright (C) 2014-2015  OOSMOS, LLC
+// Copyright (C) 2014-2016  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+//
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -51,7 +51,9 @@ static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const o
           printf("Waiting for incoming connections...\n");
 
           sock * pNewSock;
-          oosmos_SyncWaitCond(pRegion, sockAccepted(pListener->m_pSock, &pNewSock));
+          oosmos_SyncWaitCond(pRegion,
+            sockAccepted(pListener->m_pSock, &pNewSock)
+          );
           pListener->m_pAcceptedFunc(pNewSock);
         }
       oosmos_SyncEnd(pRegion);
@@ -65,8 +67,8 @@ extern listener * listenerNew(int Port, void (*pAcceptedFunc)(sock *))
 {
   oosmos_Allocate(pListener, listener, 1, NULL);
 
-  /*                                        StateName       Parent        Default        */
-  /*                            ======================================================== */
+  //                                        StateName       Parent        Default
+  //                            ========================================================
   oosmos_StateMachineInitNoQueue(pListener, StateMachine,   NULL,         Running_State);
     oosmos_LeafInit             (pListener, Running_State,  StateMachine               );
 

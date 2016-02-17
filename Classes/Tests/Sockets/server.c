@@ -1,7 +1,7 @@
-/*
+//
 // OOSMOS server Class
 //
-// Copyright (C) 2014-2015  OOSMOS, LLC
+// Copyright (C) 2014-2016  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+//
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,6 +26,11 @@
 #include "oosmos.h"
 #include "server.h"
 #include "sock.h"
+
+typedef enum
+{
+  ClosedEvent = 1,
+} eEvents;
 
 struct serverTag
 {
@@ -46,12 +51,20 @@ static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const o
       oosmos_SyncBegin(pRegion);
         while (true) {
           printf("Waiting for incoming data...\n");
-          oosmos_SyncWaitCond(pRegion, sockReceive(pServer->m_pSock, pServer->m_Buffer, sizeof(pServer->m_Buffer), &pServer->m_BytesReceived));
+          oosmos_SyncWaitCond(pRegion,
+            sockReceive(pServer->m_pSock, pServer->m_Buffer, sizeof(pServer->m_Buffer), &pServer->m_BytesReceived)
+          );
           printf("Server side, String: '%s', BytesReceived: %u\n", pServer->m_Buffer, (unsigned) pServer->m_BytesReceived);
 
-          oosmos_SyncWaitCond(pRegion, sockSend(pServer->m_pSock, pServer->m_Buffer, pServer->m_BytesReceived));
+          oosmos_SyncWaitCond(pRegion,
+            sockSend(pServer->m_pSock, pServer->m_Buffer, pServer->m_BytesReceived)
+          );
         }
       oosmos_SyncEnd(pRegion);
+      return true;
+
+    case ClosedEvent:
+      serverDelete(pServer);
       return true;
   }
 
@@ -62,21 +75,24 @@ extern server * serverNew(sock * pSock)
 {
   server * pServer = (server *) malloc(sizeof(server));
 
-  /*                               StateName       Parent        Default        */
-  /*                     ====================================================== */
+  printf("New Server %p.\n", (void *) pServer);
+
+  //                               StateName       Parent        Default
+  //                     ======================================================
   oosmos_StateMachineInit(pServer, StateMachine,   NULL,         Running_State);
     oosmos_LeafInit      (pServer, Running_State,  StateMachine               );
 
   pServer->m_pSock = pSock;
+  sockSubscribeClosedEvent(pSock, &pServer->EventQueue, ClosedEvent, NULL);
 
   return pServer;
 }
 
 extern void serverDelete(server * pServer)
 {
-  printf("In serverDelete\n");
   oosmos_StateMachineDetach(pServer, StateMachine);
 
+  printf("Delete Server %p.\n", (void *) pServer);
   sockDelete(pServer->m_pSock);
   free(pServer);
 }

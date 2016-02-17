@@ -1,6 +1,9 @@
-import sys
+oosmos_dir = r'..\..\..'
 
-sys.path.append('..\..\..')
+import sys
+sys.path.append(oosmos_dir)
 import oosmos
 
-oosmos.cWindows.Compile('Interrupt.c')
+oosmos_c = oosmos_dir+r'\Source\oosmos.c'
+
+oosmos.cWindows.Compile(oosmos_dir, ['Interrupt.c',oosmos_c])

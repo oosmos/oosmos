@@ -1,7 +1,7 @@
-/*
+//
 // OOSMOS motion Example
 //
-// Copyright (C) 2014-2015  OOSMOS, LLC
+// Copyright (C) 2014-2016  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+//
 
 #include <stdio.h>
 #include "oosmos.h"
@@ -101,13 +101,13 @@ static bool Limits_Choice_State_Code(void * pObject, oosmos_sRegion * pRegion, c
 
   switch (pEvent->Code) {
   case oosmos_ENTER:
-/*
+//
 //    if (0)                     
 //      return oosmos_Transition(pRegion, &pMotor->Limits_AtUpperLimit_State);
 //    else if (0)
 //      return oosmos_Transition(pRegion, &pMotor->Limits_AtLowerLimit_State);
 //    else
-*/
+//
         return oosmos_Transition(pRegion, &pMotor->Limits_InBounds_State);
   }
 
@@ -172,8 +172,8 @@ static motor * motorNew(void)
 {
   oosmos_Allocate(pMotor, motor, 2, NULL);
 
-  /*                                          StateName                  Parent              Default               */
-  /*                                 ============================================================================= */
+  //                                          StateName                  Parent              Default
+  //                                 =============================================================================
   oosmos_StateMachineInit            (pMotor, StateMachine,              NULL,               Ortho_State         );
     oosmos_OrthoInitNoCode           (pMotor, Ortho_State,               StateMachine                            );
       oosmos_OrthoRegionInit         (pMotor, Limits_State,              Ortho_State,        Limits_Choice_State );

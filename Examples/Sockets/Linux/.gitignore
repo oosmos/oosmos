@@ -1,17 +1,2 @@
-sock.h
-sock.c
-oosmos.h
-oosmos.c
-
-client.h
-client.c
-server.h
-server.c
-listener.h
-listener.c
-
-clienttest.c
 clienttest
-
-servertest.c
 servertest

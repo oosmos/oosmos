@@ -1,7 +1,7 @@
-/*
+//
 // OOSMOS - The Object-Oriented State Machine Operating System
 //
-// Copyright (C) 2014-2015  OOSMOS, LLC
+// Copyright (C) 2014-2016  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by

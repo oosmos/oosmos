@@ -1,7 +1,7 @@
-/*
+//
 // OOSMOS - The Object-Oriented State Machine Operating System
 //
-// Copyright (C) 2014-2015  OOSMOS, LLC
+// Copyright (C) 2014-2016  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,13 +18,13 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+//
 
 #include "oosmos.h"
 #include "prt.h"
 #include "synctest.h"
 
-/* Required by prt... */
+// Required by prt...
 unsigned long prtArduinoBaudRate = 115200;
 
 extern void setup() 

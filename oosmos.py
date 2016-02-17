@@ -7,6 +7,12 @@ import subprocess
 import os
 import glob
 
+def Path(P):
+  return os.path.normpath(P)
+
+def Join(Array):
+  return ' '.join(Array)
+
 def WalkDir(Dir, pFunc, UserArg):
   for RootDir, DirList, FileList in os.walk(Dir):
     for File in FileList:
@@ -51,12 +57,14 @@ class cWindows:
     WildRemove('*.bak')
 
   @staticmethod
-  def Compile(FileName, Options = ''):
-    print('Compiling '+FileName+'...')
+  def Compile(oosmos_dir, FileArray, Options = ''):
+    print('Compiling...')
+
+    Files = ' '.join(FileArray)
+    Line = r'cl /I. /I%s\Source /I%s\Classes /I%s\Classes\Tests /nologo /Zi /W4 /wd4065 /wd4100 /wd4127 /D_CRT_SECURE_NO_WARNINGS '%(oosmos_dir,oosmos_dir,oosmos_dir)+Files+'  '+Options+' -Doosmos_DEBUG'
 
     try :
-      p = subprocess.Popen('cl /nologo /Zi /W4 /wd4065 /wd4100 /wd4127 /D_CRT_SECURE_NO_WARNINGS '+FileName+' oosmos.c '+Options+' -Doosmos_DEBUG',
-                           stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd = os.getcwd())
+      p = subprocess.Popen(Line, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd = os.getcwd())
     except:
       print("\n*** Unable to compile. Is Visual Studio installed?")
       sys.exit(16)
@@ -74,9 +82,13 @@ class cWindows:
 
 class cLinux:
   @staticmethod
-  def Compile(Target, Files):
-    print('Compiling %s...' % (Files))
-    os.system("gcc -Wall -o %s -Doosmos_DEBUG -Doosmos_ORTHO %s oosmos.c " % (Target, Files))
+  def Compile(oosmos_dir, Target, FileArray):
+    Files = ' '.join(FileArray)
+    print('Compiling %s...' % (Target))
+    
+    classes_dir = os.path.normpath(oosmos_dir+'/Classes')
+    Line = "gcc -I%s/Source -I%s -I%s/Tests -I. -std=c99 -Wall -Wno-overflow -Wno-unused-parameter -pedantic -Werror -Wshadow -flto -o %s -Doosmos_DEBUG -Doosmos_ORTHO %s " % (oosmos_dir, classes_dir, classes_dir, Target, Files)
+    os.system(Line)
 
 def WildRemove(FilenamePattern):
   FileList = glob.glob(FilenamePattern)

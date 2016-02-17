@@ -1,7 +1,7 @@
-/*
+//
 // OOSMOS client Class
 //
-// Copyright (C) 2014-2015  OOSMOS, LLC
+// Copyright (C) 2014-2016  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+//
 
 #include <stdio.h> 
 #include <stdlib.h> 
@@ -30,6 +30,7 @@
 typedef enum
 {
   ConnectionTimeoutEvent = 1,
+  ClosedEvent,
 } eEvents;
 
 struct clientTag
@@ -48,29 +49,42 @@ static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const o
   client * pClient = (client *) pObject;
 
   switch (pEvent->Code) {
-    case oosmos_INSTATE:
-      oosmos_SyncBegin(pRegion);
-        oosmos_SyncWaitCond_TimeoutMS_Event(pRegion, sockConnect(pClient->m_pSock, pClient->m_pHost, pClient->m_Port), 2000, ConnectionTimeoutEvent);
+    case oosmos_INSTATE: {
+      uint32_t IP_HostByteOrder = sockDotToIP_HostByteOrder(pClient->m_pHost);
 
-        printf("%p: CONNECTED\n", pClient->m_pSock);
+      oosmos_SyncBegin(pRegion);
+        oosmos_SyncWaitCond_TimeoutMS_Event(pRegion, 2000, ConnectionTimeoutEvent,
+          sockConnect(pClient->m_pSock, IP_HostByteOrder, pClient->m_Port)
+        );
+
+        printf("%p: CONNECTED\n", (void *) pClient->m_pSock);
 
         while (true) {
           size_t BytesReceived;
 
-          printf("%p: Sending...\n", pClient->m_pSock);
-          oosmos_SyncWaitCond(pRegion, sockSend(pClient->m_pSock, "123456", sizeof("123456")));
+          printf("%p: Sending...\n", (void *) pClient->m_pSock);
+          oosmos_SyncWaitCond(pRegion,
+            sockSend(pClient->m_pSock, "123456", sizeof("123456"))
+          );
 
-          printf("%p: Waiting for incoming data...\n", pClient->m_pSock);
+          printf("%p: Waiting for incoming data...\n", (void *) pClient->m_pSock);
            
-          oosmos_SyncWaitCond(pRegion, sockReceive(pClient->m_pSock, pClient->m_Buffer, sizeof(pClient->m_Buffer), &BytesReceived));
-          printf("%p: Client side Received '%s', BytesReceived: %u\n", pClient->m_pSock, pClient->m_Buffer, (unsigned) BytesReceived);
+          oosmos_SyncWaitCond(pRegion,
+            sockReceive(pClient->m_pSock, pClient->m_Buffer, sizeof(pClient->m_Buffer), &BytesReceived)
+          );
+          printf("%p: Client side Received '%s', BytesReceived: %u\n", (void *) pClient->m_pSock, pClient->m_Buffer, (unsigned) BytesReceived);
 
         }
       oosmos_SyncEnd(pRegion);
       return true;
+    }
+
+    case ClosedEvent:
+      printf("Server closed.  Terminating...\n");
+      exit(1);
 
     case ConnectionTimeoutEvent:
-      printf("%p: Unable to connect to server: Timed out. Terminating.\n", pClient->m_pSock);
+      printf("%p: Unable to connect to server: Timed out. Terminating.\n", (void *) pClient->m_pSock);
       exit(1);
   }
 
@@ -81,14 +95,16 @@ extern client * clientNew(const char * pHost, int Port)
 {
   client * pClient = (client *) malloc(sizeof(client));
 
-  /*                               StateName       Parent        Default        */
-  /*                     ====================================================== */
+  //                               StateName       Parent        Default
+  //                     ======================================================
   oosmos_StateMachineInit(pClient, StateMachine,   NULL,         Running_State);
     oosmos_LeafInit      (pClient, Running_State,  StateMachine               );
 
   pClient->m_pSock = sockNew();
   pClient->m_pHost = pHost;
   pClient->m_Port  = Port;
+
+  sockSubscribeClosedEvent(pClient->m_pSock, &pClient->EventQueue, ClosedEvent, NULL);
 
   return pClient;
 }

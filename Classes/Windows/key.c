@@ -1,7 +1,7 @@
-/*
+//
 // OOSMOS key Class
 //
-// Copyright (C) 2014-2015  OOSMOS, LLC
+// Copyright (C) 2014-2016  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+//
 
 #include <windows.h>
 
@@ -48,7 +48,7 @@ struct keyTag
 
 static HANDLE hStdin;
 
-/*
+//
 // Poll the console for this object's character.  
 //
 // Peek at the buffer.  If it does not contain this object's character, return.
@@ -56,7 +56,7 @@ static HANDLE hStdin;
 // If the buffer does contain this object's character, determine if the key is up 
 // or down and store it in the by-reference pKeyState argument and clear the 
 // buffer.
-*/
+//
 static bool IsMyChar(key * pKey, eStates * pKeyState)
 {
   DWORD            NumRead;
@@ -78,9 +78,9 @@ static bool IsMyChar(key * pKey, eStates * pKeyState)
     return true;
   }
 
-  /*
+  //
   // Purge accumulated unrecognized characters.
-  */
+  //
   if (NumRead > 10)
     ReadConsoleInput(hStdin, irInBuf, 128, &NumRead);
 

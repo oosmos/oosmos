@@ -4,9 +4,9 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>oosmos.h</itemPath>
-      <itemPath>pin.h</itemPath>
-      <itemPath>toggle.h</itemPath>
+      <itemPath>../../../../Source/oosmos.h</itemPath>
+      <itemPath>../../../../Classes/pin.h</itemPath>
+      <itemPath>../../../../Classes/toggle.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -15,10 +15,10 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <itemPath>../../../../Source/oosmos.c</itemPath>
+      <itemPath>../../../../Classes/pin.c</itemPath>
+      <itemPath>../../../../Classes/toggle.c</itemPath>
       <itemPath>main.c</itemPath>
-      <itemPath>oosmos.c</itemPath>
-      <itemPath>pin.c</itemPath>
-      <itemPath>toggle.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -26,6 +26,11 @@
       <itemPath>Makefile</itemPath>
     </logicalFolder>
   </logicalFolder>
+  <sourceRootList>
+    <Elem>../../../Source</Elem>
+    <Elem>../../../../Source</Elem>
+    <Elem>../../../../Classes</Elem>
+  </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="default" type="2">
@@ -65,7 +70,8 @@
         <property key="enable-symbols" value="true"/>
         <property key="enable-unroll-loops" value="false"/>
         <property key="exclude-floating-point" value="false"/>
-        <property key="extra-include-directories" value=""/>
+        <property key="extra-include-directories"
+                  value="..\..\..\..\Source;..\..\..\..\Classes"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="false"/>
@@ -80,6 +86,7 @@
         <property key="use-cci" value="false"/>
         <property key="use-iar" value="false"/>
         <property key="use-indirect-calls" value="false"/>
+        <appendMe value="-std=gnu99 -fgnu89-inline"/>
       </C32>
       <C32-AS>
       </C32-AS>

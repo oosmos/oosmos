@@ -1,7 +1,7 @@
-/*
+//
 // OOSMOS StateTimeout Example
 //
-// Copyright (C) 2014-2015  OOSMOS, LLC
+// Copyright (C) 2014-2016  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+//
 
 #include <stdio.h>
 #include "oosmos.h"
@@ -80,8 +80,8 @@ static test * testNew(void)
 {
   oosmos_Allocate(pTest, test, 1, NULL);
 
-  /*                                    StateName      Parent       Default   */
-  /*                            ============================================= */
+  //                                    StateName      Parent       Default
+  //                            =============================================
   oosmos_StateMachineInitNoQueue(pTest, StateMachine,  NULL,        MS_State);
     oosmos_LeafInit             (pTest, MS_State,      StateMachine         );
     oosmos_LeafInit             (pTest, Seconds_State, StateMachine         );

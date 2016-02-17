@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2014-2015  OOSMOS, LLC
+// Copyright (C) 2014-2016  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #include "prt.h"
 #include "encodertest.h"
 
-/* Required by prt... */
+// Required by prt...
 unsigned long prtArduinoBaudRate = 115200;
 
 static void SetupEncoderTest(int PinA, int PinB, int Max)

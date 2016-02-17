@@ -1,7 +1,7 @@
-/*
+//
 // OOSMOS syncyieldtest class implementation
 //
-// Copyright (C) 2014-2015  OOSMOS, LLC
+// Copyright (C) 2014-2016  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+//
 
 #include <stdlib.h>
 #include "oosmos.h"
@@ -40,9 +40,9 @@ struct syncyieldtestTag
   int          m_Iterations;
 };
 
-/*
+//
 // Test oosmos_syncyieldtest.
-*/
+//
 static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
 {
   syncyieldtest * pSyncYieldTest = (syncyieldtest *) pObject;
@@ -50,7 +50,6 @@ static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const o
   switch (pEvent->Code) {
     case oosmos_INSTATE:
       oosmos_SyncBegin(pRegion);
-
         for (pSyncYieldTest->m_Count = 1; pSyncYieldTest->m_Count <= pSyncYieldTest->m_Iterations; pSyncYieldTest->m_Count++) {
           prtFormatted("Test syncyieldtest, '%s'...\n", pSyncYieldTest->m_pID);
           oosmos_SyncYield(pRegion);
@@ -69,8 +68,8 @@ extern syncyieldtest * syncyieldtestNew(const char * pID, int Iterations)
 {  
   oosmos_Allocate(psyncyieldtest, syncyieldtest, MAX_SYNC, NULL);
 
-  /*                                           StateName      Parent        Default      */
-  /*                              =======================================================*/
+  //                                           StateName      Parent        Default
+  //                              =======================================================
   oosmos_StateMachineInitNoQueue  (psyncyieldtest, StateMachine,  NULL,         Running_State);
     oosmos_LeafInit               (psyncyieldtest, Running_State, StateMachine               );
     oosmos_LeafInitNoCode         (psyncyieldtest, Final_State,   StateMachine               );

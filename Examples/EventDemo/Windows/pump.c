@@ -1,7 +1,7 @@
-/*
+//
 // OOSMOS - EventDemo example, pump object
 //
-// Copyright (C) 2014-2015  OOSMOS, LLC
+// Copyright (C) 2014-2016  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+//
 
 #include <stddef.h>
 #include <stdio.h>
@@ -114,8 +114,8 @@ extern pump * pumpNew(key * pUpKey, key * pDownKey)
   keySubscribePressedEvent(pUpKey,   &pPump->EventQueue, UpPressedEvent);
   keySubscribePressedEvent(pDownKey, &pPump->EventQueue, DownPressedEvent);
 
-  /*                             StateName      Parent        Default     */
-  /*                     ================================================ */
+  //                             StateName      Parent        Default
+  //                     ================================================
   oosmos_StateMachineInit(pPump, StateMachine,  NULL,         Idle_State);
     oosmos_LeafInit      (pPump, Idle_State,    StateMachine            );
     oosmos_LeafInit      (pPump, Pumping_State, StateMachine            );

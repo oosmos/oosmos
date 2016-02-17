@@ -61,17 +61,6 @@ def Main():
 
   print('Populating from Classes Into Examples...')
   
-  #Copy('src_obfuscateed', 'h c', 'oosmos', 'h c', 'oosmos', not IncludeOosmos)
-  #Copy('src',             'h c', 'oosmos', 'h c', 'oosmos', not IncludeOosmos)
-
-  #
-  # AnalogMap
-  #
-  Copy('',       'h c', 'Examples/AnalogMap/Windows',            'h c', '')
-
-  Copy('',       'h c', 'Examples/AnalogMap/Linux',              'h c', '')
-  oosmos.CopyFileReadOnly('Examples/AnalogMap/Windows/AnalogMap.c', 'Examples/AnalogMap/Linux/AnalogMap.c')
-
   #
   # Blink
   #
@@ -84,7 +73,6 @@ def Main():
   Copy('Classes', 'h c', 'Examples/Blink/mbed',                       'h cpp', 'pin toggle')
   Copy('Classes', 'h c', 'Examples/Blink/MSP430/BlinkExample',        'h cpp', 'pin toggle')
   Copy('Classes', 'h c', 'Examples/Blink/LightBlueBean/BlinkExample', 'h cpp', 'pin toggle')
-  Copy('Classes', 'h c', 'Examples/Blink/PIC32/BlinkExample.X',       'h c',   'pin toggle')
 
   Copy('Classes', 'h c', 'Examples/Blink/RaspberryPi',                'h c',   'pin prt toggle')
 
@@ -94,17 +82,6 @@ def Main():
   #
   Copy('Classes',       'h c', 'Examples/Encoder/Arduino/EncoderExample', 'h cpp', 'pin prt encoder')
   Copy('Classes/Tests', 'h c', 'Examples/Encoder/Arduino/EncoderExample', 'h cpp', 'encodertest', not IncludeOosmos)
-
-  #
-  # EventDemo
-  #
-  Copy('',                'h c', 'Examples/EventDemo/Windows',        'h c', '')
-  Copy('Classes/Windows', 'h c', 'Examples/EventDemo/Windows',        'h c', 'key')
-
-  #
-  # Interrupt
-  #
-  Copy('',       'h c', 'Examples/Interrupt/Windows',              'h c', '')
 
   #
   # Keyer
@@ -119,26 +96,11 @@ def Main():
   Copy('Classes', 'h c', 'Examples/Keyer/Galileo/KeyerExample',     'h cpp', 'keyer pin')
   oosmos.CopyFileReadOnly('Examples/Keyer/Arduino/KeyerExample/KeyerExample.ino', 'Examples/Keyer/Galileo/KeyerExample/KeyerExample.ino')
 
-  Copy('Classes', 'h c', 'Examples/Keyer/PIC32/KeyerExample.X',     'h c', 'keyer pin prt')
-
   #
   # LCD
   # 
   Copy('Classes',       'h c', 'Examples/LCD/Arduino/LcdExample', 'h cpp', 'pin lcd')
   Copy('Classes/Tests', 'h c', 'Examples/LCD/Arduino/LcdExample', 'h cpp', 'lcdtest', not IncludeOosmos)
-
-  Copy('Classes',       'h c', 'Examples/LCD/PIC32/LcdExample.X', 'h c', 'pin lcd')
-  Copy('Classes/Tests', 'h c', 'Examples/LCD/PIC32/LcdExample.X', 'h c', 'lcdtest', not IncludeOosmos)
-
-  #
-  # LinearRegression
-  #
-  Copy('Classes',       'h c', 'Examples/LinearRegression/Windows',   'h c', 'reg prt')
-  Copy('Classes/Tests', 'h c', 'Examples/LinearRegression/Windows',   'h c', 'regtest', not IncludeOosmos)
-
-  Copy('Classes',       'h c', 'Examples/LinearRegression/Linux',     'h c', 'reg prt')
-  Copy('Classes/Tests', 'h c', 'Examples/LinearRegression/Linux',     'h c', 'regtest', not IncludeOosmos)
-
 
   #
   # Matrix
@@ -146,53 +108,11 @@ def Main():
   Copy('Classes', 'h c', 'Examples/Matrix/Arduino/MatrixExample',         'h cpp', 'pin sw matrix prt')
   Copy('Classes/Tests', 'h c', 'Examples/Matrix/Arduino/MatrixExample',   'h cpp', 'matrixtest')
 
-  Copy('Classes', 'h c', 'Examples/Matrix/PIC32/MatrixExample.X',         'h c', 'pin sw matrix prt')
-  Copy('Classes/Tests', 'h c', 'Examples/Matrix/PIC32/MatrixExample.X',   'h c', 'matrixtest')
-
   #
   # mcp4131
   #
   Copy('Classes',       'h c', 'Examples/mcp4131/Arduino/mcp4131Example', 'h cpp', 'spi mcp4131 pin')
   Copy('Classes/Tests', 'h c', 'Examples/mcp4131/Arduino/mcp4131Example', 'h cpp', 'mcp4131test', not IncludeOosmos)
-
-  Copy('Classes',       'h c', 'Examples/mcp4131/PIC32/mcp4131.X',        'h c',   'spi mcp4131 pin')
-  Copy('Classes/Tests', 'h c', 'Examples/mcp4131/PIC32/mcp4131.X',        'h c',   'mcp4131test', not IncludeOosmos)
-
-  #
-  # Ortho
-  #
-  Copy('Classes', 'h c', 'Examples/Ortho/Windows',       'h c', '')
-
-  Copy('Classes', 'h c', 'Examples/Ortho/Linux',         'h c', '')
-  oosmos.CopyFileReadOnly('Examples/Ortho/Windows/Completion.c', 'Examples/Ortho/Linux/Completion.c')
-  oosmos.CopyFileReadOnly('Examples/Ortho/Windows/EnterExit.c',  'Examples/Ortho/Linux/EnterExit.c')
-  oosmos.CopyFileReadOnly('Examples/Ortho/Windows/Motion.c',     'Examples/Ortho/Linux/Motion.c')
-
-  #
-  # Basic
-  #
-  Copy('Classes', 'h c', 'Examples/Basic/Windows',       'h c', '')
-
-  Copy('Classes', 'h c', 'Examples/Basic/Linux',         'h c', '')
-  oosmos.CopyFileReadOnly('Examples/Basic/Windows/Final.c',            'Examples/Basic/Linux/Final.c')
-  oosmos.CopyFileReadOnly('Examples/Basic/Windows/DelayUS.c',          'Examples/Basic/Linux/DelayUS.c')
-  oosmos.CopyFileReadOnly('Examples/Basic/Windows/DelayMS.c',          'Examples/Basic/Linux/DelayMS.c')
-  oosmos.CopyFileReadOnly('Examples/Basic/Windows/DelaySeconds.c',     'Examples/Basic/Linux/DelaySeconds.c')
-  oosmos.CopyFileReadOnly('Examples/Basic/Windows/TimeoutInUS.c',      'Examples/Basic/Linux/TimeoutInUS.c')
-  oosmos.CopyFileReadOnly('Examples/Basic/Windows/TimeoutInMS.c',      'Examples/Basic/Linux/TimeoutInMS.c')
-  oosmos.CopyFileReadOnly('Examples/Basic/Windows/TimeoutInSeconds.c', 'Examples/Basic/Linux/TimeoutInSeconds.c')
-  oosmos.CopyFileReadOnly('Examples/Basic/Windows/StateTimeout.c',     'Examples/Basic/Linux/StateTimeout.c')
-
-  #
-  # Sockets
-  #
-  Copy('Classes',               'h c', 'Examples/Sockets/Windows',  'h c', 'sock')
-  Copy('Classes/Tests/Sockets', 'h c', 'Examples/Sockets/Windows',  'h c', 'client server listener', not IncludeOosmos)
-
-  Copy('Classes',               'h c', 'Examples/Sockets/Linux',  'h c', 'sock')
-  Copy('Classes/Tests/Sockets', 'h c', 'Examples/Sockets/Linux',  'h c', 'client server listener', not IncludeOosmos)
-  oosmos.CopyFileReadOnly('Examples/Sockets/Windows/clienttest.c', 'Examples/Sockets/Linux/clienttest.c')
-  oosmos.CopyFileReadOnly('Examples/Sockets/Windows/servertest.c', 'Examples/Sockets/Linux/servertest.c')
 
   #
   # Switch
@@ -200,41 +120,12 @@ def Main():
   Copy('Classes', 'h c', 'Examples/Switch/Arduino/SwitchExample',       'h cpp', 'pin sw prt')
   Copy('Classes/Tests', 'h c', 'Examples/Switch/Arduino/SwitchExample', 'h cpp', 'switchtest', not IncludeOosmos)
 
-  Copy('Classes', 'h c', 'Examples/Switch/PIC32/SwitchExample.X',       'h c', 'pin sw prt')
-  Copy('Classes/Tests', 'h c', 'Examples/Switch/PIC32/SwitchExample.X', 'h c', 'switchtest', not IncludeOosmos)
-
   #
   # Sync
   #
-  Copy('Classes',       'h c', 'Examples/Sync/Windows',              'h c', 'prt')
-  Copy('Classes/Tests', 'h c', 'Examples/Sync/Windows',              'h c', 'synctest')
-
   Copy('Classes',       'h c', 'Examples/Sync/Arduino/SyncExample',  'h cpp', 'prt')
   Copy('Classes/Tests', 'h c', 'Examples/Sync/Arduino/SyncExample',  'h cpp', 'synctest')
 
-  Copy('Classes',       'h c', 'Examples/Sync/PIC32/SyncExample.X',  'h c', 'prt')
-  Copy('Classes/Tests', 'h c', 'Examples/Sync/PIC32/SyncExample.X',  'h c', 'synctest')
-
-  Copy('Classes',       'h c', 'Examples/Sync/Linux',              'h c', 'prt')
-  Copy('Classes/Tests', 'h c', 'Examples/Sync/Linux',              'h c', 'synctest')
-
-  #
-  # SyncYield
-  #
-  Copy('Classes',       'h c', 'Examples/SyncYield/Windows',         'h c', 'prt')
-  Copy('Classes/Tests', 'h c', 'Examples/SyncYield/Windows',         'h c', 'syncyieldtest')
-
-  Copy('Classes',       'h c', 'Examples/SyncYield/Linux',           'h c', 'prt')
-  Copy('Classes/Tests', 'h c', 'Examples/SyncYield/Linux',           'h c', 'syncyieldtest')
-  oosmos.CopyFileReadOnly('Examples/SyncYield/Windows/main.c', 'Examples/SyncYield/Linux/main.c')
-
-  #
-  # UART
-  #
-  Copy('Classes/PIC32', 'h c', 'Examples/UART/PIC32/UartExample.X',              'h c', 'uart', IncludeOosmos)
-
-
-  
 IncludeOosmos = True
 
 Main()

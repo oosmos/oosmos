@@ -1,7 +1,7 @@
-/*
+//
 // OOSMOS switchtest Class
 //
-// Copyright (C) 2014-2015  OOSMOS, LLC
+// Copyright (C) 2014-2016  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+//
 
 #include "oosmos.h"
 #include "pin.h"
@@ -59,8 +59,8 @@ extern switchtest * switchtestNew(pin * pPin)
 {
   oosmos_Allocate(pSwitchTest, switchtest, MAX_SWITCHTESTS, NULL);
   
-  /*                                   StateName     Parent        Default     */
-  /*                     ===================================================== */
+  //                                   StateName     Parent        Default
+  //                     =====================================================
   oosmos_StateMachineInit(pSwitchTest, StateMachine, NULL,         Idle_State);
     oosmos_LeafInit      (pSwitchTest, Idle_State,   StateMachine            );
   

@@ -1,7 +1,7 @@
-/*
+//
 // OOSMOS EventDemo example, control object
 //
-// Copyright (C) 2014-2015  OOSMOS, LLC
+// Copyright (C) 2014-2016  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+//
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -239,8 +239,8 @@ extern control * controlNew(void)
   pControl->m_Option1 = false;
   pControl->m_Option2 = false;
 
-  /*                                         StateName                              Parent                          Default                              */
-  /*                              ====================================================================================================================== */
+  //                                         StateName                              Parent                          Default
+  //                              ======================================================================================================================
   oosmos_StateMachineInit         (pControl, StateMachine,                          NULL,                           StartingUp_State                   );
     oosmos_LeafInit               (pControl, StartingUp_State,                      StateMachine                                                       );
     oosmos_OrthoInit              (pControl, Operational_State,                     StateMachine                                                       );

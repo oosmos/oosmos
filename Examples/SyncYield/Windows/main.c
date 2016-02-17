@@ -1,7 +1,7 @@
-/*
+//
 // OOSMOS - oosmos_SyncYield example main program.
 //
-// Copyright (C) 2014-2015  OOSMOS, LLC
+// Copyright (C) 2014-2016  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,8 +18,9 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+//
 
+#include <stdio.h>
 #include "oosmos.h"
 #include "syncyieldtest.h"
 
@@ -27,6 +28,8 @@
 
 extern int main(void)
 {
+  printf("\nThis test does not end.  Control-C to exit.\n\n");
+
   syncyieldtestNew("TestA", 3);
   syncyieldtestNew("TestB", 10);
 

@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 
-import sys
+oosmos_dir = '../../..'
 
-sys.path.append('../../..')
+import sys
+sys.path.append(oosmos_dir)
 import oosmos
 
-oosmos.cLinux.Compile('Completion', 'Completion.c')
-oosmos.cLinux.Compile('EnterExit',  'EnterExit.c')
-oosmos.cLinux.Compile('Motion',     'Motion.c')
+oosmos_c = oosmos_dir+'/Source/oosmos.c'
+
+oosmos.cLinux.Compile(oosmos_dir, 'Completion', ['Completion.c',oosmos_c])
+oosmos.cLinux.Compile(oosmos_dir, 'EnterExit',  ['EnterExit.c',oosmos_c])
+oosmos.cLinux.Compile(oosmos_dir, 'Motion',     ['Motion.c',oosmos_c])

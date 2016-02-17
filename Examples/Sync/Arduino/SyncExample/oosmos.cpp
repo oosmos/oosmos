@@ -1,7 +1,7 @@
-/*
+//
 // OOSMOS - The Object-Oriented State Machine Operating System
 //
-// Copyright (C) 2014-2015  OOSMOS, LLC
+// Copyright (C) 2014-2016  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+//
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,22 +26,22 @@
 #include <stdint.h>
 #include "oosmos.h"
 
-/*
-// This is the master list of all state machines created inside 
-// of OOSMOS objects.  The master control loop visits each of 
+//
+// This is the master list of all state machines created inside
+// of OOSMOS objects.  The master control loop visits each of
 // these state machines forever.
-*/
+//
 static oosmos_sStateMachine * pStateMachineList;
 
-/*
+//
 // This is the master list of all active objects created in the system.
 // The master control loop visits each of these objects forever.
-*/
+//
 static oosmos_sActiveObject * pActiveObjectList;
 
-/*
+//
 // Predefined events, pre-initialized for fast delivery.
-*/
+//
 static const oosmos_sEvent EventTIMEOUT  = { oosmos_TIMEOUT,  NULL };
 static const oosmos_sEvent EventINSTATE  = { oosmos_INSTATE,  NULL };
 static const oosmos_sEvent EventDEFAULT  = { oosmos_DEFAULT,  NULL };
@@ -91,7 +91,7 @@ static void SyncInit(oosmos_sState * pState)
   pState->HasYielded        = false;
   pState->HasSyncBlockBegin = 0;
   RESET_SYNC_TIMEOUT(pState);
-} 
+}
 
 static void CheckInSyncBlock(oosmos_sState * pState)
 {
@@ -133,10 +133,10 @@ static bool OOSMOS_SyncTimeoutMS(oosmos_sRegion * pRegion, int MS)
   return false;
 }
 
-/*
-// Deliver an event to all regions recursively.  Within each region, deliver the 
+//
+// Deliver an event to all regions recursively.  Within each region, deliver the
 // event to the current state and then up through all parent states recursively.
-*/
+//
 static bool ProcessEvent(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
 {
   oosmos_sState * pState;
@@ -279,9 +279,9 @@ static void DefaultTransitions(oosmos_sRegion * pRegion, oosmos_sState * pState)
     }
 #endif
     case OOSMOS_LeafType: {
-      /*
+      //
       // Always send a completion event to the leaf state.
-      */
+      //
       DeliverEvent(pRegion, pState, &EventCOMPLETE);
       break;
     }
@@ -355,10 +355,10 @@ static void Complete(oosmos_sRegion * pRegion, oosmos_sState * pState)
       break;
     }
 #endif
-    /*
+    //
     // A Final state can be a child of a state machine, not just
     // an ortho.  Do nothing.
-    */
+    //
     case OOSMOS_StateMachineType: {
       break;
     }
@@ -473,8 +473,10 @@ extern void OOSMOS_StateMachineDetach(oosmos_sStateMachine * pStateMachineToDeta
   oosmos_sStateMachine ** ppStateMachineLink = &pStateMachineList;
 
   for (pStateMachine = pStateMachineList; pStateMachine != NULL; pStateMachine = pStateMachine->pNext) {
-    if (pStateMachine == pStateMachineToDetach)
+    if (pStateMachine == pStateMachineToDetach) {
       *ppStateMachineLink = pStateMachine->pNext;
+      return;
+    }
 
     ppStateMachineLink = &(pStateMachine->pNext);
   }
@@ -722,30 +724,29 @@ extern void oosmos_RunStateMachine(oosmos_sStateMachine * pStateMachine)
         }
       )
 
-      /* 
+      //
       // Send INSTATE with the popped event to each state up the tree.
       // This supports oosmos_SyncWaitEvent... functions.
-      */ 
+      //
       {
         oosmos_sEvent LocalEventINSTATE;
         LocalEventINSTATE.Code     = oosmos_INSTATE;
         LocalEventINSTATE.pContext = pEvent;
-  
         ProcessEvent(pRegion, &LocalEventINSTATE);
       }
 
-      /*
+      //
       // Send the popped event to each state up the tree.
-      */
+      //
       if (ProcessEvent(pRegion, pEvent))
         return;
     }
   }
 
-  /*
+  //
   // If there were no popped events, then send a bare INSTATE
   // event to each state up the tree.
-  */
+  //
   if (EventsHandled == 0) {
     ProcessEvent(pRegion, &EventINSTATE);
   }
@@ -753,10 +754,10 @@ extern void oosmos_RunStateMachine(oosmos_sStateMachine * pStateMachine)
   ProcessTimeouts(pRegion);
 }
 
-/*
-// The user calls this function from their main loop. 
+//
+// The user calls this function from their main loop.
 // Continuously. Forever.
-*/
+//
 extern void oosmos_RunStateMachines(void)
 {
   oosmos_sStateMachine * pStateMachine;
@@ -820,7 +821,7 @@ extern void oosmos_RunStateMachines(void)
 
     while (true) {
       uint64_t Now = ReadCoreTimer();
-  
+
       if (Now < Start)
         Now += 0x100000000;
 
@@ -916,7 +917,7 @@ extern void oosmos_RunStateMachines(void)
     const uint64_t US = tv.tv_sec * 1000000ULL + tv.tv_usec;
     return (uint32_t) US;
   }
-  
+
 #elif defined(__MBED__)
   #include "mbed.h"
 
@@ -946,7 +947,7 @@ extern void oosmos_RunStateMachines(void)
     }
 
     return (uint32_t) TimerObj.read_us();
-  } 
+  }
 #endif
 
 extern void oosmos_TimeoutInSeconds(oosmos_sTimeout * pTimeout, uint32_t Seconds)
@@ -1042,15 +1043,15 @@ extern bool oosmos_QueuePush(oosmos_sQueue * pQueue, const void * pElement, size
   else {
     oosmos_eQueueFullBehavior Behavior = oosmos_QueueFull_TossNew;
 
-    if (pQueue->pFullBehaviorFunc != NULL) 
+    if (pQueue->pFullBehaviorFunc != NULL)
       Behavior = (pQueue->pFullBehaviorFunc)(pQueue->pContext);
 
     if (Behavior == oosmos_QueueFull_TossOld) {
-      /* Pop */
+      // Pop... 
       {
         if (pQueue->pHead == pQueue->pEnd)
           pQueue->pHead = pQueue->pQueueData;
- 
+
         pQueue->pHead = ((char *) pQueue->pHead) + QueueElementSize;
         pQueue->ByteCount -= (uint16_t) QueueElementSize;
       }
@@ -1125,24 +1126,26 @@ extern bool OOSMOS_SyncDelayMS(oosmos_sRegion * pRegion, int MS)
 }
 
 
-extern bool OOSMOS_SyncWaitCond_TimeoutMS(oosmos_sRegion * pRegion, bool Condition, int TimeoutMS, bool * pTimeoutStatus)
+extern bool OOSMOS_SyncWaitCond_TimeoutMS(oosmos_sRegion * pRegion, int TimeoutMS, bool * pTimeoutStatus, 
+                                          bool Condition)
 {
   CheckInSyncBlock(pRegion->pCurrent);
 
   if (Condition) {
-    *pTimeoutStatus = false; 
+    *pTimeoutStatus = false;
     return true;
   }
 
-  if (OOSMOS_SyncTimeoutMS(pRegion, TimeoutMS)) { 
-    *pTimeoutStatus = true; 
-    return true; 
-  } 
+  if (OOSMOS_SyncTimeoutMS(pRegion, TimeoutMS)) {
+    *pTimeoutStatus = true;
+    return true;
+  }
 
   return false;
 }
 
-extern bool OOSMOS_SyncWaitCond_TimeoutMS_Event(oosmos_sRegion * pRegion, bool Condition, int TimeoutMS, int NotificationEventCode)
+extern bool OOSMOS_SyncWaitCond_TimeoutMS_Event(oosmos_sRegion * pRegion, int TimeoutMS, int NotificationEventCode,
+                                                bool Condition)
 {
   oosmos_sState * pState = pRegion->pCurrent;
 
@@ -1153,7 +1156,7 @@ extern bool OOSMOS_SyncWaitCond_TimeoutMS_Event(oosmos_sRegion * pRegion, bool C
     return true;
   }
 
-  if (OOSMOS_SyncTimeoutMS(pRegion, TimeoutMS)) { 
+  if (OOSMOS_SyncTimeoutMS(pRegion, TimeoutMS)) {
     oosmos_sEvent TimeoutEvent;
     TimeoutEvent.Code     = NotificationEventCode;
     TimeoutEvent.pContext = NULL;
@@ -1162,16 +1165,17 @@ extern bool OOSMOS_SyncWaitCond_TimeoutMS_Event(oosmos_sRegion * pRegion, bool C
 
     DeliverEvent(pRegion, pState, &TimeoutEvent);
 
-    if (!pState->TransitionOccurred) 
+    if (!pState->TransitionOccurred)
       pState->SyncContext = -2;
 
-    return false; 
-  } 
+    return false;
+  }
 
   return false;
 }
 
-extern bool OOSMOS_SyncWaitCond_TimeoutMS_Exit(oosmos_sRegion * pRegion, bool Condition, int TimeoutMS)
+extern bool OOSMOS_SyncWaitCond_TimeoutMS_Exit(oosmos_sRegion * pRegion, int TimeoutMS,
+                                               bool Condition)
 {
   oosmos_sState * pState = pRegion->pCurrent;
 
@@ -1182,15 +1186,16 @@ extern bool OOSMOS_SyncWaitCond_TimeoutMS_Exit(oosmos_sRegion * pRegion, bool Co
     return true;
   }
 
-  if (OOSMOS_SyncTimeoutMS(pRegion, TimeoutMS)) { 
+  if (OOSMOS_SyncTimeoutMS(pRegion, TimeoutMS)) {
     pState->SyncContext = -2;
-    return false; 
-  } 
+    return false;
+  }
 
   return false;
 }
 
-extern bool OOSMOS_SyncWaitEvent(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent, int WaitEventCode)
+extern bool OOSMOS_SyncWaitEvent(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent, 
+                                 int WaitEventCode)
 {
   oosmos_sState * pState = pRegion->pCurrent;
 
@@ -1200,7 +1205,7 @@ extern bool OOSMOS_SyncWaitEvent(oosmos_sRegion * pRegion, const oosmos_sEvent *
     pState->SyncDirtyEvent = false;
     return false;
   }
-  
+
   oosmos_sEvent * pDeliveredEvent = (oosmos_sEvent *) pEvent->pContext;
 
   if (pDeliveredEvent != NULL && pDeliveredEvent->Code == WaitEventCode) {
@@ -1211,8 +1216,8 @@ extern bool OOSMOS_SyncWaitEvent(oosmos_sRegion * pRegion, const oosmos_sEvent *
   return false;
 }
 
-extern bool OOSMOS_SyncWaitEvent_TimeoutMS(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent,
-                       int WaitEventCode, int TimeoutMS, bool * pTimedOut)
+extern bool OOSMOS_SyncWaitEvent_TimeoutMS(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent, int TimeoutMS, bool * pTimedOut,
+                                           int WaitEventCode)
 {
   oosmos_sState * pState = pRegion->pCurrent;
 
@@ -1240,8 +1245,8 @@ extern bool OOSMOS_SyncWaitEvent_TimeoutMS(oosmos_sRegion * pRegion, const oosmo
   return false;
 }
 
-extern bool OOSMOS_SyncWaitEvent_TimeoutMS_Event(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent,
-                       int WaitEventCode, int TimeoutMS, int NotificationEventCode)
+extern bool OOSMOS_SyncWaitEvent_TimeoutMS_Event(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent, int TimeoutMS, int NotificationEventCode,
+                                                 int WaitEventCode)
 {
   oosmos_sState * pState = pRegion->pCurrent;
 
@@ -1273,14 +1278,14 @@ extern bool OOSMOS_SyncWaitEvent_TimeoutMS_Event(oosmos_sRegion * pRegion, const
     if (!pState->TransitionOccurred)
       pState->SyncContext = -2;
 
-    return false; 
+    return false;
   }
 
   return false;
 }
 
-extern bool OOSMOS_SyncWaitEvent_TimeoutMS_Exit(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent,
-                       int WaitEventCode, int TimeoutMS)
+extern bool OOSMOS_SyncWaitEvent_TimeoutMS_Exit(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent, int TimeoutMS,
+                                                int WaitEventCode)
 {
   oosmos_sState * pState = pRegion->pCurrent;
 
@@ -1301,7 +1306,7 @@ extern bool OOSMOS_SyncWaitEvent_TimeoutMS_Exit(oosmos_sRegion * pRegion, const 
 
   if (OOSMOS_SyncDelayMS(pRegion, TimeoutMS)) {
     pState->SyncContext = -2;
-    return false; 
+    return false;
   }
 
   return false;

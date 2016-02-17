@@ -1,7 +1,7 @@
-/*
+//
 // OOSMOS mcp4131test Class
 //
-// Copyright (C) 2014-2015  OOSMOS, LLC
+// Copyright (C) 2014-2016  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+//
 
 #include "mcp4131test.h"
 #include "mcp4131.h"
@@ -84,8 +84,8 @@ extern mcp4131test * mcp4131testNew(spi * pSPI, pin * pCS, const int RampDelayTi
 {
   oosmos_Allocate(pMCP4131test, mcp4131test, mcp4131testMAX, NULL);
 
-  /*                                           StateName          Parent         Default          */
-  /*                            ================================================================= */
+  //                                           StateName          Parent         Default
+  //                            =================================================================
   oosmos_StateMachineInitNoQueue(pMCP4131test, StateMachine,      NULL,          RampingUp_State);
     oosmos_LeafInit             (pMCP4131test, RampingUp_State,   StateMachine                  );
     oosmos_LeafInit             (pMCP4131test, RampingDown_State, StateMachine                  );

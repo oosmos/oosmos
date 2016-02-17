@@ -1,7 +1,7 @@
-/*
+//
 // OOSMOS - Interrupt structure example on Windows
 //
-// Copyright (C) 2014-2015  OOSMOS, LLC
+// Copyright (C) 2014-2016  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,15 +18,15 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+//
 
 #include <stdio.h>
 #include <stdint.h>
 #include "oosmos.h"
 
-/*
+//
 // Demonstrates structure of how to react to interrupts using OOSMOS.
-*/
+//
 
 typedef struct uartTag uart;
 
@@ -50,9 +50,9 @@ static void ReceiverStateMachine(void * pObject)
   uart * pUART = (uart *) pObject;
   uint8_t Byte;
 
-  /*DisableInterrupt(pUART); */
+  //DisableInterrupt(pUART);
     const bool PopSuccess = oosmos_QueuePop(&pUART->m_ReceiveDataQueue, &Byte, sizeof(Byte));
-  /*EnableInterrupt(pUART); */
+  //EnableInterrupt(pUART);
 
   if (!PopSuccess)
     return;
@@ -93,7 +93,7 @@ extern int main()
   uartNew(3); 
   uartNew(7); 
 
-  /* Simulate random interrupts... */
+  // Simulate random interrupts...
 
   ISR(3);
   oosmos_RunStateMachines();

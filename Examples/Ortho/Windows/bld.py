@@ -1,8 +1,11 @@
-import sys
+oosmos_dir = r'..\..\..'
 
-sys.path.append('..\..\..')
+import sys
+sys.path.append(oosmos_dir)
 import oosmos
 
-oosmos.cWindows.Compile('Motion.c',     '-Doosmos_ORTHO')
-oosmos.cWindows.Compile('Completion.c', '-Doosmos_ORTHO')
-oosmos.cWindows.Compile('EnterExit.c',  '-Doosmos_ORTHO')
+oosmos_c = oosmos_dir+r'\Source\oosmos.c'
+
+oosmos.cWindows.Compile(oosmos_dir, ['Motion.c', oosmos_c],     '-Doosmos_ORTHO')
+oosmos.cWindows.Compile(oosmos_dir, ['Completion.c', oosmos_c], '-Doosmos_ORTHO')
+oosmos.cWindows.Compile(oosmos_dir, ['EnterExit.c', oosmos_c],  '-Doosmos_ORTHO')

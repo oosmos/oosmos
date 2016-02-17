@@ -1,7 +1,7 @@
-/*
+//
 // OOSMOS matrix Class
 //
-// Copyright (C) 2014-2015  OOSMOS, LLC
+// Copyright (C) 2014-2016  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+//
 
 #ifndef matrixMAX
 #define matrixMAX 1
@@ -53,9 +53,9 @@ struct matrixTag
   int m_Rows;
   int m_Columns;
 
-  /*
+  //
   // State variables...
-  */
+  //
   int m_CurrentRowIndex;
 };
 
@@ -142,8 +142,8 @@ extern matrix * matrixNew(int Rows, int Columns, ...)
     }
   }
 
-  /*                                      StateName      Parent        Default        */
-  /*                            ===================================================== */
+  //                                      StateName      Parent        Default
+  //                            =====================================================
   oosmos_StateMachineInitNoQueue(pMatrix, StateMachine,  NULL,         Running_State);
     oosmos_LeafInit             (pMatrix, Running_State, StateMachine               );
     
@@ -170,9 +170,9 @@ extern void matrixAssignSwitch(matrix * pMatrix, sw * pSwitch, const int Row, co
   const int RowIndex    = Row - 1;
   const int ColumnIndex = Column - 1;
 
-  /*
+  //
   // Check if this Row/Column slot has already been assigned.
-  */
+  //
   if (pMatrix->m_pSwitch[RowIndex][ColumnIndex] != NULL)
     while (true);
 

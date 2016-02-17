@@ -1,7 +1,7 @@
-/*
+//
 // OOSMOS uart Class
 //
-// Copyright (C) 2014-2015  OOSMOS, LLC
+// Copyright (C) 2014-2016  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+//
 
 #include "oosmos.h"
 #include "uart.h"
@@ -217,9 +217,9 @@ extern void uartStart(uart * pUART)
   EnableInterrupt(pUART);
 }
 
-/*
+//
 // 'UartModule' is 1, 2, etc.
-*/
+//
 extern uart * uartNew(const int UartModule, const int BaudRate)
 {
   oosmos_AllocateVisible(pUART, uart, UartList, UartCount, MaxUARTS, NULL);

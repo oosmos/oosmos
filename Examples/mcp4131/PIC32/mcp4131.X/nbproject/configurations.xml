@@ -4,11 +4,11 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>oosmos.h</itemPath>
-      <itemPath>spi.h</itemPath>
-      <itemPath>pin.h</itemPath>
-      <itemPath>mcp4131test.h</itemPath>
-      <itemPath>mcp4131.h</itemPath>
+      <itemPath>../../../../Classes/mcp4131.h</itemPath>
+      <itemPath>../../../../Classes/Tests/mcp4131test.h</itemPath>
+      <itemPath>../../../../Source/oosmos.h</itemPath>
+      <itemPath>../../../../Classes/pin.h</itemPath>
+      <itemPath>../../../../Classes/spi.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -17,12 +17,12 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <itemPath>oosmos.c</itemPath>
-      <itemPath>spi.c</itemPath>
-      <itemPath>pin.c</itemPath>
-      <itemPath>mcp4131test.c</itemPath>
-      <itemPath>mcp4131.c</itemPath>
       <itemPath>main.c</itemPath>
+      <itemPath>../../../../Classes/mcp4131.c</itemPath>
+      <itemPath>../../../../Classes/Tests/mcp4131test.c</itemPath>
+      <itemPath>../../../../Source/oosmos.c</itemPath>
+      <itemPath>../../../../Classes/pin.c</itemPath>
+      <itemPath>../../../../Classes/spi.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -30,6 +30,10 @@
       <itemPath>Makefile</itemPath>
     </logicalFolder>
   </logicalFolder>
+  <sourceRootList>
+    <Elem>../../../../Classes</Elem>
+    <Elem>../../../../Source</Elem>
+  </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="default" type="2">
@@ -69,7 +73,8 @@
         <property key="enable-symbols" value="true"/>
         <property key="enable-unroll-loops" value="false"/>
         <property key="exclude-floating-point" value="false"/>
-        <property key="extra-include-directories" value=""/>
+        <property key="extra-include-directories"
+                  value="..\..\..\..\Source;..\..\..\..\Classes;..\..\..\..\Classes\Tests"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="false"/>
@@ -84,6 +89,7 @@
         <property key="use-cci" value="false"/>
         <property key="use-iar" value="false"/>
         <property key="use-indirect-calls" value="false"/>
+        <appendMe value="-std=gnu99 -fgnu89-inline"/>
       </C32>
       <C32-AS>
       </C32-AS>

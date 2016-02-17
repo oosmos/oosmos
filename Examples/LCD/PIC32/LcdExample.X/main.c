@@ -1,7 +1,7 @@
-/*
+//
 // OOSMOS - LCD Example PIC32 main program
 //
-// Copyright (C) 2014-2015  OOSMOS, LLC
+// Copyright (C) 2014-2016  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,11 +18,11 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+//
 
 #include "oosmos.h"
 #include "pin.h"
-#include "lcd.h"
+#include "lcdtest.h"
 
 #pragma config FPLLMUL = MUL_20, FPLLIDIV = DIV_2, FPLLODIV = DIV_1, FWDTEN = OFF
 #pragma config POSCMOD = HS, FNOSC = PRIPLL, FPBDIV = DIV_1
@@ -31,9 +31,9 @@ extern int main(void)
 {
   oosmos_ClockSpeedInMHz(80);
 
-  /*
+  //
   // Setup and drive an HD44870 LCD device. 
-  */
+  //
   pin * pRS     = pinNew(IOPORT_E, BIT_0, pinOut, pinActiveHigh);
   pin * pE      = pinNew(IOPORT_E, BIT_1, pinOut, pinActiveHigh);
   pin * pData4  = pinNew(IOPORT_E, BIT_2, pinOut, pinActiveHigh);

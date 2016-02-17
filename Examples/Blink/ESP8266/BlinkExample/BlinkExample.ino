@@ -1,7 +1,7 @@
-/*
+//
 // OOSMOS - The Object-Oriented State Machine Operating System
 //
-// Copyright (C) 2014-2015  OOSMOS, LLC
+// Copyright (C) 2014-2016  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,16 +18,16 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+//
 
 #include "oosmos.h"
 #include "pin.h"
 #include "toggle.h"
 
-/*
+//
 // It is unclear which #include file holds these prototypes.  We declare
 // them here for now.
-*/
+//
 extern "C" bool system_deep_sleep_set_option(int option);
 extern "C" void system_deep_sleep(int);
 
@@ -47,5 +47,5 @@ extern void loop()
   oosmos_RunStateMachines();
   
   system_deep_sleep_set_option(4);
-  system_deep_sleep(10*1000);  /* in uS... */
+  system_deep_sleep(10*1000);  // in uS...
 }

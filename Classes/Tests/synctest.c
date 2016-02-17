@@ -1,7 +1,7 @@
-/*
+//
 // OOSMOS synctest Class
 //
-// Copyright (C) 2014-2015  OOSMOS, LLC
+// Copyright (C) 2014-2016  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,22 +18,22 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+//
 
 #include <stdlib.h>
 #include "oosmos.h"
 #include "prt.h"
 #include "synctest.h"
 
-/*
+//
 // Change the following #undef to #define to enable debug output.
-*/
+//
 #undef synctestDEBUG
 
-/*
+//
 // Adjust this in order to preallocate all 'synctest' objects.  
 // Use 1 for a memory constrained environment.
-*/
+//
 #ifndef MAX_SYNCTEST
 #define MAX_SYNCTEST 1
 #endif
@@ -96,9 +96,9 @@ static bool ConditionFalse(void)
 }
 
 
-/*
+//
 // Test oosmos_SyncDelayMS.
-*/
+//
 static bool Ortho_RegionA_TestA_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
 {
   synctest * pSyncTest = (synctest *) pObject;
@@ -116,10 +116,10 @@ static bool Ortho_RegionA_TestA_State_Code(void * pObject, oosmos_sRegion * pReg
   return false;
 }
 
-/*
+//
 // oosmos_SyncWaitCond
 // oosmos_SyncWaitCond_TimeoutMS
-*/
+//
 static bool Ortho_RegionA_TestB_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
 {
   synctest * pSyncTest = (synctest *) pObject;
@@ -134,10 +134,14 @@ static bool Ortho_RegionA_TestB_State_Code(void * pObject, oosmos_sRegion * pReg
 
         prtFormatted("Test SyncWaitCond_TimeoutMS...\n");
 
-        oosmos_SyncWaitCond_TimeoutMS(pRegion, ConditionTrue(), 100, &TimedOut);
+        oosmos_SyncWaitCond_TimeoutMS(pRegion, 100, &TimedOut,
+          ConditionTrue()
+        );
         Successes += (TimedOut == false);
 
-        oosmos_SyncWaitCond_TimeoutMS(pRegion, ConditionFalse(), 100, &TimedOut);
+        oosmos_SyncWaitCond_TimeoutMS(pRegion, 100, &TimedOut,
+          ConditionFalse()
+        );
         Successes += (TimedOut == true);
       oosmos_SyncEnd(pRegion);
 
@@ -147,9 +151,9 @@ static bool Ortho_RegionA_TestB_State_Code(void * pObject, oosmos_sRegion * pReg
   return false;
 }
 
-/*
+//
 // oosmos_SyncWaitCond_TimeoutMS_Event
-*/
+//
 static bool Ortho_RegionA_TestC_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
 {
   synctest * pSyncTest = (synctest *) pObject;
@@ -159,10 +163,14 @@ static bool Ortho_RegionA_TestC_State_Code(void * pObject, oosmos_sRegion * pReg
       oosmos_SyncBegin(pRegion);
         prtFormatted("Test SyncWaitCond_TimeoutMS_Event...\n");
 
-        oosmos_SyncWaitCond_TimeoutMS_Event(pRegion, ConditionTrue(), 100, eventTimedOut);
+        oosmos_SyncWaitCond_TimeoutMS_Event(pRegion, 100, eventTimedOut,
+          ConditionTrue()
+        );
         Successes += 1;
 
-        oosmos_SyncWaitCond_TimeoutMS_Event(pRegion, ConditionFalse(), 100, eventTimedOut);
+        oosmos_SyncWaitCond_TimeoutMS_Event(pRegion, 100, eventTimedOut,
+          ConditionFalse()
+        );
         Failures += 1;
       oosmos_SyncEnd(pRegion);
       return oosmos_Transition(pRegion, &pSyncTest->Ortho_RegionA_TestD_State);
@@ -175,9 +183,9 @@ static bool Ortho_RegionA_TestC_State_Code(void * pObject, oosmos_sRegion * pReg
   return false;
 }
 
-/*
+//
 // oosmos_SyncWaitCond_TimeoutMS_Exit
-*/
+//
 static bool Ortho_RegionA_TestD_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
 {
   synctest * pSyncTest = (synctest *) pObject;
@@ -187,10 +195,14 @@ static bool Ortho_RegionA_TestD_State_Code(void * pObject, oosmos_sRegion * pReg
       oosmos_SyncBegin(pRegion);
         prtFormatted("Test SyncWaitCond_TimeoutMS_Exit...\n");
 
-        oosmos_SyncWaitCond_TimeoutMS_Exit(pRegion, ConditionTrue(), 100);
+        oosmos_SyncWaitCond_TimeoutMS_Exit(pRegion, 100,
+          ConditionTrue()
+        );
         Successes += 1;
 
-        oosmos_SyncWaitCond_TimeoutMS_Exit(pRegion, ConditionFalse(), 100);
+        oosmos_SyncWaitCond_TimeoutMS_Exit(pRegion, 100,
+          ConditionFalse()
+        );
         Failures += 1;
 
       oosmos_SyncFinally(pRegion);
@@ -204,10 +216,10 @@ static bool Ortho_RegionA_TestD_State_Code(void * pObject, oosmos_sRegion * pReg
   return false;
 }
 
-/*
+//
 // oosmos_SyncWaitEvent
 // oosmos_SyncWaitEvent_TimeoutMS
-*/
+//
 static bool Ortho_RegionA_TestE_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
 {
   synctest * pSyncTest = (synctest *) pObject;
@@ -224,10 +236,14 @@ static bool Ortho_RegionA_TestE_State_Code(void * pObject, oosmos_sRegion * pReg
         prtFormatted("Test SyncWaitEvent_TimeoutMS...\n");
 
         oosmos_SendEvent(pSyncTest, eventPrint);
-        oosmos_SyncWaitEvent_TimeoutMS(pRegion, pEvent, eventDone, 100, &TimedOut);
+        oosmos_SyncWaitEvent_TimeoutMS(pRegion, pEvent, 100, &TimedOut,
+          eventDone
+        );
         Successes += (TimedOut == false);
 
-        oosmos_SyncWaitEvent_TimeoutMS(pRegion, pEvent, eventDone, 100, &TimedOut);
+        oosmos_SyncWaitEvent_TimeoutMS(pRegion, pEvent, 100, &TimedOut,
+          eventDone
+        );
         Successes += (TimedOut == true);
       oosmos_SyncEnd(pRegion);
 
@@ -237,9 +253,9 @@ static bool Ortho_RegionA_TestE_State_Code(void * pObject, oosmos_sRegion * pReg
   return false;
 }
 
-/*
+//
 // oosmos_SyncWaitEvent_TimeoutMS_Event
-*/
+//
 static bool Ortho_RegionA_TestF_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
 {
   synctest * pSyncTest = (synctest *) pObject;
@@ -249,18 +265,22 @@ static bool Ortho_RegionA_TestF_State_Code(void * pObject, oosmos_sRegion * pReg
       oosmos_SyncBegin(pRegion);
         prtFormatted("Test SyncWaitEvent_TimeoutMS_Event...\n");
 
-        /*
+        //
         // Enqueue 'eventPrint' to the orthogonal state. We expect to get and 'eventDone' well 
         // before the timeout.
-        */
+        //
         oosmos_SendEvent(pSyncTest, eventPrint);
-        oosmos_SyncWaitEvent_TimeoutMS_Event(pRegion, pEvent, eventDone, 100, eventTimedOut);
+        oosmos_SyncWaitEvent_TimeoutMS_Event(pRegion, pEvent, 100, eventTimedOut,
+          eventDone
+        );
         Successes += 1;
 
-        /*
+        //
         // We don't enqueue 'eventPrint' so we don't expect an 'eventDone' therefore it should time out.
-        */
-        oosmos_SyncWaitEvent_TimeoutMS_Event(pRegion, pEvent, eventDone, 100, eventTimedOut);
+        //
+        oosmos_SyncWaitEvent_TimeoutMS_Event(pRegion, pEvent, 100, eventTimedOut,
+          eventDone
+        );
         Failures += 1;
       oosmos_SyncEnd(pRegion);
       return oosmos_Transition(pRegion, &pSyncTest->Ortho_RegionA_TestG_State);
@@ -273,9 +293,9 @@ static bool Ortho_RegionA_TestF_State_Code(void * pObject, oosmos_sRegion * pReg
   return false;
 }
 
-/*
+//
 // oosmos_SyncWaitEvent_TimeoutMS_Exit
-*/
+//
 static bool Ortho_RegionA_TestG_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
 {
   synctest * pSyncTest = (synctest *) pObject;
@@ -285,18 +305,22 @@ static bool Ortho_RegionA_TestG_State_Code(void * pObject, oosmos_sRegion * pReg
       oosmos_SyncBegin(pRegion);
         prtFormatted("Test SyncWaitEvent_TimeoutMS_Exit...\n");
 
-        /*
+        //
         // Enqueue 'eventPrint' to the orthogonal state. We expect to get and 'eventDone' well 
         // before the timeout.
-        */
+        //
         oosmos_SendEvent(pSyncTest, eventPrint);
-        oosmos_SyncWaitEvent_TimeoutMS_Exit(pRegion, pEvent, eventDone, 100);
+        oosmos_SyncWaitEvent_TimeoutMS_Exit(pRegion, pEvent, 100,
+          eventDone
+        );
         Successes += 1;
 
-        /*
+        //
         // We don't enqueue 'eventPrint' so we don't expect an 'eventDone' therefore it should time out.
-        */
-        oosmos_SyncWaitEvent_TimeoutMS_Exit(pRegion, pEvent, eventDone, 100);
+        //
+        oosmos_SyncWaitEvent_TimeoutMS_Exit(pRegion, pEvent, 100,
+          eventDone
+        );
         Failures += 1;
 
       oosmos_SyncFinally(pRegion);
@@ -347,8 +371,8 @@ extern synctest * synctestNew(void)
 {  
   oosmos_Allocate(pSyncTest, synctest, MAX_SYNCTEST, NULL);
 
-  /*                                          StateName                  Parent                 Default                    */
-  /*                              ======================================================================================== */
+  //                                          StateName                  Parent                 Default
+  //                              ========================================================================================
   oosmos_StateMachineInit         (pSyncTest, StateMachine,              NULL,                  Ortho_State              );
     oosmos_OrthoInitNoCode        (pSyncTest, Ortho_State,               StateMachine                                    );
       oosmos_OrthoRegionInitNoCode(pSyncTest, Ortho_RegionA_State,       Ortho_State,           Ortho_RegionA_TestA_State);

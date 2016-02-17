@@ -1,7 +1,7 @@
-/*
+//
 // OOSMOS - The Object-Oriented State Machine Operating System
 //
-// Copyright (C) 2014-2015  OOSMOS, LLC
+// Copyright (C) 2014-2016  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,22 +18,22 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+//
 
 #ifndef OOSMOS_h
 #define OOSMOS_h
 
-/*
-// All names that begin with OOSMOS (all caps) are private and are not part of the 
+//
+// All names that begin with OOSMOS (all caps) are private and are not part of the
 // official oosmos interface.
-*/
+//
 
 #include <stdint.h>
 #include <stddef.h>
 
-/*
+//
 // Define the bool datatype, one way or another.
-*/
+//
 #if !defined(__cplusplus)
   #if !defined(oosmos_HAS_BOOL)
     #undef bool
@@ -45,9 +45,9 @@
   #endif
 #endif
 
-/*
+//
 // Include header files so the application doesn't have to.
-*/
+//
 #if defined(ARDUINO)
   #if ARDUINO >= 100
     #include "Arduino.h"
@@ -65,16 +65,18 @@
   #define oosmos_EndProgram(Code) while(1)continue
 #elif defined(oosmos_RASPBERRY_PI)
   #include <wiringPi.h>
+  #define __USE_BSD
   #include <unistd.h>
-  #define oosmos_EndProgram(Code) OOSMOS_EndProgram(Code) 
+  #define oosmos_EndProgram(Code) OOSMOS_EndProgram(Code)
 #elif defined(__linux__) || defined(__APPLE__)
+  #define __USE_BSD
   #include <unistd.h>
-  #define oosmos_EndProgram(Code) OOSMOS_EndProgram(Code) 
+  #define oosmos_EndProgram(Code) OOSMOS_EndProgram(Code)
 #elif defined(__MBED__)
   #include "mbed.h"
-  #define oosmos_EndProgram(Code) OOSMOS_EndProgram(Code)   
+  #define oosmos_EndProgram(Code) OOSMOS_EndProgram(Code)
 #else
-  #define oosmos_EndProgram(Code) OOSMOS_EndProgram(Code)   
+  #define oosmos_EndProgram(Code) OOSMOS_EndProgram(Code)
 #endif
 
 typedef struct
@@ -109,13 +111,13 @@ struct OOSMOS_sQueueTag
     #include <plib.h>
     #define oosmos_DebugPrint DBPRINTF
     #define oosmos_DebugCode(x) x
-  #elif defined(_MSC_VER) || defined(__linux__) || defined(__APPLE__)
-    #define oosmos_DebugPrint printf
-    #define oosmos_DebugCode(x) x
   #elif defined(ARDUINO) || defined(ENERGIA)
     #define oosmos_DebugPrint OOSMOS_ArduinoPrintf
     #define oosmos_DebugCode(x) x
     extern void OOSMOS_ArduinoPrintf(const char * pFormat, ...);
+  #else
+    #define oosmos_DebugPrint printf
+    #define oosmos_DebugCode(x) x
   #endif
 
   extern void oosmos_DebugInit(void);
@@ -144,9 +146,9 @@ typedef struct
 typedef struct OOSMOS_sStateTag        oosmos_sState;
 typedef struct OOSMOS_sRegionTag       oosmos_sRegion;
 
-/*
+//
 // User-facing state machine declaration types.
-*/
+//
 typedef struct OOSMOS_sStateMachineTag oosmos_sStateMachine;
 typedef struct OOSMOS_sOrthoTag        oosmos_sOrtho;
 typedef struct OOSMOS_sCompositeTag    oosmos_sComposite;
@@ -182,40 +184,40 @@ struct OOSMOS_sStateTag {
 
   oosmos_sTimeout SyncTimeout;
 
-  /*
+  //
   // The stored __LINE__ number of the current Sync-type call.
-  */
+  //
   int SyncContext;
 
-  /*
+  //
   // A user could attempt to make a Sync-type call without grouping it within a
   // SyncBegin/SyncEnd.  They will not get a syntax error.  This flag helps remind
   // them of the requirement at run time.
-  */
+  //
   int HasSyncBlockBegin:1;
 
-  /*
+  //
   // Following a successful SyncWaitEvent-type call, we can drop into another
-  // SyncWaitEvent-type call.  We don't want the spent event being handled 
+  // SyncWaitEvent-type call.  We don't want the spent event being handled
   // by the subsequent function.  We must cycle back through another INSTATE
   // with a fresh event.
-  */
+  //
   int SyncDirtyEvent:1;
 
-  /*
-  // Flag that helps a Sync sequence exit (if a transition occurred) or 
+  //
+  // Flag that helps a Sync sequence exit (if a transition occurred) or
   // continue.
-  */
+  //
   int TransitionOccurred:1;
 
-  /*
+  //
   // Support for oosmos_SyncYield.
-  */
+  //
   int HasYielded:1;
 
-  /*
+  //
   // Really an eTypes enumeration, but ANSI won't allow an enum on a bit field.
-  */
+  //
   int Type:4;
 };
 
@@ -272,16 +274,16 @@ struct OOSMOS_sStateMachineTag
   extern "C" {
 #endif
 
-/*--------*/
+//--------
 extern void OOSMOS_EndProgram(int);
 
-/*--------*/
+//--------
 extern void OOSMOS_StateMachineDetach(oosmos_sStateMachine * pStateMachine);
 
 #define oosmos_StateMachineDetach(pObject, StateMachine) \
           OOSMOS_StateMachineDetach(&(pObject)->StateMachine)
 
-/*--------*/
+//--------
 extern void OOSMOS_StateMachineInit(const char * pName, oosmos_sStateMachine * pStateMachine, oosmos_sState * pDefault, oosmos_sQueue * pEventQueue,
                  void * pCurrentEvent, size_t CurrentEventSize, void * pObject);
 
@@ -293,7 +295,7 @@ extern void OOSMOS_StateMachineInit(const char * pName, oosmos_sStateMachine * p
 #define oosmos_StateMachineInitNoQueue(pObject, StateMachine, Parent, Default)\
         OOSMOS_StateMachineInit(#StateMachine, &(pObject)->StateMachine, (oosmos_sState*) &(pObject)->Default, NULL,\
                  NULL, 0, (pObject))
-/*--------*/
+//--------
 extern void OOSMOS_CompositeInit(const char * pName, oosmos_sComposite *pComposite,
                        oosmos_sState *pParent, oosmos_sState * pDefault, OOSMOS_tCode pCode);
 #define oosmos_CompositeInit(pObject, Composite, Parent, Default) \
@@ -307,7 +309,7 @@ extern void OOSMOS_CompositeInit(const char * pName, oosmos_sComposite *pComposi
 
 #define oosmos_CompositeInitNoDefaultNoCode(pObject, Composite, Parent) \
         OOSMOS_CompositeInit(OOSMOS_xstr(Composite), &(pObject)->Composite, (oosmos_sState*) &(pObject)->Parent, NULL, NULL)
-/*--------*/
+//--------
 extern void OOSMOS_LeafInit(const char * pName, oosmos_sState *pState, oosmos_sState *pParent, OOSMOS_tCode pCode);
 
 #define oosmos_LeafInit(pObject, LeafState, Parent)\
@@ -316,7 +318,7 @@ extern void OOSMOS_LeafInit(const char * pName, oosmos_sState *pState, oosmos_sS
 #define oosmos_LeafInitNoCode(pObject, LeafState, Parent)\
         OOSMOS_LeafInit(#LeafState, &(pObject)->LeafState, (oosmos_sState *) &(pObject)->Parent, NULL)
 #ifdef oosmos_ORTHO
-/*--------*/
+//--------
 extern void OOSMOS_OrthoInit(const char * pName, oosmos_sOrtho *pOrtho, oosmos_sState *pParent, OOSMOS_tCode pCode);
 
 #define oosmos_OrthoInit(pObject, Ortho, Parent)\
@@ -324,7 +326,7 @@ extern void OOSMOS_OrthoInit(const char * pName, oosmos_sOrtho *pOrtho, oosmos_s
 
 #define oosmos_OrthoInitNoCode(pObject, Ortho, Parent)\
         OOSMOS_OrthoInit(#Ortho, &(pObject)->Ortho, (oosmos_sState *) &(pObject)->Parent, NULL)
-/*--------*/
+//--------
 extern void OOSMOS_OrthoRegionInit(const char * pName, oosmos_sOrthoRegion * pOrthoRegion,
                               oosmos_sOrtho * pOrthoParent, oosmos_sState * pDefault, OOSMOS_tCode pHandler, void * pObject);
 
@@ -334,12 +336,12 @@ extern void OOSMOS_OrthoRegionInit(const char * pName, oosmos_sOrthoRegion * pOr
 #define oosmos_OrthoRegionInitNoCode(pObject, OrthoRegion, Parent, Default) \
         OOSMOS_OrthoRegionInit(#OrthoRegion, &(pObject)->OrthoRegion, &(pObject)->Parent, (oosmos_sState*) &(pObject)->Default, NULL, (pObject))
 #endif
-/*--------*/
+//--------
 extern void OOSMOS_ChoiceInit(const char * pName, oosmos_sState *pState, oosmos_sState *pParent, OOSMOS_tCode pCode);
 
 #define oosmos_ChoiceInit(pObject, State, Parent)\
         OOSMOS_ChoiceInit(#State, &(pObject)->State, (oosmos_sState*) &(pObject)->Parent, State ## _Code)
-/*--------*/
+//--------
 extern void OOSMOS_FinalInit(const char * pName, oosmos_sState *pState, oosmos_sState *pParent, OOSMOS_tCode pCode);
 
 #define oosmos_FinalInit(pObject, State, Parent)\
@@ -347,17 +349,17 @@ extern void OOSMOS_FinalInit(const char * pName, oosmos_sState *pState, oosmos_s
 
 #define oosmos_FinalInitNoCode(pObject, State, Parent)\
         OOSMOS_FinalInit(#State, &(pObject)->State, (oosmos_sState*) &(pObject)->Parent, NULL)
-/*--------*/
+//--------
 extern bool OOSMOS_Transition(oosmos_sRegion * pRegion, oosmos_sState * pToState);
 
 #define oosmos_Transition(pRegion, pToState)\
         OOSMOS_Transition(pRegion, (oosmos_sState*) pToState)
-/*--------*/
+//--------
 extern bool OOSMOS_IsInState(const oosmos_sStateMachine * pStateMachine, const oosmos_sState * pState);
 
 #define oosmos_IsInState(pStateMachine, pState) \
         OOSMOS_IsInState(pStateMachine, (oosmos_sState*) pState)
-/*--------*/
+//--------
 
 extern void oosmos_RunStateMachine(oosmos_sStateMachine * pStateMachine);
 extern void oosmos_RunStateMachines(void);
@@ -425,7 +427,7 @@ typedef void (*oosmos_tOutOfMemory)(const char*, int, const char*);
 #define oosmos_COMPLETE -6
 
 
-/*
+//
 // oosmos_SyncDelayMS
 //
 // oosmos_SyncWaitCond
@@ -437,7 +439,9 @@ typedef void (*oosmos_tOutOfMemory)(const char*, int, const char*);
 // oosmos_SyncWaitEvent_TimeoutMS
 // oosmos_SyncWaitEvent_TimeoutMS_Event
 // oosmos_SyncWaitEvent_TimeoutMS_Exit
-*/
+//
+// oosmos_SyncYield
+//
 
 
 extern bool OOSMOS_SyncYield(oosmos_sRegion * pRegion);
@@ -446,32 +450,33 @@ extern bool OOSMOS_SyncDelayMS(oosmos_sRegion * pRegion, int MS);
 
 extern bool OOSMOS_SyncWaitCond(oosmos_sRegion * pRegion, bool Condition);
 
-extern bool OOSMOS_SyncWaitCond_TimeoutMS(oosmos_sRegion * pRegion, bool Condition, 
-                       int TimeoutMS, bool * pTimeoutStatus);
+extern bool OOSMOS_SyncWaitCond_TimeoutMS(oosmos_sRegion * pRegion,
+                       int TimeoutMS, bool * pTimeoutStatus, bool Condition);
 
-extern bool OOSMOS_SyncWaitCond_TimeoutMS_Event(oosmos_sRegion * pRegion, bool Condition,
-                       int TimeoutMS, int NotificationEventCode);
+extern bool OOSMOS_SyncWaitCond_TimeoutMS_Event(oosmos_sRegion * pRegion,
+                       int TimeoutMS, int NotificationEventCode, bool Condition);
 
-extern bool OOSMOS_SyncWaitCond_TimeoutMS_Exit(oosmos_sRegion * pRegion, bool Condition,
-                       int TimeoutMS);
+extern bool OOSMOS_SyncWaitCond_TimeoutMS_Exit(oosmos_sRegion * pRegion,
+                       int TimeoutMS, bool Condition);
 
-extern bool OOSMOS_SyncWaitEvent(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent, int WaitEventCode);
+extern bool OOSMOS_SyncWaitEvent(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent,
+                       int WaitEventCode);
 
 extern bool OOSMOS_SyncWaitEvent_TimeoutMS(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent,
-                       int WaitEventCode, int TimeoutMS, bool * pTimedOut);
+                       int TimeoutMS, bool * pTimedOut, int WaitEventCode);
 
 extern bool OOSMOS_SyncWaitEvent_TimeoutMS_Event(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent,
-                       int WaitEventCode, int TimeoutMS, int NotificationEventCode);
+                       int TimeoutMS, int NotificationEventCode, int WaitEventCode);
 
 extern bool OOSMOS_SyncWaitEvent_TimeoutMS_Exit(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent,
-                       int WaitEventCode, int TimeoutMS);
+                       int TimeoutMS, int WaitEventCode);
 
-/*
-// Use the Protothread __LINE__ trick to implement synchronous functions.  Synchronous 
+//
+// Use the Protothread __LINE__ trick to implement synchronous functions.  Synchronous
 // functions block the object, not the entire thread of execution.
 //
 // Very powerful.
-*/
+//
 
 
 #define oosmos_SyncBegin(pRegion) switch ((pRegion)->pCurrent->SyncContext) { \
@@ -493,39 +498,39 @@ extern bool OOSMOS_SyncWaitEvent_TimeoutMS_Exit(oosmos_sRegion * pRegion, const 
                                       if (!(Cond)) \
                                         return false
 
-#define oosmos_SyncWaitCond_TimeoutMS(pRegion, Cond, TimeoutMS, pTimeoutStatus) \
+#define oosmos_SyncWaitCond_TimeoutMS(pRegion, TimeoutMS, pTimeoutStatus, Cond) \
                                     case __LINE__: (pRegion)->pCurrent->SyncContext = __LINE__; \
-                                      if (!OOSMOS_SyncWaitCond_TimeoutMS(pRegion, Cond, TimeoutMS, pTimeoutStatus)) \
+                                      if (!OOSMOS_SyncWaitCond_TimeoutMS(pRegion, TimeoutMS, pTimeoutStatus, Cond)) \
                                         return false
 
-#define oosmos_SyncWaitCond_TimeoutMS_Event(pRegion, Cond, TimeoutMS, NotificationEventCode) \
+#define oosmos_SyncWaitCond_TimeoutMS_Event(pRegion, TimeoutMS, NotificationEventCode, Cond) \
                                     case __LINE__: (pRegion)->pCurrent->SyncContext = __LINE__; \
-                                      if (!OOSMOS_SyncWaitCond_TimeoutMS_Event(pRegion, Cond, TimeoutMS, NotificationEventCode)) \
+                                      if (!OOSMOS_SyncWaitCond_TimeoutMS_Event(pRegion, TimeoutMS, NotificationEventCode, Cond)) \
                                         return false
 
-#define oosmos_SyncWaitCond_TimeoutMS_Exit(pRegion, Cond, TimeoutMS) \
+#define oosmos_SyncWaitCond_TimeoutMS_Exit(pRegion, TimeoutMS, Cond) \
                                     case __LINE__: (pRegion)->pCurrent->SyncContext = __LINE__; \
-                                      if (!OOSMOS_SyncWaitCond_TimeoutMS_Exit(pRegion, Cond, TimeoutMS)) \
+                                      if (!OOSMOS_SyncWaitCond_TimeoutMS_Exit(pRegion, TimeoutMS, Cond)) \
                                         return false
 
-#define oosmos_SyncWaitEvent(pRegion, pEvent, EventCode) \
+#define oosmos_SyncWaitEvent(pRegion, pEvent, WaitEventCode) \
                                     case __LINE__: (pRegion)->pCurrent->SyncContext = __LINE__; \
-                                      if (!OOSMOS_SyncWaitEvent(pRegion, pEvent, EventCode)) \
+                                      if (!OOSMOS_SyncWaitEvent(pRegion, pEvent, WaitEventCode)) \
                                         return false
 
-#define oosmos_SyncWaitEvent_TimeoutMS(pRegion, pEvent, WaitEventCode, TimeoutMS, pTimeoutResult) \
+#define oosmos_SyncWaitEvent_TimeoutMS(pRegion, pEvent, TimeoutMS, pTimeoutResult, WaitEventCode) \
                                     case __LINE__: (pRegion)->pCurrent->SyncContext = __LINE__; \
-                                      if (!OOSMOS_SyncWaitEvent_TimeoutMS(pRegion, pEvent, WaitEventCode, TimeoutMS, pTimeoutResult)) \
+                                      if (!OOSMOS_SyncWaitEvent_TimeoutMS(pRegion, pEvent, TimeoutMS, pTimeoutResult, WaitEventCode)) \
                                         return false
 
-#define oosmos_SyncWaitEvent_TimeoutMS_Event(pRegion, pEvent, WaitEvent, TimeoutMS, NotificationEventCode) \
+#define oosmos_SyncWaitEvent_TimeoutMS_Event(pRegion, pEvent, TimeoutMS, NotificationEventCode, WaitEventCode) \
                                     case __LINE__: (pRegion)->pCurrent->SyncContext = __LINE__; \
-                                      if (!OOSMOS_SyncWaitEvent_TimeoutMS_Event(pRegion, pEvent, WaitEvent, TimeoutMS, NotificationEventCode)) \
+                                      if (!OOSMOS_SyncWaitEvent_TimeoutMS_Event(pRegion, pEvent, TimeoutMS, NotificationEventCode, WaitEventCode)) \
                                         return false
 
-#define oosmos_SyncWaitEvent_TimeoutMS_Exit(pRegion, pEvent, WaitEvent, TimeoutMS) \
+#define oosmos_SyncWaitEvent_TimeoutMS_Exit(pRegion, pEvent, TimeoutMS, WaitEventCode) \
                                     case __LINE__: (pRegion)->pCurrent->SyncContext = __LINE__; \
-                                      if (!OOSMOS_SyncWaitEvent_TimeoutMS_Exit(pRegion, pEvent, WaitEvent, TimeoutMS)) \
+                                      if (!OOSMOS_SyncWaitEvent_TimeoutMS_Exit(pRegion, pEvent, TimeoutMS, WaitEventCode)) \
                                         return false
 
 #define oosmos_SyncExit(pRegion) \
@@ -545,19 +550,19 @@ typedef struct
   oosmos_sEvent   Event;
 } oosmos_sSubscriberList;
 
-/*--------*/
+//--------
 #define oosmos_SubscriberListInit(Subscriber) \
         OOSMOS_SubscriberListInit(Subscriber, sizeof(Subscriber)/sizeof(Subscriber[0]))
 extern void OOSMOS_SubscriberListInit(oosmos_sSubscriberList * pSubscriberList, size_t ListElements);
-/*--------*/
+//--------
 #define oosmos_SubscriberListNotify(Subscriber) \
         OOSMOS_SubscriberListNotify(Subscriber, sizeof(Subscriber)/sizeof(Subscriber[0]))
 extern bool OOSMOS_SubscriberListNotify(oosmos_sSubscriberList * pSubscriberList, size_t ListElements);
-/*--------*/
+//--------
 #define oosmos_SubscriberListNotifyWithArgs(Subscriber, Event) \
         OOSMOS_SubscriberListNotifyWithArgs(Subscriber, &Event, sizeof(Event), sizeof(Subscriber)/sizeof(Subscriber[0]))
 extern bool OOSMOS_SubscriberListNotifyWithArgs(oosmos_sSubscriberList * pSubscriberList, void * pEvent, size_t EventSize, size_t ListElements);
-/*--------*/
+//--------
 #define oosmos_SubscriberListAdd(Subscriber, pNotifyQueue, EventCode, pContext) \
         OOSMOS_SubscriberListAdd(Subscriber, sizeof(Subscriber)/sizeof(Subscriber[0]), pNotifyQueue, EventCode, pContext)
 extern void OOSMOS_SubscriberListAdd(oosmos_sSubscriberList * pSubscriberList, size_t ListElements, oosmos_sQueue * pNotifyQueue, int EventCode, void * pContext);
@@ -571,7 +576,7 @@ extern void oosmos_TimeoutInUS(oosmos_sTimeout * pTimeout, uint32_t Microseconds
 extern void oosmos_TimeoutInSeconds(oosmos_sTimeout * pTimeout, uint32_t Seconds);
 extern bool oosmos_TimeoutHasExpired(const oosmos_sTimeout * pTimeout);
 
-/*--------*/
+//--------
 extern void OOSMOS_QueueConstruct(oosmos_sQueue * pQueue, void * pQueueData, size_t QueueDataSize, size_t QueueElementSize);
 #define oosmos_QueueConstruct(pQueue, pQueueData) \
   OOSMOS_QueueConstruct((pQueue), (pQueueData),sizeof(pQueueData),sizeof((pQueueData)[0]));
