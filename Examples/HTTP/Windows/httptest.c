@@ -80,11 +80,13 @@ static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const o
 
         printf("%d: CONNECTED\n", pHttpTest->m_ID);
 
-        printf("%d: Sending GET...\n", pHttpTest->m_ID);
-        static const char GET[] = "GET http://example.com/index.html HTTP/1.1\r\n\r\n";
-        oosmos_SyncWaitCond(pRegion,
-          sockSend(pHttpTest->m_pSock, GET, strlen(GET))
-        );
+        {
+          static const char GET[] = "GET http://example.com/index.html HTTP/1.1\r\n\r\n";
+          printf("%d: Sending GET...\n", pHttpTest->m_ID);
+          oosmos_SyncWaitCond(pRegion,
+            sockSend(pHttpTest->m_pSock, GET, strlen(GET))
+          );
+        }
 
         printf("%d: Waiting for Content-Length:...\n", pHttpTest->m_ID);
 
@@ -106,10 +108,10 @@ static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const o
         // Receive header until we see "\r\n\r\n".
         //
         {
-          printf("%d: Waiting for end of header...\n", pHttpTest->m_ID);
-
           static const char   End[]     = "\r\n\r\n";
           static const size_t EndLength = sizeof(End) - 1;
+
+          printf("%d: Waiting for end of header...\n", pHttpTest->m_ID);
 
           oosmos_SyncWaitCond(pRegion,
             sockReceiveUntilContent(pHttpTest->m_pSock,

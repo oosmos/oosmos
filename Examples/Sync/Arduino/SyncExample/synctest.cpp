@@ -123,11 +123,11 @@ static bool Ortho_RegionA_TestA_State_Code(void * pObject, oosmos_sRegion * pReg
 static bool Ortho_RegionA_TestB_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
 {
   synctest * pSyncTest = (synctest *) pObject;
+  bool TimedOut;
 
   switch (pEvent->Code) {
     case oosmos_INSTATE:
       oosmos_SyncBegin(pRegion);
-        bool TimedOut;
         prtFormatted("Test SyncWaitCond...\n");
 
         oosmos_SyncWaitCond(pRegion, ConditionRandom(2));
@@ -223,11 +223,11 @@ static bool Ortho_RegionA_TestD_State_Code(void * pObject, oosmos_sRegion * pReg
 static bool Ortho_RegionA_TestE_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
 {
   synctest * pSyncTest = (synctest *) pObject;
+  bool TimedOut;
 
   switch (pEvent->Code) {
     case oosmos_INSTATE:
       oosmos_SyncBegin(pRegion);
-        bool TimedOut;
         prtFormatted("Test SyncWaitEvent...\n");
 
         oosmos_SendEvent(pSyncTest, eventPrint);

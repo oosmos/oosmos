@@ -250,7 +250,7 @@ static void DefaultTransitions(oosmos_sRegion * pRegion, oosmos_sState * pState)
 
   oosmos_DebugCode(
     if (pRegion->Composite.State.pStateMachine->Debug)
-      oosmos_DebugPrint("--> %s (+default)\n", pState->pName);
+      oosmos_DebugPrint("==> %s\n", pState->pName);
   )
 
   SyncInit(pState);
@@ -373,6 +373,10 @@ extern bool OOSMOS_Transition(oosmos_sRegion * pRegion, oosmos_sState * pToState
 {
   oosmos_sState * pFromState = pRegion->pCurrent;
   oosmos_sState * pLCA       = OOSMOS_LCA(pRegion->pCurrent, pToState);
+
+  if (pToState == pLCA) {
+    pLCA = pLCA->pParent;
+  }
 
   OOSMOS_Exit (pRegion, pFromState, pLCA);
   OOSMOS_Enter(pRegion, pLCA,       pToState);
@@ -1198,6 +1202,7 @@ extern bool OOSMOS_SyncWaitEvent(oosmos_sRegion * pRegion, const oosmos_sEvent *
                                  int WaitEventCode)
 {
   oosmos_sState * pState = pRegion->pCurrent;
+  oosmos_sEvent * pDeliveredEvent;
 
   CheckInSyncBlock(pState);
 
@@ -1206,7 +1211,7 @@ extern bool OOSMOS_SyncWaitEvent(oosmos_sRegion * pRegion, const oosmos_sEvent *
     return false;
   }
 
-  oosmos_sEvent * pDeliveredEvent = (oosmos_sEvent *) pEvent->pContext;
+  pDeliveredEvent = (oosmos_sEvent *) pEvent->pContext;
 
   if (pDeliveredEvent != NULL && pDeliveredEvent->Code == WaitEventCode) {
     pState->SyncDirtyEvent = true;
@@ -1220,6 +1225,7 @@ extern bool OOSMOS_SyncWaitEvent_TimeoutMS(oosmos_sRegion * pRegion, const oosmo
                                            int WaitEventCode)
 {
   oosmos_sState * pState = pRegion->pCurrent;
+  oosmos_sEvent * pDeliveredEvent;
 
   CheckInSyncBlock(pState);
 
@@ -1228,7 +1234,7 @@ extern bool OOSMOS_SyncWaitEvent_TimeoutMS(oosmos_sRegion * pRegion, const oosmo
     return false;
   }
 
-  oosmos_sEvent * pDeliveredEvent = (oosmos_sEvent *) pEvent->pContext;
+  pDeliveredEvent = (oosmos_sEvent *) pEvent->pContext;
 
   if (pDeliveredEvent != NULL && pDeliveredEvent->Code == WaitEventCode) {
     *pTimedOut = false;
@@ -1249,6 +1255,7 @@ extern bool OOSMOS_SyncWaitEvent_TimeoutMS_Event(oosmos_sRegion * pRegion, const
                                                  int WaitEventCode)
 {
   oosmos_sState * pState = pRegion->pCurrent;
+  oosmos_sEvent * pDeliveredEvent;
 
   CheckInSyncBlock(pState);
 
@@ -1257,7 +1264,7 @@ extern bool OOSMOS_SyncWaitEvent_TimeoutMS_Event(oosmos_sRegion * pRegion, const
     return false;
   }
 
-  oosmos_sEvent * pDeliveredEvent = (oosmos_sEvent *) pEvent->pContext;
+  pDeliveredEvent = (oosmos_sEvent *) pEvent->pContext;
 
   if (pDeliveredEvent != NULL && pDeliveredEvent->Code == WaitEventCode) {
     RESET_SYNC_TIMEOUT(pState);
@@ -1288,6 +1295,7 @@ extern bool OOSMOS_SyncWaitEvent_TimeoutMS_Exit(oosmos_sRegion * pRegion, const 
                                                 int WaitEventCode)
 {
   oosmos_sState * pState = pRegion->pCurrent;
+  oosmos_sEvent * pDeliveredEvent;
 
   CheckInSyncBlock(pState);
 
@@ -1296,7 +1304,7 @@ extern bool OOSMOS_SyncWaitEvent_TimeoutMS_Exit(oosmos_sRegion * pRegion, const 
     return false;
   }
 
-  oosmos_sEvent * pDeliveredEvent = (oosmos_sEvent *) pEvent->pContext;
+  pDeliveredEvent = (oosmos_sEvent *) pEvent->pContext;
 
   if (pDeliveredEvent != NULL && pDeliveredEvent->Code == WaitEventCode) {
     RESET_SYNC_TIMEOUT(pState);

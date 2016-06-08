@@ -48,9 +48,10 @@ static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const o
     case oosmos_INSTATE:
       oosmos_SyncBegin(pRegion);
         while (true) {
+          sock * pNewSock;
+
           printf("Waiting for incoming connections...\n");
 
-          sock * pNewSock;
           oosmos_SyncWaitCond(pRegion,
             sockAccepted(pListener->m_pSock, &pNewSock)
           );

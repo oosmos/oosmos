@@ -50,7 +50,9 @@ static void Run(void * pObject)
   printf("Checking %s...\n", pDnsTest->pDomain);
   
   if (dnsQuery(pDnsTest->pDNS, pDnsTest->pDomain, pDnsTest->IP, MAX_ANSWERS)) {
-    for (int Answer = 0; Answer < MAX_ANSWERS; Answer++) {
+    int Answer;
+
+    for (Answer = 0; Answer < MAX_ANSWERS; Answer++) {
       const uint32_t IP = pDnsTest->IP[Answer];
 
       if (IP == 0) 

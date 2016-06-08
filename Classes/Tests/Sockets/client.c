@@ -50,7 +50,7 @@ static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const o
 
   switch (pEvent->Code) {
     case oosmos_INSTATE: {
-      uint32_t IP_HostByteOrder = sockDotToIP_HostByteOrder(pClient->m_pHost);
+      const uint32_t IP_HostByteOrder = sockDotToIP_HostByteOrder(pClient->m_pHost);
 
       oosmos_SyncBegin(pRegion);
         oosmos_SyncWaitCond_TimeoutMS_Event(pRegion, 2000, ConnectionTimeoutEvent,

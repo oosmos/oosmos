@@ -189,8 +189,24 @@ extern bool dnsQuery(dns * pDns, const char * pHost, uint32_t * pIP, int MaxIPs)
 
   struct sockaddr_in SockAddr;
   socklen_t SockAddrSize = sizeof(SockAddr);
+  int Bytes;
 
   if (pDns->dnsQuery.bFirst) {
+    tHeader * pHeader = (tHeader * ) Buffer;
+    uint16_t ID;
+    uint16_t Flags; // Standard Query 
+    uint16_t Questions;
+    uint16_t Answers;
+    uint16_t AuthorityRRs;
+    uint16_t AdditionalRRs;
+    uint8_t * pQuestionName;
+    size_t NameSize;
+    tQuestionTail * pQuestionTail;
+    uint16_t Type;
+    uint16_t Class;
+    size_t QuerySize;
+
+
     const uint16_t DnsPort = 53;
 
     memset(&SockAddr, 0, sizeof(SockAddr));
@@ -199,45 +215,45 @@ extern bool dnsQuery(dns * pDns, const char * pHost, uint32_t * pIP, int MaxIPs)
     SockAddr.sin_addr.s_addr = htonl(NameServerIP);
  
 
-    tHeader * pHeader = (tHeader * ) Buffer;
+    pHeader = (tHeader * ) Buffer;
 
-    const uint16_t ID = TransactionID++;
+    ID = TransactionID++;
     pHeader->TransactionID[0] = (uint8_t) (ID >> 8);
     pHeader->TransactionID[1] = (uint8_t) (ID);
 
-    const uint16_t Flags = 0x0100; // Standard Query 
+    Flags = 0x0100; // Standard Query 
     pHeader->Flags[0] = (uint8_t) (Flags >> 8);
     pHeader->Flags[1] = (uint8_t) (Flags);
 
-    const uint16_t Questions = 1;
+    Questions = 1;
     pHeader->Questions[0] = (uint8_t) (Questions >> 8);
     pHeader->Questions[1] = (uint8_t) (Questions);
 
-    const uint16_t Answers = 0;
+    Answers = 0;
     pHeader->Answers[0] = (uint8_t) (Answers >> 8);
     pHeader->Answers[1] = (uint8_t) (Answers);
 
-    const uint16_t AuthorityRRs = 0;
+    AuthorityRRs = 0;
     pHeader->AuthorityRRs[0] = (uint8_t) (AuthorityRRs >> 8);
     pHeader->AuthorityRRs[1] = (uint8_t) (AuthorityRRs);
 
-    const uint16_t AdditionalRRs = 0;
+    AdditionalRRs = 0;
     pHeader->AdditionalRRs[0] = (uint8_t) (AdditionalRRs >> 8);
     pHeader->AdditionalRRs[1] = (uint8_t) (AdditionalRRs);
 
-    uint8_t * pQuestionName = (uint8_t *) (pHeader + 1);
-    const size_t NameSize = DomainToDnsDomain(pHost, pQuestionName);
+    pQuestionName = (uint8_t *) (pHeader + 1);
+    NameSize = DomainToDnsDomain(pHost, pQuestionName);
  
-    tQuestionTail * pQuestionTail = (tQuestionTail * ) (pQuestionName + NameSize);
-    const uint16_t Type = 1;
+    pQuestionTail = (tQuestionTail * ) (pQuestionName + NameSize);
+    Type = 1;
     pQuestionTail->Type[0] = (uint8_t) (Type >> 8);
     pQuestionTail->Type[1] = (uint8_t) (Type);
 
-    const uint16_t Class = 1;
+    Class = 1;
     pQuestionTail->Class[0] = (uint8_t) (Class >> 8);
     pQuestionTail->Class[1] = (uint8_t) (Class);
 
-    const size_t QuerySize = sizeof(tHeader) + NameSize + sizeof(tQuestionTail);
+    QuerySize = sizeof(tHeader) + NameSize + sizeof(tQuestionTail);
 
     if (sendto(pDns->Socket, Buffer, QuerySize, 0, (struct sockaddr *) &SockAddr, SockAddrSize) == -1) {
       exit(1);
@@ -247,7 +263,7 @@ extern bool dnsQuery(dns * pDns, const char * pHost, uint32_t * pIP, int MaxIPs)
     return false;
   }
 
-  const int Bytes = recvfrom(pDns->Socket, Buffer, sizeof(Buffer), 0, 
+  Bytes = recvfrom(pDns->Socket, Buffer, sizeof(Buffer), 0, 
                                         (struct sockaddr *) &SockAddr, &SockAddrSize);
   if (Bytes == -1) {
     if (dnsGetLastError() == dnsEWOULDBLOCK) {
@@ -257,29 +273,33 @@ extern bool dnsQuery(dns * pDns, const char * pHost, uint32_t * pIP, int MaxIPs)
     exit(1);
   }
 
-  const tHeader * pHeader = (tHeader *) Buffer;
-
-  const uint16_t Answers = (uint8_t) (pHeader->Answers[0] << 8) |
-                           (uint8_t) (pHeader->Answers[1]);
-
-  const uint8_t * pQuery = (const uint8_t *) (pHeader + 1);
-  const int QueryNameLen = strlen((const char *) pQuery);
-
-  const tAnswer * pAnswer = (tAnswer *) (pQuery + (QueryNameLen + 1) + sizeof(tQuestionTail));
-
-  memset(pIP, 0, sizeof(*pIP) * MaxIPs);
-
-  for (int Count = 1; Count <= Answers; Count++) {
-    *pIP = pAnswer->Address[0] << 24 |
-           pAnswer->Address[1] << 16 |
-           pAnswer->Address[2] << 8  |
-           pAnswer->Address[3];
-
-    if (Count == MaxIPs)
-      break;
+  {
+    const tHeader * pHeader = (tHeader *) Buffer;
   
-    pAnswer++;
-    pIP++;
+    const uint16_t Answers = (uint8_t) (pHeader->Answers[0] << 8) |
+                             (uint8_t) (pHeader->Answers[1]);
+  
+    const uint8_t * pQuery = (const uint8_t *) (pHeader + 1);
+    const int QueryNameLen = strlen((const char *) pQuery);
+  
+    const tAnswer * pAnswer = (tAnswer *) (pQuery + (QueryNameLen + 1) + sizeof(tQuestionTail));
+
+    int Count;
+  
+    memset(pIP, 0, sizeof(*pIP) * MaxIPs);
+  
+    for (Count = 1; Count <= Answers; Count++) {
+      *pIP = pAnswer->Address[0] << 24 |
+             pAnswer->Address[1] << 16 |
+             pAnswer->Address[2] << 8  |
+             pAnswer->Address[3];
+  
+      if (Count == MaxIPs)
+        break;
+    
+      pAnswer++;
+      pIP++;
+    }
   }
 
   pDns->dnsQuery.bFirst = true;

@@ -210,17 +210,27 @@ static bool Termination_State_Code(void * pObject, oosmos_sRegion * pRegion, con
 
 extern control * controlNew(void)
 {
+  key * pStopKey;
+  key * pMoveKey;
+  key * pQuitKey;
+
+  key * pPumpKey;
+  key * pUpKey;
+  key * pDownKey;
+  key * pOption1Key;
+  key * pOption2Key;
+
   oosmos_Allocate(pControl, control, 1, NULL);
 
-  key * pStopKey    = keyNew('s');
-  key * pMoveKey    = keyNew('m');
-  key * pQuitKey    = keyNew('q');
+  pStopKey    = keyNew('s');
+  pMoveKey    = keyNew('m');
+  pQuitKey    = keyNew('q');
 
-  key * pPumpKey    = keyNew('p');
-  key * pUpKey      = keyNew('u');
-  key * pDownKey    = keyNew('d');
-  key * pOption1Key = keyNew('1');
-  key * pOption2Key = keyNew('2');
+  pPumpKey    = keyNew('p');
+  pUpKey      = keyNew('u');
+  pDownKey    = keyNew('d');
+  pOption1Key = keyNew('1');
+  pOption2Key = keyNew('2');
 
   {
     oosmos_sQueue * const pControlEventQueue = &pControl->EventQueue;

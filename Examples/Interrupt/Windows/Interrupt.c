@@ -69,8 +69,11 @@ static void ISR(const int UartId)
     if (UartId != pUART->m_UartId)
       continue;
 
-    const uint8_t Byte = (uint8_t) UartId;
-    oosmos_QueuePush(&pUART->m_ReceiveDataQueue, &Byte, sizeof(Byte));
+    {
+      const uint8_t Byte = (uint8_t) UartId;
+      oosmos_QueuePush(&pUART->m_ReceiveDataQueue, &Byte, sizeof(Byte));
+    }
+
     return;
   }
 }

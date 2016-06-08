@@ -25,7 +25,9 @@
 
 extern int main(void)
 {
-  for (int LoopCount = 1; LoopCount <= 5; LoopCount++) {
+  int LoopCount;
+
+  for (LoopCount = 1; LoopCount <= 5; LoopCount++) {
     oosmos_DelaySeconds(1);
     printf("Work...\n");
   }

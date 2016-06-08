@@ -27,7 +27,9 @@
 
 extern int main(void)
 {
-  for (int I = 1; I <= SYNCTESTS; I++)
+  int I;
+
+  for (I = 1; I <= SYNCTESTS; I++)
     synctestNew();
 
   while (true) {

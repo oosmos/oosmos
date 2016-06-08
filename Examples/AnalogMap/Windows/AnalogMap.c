@@ -31,9 +31,11 @@ static int AccurateDistribution[ITERATIONS+1];
 static void TestAccurate(float Value, float InMin, float InMax, float OutMin, float OutMax)
 {
   const float Result = oosmos_AnalogMapAccurate(Value, InMin, InMax, OutMin, OutMax);
+  long IntResult;
+
   printf("Value:%f, InMin:%f, InMax:%f, OutMin:%f, OutMax:%f, Result:%f\n", Value, InMin, InMax, OutMin, OutMax, Result);
 
-  const long IntResult = (long) (Result + .5f);
+  IntResult = (long) (Result + .5f);
   AccurateDistribution[IntResult]++;
 }
 
@@ -49,23 +51,25 @@ extern int main(void)
 {
   const long Min = 1;
   const long Max = 1000;
+
+  int I;
   
   //
   // Test accurate implementation...
   //
-  for (int I = Min; I <= Max; I++) 
+  for (I = Min; I <= Max; I++) 
     TestAccurate((float) I, (float) Min, (float) Max, 1, 25);
 
-  for (int I = 1; I <= ITERATIONS; I++)
+  for (I = 1; I <= ITERATIONS; I++)
     printf("%d\n", AccurateDistribution[I]);
 
   //
   // Test fast implementation...
   //
-  for (int I = Min; I <= Max; I++) 
+  for (I = Min; I <= Max; I++) 
     TestFast(I, Min, Max, 1, 25);
 
-  for (int I = 1; I <= ITERATIONS; I++)
+  for (I = 1; I <= ITERATIONS; I++)
     printf("%d\n", FastDistribution[I]);
 
   return 0;

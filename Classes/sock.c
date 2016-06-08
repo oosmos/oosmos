@@ -82,7 +82,7 @@ struct sockTag
   sock_tSocket m_Socket;
 
   // Connect...
-  bool m_ConnectPrimed;
+  bool m_FirstConnect;
 
   // Send...
   const char * m_pSendData;
@@ -172,7 +172,7 @@ static sock * New(int Socket)
 
   pSock->m_Socket         = Socket;
   pSock->m_Closed         = false;
-  pSock->m_ConnectPrimed  = false;
+  pSock->m_FirstConnect   = true;
   pSock->m_pSendData      = NULL;
 
   pSock->m_BytesReceived  = 0;
@@ -360,17 +360,19 @@ extern bool sockSend(sock * pSock, const void * pData, size_t Bytes)
     pSock->m_BytesToSend = Bytes;
   }
 
-  const sendsize_t BytesSent = send(pSock->m_Socket, pSock->m_pSendData, pSock->m_BytesToSend, 0);
+  {
+    const sendsize_t BytesSent = send(pSock->m_Socket, pSock->m_pSendData, pSock->m_BytesToSend, 0);
 
-  if (CheckSendError(pSock, BytesSent))
-    return false;
-
-  pSock->m_pSendData   += BytesSent;
-  pSock->m_BytesToSend -= BytesSent;
-
-  if (pSock->m_BytesToSend == 0) {
-    pSock->m_pSendData = NULL;
-    return true;
+    if (CheckSendError(pSock, BytesSent))
+      return false;
+  
+    pSock->m_pSendData   += BytesSent;
+    pSock->m_BytesToSend -= BytesSent;
+  
+    if (pSock->m_BytesToSend == 0) {
+      pSock->m_pSendData = NULL;
+      return true;
+    }
   }
 
   return false;
@@ -378,10 +380,17 @@ extern bool sockSend(sock * pSock, const void * pData, size_t Bytes)
 
 extern bool sockConnect(sock * pSock, uint32_t IP_HostByteOrder, int Port)
 {
+  fd_set fd_out;
+  struct timeval tv;
+  int largest_sock;
+  int Code;
+  int Writable;
+  socklen_t SizeofCode;
+  
   if (pSock->m_Closed)
     return false;
 
-  if (!pSock->m_ConnectPrimed) {
+  if (pSock->m_FirstConnect) {
     struct sockaddr_in server;
 
     server.sin_addr.s_addr = htonl(IP_HostByteOrder);
@@ -390,30 +399,26 @@ extern bool sockConnect(sock * pSock, uint32_t IP_HostByteOrder, int Port)
 
     connect(pSock->m_Socket, (struct sockaddr *) &server, sizeof(server));
 
-    pSock->m_ConnectPrimed = true;
+    pSock->m_FirstConnect = false;
   }
-
-  fd_set fd_out;
-  struct timeval tv;
 
   FD_ZERO( &fd_out );
   FD_SET( pSock->m_Socket, &fd_out );
-
-  const int largest_sock = pSock->m_Socket;
+ 
+  largest_sock = pSock->m_Socket;
 
   tv.tv_sec  = 0;
   tv.tv_usec = 0;
 
   select(largest_sock+1, NULL, &fd_out, NULL, &tv);
-  const int Writable = FD_ISSET(pSock->m_Socket, &fd_out);
+  Writable = FD_ISSET(pSock->m_Socket, &fd_out);
 
-  int Code;
-  socklen_t SizeofCode = sizeof(Code);
+  SizeofCode = sizeof(Code);
 
   getsockopt(pSock->m_Socket, SOL_SOCKET, SO_ERROR, (char *) &Code, &SizeofCode);
 
   if (Writable && Code == 0) {
-    pSock->m_ConnectPrimed = false;
+    pSock->m_FirstConnect = true;
     return true;
   }
 
@@ -428,13 +433,18 @@ extern bool sockClose(sock * pSock)
 {
   CLOSE(pSock->m_Socket);
   pSock->m_Closed = true;
+
   return true;
 }
 
 extern sock * sockNew(void)
 {
+  int Socket;
+
   Init();
-  const int Socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+  Socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
   return New(Socket);
 }
 

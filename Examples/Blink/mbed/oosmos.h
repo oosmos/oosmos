@@ -69,7 +69,9 @@
   #include <unistd.h>
   #define oosmos_EndProgram(Code) OOSMOS_EndProgram(Code)
 #elif defined(__linux__) || defined(__APPLE__)
-  #define __USE_BSD
+  #ifndef __USE_BSD
+    #define __USE_BSD
+  #endif
   #include <unistd.h>
   #define oosmos_EndProgram(Code) OOSMOS_EndProgram(Code)
 #elif defined(__MBED__)
