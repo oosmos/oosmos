@@ -100,22 +100,22 @@ static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const o
 
   switch (pEvent->Code) {
     case oosmos_INSTATE:
-      oosmos_SyncBegin(pRegion);
+      oosmos_AsyncBegin(pRegion);
         while (true) {
           for (pMatrix->m_CurrentRowIndex = 0; pMatrix->m_CurrentRowIndex < pMatrix->m_Rows; pMatrix->m_CurrentRowIndex++) {
             if (pMatrix->m_pRowPins[pMatrix->m_CurrentRowIndex] == NULL)
               continue;
 
             pinOn(pMatrix->m_pRowPins[pMatrix->m_CurrentRowIndex]);
-            oosmos_SyncDelayMS(pRegion, RowOnSettleTimeUS);
+            oosmos_AsyncDelayMS(pRegion, RowOnSettleTimeUS);
 
             InterrogateColumns(pMatrix);
 
             pinOff(pMatrix->m_pRowPins[pMatrix->m_CurrentRowIndex]);
-            oosmos_SyncDelayMS(pRegion, RowOffSettleTimeUS);
+            oosmos_AsyncDelayMS(pRegion, RowOffSettleTimeUS);
           }
         }
-      oosmos_SyncEnd(pRegion);
+      oosmos_AsyncEnd(pRegion);
       return true;
   }
 

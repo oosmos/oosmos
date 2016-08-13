@@ -51,13 +51,13 @@ static bool Initializing_State_Code(void * pObject, oosmos_sRegion * pRegion, co
 
   switch (pEvent->Code) {
     case oosmos_INSTATE:
-      oosmos_SyncBegin(pRegion);
+      oosmos_AsyncBegin(pRegion);
         lcdClear(pLCD);
         oosmos_DelaySeconds(1);
 
         lcdSetCursor(pLCD, 0, 0);
         lcdPrint(pLCD, "Hello world");
-      oosmos_SyncEnd(pRegion);
+      oosmos_AsyncEnd(pRegion);
 
       return oosmos_Transition(pRegion, &pLcdTest->Running_State);
   }
@@ -73,14 +73,14 @@ static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const o
 
   switch (pEvent->Code) {
     case oosmos_INSTATE:
-      oosmos_SyncBegin(pRegion);
+      oosmos_AsyncBegin(pRegion);
         for (pLcdTest->m_Count = 1;; pLcdTest->m_Count++) {
           lcdSetCursor(pLcdTest->m_pLCD, 1, 0);         
           lcdPrint(pLcdTest->m_pLCD, "Count: %ld", pLcdTest->m_Count);
 
-          oosmos_SyncDelayMS(pRegion, 300);
+          oosmos_AsyncDelayMS(pRegion, 300);
         }
-      oosmos_SyncEnd(pRegion);
+      oosmos_AsyncEnd(pRegion);
 
       return true;
   }

@@ -1,5 +1,5 @@
 //
-// OOSMOS syncyieldtest class implementation
+// OOSMOS asyncyieldtest class implementation
 //
 // Copyright (C) 2014-2016  OOSMOS, LLC
 //
@@ -23,13 +23,13 @@
 #include <stdlib.h>
 #include "oosmos.h"
 #include "prt.h"
-#include "syncyieldtest.h"
+#include "asyncyieldtest.h"
 
-#ifndef MAX_SYNC
-#define MAX_SYNC 2
+#ifndef MAX_ASYNC
+#define MAX_ASYNC 2
 #endif
 
-struct syncyieldtestTag
+struct asyncyieldtestTag
 {
   oosmos_sStateMachineNoQueue(StateMachine);
     oosmos_sLeaf              Running_State;
@@ -41,41 +41,41 @@ struct syncyieldtestTag
 };
 
 //
-// Test oosmos_syncyieldtest.
+// Test oosmos_asyncyieldtest.
 //
 static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
 {
-  syncyieldtest * pSyncYieldTest = (syncyieldtest *) pObject;
+  asyncyieldtest * pAsyncYieldTest = (asyncyieldtest *) pObject;
 
   switch (pEvent->Code) {
     case oosmos_INSTATE:
-      oosmos_SyncBegin(pRegion);
-        for (pSyncYieldTest->m_Count = 1; pSyncYieldTest->m_Count <= pSyncYieldTest->m_Iterations; pSyncYieldTest->m_Count++) {
-          prtFormatted("Test syncyieldtest, '%s'...\n", pSyncYieldTest->m_pID);
-          oosmos_SyncYield(pRegion);
+      oosmos_AsyncBegin(pRegion);
+        for (pAsyncYieldTest->m_Count = 1; pAsyncYieldTest->m_Count <= pAsyncYieldTest->m_Iterations; pAsyncYieldTest->m_Count++) {
+          prtFormatted("Test asyncyieldtest, '%s'...\n", pAsyncYieldTest->m_pID);
+          oosmos_AsyncYield(pRegion);
         }
-      oosmos_SyncEnd(pRegion);
+      oosmos_AsyncEnd(pRegion);
 
-      return oosmos_Transition(pRegion, &pSyncYieldTest->Final_State);
+      return oosmos_Transition(pRegion, &pAsyncYieldTest->Final_State);
     case oosmos_EXIT:
-      return prtFormatted("Test syncyieldtest, '%s' DONE.\n", pSyncYieldTest->m_pID);
+      return prtFormatted("Test asyncyieldtest, '%s' DONE.\n", pAsyncYieldTest->m_pID);
   }
 
   return false;
 }
 
-extern syncyieldtest * syncyieldtestNew(const char * pID, int Iterations)
+extern asyncyieldtest * asyncyieldtestNew(const char * pID, int Iterations)
 {  
-  oosmos_Allocate(psyncyieldtest, syncyieldtest, MAX_SYNC, NULL);
+  oosmos_Allocate(pAsyncyieldtest, asyncyieldtest, MAX_SYNC, NULL);
 
   //                                           StateName      Parent        Default
   //                              =======================================================
-  oosmos_StateMachineInitNoQueue  (psyncyieldtest, StateMachine,  NULL,         Running_State);
-    oosmos_LeafInit               (psyncyieldtest, Running_State, StateMachine               );
-    oosmos_LeafInitNoCode         (psyncyieldtest, Final_State,   StateMachine               );
+  oosmos_StateMachineInitNoQueue  (pAsyncyieldtest, StateMachine,  NULL,         Running_State);
+    oosmos_LeafInit               (pAsyncyieldtest, Running_State, StateMachine               );
+    oosmos_LeafInitNoCode         (pAsyncyieldtest, Final_State,   StateMachine               );
 
-  psyncyieldtest->m_pID        = pID;
-  psyncyieldtest->m_Iterations = Iterations;
+  pAsyncyieldtest->m_pID        = pID;
+  pAsyncyieldtest->m_Iterations = Iterations;
 
-  return psyncyieldtest;
+  return pAsyncyieldtest;
 }

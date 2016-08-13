@@ -59,14 +59,14 @@ static void RESET_TIMEOUT(oosmos_sState * pState)
   pState->Timeout.Start = pState->Timeout.End = 0;
 }
 
-static int IS_SYNC_TIMEOUT_ACTIVE(const oosmos_sState * pState)
+static int IS_ASYNC_TIMEOUT_ACTIVE(const oosmos_sState * pState)
 {
-  return pState->SyncTimeout.Start != 0 || pState->SyncTimeout.End != 0;
+  return pState->AsyncTimeout.Start != 0 || pState->AsyncTimeout.End != 0;
 }
 
-static void RESET_SYNC_TIMEOUT(oosmos_sState * pState)
+static void RESET_ASYNC_TIMEOUT(oosmos_sState * pState)
 {
-  pState->SyncTimeout.Start = pState->SyncTimeout.End = 0;
+  pState->AsyncTimeout.Start = pState->AsyncTimeout.End = 0;
 }
 
 #ifdef oosmos_DEBUG
@@ -84,19 +84,19 @@ static void RESET_SYNC_TIMEOUT(oosmos_sState * pState)
   }
 #endif
 
-static void SyncInit(oosmos_sState * pState)
+static void AsyncInit(oosmos_sState * pState)
 {
-  pState->SyncContext       = 0;
-  pState->SyncDirtyEvent    = false;
+  pState->AsyncContext       = 0;
+  pState->AsyncDirtyEvent    = false;
   pState->HasYielded        = false;
-  pState->HasSyncBlockBegin = 0;
-  RESET_SYNC_TIMEOUT(pState);
+  pState->HasAsyncBlockBegin = 0;
+  RESET_ASYNC_TIMEOUT(pState);
 }
 
-static void CheckInSyncBlock(oosmos_sState * pState)
+static void CheckInAsyncBlock(oosmos_sState * pState)
 {
-  if (!pState->HasSyncBlockBegin) {
-    printf("Must bracket sync calls with oosmos_SyncBegin and oosmos_SyncEnd.\n");
+  if (!pState->HasAsyncBlockBegin) {
+    printf("Must bracket async calls with oosmos_AsyncBegin and oosmos_AsyncEnd.\n");
     while (true);
   }
 }
@@ -112,22 +112,22 @@ static bool DeliverEvent(oosmos_sRegion * pRegion, oosmos_sState * pState, const
   return pCode(pRegion->pObject, pRegion, pEvent);
 }
 
-static bool OOSMOS_SyncTimeoutMS(oosmos_sRegion * pRegion, int MS)
+static bool OOSMOS_AsyncTimeoutMS(oosmos_sRegion * pRegion, int MS)
 {
   oosmos_sState * pCurrent = pRegion->pCurrent;
 
-  CheckInSyncBlock(pCurrent);
+  CheckInAsyncBlock(pCurrent);
 
-  if (IS_SYNC_TIMEOUT_ACTIVE(pCurrent)) {
-    if (oosmos_TimeoutHasExpired(&pCurrent->SyncTimeout)) {
-      RESET_SYNC_TIMEOUT(pCurrent);
+  if (IS_ASYNC_TIMEOUT_ACTIVE(pCurrent)) {
+    if (oosmos_TimeoutHasExpired(&pCurrent->AsyncTimeout)) {
+      RESET_ASYNC_TIMEOUT(pCurrent);
 
       DeliverEvent(pRegion, pCurrent, &EventTIMEOUT);
       return true;
     }
   }
   else {
-    oosmos_TimeoutInMS(&pCurrent->SyncTimeout, MS);
+    oosmos_TimeoutInMS(&pCurrent->AsyncTimeout, MS);
   }
 
   return false;
@@ -253,7 +253,7 @@ static void DefaultTransitions(oosmos_sRegion * pRegion, oosmos_sState * pState)
       oosmos_DebugPrint("==> %s\n", pState->pName);
   )
 
-  SyncInit(pState);
+  AsyncInit(pState);
   DeliverEvent(pRegion, pState, &EventENTER);
 
   switch (pState->Type) {
@@ -382,7 +382,7 @@ extern bool OOSMOS_Transition(oosmos_sRegion * pRegion, oosmos_sState * pToState
   OOSMOS_Enter(pRegion, pLCA,       pToState);
 
   pFromState->TransitionOccurred = true;
-  SyncInit(pFromState);
+  AsyncInit(pFromState);
 
   return true;
 }
@@ -494,7 +494,7 @@ extern void OOSMOS_Enter(oosmos_sRegion * pRegion, const oosmos_sState * pLCA, o
   oosmos_sState * pStates[MAX_STATE_NESTING];
   oosmos_sState ** ppState = pStates;
 
-  SyncInit(pTarget);
+  AsyncInit(pTarget);
 
   *ppState = NULL;
 
@@ -730,7 +730,7 @@ extern void oosmos_RunStateMachine(oosmos_sStateMachine * pStateMachine)
 
       //
       // Send INSTATE with the popped event to each state up the tree.
-      // This supports oosmos_SyncWaitEvent... functions.
+      // This supports oosmos_AsyncWaitEvent... functions.
       //
       {
         oosmos_sEvent LocalEventINSTATE;
@@ -1089,14 +1089,14 @@ extern bool oosmos_QueuePop(oosmos_sQueue * pQueue, void * pElement, size_t User
   return false;
 }
 
-extern bool OOSMOS_SyncYield(oosmos_sRegion * pRegion)
+extern bool OOSMOS_AsyncYield(oosmos_sRegion * pRegion)
 {
   oosmos_sState * pState = pRegion->pCurrent;
 
-  CheckInSyncBlock(pState);
+  CheckInAsyncBlock(pState);
 
-  if (pState->SyncDirtyEvent) {
-    pState->SyncDirtyEvent = false;
+  if (pState->AsyncDirtyEvent) {
+    pState->AsyncDirtyEvent = false;
     pState->HasYielded     = true;
     return false;
   }
@@ -1110,37 +1110,37 @@ extern bool OOSMOS_SyncYield(oosmos_sRegion * pRegion)
   return true;
 }
 
-extern bool OOSMOS_SyncDelayMS(oosmos_sRegion * pRegion, int MS)
+extern bool OOSMOS_AsyncDelayMS(oosmos_sRegion * pRegion, int MS)
 {
   oosmos_sState * pCurrent = pRegion->pCurrent;
 
-  CheckInSyncBlock(pCurrent);
+  CheckInAsyncBlock(pCurrent);
 
-  if (IS_SYNC_TIMEOUT_ACTIVE(pCurrent)) {
-    if (oosmos_TimeoutHasExpired(&pCurrent->SyncTimeout)) {
-      RESET_SYNC_TIMEOUT(pCurrent);
+  if (IS_ASYNC_TIMEOUT_ACTIVE(pCurrent)) {
+    if (oosmos_TimeoutHasExpired(&pCurrent->AsyncTimeout)) {
+      RESET_ASYNC_TIMEOUT(pCurrent);
       return true;
     }
   }
   else {
-    oosmos_TimeoutInMS(&pCurrent->SyncTimeout, MS);
+    oosmos_TimeoutInMS(&pCurrent->AsyncTimeout, MS);
   }
 
   return false;
 }
 
 
-extern bool OOSMOS_SyncWaitCond_TimeoutMS(oosmos_sRegion * pRegion, int TimeoutMS, bool * pTimeoutStatus, 
+extern bool OOSMOS_AsyncWaitCond_TimeoutMS(oosmos_sRegion * pRegion, int TimeoutMS, bool * pTimeoutStatus, 
                                           bool Condition)
 {
-  CheckInSyncBlock(pRegion->pCurrent);
+  CheckInAsyncBlock(pRegion->pCurrent);
 
   if (Condition) {
     *pTimeoutStatus = false;
     return true;
   }
 
-  if (OOSMOS_SyncTimeoutMS(pRegion, TimeoutMS)) {
+  if (OOSMOS_AsyncTimeoutMS(pRegion, TimeoutMS)) {
     *pTimeoutStatus = true;
     return true;
   }
@@ -1148,19 +1148,19 @@ extern bool OOSMOS_SyncWaitCond_TimeoutMS(oosmos_sRegion * pRegion, int TimeoutM
   return false;
 }
 
-extern bool OOSMOS_SyncWaitCond_TimeoutMS_Event(oosmos_sRegion * pRegion, int TimeoutMS, int NotificationEventCode,
+extern bool OOSMOS_AsyncWaitCond_TimeoutMS_Event(oosmos_sRegion * pRegion, int TimeoutMS, int NotificationEventCode,
                                                 bool Condition)
 {
   oosmos_sState * pState = pRegion->pCurrent;
 
-  CheckInSyncBlock(pState);
+  CheckInAsyncBlock(pState);
 
   if (Condition) {
-    RESET_SYNC_TIMEOUT(pState);
+    RESET_ASYNC_TIMEOUT(pState);
     return true;
   }
 
-  if (OOSMOS_SyncTimeoutMS(pRegion, TimeoutMS)) {
+  if (OOSMOS_AsyncTimeoutMS(pRegion, TimeoutMS)) {
     oosmos_sEvent TimeoutEvent;
     TimeoutEvent.Code     = NotificationEventCode;
     TimeoutEvent.pContext = NULL;
@@ -1170,7 +1170,7 @@ extern bool OOSMOS_SyncWaitCond_TimeoutMS_Event(oosmos_sRegion * pRegion, int Ti
     DeliverEvent(pRegion, pState, &TimeoutEvent);
 
     if (!pState->TransitionOccurred)
-      pState->SyncContext = -2;
+      pState->AsyncContext = -2;
 
     return false;
   }
@@ -1178,59 +1178,59 @@ extern bool OOSMOS_SyncWaitCond_TimeoutMS_Event(oosmos_sRegion * pRegion, int Ti
   return false;
 }
 
-extern bool OOSMOS_SyncWaitCond_TimeoutMS_Exit(oosmos_sRegion * pRegion, int TimeoutMS,
+extern bool OOSMOS_AsyncWaitCond_TimeoutMS_Exit(oosmos_sRegion * pRegion, int TimeoutMS,
                                                bool Condition)
 {
   oosmos_sState * pState = pRegion->pCurrent;
 
-  CheckInSyncBlock(pState);
+  CheckInAsyncBlock(pState);
 
   if (Condition) {
-    RESET_SYNC_TIMEOUT(pState);
+    RESET_ASYNC_TIMEOUT(pState);
     return true;
   }
 
-  if (OOSMOS_SyncTimeoutMS(pRegion, TimeoutMS)) {
-    pState->SyncContext = -2;
+  if (OOSMOS_AsyncTimeoutMS(pRegion, TimeoutMS)) {
+    pState->AsyncContext = -2;
     return false;
   }
 
   return false;
 }
 
-extern bool OOSMOS_SyncWaitEvent(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent, 
+extern bool OOSMOS_AsyncWaitEvent(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent, 
                                  int WaitEventCode)
 {
   oosmos_sState * pState = pRegion->pCurrent;
   oosmos_sEvent * pDeliveredEvent;
 
-  CheckInSyncBlock(pState);
+  CheckInAsyncBlock(pState);
 
-  if (pState->SyncDirtyEvent) {
-    pState->SyncDirtyEvent = false;
+  if (pState->AsyncDirtyEvent) {
+    pState->AsyncDirtyEvent = false;
     return false;
   }
 
   pDeliveredEvent = (oosmos_sEvent *) pEvent->pContext;
 
   if (pDeliveredEvent != NULL && pDeliveredEvent->Code == WaitEventCode) {
-    pState->SyncDirtyEvent = true;
+    pState->AsyncDirtyEvent = true;
     return true;
   }
 
   return false;
 }
 
-extern bool OOSMOS_SyncWaitEvent_TimeoutMS(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent, int TimeoutMS, bool * pTimedOut,
+extern bool OOSMOS_AsyncWaitEvent_TimeoutMS(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent, int TimeoutMS, bool * pTimedOut,
                                            int WaitEventCode)
 {
   oosmos_sState * pState = pRegion->pCurrent;
   oosmos_sEvent * pDeliveredEvent;
 
-  CheckInSyncBlock(pState);
+  CheckInAsyncBlock(pState);
 
-  if (pState->SyncDirtyEvent) {
-    pState->SyncDirtyEvent = false;
+  if (pState->AsyncDirtyEvent) {
+    pState->AsyncDirtyEvent = false;
     return false;
   }
 
@@ -1238,41 +1238,41 @@ extern bool OOSMOS_SyncWaitEvent_TimeoutMS(oosmos_sRegion * pRegion, const oosmo
 
   if (pDeliveredEvent != NULL && pDeliveredEvent->Code == WaitEventCode) {
     *pTimedOut = false;
-    pState->SyncDirtyEvent = true;
+    pState->AsyncDirtyEvent = true;
     return true;
   }
 
-  if (OOSMOS_SyncDelayMS(pRegion, TimeoutMS)) {
+  if (OOSMOS_AsyncDelayMS(pRegion, TimeoutMS)) {
     *pTimedOut = true;
-    pState->SyncDirtyEvent = true;
+    pState->AsyncDirtyEvent = true;
     return true;
   }
 
   return false;
 }
 
-extern bool OOSMOS_SyncWaitEvent_TimeoutMS_Event(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent, int TimeoutMS, int NotificationEventCode,
+extern bool OOSMOS_AsyncWaitEvent_TimeoutMS_Event(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent, int TimeoutMS, int NotificationEventCode,
                                                  int WaitEventCode)
 {
   oosmos_sState * pState = pRegion->pCurrent;
   oosmos_sEvent * pDeliveredEvent;
 
-  CheckInSyncBlock(pState);
+  CheckInAsyncBlock(pState);
 
-  if (pState->SyncDirtyEvent) {
-    pState->SyncDirtyEvent = false;
+  if (pState->AsyncDirtyEvent) {
+    pState->AsyncDirtyEvent = false;
     return false;
   }
 
   pDeliveredEvent = (oosmos_sEvent *) pEvent->pContext;
 
   if (pDeliveredEvent != NULL && pDeliveredEvent->Code == WaitEventCode) {
-    RESET_SYNC_TIMEOUT(pState);
-    pState->SyncDirtyEvent = true;
+    RESET_ASYNC_TIMEOUT(pState);
+    pState->AsyncDirtyEvent = true;
     return true;
   }
 
-  if (OOSMOS_SyncDelayMS(pRegion, TimeoutMS)) {
+  if (OOSMOS_AsyncDelayMS(pRegion, TimeoutMS)) {
     oosmos_sEvent TimeoutEvent;
 
     TimeoutEvent.Code     = NotificationEventCode;
@@ -1283,7 +1283,7 @@ extern bool OOSMOS_SyncWaitEvent_TimeoutMS_Event(oosmos_sRegion * pRegion, const
     DeliverEvent(pRegion, pState, &TimeoutEvent);
 
     if (!pState->TransitionOccurred)
-      pState->SyncContext = -2;
+      pState->AsyncContext = -2;
 
     return false;
   }
@@ -1291,29 +1291,29 @@ extern bool OOSMOS_SyncWaitEvent_TimeoutMS_Event(oosmos_sRegion * pRegion, const
   return false;
 }
 
-extern bool OOSMOS_SyncWaitEvent_TimeoutMS_Exit(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent, int TimeoutMS,
+extern bool OOSMOS_AsyncWaitEvent_TimeoutMS_Exit(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent, int TimeoutMS,
                                                 int WaitEventCode)
 {
   oosmos_sState * pState = pRegion->pCurrent;
   oosmos_sEvent * pDeliveredEvent;
 
-  CheckInSyncBlock(pState);
+  CheckInAsyncBlock(pState);
 
-  if (pState->SyncDirtyEvent) {
-    pState->SyncDirtyEvent = false;
+  if (pState->AsyncDirtyEvent) {
+    pState->AsyncDirtyEvent = false;
     return false;
   }
 
   pDeliveredEvent = (oosmos_sEvent *) pEvent->pContext;
 
   if (pDeliveredEvent != NULL && pDeliveredEvent->Code == WaitEventCode) {
-    RESET_SYNC_TIMEOUT(pState);
-    pState->SyncDirtyEvent = true;
+    RESET_ASYNC_TIMEOUT(pState);
+    pState->AsyncDirtyEvent = true;
     return true;
   }
 
-  if (OOSMOS_SyncDelayMS(pRegion, TimeoutMS)) {
-    pState->SyncContext = -2;
+  if (OOSMOS_AsyncDelayMS(pRegion, TimeoutMS)) {
+    pState->AsyncContext = -2;
     return false;
   }
 

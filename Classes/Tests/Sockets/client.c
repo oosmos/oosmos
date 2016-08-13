@@ -52,8 +52,8 @@ static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const o
     case oosmos_INSTATE: {
       const uint32_t IP_HostByteOrder = sockDotToIP_HostByteOrder(pClient->m_pHost);
 
-      oosmos_SyncBegin(pRegion);
-        oosmos_SyncWaitCond_TimeoutMS_Event(pRegion, 2000, ConnectionTimeoutEvent,
+      oosmos_AsyncBegin(pRegion);
+        oosmos_AsyncWaitCond_TimeoutMS_Event(pRegion, 2000, ConnectionTimeoutEvent,
           sockConnect(pClient->m_pSock, IP_HostByteOrder, pClient->m_Port)
         );
 
@@ -63,19 +63,19 @@ static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const o
           size_t BytesReceived;
 
           printf("%p: Sending...\n", (void *) pClient->m_pSock);
-          oosmos_SyncWaitCond(pRegion,
+          oosmos_AsyncWaitCond(pRegion,
             sockSend(pClient->m_pSock, "123456", sizeof("123456"))
           );
 
           printf("%p: Waiting for incoming data...\n", (void *) pClient->m_pSock);
            
-          oosmos_SyncWaitCond(pRegion,
+          oosmos_AsyncWaitCond(pRegion,
             sockReceive(pClient->m_pSock, pClient->m_Buffer, sizeof(pClient->m_Buffer), &BytesReceived)
           );
           printf("%p: Client side Received '%s', BytesReceived: %u\n", (void *) pClient->m_pSock, pClient->m_Buffer, (unsigned) BytesReceived);
 
         }
-      oosmos_SyncEnd(pRegion);
+      oosmos_AsyncEnd(pRegion);
       return true;
     }
 

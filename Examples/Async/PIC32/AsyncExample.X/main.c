@@ -1,5 +1,5 @@
 //
-// OOSMOS - The Object-Oriented State Machine Operating System
+// OOSMOS - PIC32 sync example main program.
 //
 // Copyright (C) 2014-2016  OOSMOS, LLC
 //
@@ -21,18 +21,24 @@
 //
 
 #include "oosmos.h"
-#include "prt.h"
-#include "synctest.h"
+#include "asynctest.h"
 
-// Required by prt...
-unsigned long prtArduinoBaudRate = 115200;
+#pragma config FPLLMUL = MUL_20, FPLLIDIV = DIV_2, FPLLODIV = DIV_1, FWDTEN = OFF
+#pragma config POSCMOD = HS, FNOSC = PRIPLL, FPBDIV = DIV_1
 
-extern void setup() 
-{ 
-  synctestNew();
-}
+#define ASYNCTESTS 1
 
-extern void loop() 
+extern int main(void)
 {
-  oosmos_RunStateMachines();
+  oosmos_ClockSpeedInMHz(80);
+
+  for (int I = 1; I <= ASYNCTESTS; I++)
+    asynctestNew();
+
+  while (true) {
+    oosmos_RunStateMachines();
+    oosmos_DelayMS(25);
+  }
+
+  return 0;
 }

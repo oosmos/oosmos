@@ -1,5 +1,5 @@
 //
-// OOSMOS - PIC32 sync example main program.
+// OOSMOS asynctest Class
 //
 // Copyright (C) 2014-2016  OOSMOS, LLC
 //
@@ -20,25 +20,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "oosmos.h"
-#include "synctest.h"
+#ifndef _asynctest_h
+#define _asynctest_h
 
-#pragma config FPLLMUL = MUL_20, FPLLIDIV = DIV_2, FPLLODIV = DIV_1, FWDTEN = OFF
-#pragma config POSCMOD = HS, FNOSC = PRIPLL, FPBDIV = DIV_1
+typedef struct asynctestTag asynctest;
 
-#define SYNCTESTS 1
+extern asynctest * asynctestNew(void);
 
-extern int main(void)
-{
-  oosmos_ClockSpeedInMHz(80);
-
-  for (int I = 1; I <= SYNCTESTS; I++)
-    synctestNew();
-
-  while (true) {
-    oosmos_RunStateMachines();
-    oosmos_DelayMS(25);
-  }
-
-  return 0;
-}
+#endif

@@ -1,5 +1,5 @@
 //
-// OOSMOS prt Class
+// OOSMOS - oosmos_AsyncYield example main program.
 //
 // Copyright (C) 2014-2016  OOSMOS, LLC
 //
@@ -20,49 +20,23 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#define MaxBuffer 100
-
-#include <stdarg.h>
 #include <stdio.h>
-#include "oosmos.h" 
-#include "prt.h" 
+#include "oosmos.h"
+#include "asyncyieldtest.h"
 
-static void Init()
+#define ASYNC_OBJECTS 2
+
+extern int main(void)
 {
-  static bool First = true;
+  printf("\nThis test does not end.  Control-C to exit.\n\n");
 
-  if (!First)
-    return;
-    
-  First = false;
+  asyncyieldtestNew("TestA", 3);
+  asyncyieldtestNew("TestB", 10);
 
-  #if defined(ARDUINO)
-  {
-    Serial.begin(prtArduinoBaudRate);
+  while (true) {
+    oosmos_RunStateMachines();
+    oosmos_DelayMS(25);
   }
-  #elif defined(__PIC32MX)
-    DBINIT();
-  #endif
-}
 
-extern bool prtFormatted(const char * pFormat, ...)
-{
-  static char Buffer[MaxBuffer];
-
-  va_list ArgList;
-  va_start(ArgList, pFormat);
-  vsnprintf(Buffer, MaxBuffer, pFormat, ArgList);
-  va_end(ArgList);
-  
-  Init();
-  
-  #if defined(ARDUINO)
-    Serial.print(Buffer);
-  #elif defined(__PIC32MX)
-    DBPRINTF("%s", Buffer);
-  #else
-    printf("%s", Buffer);
-  #endif  
-
-  return true;
+  return 0;
 }

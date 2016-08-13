@@ -101,12 +101,12 @@ static bool Dah_Tone_State_Code(void * pObject, oosmos_sRegion * pRegion, const 
 
   switch (pEvent->Code) {
     case oosmos_INSTATE:
-      oosmos_SyncBegin(pRegion);
+      oosmos_AsyncBegin(pRegion);
         pinOn(pKeyer->m_pSpeakerPin);
-        oosmos_SyncDelayMS(pRegion, pKeyer->m_DahTimeMS);
+        oosmos_AsyncDelayMS(pRegion, pKeyer->m_DahTimeMS);
         pinOff(pKeyer->m_pSpeakerPin);
-        oosmos_SyncDelayMS(pRegion, pKeyer->m_SpaceTimeMS);
-      oosmos_SyncEnd(pRegion);
+        oosmos_AsyncDelayMS(pRegion, pKeyer->m_SpaceTimeMS);
+      oosmos_AsyncEnd(pRegion);
 
       if (pKeyer->m_StateData.Dah.m_DitWasPressed)
         return oosmos_Transition(pRegion, &pKeyer->Dit_State);
@@ -139,12 +139,12 @@ static bool Dit_Tone_State_Code(void * pObject, oosmos_sRegion * pRegion, const 
 
   switch (pEvent->Code) {
     case oosmos_INSTATE:
-      oosmos_SyncBegin(pRegion);
+      oosmos_AsyncBegin(pRegion);
         pinOn(pKeyer->m_pSpeakerPin);
-        oosmos_SyncDelayMS(pRegion, pKeyer->m_DitTimeMS);
+        oosmos_AsyncDelayMS(pRegion, pKeyer->m_DitTimeMS);
         pinOff(pKeyer->m_pSpeakerPin);
-        oosmos_SyncDelayMS(pRegion, pKeyer->m_SpaceTimeMS);
-      oosmos_SyncEnd(pRegion);
+        oosmos_AsyncDelayMS(pRegion, pKeyer->m_SpaceTimeMS);
+      oosmos_AsyncEnd(pRegion);
 
       if (pKeyer->m_StateData.Dit.m_DahWasPressed)
         return oosmos_Transition(pRegion, &pKeyer->Dah_State);

@@ -93,12 +93,12 @@ static bool Pumping_State_Code(void * pObject, oosmos_sRegion * pRegion, const o
       return true;
 
     case oosmos_INSTATE:
-      oosmos_SyncBegin(pRegion);
+      oosmos_AyncBegin(pRegion);
         while (true) {
           printf("pump: PUMPING...\n");
-          oosmos_SyncDelayMS(pRegion, (10-pPump->PumpSpeed) * 200);
+          oosmos_AyncDelayMS(pRegion, (10-pPump->PumpSpeed) * 200);
         }
-      oosmos_SyncEnd(pRegion);
+      oosmos_AyncEnd(pRegion);
       return true;
   }
 

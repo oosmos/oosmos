@@ -61,20 +61,20 @@ static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const o
     case oosmos_INSTATE: {
       size_t BytesReceived;
 
-      oosmos_SyncBegin(pRegion);
+      oosmos_AsyncBegin(pRegion);
         printf("%d: Getting IP from DNS lookup.\n", pHttpTest->m_ID);
 
         if (sockIsIpAddress(pHttpTest->m_pHost)) {
           pHttpTest->Running.m_IP_HostByteOrder[0] = sockDotToIP_HostByteOrder(pHttpTest->m_pHost);
         }
         else {
-          oosmos_SyncWaitCond_TimeoutMS_Event(pRegion, 8000, ConnectionTimeoutEvent,
+          oosmos_AsyncWaitCond_TimeoutMS_Event(pRegion, 8000, ConnectionTimeoutEvent,
             dnsQuery(pHttpTest->m_pDNS, pHttpTest->m_pHost, pHttpTest->Running.m_IP_HostByteOrder, 3)
           );
         }
 
         printf("%d: Connecting...\n", pHttpTest->m_ID);
-        oosmos_SyncWaitCond_TimeoutMS_Event(pRegion, 2000, ConnectionTimeoutEvent,
+        oosmos_AsyncWaitCond_TimeoutMS_Event(pRegion, 2000, ConnectionTimeoutEvent,
           sockConnect(pHttpTest->m_pSock, pHttpTest->Running.m_IP_HostByteOrder[0], pHttpTest->m_Port)
         );
 
@@ -83,7 +83,7 @@ static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const o
         {
           static const char GET[] = "GET http://example.com/index.html HTTP/1.1\r\n\r\n";
           printf("%d: Sending GET...\n", pHttpTest->m_ID);
-          oosmos_SyncWaitCond(pRegion,
+          oosmos_AsyncWaitCond(pRegion,
             sockSend(pHttpTest->m_pSock, GET, strlen(GET))
           );
         }
@@ -97,7 +97,7 @@ static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const o
           static const char   ContentLength[]   = "Content-Length: ";
           static const size_t ContentLengthSize = sizeof(ContentLength) - 1;
 
-          oosmos_SyncWaitCond(pRegion,
+          oosmos_AsyncWaitCond(pRegion,
             sockReceiveUntilContent(pHttpTest->m_pSock,
                                     pHttpTest->m_Buffer, sizeof(pHttpTest->m_Buffer),
                                     ContentLength, ContentLengthSize, &BytesReceived)
@@ -113,7 +113,7 @@ static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const o
 
           printf("%d: Waiting for end of header...\n", pHttpTest->m_ID);
 
-          oosmos_SyncWaitCond(pRegion,
+          oosmos_AsyncWaitCond(pRegion,
             sockReceiveUntilContent(pHttpTest->m_pSock,
                                     pHttpTest->m_Buffer, sizeof(pHttpTest->m_Buffer),
                                     End, EndLength, &BytesReceived)
@@ -128,7 +128,7 @@ static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const o
         // Receive body.
         //
         while (pHttpTest->Running.m_ContentLength > 0) {
-          oosmos_SyncWaitCond(pRegion,
+          oosmos_AsyncWaitCond(pRegion,
             sockReceive(pHttpTest->m_pSock,
                         pHttpTest->m_Buffer, sizeof(pHttpTest->m_Buffer),
                         &BytesReceived)
@@ -139,7 +139,7 @@ static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const o
 
         sockClose(pHttpTest->m_pSock);
         printf("%d: DONE...\n", pHttpTest->m_ID);
-      oosmos_SyncEnd(pRegion);
+      oosmos_AsyncEnd(pRegion);
       return true;
     }
 

@@ -21,16 +21,16 @@
 //
 
 #include "oosmos.h"
-#include "synctest.h"
+#include "asynctest.h"
 
-#define SYNCTESTS 1
+#define ASYNCTESTS 1
 
 extern int main(void)
 {
   int I;
 
-  for (I = 1; I <= SYNCTESTS; I++)
-    synctestNew();
+  for (I = 1; I <= ASYNCTESTS; I++)
+    asynctestNew();
 
   while (true) {
     oosmos_RunStateMachines();

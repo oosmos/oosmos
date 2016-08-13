@@ -1,5 +1,5 @@
 //
-// OOSMOS synctest Class
+// OOSMOS - The Object-Oriented State Machine Operating System
 //
 // Copyright (C) 2014-2016  OOSMOS, LLC
 //
@@ -20,11 +20,20 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef _synctest_h
-#define _synctest_h
+#define oosmos_ORTHO
+#include "oosmos.h"
+#include "prt.h"
+#include "asynctest.h"
 
-typedef struct synctestTag synctest;
+// Required by prt...
+unsigned long prtArduinoBaudRate = 115200;
 
-extern synctest * synctestNew(void);
+extern void setup() 
+{ 
+  asynctestNew();
+}
 
-#endif
+extern void loop() 
+{
+  oosmos_RunStateMachines();
+}

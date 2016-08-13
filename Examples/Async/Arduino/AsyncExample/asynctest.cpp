@@ -1,5 +1,5 @@
 //
-// OOSMOS synctest Class
+// OOSMOS asynctest Class
 //
 // Copyright (C) 2014-2016  OOSMOS, LLC
 //
@@ -23,25 +23,25 @@
 #include <stdlib.h>
 #include "oosmos.h"
 #include "prt.h"
-#include "synctest.h"
+#include "asynctest.h"
 
 //
 // Change the following #undef to #define to enable debug output.
 //
-#undef synctestDEBUG
+#undef asynctestDEBUG
 
 //
-// Adjust this in order to preallocate all 'synctest' objects.  
+// Adjust this in order to preallocate all 'asynctest' objects.  
 // Use 1 for a memory constrained environment.
 //
-#ifndef MAX_SYNCTEST
-#define MAX_SYNCTEST 1
+#ifndef MAX_ASYNCTEST
+#define MAX_ASYNCTEST 1
 #endif
 
-static int TotalTests      = 11;
-static int SyncTestObjects = 0;
-static int Successes       = 0;
-static int Failures        = 0;
+static int TotalTests       = 11;
+static int AsyncTestObjects = 0;
+static int Successes        = 0;
+static int Failures         = 0;
 
 enum {
   eventDone = 1,
@@ -49,7 +49,7 @@ enum {
   eventPrint,
 };
 
-#ifdef synctestDEBUG
+#ifdef asynctestDEBUG
   #define NameCase(Name) case Name: return #Name;
 
   static const char * EventNames(int EventCode)
@@ -63,7 +63,7 @@ enum {
   }
 #endif
 
-struct synctestTag
+struct asynctestTag
 {
   oosmos_sStateMachine   (StateMachine, oosmos_sEvent, 10);
     oosmos_sOrtho         Ortho_State;
@@ -97,83 +97,83 @@ static bool ConditionFalse(void)
 
 
 //
-// Test oosmos_SyncDelayMS.
+// Test oosmos_AsyncDelayMS.
 //
 static bool Ortho_RegionA_TestA_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
 {
-  synctest * pSyncTest = (synctest *) pObject;
+  asynctest * pAsyncTest = (asynctest *) pObject;
 
   switch (pEvent->Code) {
     case oosmos_INSTATE:
-      oosmos_SyncBegin(pRegion);
-        prtFormatted("Test SyncDelayMS...\n");
-        oosmos_SyncDelayMS(pRegion, 100);
-      oosmos_SyncEnd(pRegion);
+      oosmos_AsyncBegin(pRegion);
+        prtFormatted("Test AsyncDelayMS...\n");
+        oosmos_AsyncDelayMS(pRegion, 100);
+      oosmos_AsyncEnd(pRegion);
 
-      return oosmos_Transition(pRegion, &pSyncTest->Ortho_RegionA_TestB_State);
+      return oosmos_Transition(pRegion, &pAsyncTest->Ortho_RegionA_TestB_State);
   }
 
   return false;
 }
 
 //
-// oosmos_SyncWaitCond
-// oosmos_SyncWaitCond_TimeoutMS
+// oosmos_AsyncWaitCond
+// oosmos_AsyncWaitCond_TimeoutMS
 //
 static bool Ortho_RegionA_TestB_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
 {
-  synctest * pSyncTest = (synctest *) pObject;
+  asynctest * pAsyncTest = (asynctest *) pObject;
   bool TimedOut;
 
   switch (pEvent->Code) {
     case oosmos_INSTATE:
-      oosmos_SyncBegin(pRegion);
-        prtFormatted("Test SyncWaitCond...\n");
+      oosmos_AsyncBegin(pRegion);
+        prtFormatted("Test AsyncWaitCond...\n");
 
-        oosmos_SyncWaitCond(pRegion, ConditionRandom(2));
+        oosmos_AsyncWaitCond(pRegion, ConditionRandom(2));
 
-        prtFormatted("Test SyncWaitCond_TimeoutMS...\n");
+        prtFormatted("Test AsyncWaitCond_TimeoutMS...\n");
 
-        oosmos_SyncWaitCond_TimeoutMS(pRegion, 100, &TimedOut,
+        oosmos_AsyncWaitCond_TimeoutMS(pRegion, 100, &TimedOut,
           ConditionTrue()
         );
         Successes += (TimedOut == false);
 
-        oosmos_SyncWaitCond_TimeoutMS(pRegion, 100, &TimedOut,
+        oosmos_AsyncWaitCond_TimeoutMS(pRegion, 100, &TimedOut,
           ConditionFalse()
         );
         Successes += (TimedOut == true);
-      oosmos_SyncEnd(pRegion);
+      oosmos_AsyncEnd(pRegion);
 
-      return oosmos_Transition(pRegion, &pSyncTest->Ortho_RegionA_TestC_State);
+      return oosmos_Transition(pRegion, &pAsyncTest->Ortho_RegionA_TestC_State);
   }
 
   return false;
 }
 
 //
-// oosmos_SyncWaitCond_TimeoutMS_Event
+// oosmos_AsyncWaitCond_TimeoutMS_Event
 //
 static bool Ortho_RegionA_TestC_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
 {
-  synctest * pSyncTest = (synctest *) pObject;
+  asynctest * pAsyncTest = (asynctest *) pObject;
 
   switch (pEvent->Code) {
     case oosmos_INSTATE:
-      oosmos_SyncBegin(pRegion);
-        prtFormatted("Test SyncWaitCond_TimeoutMS_Event...\n");
+      oosmos_AsyncBegin(pRegion);
+        prtFormatted("Test AsyncWaitCond_TimeoutMS_Event...\n");
 
-        oosmos_SyncWaitCond_TimeoutMS_Event(pRegion, 100, eventTimedOut,
+        oosmos_AsyncWaitCond_TimeoutMS_Event(pRegion, 100, eventTimedOut,
           ConditionTrue()
         );
         Successes += 1;
 
-        oosmos_SyncWaitCond_TimeoutMS_Event(pRegion, 100, eventTimedOut,
+        oosmos_AsyncWaitCond_TimeoutMS_Event(pRegion, 100, eventTimedOut,
           ConditionFalse()
         );
         Failures += 1;
-      oosmos_SyncEnd(pRegion);
-      return oosmos_Transition(pRegion, &pSyncTest->Ortho_RegionA_TestD_State);
+      oosmos_AsyncEnd(pRegion);
+      return oosmos_Transition(pRegion, &pAsyncTest->Ortho_RegionA_TestD_State);
 
     case eventTimedOut:
       Successes += 1;
@@ -184,32 +184,32 @@ static bool Ortho_RegionA_TestC_State_Code(void * pObject, oosmos_sRegion * pReg
 }
 
 //
-// oosmos_SyncWaitCond_TimeoutMS_Exit
+// oosmos_AsyncWaitCond_TimeoutMS_Exit
 //
 static bool Ortho_RegionA_TestD_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
 {
-  synctest * pSyncTest = (synctest *) pObject;
+  asynctest * pAsyncTest = (asynctest *) pObject;
 
   switch (pEvent->Code) {
     case oosmos_INSTATE:
-      oosmos_SyncBegin(pRegion);
-        prtFormatted("Test SyncWaitCond_TimeoutMS_Exit...\n");
+      oosmos_AsyncBegin(pRegion);
+        prtFormatted("Test AsyncWaitCond_TimeoutMS_Exit...\n");
 
-        oosmos_SyncWaitCond_TimeoutMS_Exit(pRegion, 100,
+        oosmos_AsyncWaitCond_TimeoutMS_Exit(pRegion, 100,
           ConditionTrue()
         );
         Successes += 1;
 
-        oosmos_SyncWaitCond_TimeoutMS_Exit(pRegion, 100,
+        oosmos_AsyncWaitCond_TimeoutMS_Exit(pRegion, 100,
           ConditionFalse()
         );
         Failures += 1;
 
-      oosmos_SyncFinally(pRegion);
+      oosmos_AsyncFinally(pRegion);
         Successes += 1;
-        oosmos_Transition(pRegion, &pSyncTest->Ortho_RegionA_TestE_State);
+        oosmos_Transition(pRegion, &pAsyncTest->Ortho_RegionA_TestE_State);
 
-      oosmos_SyncEnd(pRegion);
+      oosmos_AsyncEnd(pRegion);
       return true;
   }
 
@@ -217,60 +217,60 @@ static bool Ortho_RegionA_TestD_State_Code(void * pObject, oosmos_sRegion * pReg
 }
 
 //
-// oosmos_SyncWaitEvent
-// oosmos_SyncWaitEvent_TimeoutMS
+// oosmos_AsyncWaitEvent
+// oosmos_AsyncWaitEvent_TimeoutMS
 //
 static bool Ortho_RegionA_TestE_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
 {
-  synctest * pSyncTest = (synctest *) pObject;
+  asynctest * pAsyncTest = (asynctest *) pObject;
   bool TimedOut;
 
   switch (pEvent->Code) {
     case oosmos_INSTATE:
-      oosmos_SyncBegin(pRegion);
-        prtFormatted("Test SyncWaitEvent...\n");
+      oosmos_AsyncBegin(pRegion);
+        prtFormatted("Test AsyncWaitEvent...\n");
 
-        oosmos_SendEvent(pSyncTest, eventPrint);
-        oosmos_SyncWaitEvent(pRegion, pEvent, eventDone);
+        oosmos_SendEvent(pAsyncTest, eventPrint);
+        oosmos_AsyncWaitEvent(pRegion, pEvent, eventDone);
 
-        prtFormatted("Test SyncWaitEvent_TimeoutMS...\n");
+        prtFormatted("Test AsyncWaitEvent_TimeoutMS...\n");
 
-        oosmos_SendEvent(pSyncTest, eventPrint);
-        oosmos_SyncWaitEvent_TimeoutMS(pRegion, pEvent, 100, &TimedOut,
+        oosmos_SendEvent(pAsyncTest, eventPrint);
+        oosmos_AsyncWaitEvent_TimeoutMS(pRegion, pEvent, 100, &TimedOut,
           eventDone
         );
         Successes += (TimedOut == false);
 
-        oosmos_SyncWaitEvent_TimeoutMS(pRegion, pEvent, 100, &TimedOut,
+        oosmos_AsyncWaitEvent_TimeoutMS(pRegion, pEvent, 100, &TimedOut,
           eventDone
         );
         Successes += (TimedOut == true);
-      oosmos_SyncEnd(pRegion);
+      oosmos_AsyncEnd(pRegion);
 
-      return oosmos_Transition(pRegion, &pSyncTest->Ortho_RegionA_TestF_State);
+      return oosmos_Transition(pRegion, &pAsyncTest->Ortho_RegionA_TestF_State);
   }
 
   return false;
 }
 
 //
-// oosmos_SyncWaitEvent_TimeoutMS_Event
+// oosmos_AsyncWaitEvent_TimeoutMS_Event
 //
 static bool Ortho_RegionA_TestF_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
 {
-  synctest * pSyncTest = (synctest *) pObject;
+  asynctest * pAsyncTest = (asynctest *) pObject;
 
   switch (pEvent->Code) {
     case oosmos_INSTATE:
-      oosmos_SyncBegin(pRegion);
-        prtFormatted("Test SyncWaitEvent_TimeoutMS_Event...\n");
+      oosmos_AsyncBegin(pRegion);
+        prtFormatted("Test AsyncWaitEvent_TimeoutMS_Event...\n");
 
         //
         // Enqueue 'eventPrint' to the orthogonal state. We expect to get and 'eventDone' well 
         // before the timeout.
         //
-        oosmos_SendEvent(pSyncTest, eventPrint);
-        oosmos_SyncWaitEvent_TimeoutMS_Event(pRegion, pEvent, 100, eventTimedOut,
+        oosmos_SendEvent(pAsyncTest, eventPrint);
+        oosmos_AsyncWaitEvent_TimeoutMS_Event(pRegion, pEvent, 100, eventTimedOut,
           eventDone
         );
         Successes += 1;
@@ -278,12 +278,12 @@ static bool Ortho_RegionA_TestF_State_Code(void * pObject, oosmos_sRegion * pReg
         //
         // We don't enqueue 'eventPrint' so we don't expect an 'eventDone' therefore it should time out.
         //
-        oosmos_SyncWaitEvent_TimeoutMS_Event(pRegion, pEvent, 100, eventTimedOut,
+        oosmos_AsyncWaitEvent_TimeoutMS_Event(pRegion, pEvent, 100, eventTimedOut,
           eventDone
         );
         Failures += 1;
-      oosmos_SyncEnd(pRegion);
-      return oosmos_Transition(pRegion, &pSyncTest->Ortho_RegionA_TestG_State);
+      oosmos_AsyncEnd(pRegion);
+      return oosmos_Transition(pRegion, &pAsyncTest->Ortho_RegionA_TestG_State);
 
     case eventTimedOut:
       Successes += 1;
@@ -294,23 +294,23 @@ static bool Ortho_RegionA_TestF_State_Code(void * pObject, oosmos_sRegion * pReg
 }
 
 //
-// oosmos_SyncWaitEvent_TimeoutMS_Exit
+// oosmos_AsyncWaitEvent_TimeoutMS_Exit
 //
 static bool Ortho_RegionA_TestG_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
 {
-  synctest * pSyncTest = (synctest *) pObject;
+  asynctest * pAsyncTest = (asynctest *) pObject;
 
   switch (pEvent->Code) {
     case oosmos_INSTATE:
-      oosmos_SyncBegin(pRegion);
-        prtFormatted("Test SyncWaitEvent_TimeoutMS_Exit...\n");
+      oosmos_AsyncBegin(pRegion);
+        prtFormatted("Test AsyncWaitEvent_TimeoutMS_Exit...\n");
 
         //
         // Enqueue 'eventPrint' to the orthogonal state. We expect to get and 'eventDone' well 
         // before the timeout.
         //
-        oosmos_SendEvent(pSyncTest, eventPrint);
-        oosmos_SyncWaitEvent_TimeoutMS_Exit(pRegion, pEvent, 100,
+        oosmos_SendEvent(pAsyncTest, eventPrint);
+        oosmos_AsyncWaitEvent_TimeoutMS_Exit(pRegion, pEvent, 100,
           eventDone
         );
         Successes += 1;
@@ -318,15 +318,15 @@ static bool Ortho_RegionA_TestG_State_Code(void * pObject, oosmos_sRegion * pReg
         //
         // We don't enqueue 'eventPrint' so we don't expect an 'eventDone' therefore it should time out.
         //
-        oosmos_SyncWaitEvent_TimeoutMS_Exit(pRegion, pEvent, 100,
+        oosmos_AsyncWaitEvent_TimeoutMS_Exit(pRegion, pEvent, 100,
           eventDone
         );
         Failures += 1;
 
-      oosmos_SyncFinally(pRegion);
-        oosmos_Transition(pRegion, &pSyncTest->Ortho_RegionA_Done_State);
+      oosmos_AsyncFinally(pRegion);
+        oosmos_Transition(pRegion, &pAsyncTest->Ortho_RegionA_Done_State);
 
-      oosmos_SyncEnd(pRegion);
+      oosmos_AsyncEnd(pRegion);
       return true;
   }
 
@@ -344,7 +344,7 @@ static bool Ortho_RegionA_Done_State_Code(void * pObject, oosmos_sRegion * pRegi
         oosmos_EndProgram(0);
       }
 
-      if (Successes == TotalTests * SyncTestObjects) {
+      if (Successes == TotalTests * AsyncTestObjects) {
         prtFormatted("SUCCESS.\n");
         oosmos_EndProgram(0);
       }
@@ -357,41 +357,41 @@ static bool Ortho_RegionA_Done_State_Code(void * pObject, oosmos_sRegion * pRegi
 
 static bool Ortho_RegionB_Idle_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
 {
-  synctest * pSyncTest = (synctest *) pObject;
+  asynctest * pAsyncTest = (asynctest *) pObject;
 
   switch (pEvent->Code) {
     case eventPrint:
-      return oosmos_SendEvent(pSyncTest, eventDone);
+      return oosmos_SendEvent(pAsyncTest, eventDone);
   }
 
   return false;
 }
 
-extern synctest * synctestNew(void)
+extern asynctest * asynctestNew(void)
 {  
-  oosmos_Allocate(pSyncTest, synctest, MAX_SYNCTEST, NULL);
+  oosmos_Allocate(pAsyncTest, asynctest, MAX_ASYNCTEST, NULL);
 
   //                                          StateName                  Parent                 Default
   //                              ========================================================================================
-  oosmos_StateMachineInit         (pSyncTest, StateMachine,              NULL,                  Ortho_State              );
-    oosmos_OrthoInitNoCode        (pSyncTest, Ortho_State,               StateMachine                                    );
-      oosmos_OrthoRegionInitNoCode(pSyncTest, Ortho_RegionA_State,       Ortho_State,           Ortho_RegionA_TestA_State);
-        oosmos_LeafInit           (pSyncTest, Ortho_RegionA_TestA_State, Ortho_RegionA_State                             );
-        oosmos_LeafInit           (pSyncTest, Ortho_RegionA_TestB_State, Ortho_RegionA_State                             );
-        oosmos_LeafInit           (pSyncTest, Ortho_RegionA_TestC_State, Ortho_RegionA_State                             );
-        oosmos_LeafInit           (pSyncTest, Ortho_RegionA_TestD_State, Ortho_RegionA_State                             );
-        oosmos_LeafInit           (pSyncTest, Ortho_RegionA_TestE_State, Ortho_RegionA_State                             );
-        oosmos_LeafInit           (pSyncTest, Ortho_RegionA_TestF_State, Ortho_RegionA_State                             );
-        oosmos_LeafInit           (pSyncTest, Ortho_RegionA_TestG_State, Ortho_RegionA_State                             );
-        oosmos_LeafInit           (pSyncTest, Ortho_RegionA_Done_State,  Ortho_RegionA_State                             );
-      oosmos_OrthoRegionInitNoCode(pSyncTest, Ortho_RegionB_State,       Ortho_State,           Ortho_RegionB_Idle_State );
-        oosmos_LeafInit           (pSyncTest, Ortho_RegionB_Idle_State,  Ortho_RegionB_State                             );
+  oosmos_StateMachineInit         (pAsyncTest, StateMachine,              NULL,                  Ortho_State              );
+    oosmos_OrthoInitNoCode        (pAsyncTest, Ortho_State,               StateMachine                                    );
+      oosmos_OrthoRegionInitNoCode(pAsyncTest, Ortho_RegionA_State,       Ortho_State,           Ortho_RegionA_TestA_State);
+        oosmos_LeafInit           (pAsyncTest, Ortho_RegionA_TestA_State, Ortho_RegionA_State                             );
+        oosmos_LeafInit           (pAsyncTest, Ortho_RegionA_TestB_State, Ortho_RegionA_State                             );
+        oosmos_LeafInit           (pAsyncTest, Ortho_RegionA_TestC_State, Ortho_RegionA_State                             );
+        oosmos_LeafInit           (pAsyncTest, Ortho_RegionA_TestD_State, Ortho_RegionA_State                             );
+        oosmos_LeafInit           (pAsyncTest, Ortho_RegionA_TestE_State, Ortho_RegionA_State                             );
+        oosmos_LeafInit           (pAsyncTest, Ortho_RegionA_TestF_State, Ortho_RegionA_State                             );
+        oosmos_LeafInit           (pAsyncTest, Ortho_RegionA_TestG_State, Ortho_RegionA_State                             );
+        oosmos_LeafInit           (pAsyncTest, Ortho_RegionA_Done_State,  Ortho_RegionA_State                             );
+      oosmos_OrthoRegionInitNoCode(pAsyncTest, Ortho_RegionB_State,       Ortho_State,           Ortho_RegionB_Idle_State );
+        oosmos_LeafInit           (pAsyncTest, Ortho_RegionB_Idle_State,  Ortho_RegionB_State                             );
 
-#ifdef synctestDEBUG
-  oosmos_Debug(&pSyncTest->StateMachine, true, EventNames);
+#ifdef asynctestDEBUG
+  oosmos_Debug(&pAsyncTest->StateMachine, true, EventNames);
 #endif
 
-  SyncTestObjects += 1;
+  AsyncTestObjects += 1;
 
-  return pSyncTest;
+  return pAsyncTest;
 }

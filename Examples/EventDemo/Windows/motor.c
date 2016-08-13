@@ -72,12 +72,12 @@ static bool Moving_State_Code(void * pObject, oosmos_sRegion * pRegion, const oo
 
   switch (pEvent->Code) {
     case oosmos_INSTATE:
-      oosmos_SyncBegin(pRegion);
+      oosmos_AyncBegin(pRegion);
         while (true) {
           printf("motor: MOVING...\n");
-          oosmos_SyncDelayMS(pRegion, 500);
+          oosmos_AyncDelayMS(pRegion, 500);
         }
-      oosmos_SyncEnd(pRegion);
+      oosmos_AyncEnd(pRegion);
       return true;
      
     case StopEvent:

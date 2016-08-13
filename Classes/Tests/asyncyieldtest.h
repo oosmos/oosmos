@@ -1,5 +1,5 @@
 //
-// OOSMOS - oosmos_SyncYield example main program.
+// OOSMOS asynctest class interface
 //
 // Copyright (C) 2014-2016  OOSMOS, LLC
 //
@@ -20,23 +20,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <stdio.h>
-#include "oosmos.h"
-#include "syncyieldtest.h"
+#ifndef _asyncyield_h
+#define _asyncyield_h
 
-#define SYNC_OBJECTS 2
+typedef struct asyncyieldtestTag asyncyieldtest;
 
-extern int main(void)
-{
-  printf("\nThis test does not end.  Control-C to exit.\n\n");
+extern asyncyieldtest * asyncyieldtestNew(const char * pID, int Iterations);
 
-  syncyieldtestNew("TestA", 3);
-  syncyieldtestNew("TestB", 10);
-
-  while (true) {
-    oosmos_RunStateMachines();
-    oosmos_DelayMS(25);
-  }
-
-  return 0;
-}
+#endif

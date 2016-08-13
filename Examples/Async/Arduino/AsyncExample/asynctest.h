@@ -1,5 +1,5 @@
 //
-// OOSMOS prt Class
+// OOSMOS asynctest Class
 //
 // Copyright (C) 2014-2016  OOSMOS, LLC
 //
@@ -20,15 +20,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef prt_h
-#define prt_h
+#ifndef _asynctest_h
+#define _asynctest_h
 
-#include "oosmos.h"
+typedef struct asynctestTag asynctest;
 
-#if defined(ARDUINO)
-  extern unsigned long prtArduinoBaudRate;
-#endif
-
-extern bool prtFormatted(const char * pFormat, ...);
+extern asynctest * asynctestNew(void);
 
 #endif

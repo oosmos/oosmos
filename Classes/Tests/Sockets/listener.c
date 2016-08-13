@@ -46,18 +46,18 @@ static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const o
       return true;
 
     case oosmos_INSTATE:
-      oosmos_SyncBegin(pRegion);
+      oosmos_AsyncBegin(pRegion);
         while (true) {
           sock * pNewSock;
 
           printf("Waiting for incoming connections...\n");
 
-          oosmos_SyncWaitCond(pRegion,
+          oosmos_AsyncWaitCond(pRegion,
             sockAccepted(pListener->m_pSock, &pNewSock)
           );
           pListener->m_pAcceptedFunc(pNewSock);
         }
-      oosmos_SyncEnd(pRegion);
+      oosmos_AsyncEnd(pRegion);
       return true;
   }
 

@@ -184,36 +184,36 @@ struct OOSMOS_sStateTag {
     const char *           pName;
   )
 
-  oosmos_sTimeout SyncTimeout;
+  oosmos_sTimeout AsyncTimeout;
 
   //
-  // The stored __LINE__ number of the current Sync-type call.
+  // The stored __LINE__ number of the current Async-type call.
   //
-  int SyncContext;
+  int AsyncContext;
 
   //
-  // A user could attempt to make a Sync-type call without grouping it within a
-  // SyncBegin/SyncEnd.  They will not get a syntax error.  This flag helps remind
+  // A user could attempt to make a Async-type call without grouping it within a
+  // AsyncBegin/AsyncEnd.  They will not get a syntax error.  This flag helps remind
   // them of the requirement at run time.
   //
-  int HasSyncBlockBegin:1;
+  int HasAsyncBlockBegin:1;
 
   //
-  // Following a successful SyncWaitEvent-type call, we can drop into another
-  // SyncWaitEvent-type call.  We don't want the spent event being handled
+  // Following a successful AsyncWaitEvent-type call, we can drop into another
+  // AsyncWaitEvent-type call.  We don't want the spent event being handled
   // by the subsequent function.  We must cycle back through another INSTATE
   // with a fresh event.
   //
-  int SyncDirtyEvent:1;
+  int AsyncDirtyEvent:1;
 
   //
-  // Flag that helps a Sync sequence exit (if a transition occurred) or
+  // Flag that helps a Async sequence exit (if a transition occurred) or
   // continue.
   //
   int TransitionOccurred:1;
 
   //
-  // Support for oosmos_SyncYield.
+  // Support for oosmos_AsyncYield.
   //
   int HasYielded:1;
 
@@ -430,119 +430,119 @@ typedef void (*oosmos_tOutOfMemory)(const char*, int, const char*);
 
 
 //
-// oosmos_SyncDelayMS
+// oosmos_AsyncDelayMS
 //
-// oosmos_SyncWaitCond
-// oosmos_SyncWaitCond_TimeoutMS
-// oosmos_SyncWaitCond_TimeoutMS_Event
-// oosmos_SyncWaitCond_TimeoutMS_Exit
+// oosmos_AsyncWaitCond
+// oosmos_AsyncWaitCond_TimeoutMS
+// oosmos_AsyncWaitCond_TimeoutMS_Event
+// oosmos_AsyncWaitCond_TimeoutMS_Exit
 //
-// oosmos_SyncWaitEvent
-// oosmos_SyncWaitEvent_TimeoutMS
-// oosmos_SyncWaitEvent_TimeoutMS_Event
-// oosmos_SyncWaitEvent_TimeoutMS_Exit
+// oosmos_AsyncWaitEvent
+// oosmos_AsyncWaitEvent_TimeoutMS
+// oosmos_AsyncWaitEvent_TimeoutMS_Event
+// oosmos_AsyncWaitEvent_TimeoutMS_Exit
 //
-// oosmos_SyncYield
+// oosmos_AsyncYield
 //
 
 
-extern bool OOSMOS_SyncYield(oosmos_sRegion * pRegion);
+extern bool OOSMOS_AsyncYield(oosmos_sRegion * pRegion);
 
-extern bool OOSMOS_SyncDelayMS(oosmos_sRegion * pRegion, int MS);
+extern bool OOSMOS_AsyncDelayMS(oosmos_sRegion * pRegion, int MS);
 
-extern bool OOSMOS_SyncWaitCond(oosmos_sRegion * pRegion, bool Condition);
+extern bool OOSMOS_AsyncWaitCond(oosmos_sRegion * pRegion, bool Condition);
 
-extern bool OOSMOS_SyncWaitCond_TimeoutMS(oosmos_sRegion * pRegion,
+extern bool OOSMOS_AsyncWaitCond_TimeoutMS(oosmos_sRegion * pRegion,
                        int TimeoutMS, bool * pTimeoutStatus, bool Condition);
 
-extern bool OOSMOS_SyncWaitCond_TimeoutMS_Event(oosmos_sRegion * pRegion,
+extern bool OOSMOS_AsyncWaitCond_TimeoutMS_Event(oosmos_sRegion * pRegion,
                        int TimeoutMS, int NotificationEventCode, bool Condition);
 
-extern bool OOSMOS_SyncWaitCond_TimeoutMS_Exit(oosmos_sRegion * pRegion,
+extern bool OOSMOS_AsyncWaitCond_TimeoutMS_Exit(oosmos_sRegion * pRegion,
                        int TimeoutMS, bool Condition);
 
-extern bool OOSMOS_SyncWaitEvent(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent,
+extern bool OOSMOS_AsyncWaitEvent(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent,
                        int WaitEventCode);
 
-extern bool OOSMOS_SyncWaitEvent_TimeoutMS(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent,
+extern bool OOSMOS_AsyncWaitEvent_TimeoutMS(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent,
                        int TimeoutMS, bool * pTimedOut, int WaitEventCode);
 
-extern bool OOSMOS_SyncWaitEvent_TimeoutMS_Event(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent,
+extern bool OOSMOS_AsyncWaitEvent_TimeoutMS_Event(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent,
                        int TimeoutMS, int NotificationEventCode, int WaitEventCode);
 
-extern bool OOSMOS_SyncWaitEvent_TimeoutMS_Exit(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent,
+extern bool OOSMOS_AsyncWaitEvent_TimeoutMS_Exit(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent,
                        int TimeoutMS, int WaitEventCode);
 
 //
-// Use the Protothread __LINE__ trick to implement synchronous functions.  Synchronous
+// Use the Protothread __LINE__ trick to implement asynchronous functions.  Asynchronous
 // functions block the object, not the entire thread of execution.
 //
 // Very powerful.
 //
 
 
-#define oosmos_SyncBegin(pRegion) switch ((pRegion)->pCurrent->SyncContext) { \
+#define oosmos_AsyncBegin(pRegion) switch ((pRegion)->pCurrent->AsyncContext) { \
                                     case 0: \
-                                      (pRegion)->pCurrent->HasSyncBlockBegin = 1
+                                      (pRegion)->pCurrent->HasAsyncBlockBegin = 1
 
-#define oosmos_SyncDelayMS(pRegion, MS) \
-                                    case __LINE__: (pRegion)->pCurrent->SyncContext = __LINE__; \
-                                      if (!OOSMOS_SyncDelayMS(pRegion, (MS))) \
+#define oosmos_AsyncDelayMS(pRegion, MS) \
+                                    case __LINE__: (pRegion)->pCurrent->AsyncContext = __LINE__; \
+                                      if (!OOSMOS_AsyncDelayMS(pRegion, (MS))) \
                                         return false
 
-#define oosmos_SyncYield(pRegion) \
-                                    case __LINE__: (pRegion)->pCurrent->SyncContext = __LINE__; \
-                                      if (!OOSMOS_SyncYield(pRegion)) \
+#define oosmos_AsyncYield(pRegion) \
+                                    case __LINE__: (pRegion)->pCurrent->AsyncContext = __LINE__; \
+                                      if (!OOSMOS_AsyncYield(pRegion)) \
                                         return false
 
-#define oosmos_SyncWaitCond(pRegion, Cond) \
-                                    case __LINE__: (pRegion)->pCurrent->SyncContext = __LINE__; \
+#define oosmos_AsyncWaitCond(pRegion, Cond) \
+                                    case __LINE__: (pRegion)->pCurrent->AsyncContext = __LINE__; \
                                       if (!(Cond)) \
                                         return false
 
-#define oosmos_SyncWaitCond_TimeoutMS(pRegion, TimeoutMS, pTimeoutStatus, Cond) \
-                                    case __LINE__: (pRegion)->pCurrent->SyncContext = __LINE__; \
-                                      if (!OOSMOS_SyncWaitCond_TimeoutMS(pRegion, TimeoutMS, pTimeoutStatus, Cond)) \
+#define oosmos_AsyncWaitCond_TimeoutMS(pRegion, TimeoutMS, pTimeoutStatus, Cond) \
+                                    case __LINE__: (pRegion)->pCurrent->AsyncContext = __LINE__; \
+                                      if (!OOSMOS_AsyncWaitCond_TimeoutMS(pRegion, TimeoutMS, pTimeoutStatus, Cond)) \
                                         return false
 
-#define oosmos_SyncWaitCond_TimeoutMS_Event(pRegion, TimeoutMS, NotificationEventCode, Cond) \
-                                    case __LINE__: (pRegion)->pCurrent->SyncContext = __LINE__; \
-                                      if (!OOSMOS_SyncWaitCond_TimeoutMS_Event(pRegion, TimeoutMS, NotificationEventCode, Cond)) \
+#define oosmos_AsyncWaitCond_TimeoutMS_Event(pRegion, TimeoutMS, NotificationEventCode, Cond) \
+                                    case __LINE__: (pRegion)->pCurrent->AsyncContext = __LINE__; \
+                                      if (!OOSMOS_AsyncWaitCond_TimeoutMS_Event(pRegion, TimeoutMS, NotificationEventCode, Cond)) \
                                         return false
 
-#define oosmos_SyncWaitCond_TimeoutMS_Exit(pRegion, TimeoutMS, Cond) \
-                                    case __LINE__: (pRegion)->pCurrent->SyncContext = __LINE__; \
-                                      if (!OOSMOS_SyncWaitCond_TimeoutMS_Exit(pRegion, TimeoutMS, Cond)) \
+#define oosmos_AsyncWaitCond_TimeoutMS_Exit(pRegion, TimeoutMS, Cond) \
+                                    case __LINE__: (pRegion)->pCurrent->AsyncContext = __LINE__; \
+                                      if (!OOSMOS_AsyncWaitCond_TimeoutMS_Exit(pRegion, TimeoutMS, Cond)) \
                                         return false
 
-#define oosmos_SyncWaitEvent(pRegion, pEvent, WaitEventCode) \
-                                    case __LINE__: (pRegion)->pCurrent->SyncContext = __LINE__; \
-                                      if (!OOSMOS_SyncWaitEvent(pRegion, pEvent, WaitEventCode)) \
+#define oosmos_AsyncWaitEvent(pRegion, pEvent, WaitEventCode) \
+                                    case __LINE__: (pRegion)->pCurrent->AsyncContext = __LINE__; \
+                                      if (!OOSMOS_AsyncWaitEvent(pRegion, pEvent, WaitEventCode)) \
                                         return false
 
-#define oosmos_SyncWaitEvent_TimeoutMS(pRegion, pEvent, TimeoutMS, pTimeoutResult, WaitEventCode) \
-                                    case __LINE__: (pRegion)->pCurrent->SyncContext = __LINE__; \
-                                      if (!OOSMOS_SyncWaitEvent_TimeoutMS(pRegion, pEvent, TimeoutMS, pTimeoutResult, WaitEventCode)) \
+#define oosmos_AsyncWaitEvent_TimeoutMS(pRegion, pEvent, TimeoutMS, pTimeoutResult, WaitEventCode) \
+                                    case __LINE__: (pRegion)->pCurrent->AsyncContext = __LINE__; \
+                                      if (!OOSMOS_AsyncWaitEvent_TimeoutMS(pRegion, pEvent, TimeoutMS, pTimeoutResult, WaitEventCode)) \
                                         return false
 
-#define oosmos_SyncWaitEvent_TimeoutMS_Event(pRegion, pEvent, TimeoutMS, NotificationEventCode, WaitEventCode) \
-                                    case __LINE__: (pRegion)->pCurrent->SyncContext = __LINE__; \
-                                      if (!OOSMOS_SyncWaitEvent_TimeoutMS_Event(pRegion, pEvent, TimeoutMS, NotificationEventCode, WaitEventCode)) \
+#define oosmos_AsyncWaitEvent_TimeoutMS_Event(pRegion, pEvent, TimeoutMS, NotificationEventCode, WaitEventCode) \
+                                    case __LINE__: (pRegion)->pCurrent->AsyncContext = __LINE__; \
+                                      if (!OOSMOS_AsyncWaitEvent_TimeoutMS_Event(pRegion, pEvent, TimeoutMS, NotificationEventCode, WaitEventCode)) \
                                         return false
 
-#define oosmos_SyncWaitEvent_TimeoutMS_Exit(pRegion, pEvent, TimeoutMS, WaitEventCode) \
-                                    case __LINE__: (pRegion)->pCurrent->SyncContext = __LINE__; \
-                                      if (!OOSMOS_SyncWaitEvent_TimeoutMS_Exit(pRegion, pEvent, TimeoutMS, WaitEventCode)) \
+#define oosmos_AsyncWaitEvent_TimeoutMS_Exit(pRegion, pEvent, TimeoutMS, WaitEventCode) \
+                                    case __LINE__: (pRegion)->pCurrent->AsyncContext = __LINE__; \
+                                      if (!OOSMOS_AsyncWaitEvent_TimeoutMS_Exit(pRegion, pEvent, TimeoutMS, WaitEventCode)) \
                                         return false
 
-#define oosmos_SyncExit(pRegion) \
-                                      (pRegion)->pCurrent->SyncContext = -2; \
+#define oosmos_AsyncExit(pRegion) \
+                                      (pRegion)->pCurrent->AsyncContext = -2; \
                                       return false
 
-#define oosmos_SyncFinally(pRegion) \
-                                    case -2: (pRegion)->pCurrent->SyncContext = -1
+#define oosmos_AsyncFinally(pRegion) \
+                                    case -2: (pRegion)->pCurrent->AsyncContext = -1
 
-#define oosmos_SyncEnd(pRegion)     default: \
+#define oosmos_AsyncEnd(pRegion)     default: \
                                       break; \
                                   } do {} while(0)
 

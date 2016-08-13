@@ -44,15 +44,15 @@ static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const o
 
   switch (pEvent->Code) {
     case oosmos_INSTATE:
-      oosmos_SyncBegin(pRegion);
+      oosmos_AsyncBegin(pRegion);
         while (true) {
           pinOn(pToggle->m_pPin);
-          oosmos_SyncDelayMS(pRegion, pToggle->m_TimeOnMS);
+          oosmos_AsyncDelayMS(pRegion, pToggle->m_TimeOnMS);
 
           pinOff(pToggle->m_pPin);
-          oosmos_SyncDelayMS(pRegion, pToggle->m_TimeOffMS);
+          oosmos_AsyncDelayMS(pRegion, pToggle->m_TimeOffMS);
         }
-      oosmos_SyncEnd(pRegion);
+      oosmos_AsyncEnd(pRegion);
       return true; 
   }
 

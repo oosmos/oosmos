@@ -48,19 +48,19 @@ static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const o
 
   switch (pEvent->Code) {
     case oosmos_INSTATE:
-      oosmos_SyncBegin(pRegion);
+      oosmos_AsyncBegin(pRegion);
         while (true) {
           printf("Waiting for incoming data...\n");
-          oosmos_SyncWaitCond(pRegion,
+          oosmos_AsyncWaitCond(pRegion,
             sockReceive(pServer->m_pSock, pServer->m_Buffer, sizeof(pServer->m_Buffer), &pServer->m_BytesReceived)
           );
           printf("Server side, String: '%s', BytesReceived: %u\n", pServer->m_Buffer, (unsigned) pServer->m_BytesReceived);
 
-          oosmos_SyncWaitCond(pRegion,
+          oosmos_AsyncWaitCond(pRegion,
             sockSend(pServer->m_pSock, pServer->m_Buffer, pServer->m_BytesReceived)
           );
         }
-      oosmos_SyncEnd(pRegion);
+      oosmos_AsyncEnd(pRegion);
       return true;
 
     case ClosedEvent:

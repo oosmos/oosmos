@@ -121,10 +121,10 @@ def Main():
   Copy('Classes/Tests', 'h c', 'Examples/Switch/Arduino/SwitchExample', 'h cpp', 'switchtest', not IncludeOosmos)
 
   #
-  # Sync
+  # Async
   #
-  Copy('Classes',       'h c', 'Examples/Sync/Arduino/SyncExample',  'h cpp', 'prt')
-  Copy('Classes/Tests', 'h c', 'Examples/Sync/Arduino/SyncExample',  'h cpp', 'synctest')
+  Copy('Classes',       'h c', 'Examples/Async/Arduino/AsyncExample',  'h cpp', 'prt')
+  Copy('Classes/Tests', 'h c', 'Examples/Async/Arduino/AsyncExample',  'h cpp', 'asynctest')
 
 IncludeOosmos = True
 
