@@ -1,7 +1,7 @@
 //
 // OOSMOS uart Class
 //
-// Copyright (C) 2014-2018  OOSMOS, LLC
+// Copyright (C) 2014-2019  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -124,7 +124,7 @@ static void RunReceiverStateMachine(void * pObject)
   EnableInterrupt(pUART);
 
   if (PopSuccess) {
-    uart_sReceivedByteEvent ReceivedByteEvent = { oosmos_EMPTY_EVENT, Byte }; 
+    uart_sReceivedByteEvent ReceivedByteEvent = { oosmos_EMPTY_EVENT, Byte };
     oosmos_SubscriberListNotifyWithArgs(pUART->m_ReceivedByteEventSubscribers, ReceivedByteEvent);
   }
 }

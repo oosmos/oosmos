@@ -1,7 +1,7 @@
 //
 // OOSMOS pin Class
 //
-// Copyright (C) 2014-2018  OOSMOS, LLC
+// Copyright (C) 2014-2019  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -406,7 +406,7 @@ extern pin * pinNew_Debounce(GPIO_TypeDef* Port, const uint16_t Bit, const pin_e
 
     DWORD         NumRead;
     INPUT_RECORD  InputRecord;
-   
+
     while (PeekConsoleInput(hStdin, &InputRecord, 1, &NumRead) && NumRead > 0) {
       if (InputRecord.EventType == KEY_EVENT) {
         const KEY_EVENT_RECORD KER  = InputRecord.Event.KeyEvent;

@@ -1,7 +1,7 @@
 //
 // OOSMOS Poll Example
 //
-// Copyright (C) 2014-2018  OOSMOS, LLC
+// Copyright (C) 2014-2019  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -91,7 +91,7 @@ static void ThreadA1(test * pTest, oosmos_sState * pState)
   oosmos_ThreadBegin();
     for (;;) {
       printf("Poll A1: %d\n", pTest->m_A1_Count);
-      pTest->m_A1_Count++; 
+      pTest->m_A1_Count++;
       oosmos_ThreadDelayMS(20);
     }
   oosmos_ThreadEnd();
@@ -100,13 +100,13 @@ static void ThreadA1(test * pTest, oosmos_sState * pState)
 static void PollB1(test * pTest)
 {
   printf("Poll B1: %d\n", pTest->m_B1_Count);
-  pTest->m_B1_Count++; 
+  pTest->m_B1_Count++;
 }
 
 static void PollC1(test * pTest)
 {
   printf("Poll C1: %d\n", pTest->m_C1_Count);
-  pTest->m_C1_Count++; 
+  pTest->m_C1_Count++;
 }
 
 static void PollA2(test * pTest)
@@ -118,13 +118,13 @@ static void PollA2(test * pTest)
 static void PollB2(test * pTest)
 {
   printf("Poll B2: %d\n", pTest->m_B2_Count);
-  pTest->m_B2_Count++; 
+  pTest->m_B2_Count++;
 }
 
 static void PollC2(test * pTest)
 {
   printf("Poll C2: %d\n", pTest->m_C2_Count);
-  pTest->m_C2_Count++; 
+  pTest->m_C2_Count++;
 }
 
 

@@ -1,7 +1,7 @@
 //
 // OOSMOS threadtest Class
 //
-// Copyright (C) 2014-2018  OOSMOS, LLC
+// Copyright (C) 2014-2019  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -422,7 +422,7 @@ static void OOSMOS_Action1(void * pObject, oosmos_sState * pState, const oosmos_
   threadtest * pThreadTest = (threadtest *) pObject;
 
   oosmos_PushEventCode(pThreadTest, evDone);
-  
+
   oosmos_UNUSED(pState);
   oosmos_UNUSED(pEvent);
 }

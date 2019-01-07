@@ -1,7 +1,7 @@
 //
 // OOSMOS - The Object-Oriented State Machine Operating System
 //
-// Copyright (C) 2014-2018  OOSMOS, LLC
+// Copyright (C) 2014-2019  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -277,8 +277,8 @@ static bool ProcessTimeouts(const oosmos_sRegion * pRegion)
       }
     #endif
 
-    /*lint -e764 suppress "switch statement does not have a case"*/                           
-    /*lint -e616 suppress "control flows into case/default"*/                           
+    /*lint -e764 suppress "switch statement does not have a case"*/
+    /*lint -e616 suppress "control flows into case/default"*/
     /*lint -fallthrough */
     default: {
       for (oosmos_sState * pState = pCurrent; pState != &pRegion->m_Composite.m_State; pState = pState->m_pParent) {
@@ -331,7 +331,7 @@ static bool IsInState(const oosmos_sRegion * pRegion, const oosmos_sState * pQue
       }
     #endif
 
-    /*lint -e764 suppress "switch statement does not have a case"*/                           
+    /*lint -e764 suppress "switch statement does not have a case"*/
     default: {
       for (const oosmos_sState * pState = pCurrent; pState != NULL; pState = pState->m_pParent) {
         if (pState == pQueriedState) {

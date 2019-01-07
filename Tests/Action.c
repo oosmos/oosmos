@@ -1,7 +1,7 @@
 //
 // OOSMOS Poll Example
 //
-// Copyright (C) 2014-2018  OOSMOS, LLC
+// Copyright (C) 2014-2019  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ static void OOSMOS_Action1(void * pObject, oosmos_sState * pState, const oosmos_
   printf("Count: %d\n", Count);
   ActionCount = Count;
   printf("%s\n", oosmos_IsInState(pTest, &pTest->ROOT) ? "SUCCESS" : "FAILURE");
-  
+
   oosmos_UNUSED(pState);
   oosmos_UNUSED(pEvent);
 }
@@ -70,7 +70,7 @@ static bool A_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sE
       return true;
     }
     case oosmos_DEFAULT: {
-      Count = 0; 
+      Count = 0;
       printf("INITIAL\n");
       return true;
     }

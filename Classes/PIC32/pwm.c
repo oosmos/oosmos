@@ -1,7 +1,7 @@
 //
 // OOSMOS pwm Class
 //
-// Copyright (C) 2014-2018  OOSMOS, LLC
+// Copyright (C) 2014-2019  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -98,7 +98,7 @@ extern void pwmStart(pwm * pPWM)
     #endif
 
     default:
-      oosmos_FOREVER();                
+      oosmos_FOREVER();
   }
 }
 
@@ -126,6 +126,6 @@ extern void pwmStop(pwm * pPWM)
     #endif
 
     default:
-      oosmos_FOREVER();                
+      oosmos_FOREVER();
   }
 }
