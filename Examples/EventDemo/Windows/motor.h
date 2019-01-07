@@ -1,7 +1,7 @@
 //
 // OOSMOS - EventDemo motor object interface
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,7 +26,7 @@
 typedef struct motorTag motor;
 
 extern motor * motorNew(void);
-extern void motorOn(motor * pMotor);
-extern void motorOff(motor * pMotor);
+extern void motorOn(const motor * pMotor);
+extern void motorOff(const motor * pMotor);
 
 #endif

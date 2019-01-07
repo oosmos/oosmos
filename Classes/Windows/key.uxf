@@ -1,78 +1,80 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<diagram program="umlet" version="13.0">
+<diagram program="umlet" version="14.2">
   <zoom_level>10</zoom_level>
   <element>
-    <type>com.umlet.element.custom.State</type>
+    <id>UMLState</id>
     <coordinates>
-      <x>20</x>
-      <y>70</y>
-      <w>70</w>
-      <h>110</h>
-    </coordinates>
-    <panel_attributes>Up
---</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <type>com.umlet.element.Relation</type>
-    <coordinates>
-      <x>20</x>
-      <y>0</y>
-      <w>50</w>
+      <x>470</x>
+      <y>80</y>
+      <w>90</w>
       <h>90</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>30;70;30;30;30;30</additional_attributes>
-  </element>
-  <element>
-    <type>com.umlet.element.custom.InitialState</type>
-    <coordinates>
-      <x>40</x>
-      <y>20</y>
-      <w>20</w>
-      <h>20</h>
-    </coordinates>
-    <panel_attributes/>
-    <additional_attributes/>
-  </element>
-  <element>
-    <type>com.umlet.element.custom.State</type>
-    <coordinates>
-      <x>460</x>
-      <y>70</y>
-      <w>100</w>
-      <h>110</h>
     </coordinates>
     <panel_attributes>Down
 --
-
+valign=top
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
-    <type>com.umlet.element.Relation</type>
+    <id>UMLState</id>
     <coordinates>
-      <x>60</x>
-      <y>70</y>
-      <w>420</w>
-      <h>74</h>
+      <x>30</x>
+      <y>80</y>
+      <w>80</w>
+      <h>90</h>
     </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
-[KeyState == Down]/
-oosmos_SubscriberListNotify(pKey-&gt;m_PressedEvent);</panel_attributes>
-    <additional_attributes>400;40;30;40</additional_attributes>
+    <panel_attributes>Up
+--
+valign=top
+</panel_attributes>
+    <additional_attributes/>
   </element>
   <element>
-    <type>com.umlet.element.Relation</type>
+    <id>Relation</id>
     <coordinates>
-      <x>60</x>
-      <y>120</y>
-      <w>420</w>
-      <h>74</h>
+      <x>100</x>
+      <y>80</y>
+      <w>390</w>
+      <h>40</h>
     </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+    <panel_attributes>lt=-&gt;
+[KeyState == Down]/
+oosmos_SubscriberListNotify(pKey-&gt;m_PressedEvent);</panel_attributes>
+    <additional_attributes>10.0;20.0;370.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>100</x>
+      <y>120</y>
+      <w>390</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
 [KeyState == Up]/
 oosmos_SubscriberListNotify(pKey-&gt;m_ReleasedEvent);</panel_attributes>
-    <additional_attributes>30;40;400;40</additional_attributes>
+    <additional_attributes>370.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>60</x>
+      <y>30</y>
+      <w>20</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>type=initial</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>60</x>
+      <y>40</y>
+      <w>30</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
   </element>
 </diagram>

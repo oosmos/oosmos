@@ -1,7 +1,7 @@
 //
 // OOSMOS server Class
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,10 +27,10 @@
 #include "server.h"
 #include "sock.h"
 
-typedef enum
+enum
 {
   ClosedEvent = 1,
-} eEvents;
+};
 
 struct serverTag
 {
@@ -42,25 +42,30 @@ struct serverTag
   char   m_Buffer[100];
 };
 
-static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static void IncomingThread(server * pServer, oosmos_sState * pState)
+{
+  oosmos_ThreadBegin();
+    for (;;) {
+      printf("Waiting for incoming data...\n");
+      oosmos_ThreadWaitCond(
+        sockReceive(pServer->m_pSock, pServer->m_Buffer, sizeof(pServer->m_Buffer), &pServer->m_BytesReceived)
+      );
+      printf("Server side, String: '%s', BytesReceived: %u\n", pServer->m_Buffer, (unsigned) pServer->m_BytesReceived);
+
+      oosmos_ThreadWaitCond(
+        sockSend(pServer->m_pSock, pServer->m_Buffer, pServer->m_BytesReceived)
+      );
+    }
+  oosmos_ThreadEnd();
+}
+
+static bool Running_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   server * pServer = (server *) pObject;
 
-  switch (pEvent->Code) {
-    case oosmos_INSTATE:
-      oosmos_AsyncBegin(pRegion);
-        while (true) {
-          printf("Waiting for incoming data...\n");
-          oosmos_AsyncWaitCond(pRegion,
-            sockReceive(pServer->m_pSock, pServer->m_Buffer, sizeof(pServer->m_Buffer), &pServer->m_BytesReceived)
-          );
-          printf("Server side, String: '%s', BytesReceived: %u\n", pServer->m_Buffer, (unsigned) pServer->m_BytesReceived);
-
-          oosmos_AsyncWaitCond(pRegion,
-            sockSend(pServer->m_pSock, pServer->m_Buffer, pServer->m_BytesReceived)
-          );
-        }
-      oosmos_AsyncEnd(pRegion);
+  switch (oosmos_EventCode(pEvent)) {
+    case oosmos_POLL:
+      IncomingThread(pServer, pState);
       return true;
 
     case ClosedEvent:
@@ -83,7 +88,7 @@ extern server * serverNew(sock * pSock)
     oosmos_LeafInit      (pServer, Running_State,  StateMachine               );
 
   pServer->m_pSock = pSock;
-  sockSubscribeClosedEvent(pSock, &pServer->EventQueue, ClosedEvent, NULL);
+  sockSubscribeClosedEvent(pSock, oosmos_EventQueue(pServer), ClosedEvent, NULL);
 
   return pServer;
 }

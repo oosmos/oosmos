@@ -61,33 +61,34 @@ class cWindows:
     print('Compiling...')
 
     Files = ' '.join(FileArray)
-    Line = r'cl /I. /I%s\Source /I%s\Classes /I%s\Classes\Tests /nologo /Zi /W4 /wd4065 /wd4100 /wd4127 /D_CRT_SECURE_NO_WARNINGS '%(oosmos_dir,oosmos_dir,oosmos_dir)+Files+'  '+Options+' -Doosmos_DEBUG'
+    Line = r'cl -I. -I%s\Source -I%s\Classes -I%s\Classes\Tests -nologo -Zi -W4 -wd4204 -wd4065 -wd4100 -wd4127 -D_CRT_SECURE_NO_WARNINGS '%(oosmos_dir,oosmos_dir,oosmos_dir)+Files+' -Doosmos_DEBUG '+Options
+    print(Line)
 
     try :
       p = subprocess.Popen(Line, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd = os.getcwd())
     except:
       print("\n*** Unable to compile. Is Visual Studio installed?")
       sys.exit(16)
-  
+
     for Line in p.stdout:
       Line = Line.rstrip()
-  
+
       if Line.startswith((b'reg', b'Generating Code...', b'Compiling...')):
         continue
-  
+
       if Line.endswith((b'.c', b'.cpp')):
         continue
-  
-      print(Line)
+
+      print(Line.decode('utf-8'))
 
 class cLinux:
   @staticmethod
-  def Compile(oosmos_dir, Target, FileArray):
+  def Compile(oosmos_dir, Target, FileArray, Options = ''):
     Files = ' '.join(FileArray)
     print('Compiling %s...' % (Target))
-    
+
     classes_dir = os.path.normpath(oosmos_dir+'/Classes')
-    Line = "gcc -I%s/Source -I%s -I%s/Tests -I. -std=c99 -Wall -Wno-overflow -Wno-unused-parameter -pedantic -Werror -Wshadow -flto -o %s -Doosmos_DEBUG -Doosmos_ORTHO %s " % (oosmos_dir, classes_dir, classes_dir, Target, Files)
+    Line = "gcc -I%s/Source -I%s -I%s/Tests -I. -std=c99 -Wall -Wno-overflow -Wno-unused-parameter -pedantic -Werror -Wshadow -flto -o %s -D_POSIX_C_SOURCE=199309 -D__linux__ -Doosmos_DEBUG -Doosmos_ORTHO %s " % (oosmos_dir, classes_dir, classes_dir, Target, Files) + Options
     os.system(Line)
 
 def WildRemove(FilenamePattern):

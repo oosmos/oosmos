@@ -1,7 +1,7 @@
 //
 // OOSMOS spi Class
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +23,7 @@
 #include "spi.h"
 #include "pin.h"
 #include "oosmos.h"
+#include <stdint.h>
 
 struct spiTag
 {
@@ -45,16 +46,14 @@ struct spi_sSlaveTag
 #define spi_slaveMAX 2
 #endif
 
-static void SendByte(spi_sSlave * pSlave, uint8_t Byte)
+static void SendByte(const spi_sSlave * pSlave, uint8_t Byte)
 {
   spi * pSPI = pSlave->m_pSPI;
 
   pin * pCLK  = pSPI->m_pCLK;
   pin * pMOSI = pSPI->m_pMOSI;
 
-  int Count;
-
-  for (Count = 1; Count <= 8; Count++) {
+  for (int Count = 1; Count <= 8; Count++) {
     ((Byte & 0x80) ? pinOff : pinOn)(pMOSI);
 
     pinOn(pCLK);
@@ -66,23 +65,22 @@ static void SendByte(spi_sSlave * pSlave, uint8_t Byte)
   pinOff(pMOSI);
 }
 
-extern void spiSendByte(spi_sSlave * pSlave, const uint8_t Byte)
+extern void spiSendByte(const spi_sSlave * pSlave, const uint8_t Byte)
 {
   pinOn(pSlave->m_pCS);
   SendByte(pSlave, Byte);
   pinOff(pSlave->m_pCS);
 }
 
-extern void spiSendBytes(spi_sSlave * pSlave, const void * pData, const size_t Bytes)
+extern void spiSendBytes(const spi_sSlave * pSlave, const void * pData, const size_t Bytes)
 {
   uint8_t * pBytes = (uint8_t *) pData;
 
   pinOn(pSlave->m_pCS);
 
-  size_t ByteIndex;
-
-  for (ByteIndex = 0; ByteIndex < Bytes; ByteIndex++)
+  for (size_t ByteIndex = 0; ByteIndex < Bytes; ByteIndex++) {
     SendByte(pSlave, pBytes[ByteIndex]);
+  }
 
   pinOff(pSlave->m_pCS);
 }

@@ -1,7 +1,7 @@
 //
 // OOSMOS - PIC32 Blink main program
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,6 +39,7 @@ extern int main(void)
   toggleNew(pYELLOW, 100,  100);
   toggleNew(pGREEN,   50, 1500);
 
-  while (true)
+  for (;;) {
     oosmos_RunStateMachines();
+  }
 }

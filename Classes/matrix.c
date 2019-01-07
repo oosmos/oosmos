@@ -1,7 +1,7 @@
 //
 // OOSMOS matrix Class
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,24 +32,26 @@
 #define matrixMAX_COLS 8
 #endif
 
-const static int RowOnSettleTimeUS  = 50;
-const static int RowOffSettleTimeUS = 50;
+static const int RowOnSettleTimeUS  = 50;
+static const int RowOffSettleTimeUS = 50;
 
 #include "oosmos.h"
 #include "matrix.h"
 #include "sw.h"
 #include "pin.h"
 #include <stdarg.h>
+#include <stdbool.h>
+#include <stddef.h>
 
 struct matrixTag
 {
-  oosmos_sStateMachineNoQueue(StateMachine);
+  oosmos_sStateMachineNoQueue(ROOT);
     oosmos_sLeaf              Running_State;
 
   pin * m_pRowPins[matrixMAX_ROWS];
   pin * m_pColumnPins[matrixMAX_COLS];
   sw  * m_pSwitch[matrixMAX_ROWS][matrixMAX_COLS];
-  
+
   int m_Rows;
   int m_Columns;
 
@@ -59,7 +61,7 @@ struct matrixTag
   int m_CurrentRowIndex;
 };
 
-static void InterrogateColumns(matrix * pMatrix)
+static void InterrogateColumns(const matrix * pMatrix)
 {
   const int RowIndex = pMatrix->m_CurrentRowIndex;
   const int Columns  = pMatrix->m_Columns;
@@ -75,14 +77,36 @@ static void InterrogateColumns(matrix * pMatrix)
   }
 }
 
+static void Thread(matrix * pMatrix, oosmos_sState * pState)
+{
+  oosmos_ThreadBegin();
+    for (;;) {
+      for (pMatrix->m_CurrentRowIndex = 0; pMatrix->m_CurrentRowIndex < pMatrix->m_Rows; pMatrix->m_CurrentRowIndex++) {
+        if (pMatrix->m_pRowPins[pMatrix->m_CurrentRowIndex] == NULL) {
+          continue;
+        }
+
+        pinOn(pMatrix->m_pRowPins[pMatrix->m_CurrentRowIndex]);
+        oosmos_ThreadDelayMS(RowOnSettleTimeUS);
+
+        InterrogateColumns(pMatrix);
+
+        pinOff(pMatrix->m_pRowPins[pMatrix->m_CurrentRowIndex]);
+        oosmos_ThreadDelayMS(RowOffSettleTimeUS);
+      }
+    }
+  oosmos_ThreadEnd();
+}
+
 static void AddRow(matrix * pMatrix, const int Row, pin * pPin)
 {
   const int RowIndex = Row - 1;
 
   pMatrix->m_pRowPins[RowIndex] = pPin;
 
-  if (Row > pMatrix->m_Rows)
+  if (Row > pMatrix->m_Rows) {
     pMatrix->m_Rows = Row;
+  }
 }
 
 static void AddColumn(matrix * pMatrix, const int Column, pin * pPin)
@@ -90,32 +114,18 @@ static void AddColumn(matrix * pMatrix, const int Column, pin * pPin)
   const int ColumnIndex = Column - 1;
   pMatrix->m_pColumnPins[ColumnIndex] = pPin;
 
-  if (Column > pMatrix->m_Columns)
+  if (Column > pMatrix->m_Columns) {
     pMatrix->m_Columns = Column;
+  }
 }
 
-static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool Running_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   matrix * pMatrix = (matrix *) pObject;
 
-  switch (pEvent->Code) {
-    case oosmos_INSTATE:
-      oosmos_AsyncBegin(pRegion);
-        while (true) {
-          for (pMatrix->m_CurrentRowIndex = 0; pMatrix->m_CurrentRowIndex < pMatrix->m_Rows; pMatrix->m_CurrentRowIndex++) {
-            if (pMatrix->m_pRowPins[pMatrix->m_CurrentRowIndex] == NULL)
-              continue;
-
-            pinOn(pMatrix->m_pRowPins[pMatrix->m_CurrentRowIndex]);
-            oosmos_AsyncDelayMS(pRegion, RowOnSettleTimeUS);
-
-            InterrogateColumns(pMatrix);
-
-            pinOff(pMatrix->m_pRowPins[pMatrix->m_CurrentRowIndex]);
-            oosmos_AsyncDelayMS(pRegion, RowOffSettleTimeUS);
-          }
-        }
-      oosmos_AsyncEnd(pRegion);
+  switch (oosmos_EventCode(pEvent)) {
+    case oosmos_POLL:
+      Thread(pMatrix, pState);
       return true;
   }
 
@@ -144,24 +154,26 @@ extern matrix * matrixNew(int Rows, int Columns, ...)
 
   //                                      StateName      Parent        Default
   //                            =====================================================
-  oosmos_StateMachineInitNoQueue(pMatrix, StateMachine,  NULL,         Running_State);
-    oosmos_LeafInit             (pMatrix, Running_State, StateMachine               );
-    
+  oosmos_StateMachineInitNoQueue(pMatrix, ROOT,          NULL,         Running_State);
+    oosmos_LeafInit             (pMatrix, Running_State, ROOT                       );
+
   va_list ArgList;
   va_start(ArgList, Columns);
 
   int Row;
-  
-  for (Row = 1; Row <= Rows; Row += 1)
+
+  for (Row = 1; Row <= Rows; Row += 1) {
     AddRow(pMatrix, Row, va_arg(ArgList, pin *));
+  }
 
   int Column;
-  
-  for (Column = 1; Column <= Columns; Column += 1)
+
+  for (Column = 1; Column <= Columns; Column += 1) {
     AddColumn(pMatrix, Column, va_arg(ArgList, pin *));
+  }
 
   va_end(ArgList);
-  
+
   return pMatrix;
 }
 
@@ -173,8 +185,11 @@ extern void matrixAssignSwitch(matrix * pMatrix, sw * pSwitch, const int Row, co
   //
   // Check if this Row/Column slot has already been assigned.
   //
-  if (pMatrix->m_pSwitch[RowIndex][ColumnIndex] != NULL)
-    while (true);
+  if (pMatrix->m_pSwitch[RowIndex][ColumnIndex] != NULL) {
+    for (;;) {
+      continue;
+    }
+  }
 
   pMatrix->m_pSwitch[RowIndex][ColumnIndex] = pSwitch;
 }

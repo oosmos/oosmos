@@ -1,0 +1,23 @@
+[
+  {
+    "enabled":      true,
+    "uxf_filename": "keyer.uxf",
+    "filename":     "keyer.c",
+    "type":         "keyer",
+    "object_ptr":   "pKeyer"
+  },
+  {
+    "enabled":      true,
+    "uxf_filename": "toggle_state.uxf",
+    "filename":     "toggle_state.c",
+    "type":         "toggle",
+    "object_ptr":   "pToggle"
+  },
+  {
+    "enabled":      true,
+    "uxf_filename": "toggle.uxf",
+    "filename":     "toggle.c",
+    "type":         "toggle",
+    "object_ptr":   "pToggle"
+  }
+]

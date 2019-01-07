@@ -1,7 +1,7 @@
 //
 // OOSMOS - The Object-Oriented State Machine Operating System
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,19 +30,10 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <stdbool.h>
 
-//
-// Define the bool datatype, one way or another.
-//
-#if !defined(__cplusplus)
-  #if !defined(oosmos_HAS_BOOL)
-    #undef bool
-    #undef false
-    #undef true
-    #define bool char
-    #define false 0
-    #define true  1
-  #endif
+#ifdef __cplusplus
+  extern "C" {
 #endif
 
 //
@@ -57,11 +48,11 @@
     #include "WProgram.h"
   #endif
 
-  #define oosmos_EndProgram(Code) while(1)continue
+  #define oosmos_EndProgram(Code) do { } while(1)
 #elif defined(__PIC32MX)
   #include <plib.h>
-  extern void oosmos_ClockSpeedInMHz(int ClockSpeedMHz);
-  extern int oosmos_GetClockSpeedInMHz(void);
+  extern void oosmos_ClockSpeedInMHz(uint32_t ClockSpeedMHz);
+  extern uint32_t oosmos_GetClockSpeedInMHz(void);
   #define oosmos_EndProgram(Code) while(1)continue
 #elif defined(oosmos_RASPBERRY_PI)
   #include <wiringPi.h>
@@ -77,35 +68,39 @@
 #elif defined(__MBED__)
   #include "mbed.h"
   #define oosmos_EndProgram(Code) OOSMOS_EndProgram(Code)
+#elif defined(__IAR_SYSTEMS_ICC__)
+  #ifdef oosmos_INCLUDE
+    #include oosmos_INCLUDE
+  #else
+    #error Must define oosmos_INCLUDE.  Example: "stm32l1xx_hal.h"
+  #endif
 #else
   #define oosmos_EndProgram(Code) OOSMOS_EndProgram(Code)
 #endif
 
-typedef struct
-{
-  uint32_t Start;
-  uint32_t End;
+typedef struct {
+  uint32_t m_Start;
+  uint32_t m_End;
 } oosmos_sTimeout;
 
 typedef enum {
   oosmos_QueueFull_TossNew = 1,
-  oosmos_QueueFull_TossOld,
+  oosmos_QueueFull_TossOld
 } oosmos_eQueueFullBehavior;
 
 typedef struct OOSMOS_sQueueTag oosmos_sQueue;
 
-struct OOSMOS_sQueueTag
-{
-  void   * pHead;
-  void   * pTail;
-  void   * pEnd;
-  void   * pQueueData;
-  uint16_t QueueDataSize;
-  uint16_t QueueElementSize;
-  uint16_t ByteCount;
+struct OOSMOS_sQueueTag {
+  void   * m_pHead;
+  void   * m_pTail;
+  void   * m_pEnd;
+  void   * m_pQueueData;
+  uint16_t m_QueueDataSize;
+  uint16_t m_QueueElementSize;
+  uint16_t m_ByteCount;
 
-  oosmos_eQueueFullBehavior (*pFullBehaviorFunc)(void * pContext);
-  void   * pContext;
+  oosmos_eQueueFullBehavior (*m_pFullBehaviorFunc)(void * pContext);
+  void   * m_pContext;
 };
 
 #if defined(oosmos_DEBUG)
@@ -118,6 +113,7 @@ struct OOSMOS_sQueueTag
     #define oosmos_DebugCode(x) x
     extern void OOSMOS_ArduinoPrintf(const char * pFormat, ...);
   #else
+    #include <stdio.h>
     #define oosmos_DebugPrint printf
     #define oosmos_DebugCode(x) x
   #endif
@@ -125,21 +121,81 @@ struct OOSMOS_sQueueTag
   extern void oosmos_DebugInit(void);
 #else
   extern void oosmos_DebugDummy(const char*, ...);
+  /*lint -e773 suppress "Expression-like macro not parenthesized" */
   #define oosmos_DebugPrint 1 ? (void)0 : oosmos_DebugDummy
   #define oosmos_DebugCode(x)
   #define oosmos_DebugInit()
 #endif
 
-typedef struct
-{
-  int    Code;
-  void * pContext;
+#define oosmos_UNUSED(x) (void)(x)
+
+/*lint -e506 suppress "consant value boolean" */
+/*lint -e717 suppress "do { } while(0)" */
+#define oosmos_POINTER_GUARD(x) \
+       do {                     \
+         if ((x) == NULL) {     \
+           for (;;) {           \
+             continue;          \
+           }                    \
+         }                      \
+       } while (false)
+
+/*lint -e506 suppress "consant value boolean" */
+/*lint -e717 suppress "do { } while(0)" */
+#define oosmos_FOREVER() \
+       do {              \
+         continue;       \
+       } while (true)
+
+/*lint -e506 suppress "consant value boolean" */
+/*lint -e717 suppress "do { } while(0)" */
+#define oosmos_ASSERT(Condition) \
+       do {                      \
+         if (!(Condition)) {     \
+           do {                  \
+             continue;           \
+           } while (true);       \
+         }                       \
+       } while (false)
+
+typedef struct {
+  int    m_Code;
+  void * m_pContext;
 } oosmos_sEvent;
 
+#define oosmos_Divide_Integral_Rounded(Dividend, Divisor) (((Dividend) + ((Divisor) / 2)) / (Divisor))
+
+#define oosmos_Minutes2US(Minutes)                  ((Minutes) * (60ul * 1000ul * 1000ul))
+#define oosmos_Minutes2MS(Minutes)                  ((Minutes) * (60ul * 1000ul))
+#define oosmos_Minutes2Seconds(Minutes)             ((Minutes) * 60ul)
+#define oosmos_Minutes2Hours_Truncated(Minutes)     ((Minutes) / 60ul)
+#define oosmos_Minutes2Hours_Rounded(Minutes)       oosmos_Divide_Integral_Rounded(Minutes, 60ul)
+
+#define oosmos_Seconds2US(Seconds)                  ((Seconds) * (1000ul * 1000ul))
+#define oosmos_Seconds2MS(Seconds)                  ((Seconds) * 1000ul)
+#define oosmos_Seconds2Hours_Truncated(Seconds)     ((Seconds) / 3600ul)
+#define oosmos_Seconds2Hours_Rounded(Seconds)       oosmos_Divide_Integral_Rounded(Seconds, 3600ul)
+
+#define oosmos_US2MS_Truncated(MicroSeconds)        ((MicroSeconds) / 1000ul))
+#define oosmos_US2MS_Rounded(MicroSeconds)          oosmos_Divide_Integral_Rounded(MicroSeconds, 1000ul)
+#define oosmos_US2Seconds_Truncated(MicroSeconds)   ((MicroSeconds) / (1000ul * 1000ul))
+#define oosmos_US2Seconds_Rounded(MicroSeconds)     oosmos_Divide_Integral_Rounded(MicroSeconds, 1000ul * 1000ul)
+#define oosmos_US2Minutes_Truncated(MicroSeconds)   ((MicroSeconds) / (60ul * 1000ul * 1000ul))
+#define oosmos_US2Minutes_Rounded(MicroSeconds)     oosmos_Divide_Integral_Rounded(MicroSeconds, 60ul * 1000ul * 1000ul)
+
+#define oosmos_MS2US(MicroSeconds)                  ((MicroSeconds) * 1000ul)
+#define oosmos_MS2Seconds_Truncated(MicroSeconds)   ((MicroSeconds) / 1000ul)
+#define oosmos_MS2Seconds_Rounded(MicroSeconds)     oosmos_Divide_Integral_Rounded(MicroSeconds, 1000ul)
+#define oosmos_MS2Minutes_Truncated(MicroSeconds)   ((MicroSeconds) / (60ul * 1000ul))
+#define oosmos_MS2Minutes_Rounded(MicroSeconds)     oosmos_Divide_Integral_Rounded(MicroSeconds, 60ul * 1000ul)
+
+#define oosmos_EMPTY_EVENT { 0, NULL }
+
+/*lint -e123 suppress "Macro 'oosmos_sStateMachine' defined" */
 #define oosmos_sStateMachine(StateMachine, EventType, MaxEvents) \
-  oosmos_sQueue        EventQueue; \
-  EventType            EventQueueData[MaxEvents]; \
-  EventType            CurrentEvent; \
+  oosmos_sQueue        m_EventQueue; \
+  EventType            m_EventQueueData[MaxEvents]; \
+  EventType            m_CurrentEvent; \
   oosmos_sStateMachine StateMachine
 
 #define oosmos_sStateMachineNoQueue(StateMachine) \
@@ -159,149 +215,132 @@ typedef struct OOSMOS_sOrthoRegionTag  oosmos_sOrthoRegion;
 typedef struct OOSMOS_sStateTag        oosmos_sChoice;
 typedef struct OOSMOS_sStateTag        oosmos_sFinal;
 
-typedef bool (*OOSMOS_tCode)(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent);
+typedef bool (*OOSMOS_tCode)(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent);
+typedef void (*OOSMOS_tAction)(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent);
 
-typedef enum
-{
+typedef enum {
   OOSMOS_CompositeType = 1,
-  OOSMOS_StateMachineType,
-  OOSMOS_FinalType,
   OOSMOS_LeafType,
+  OOSMOS_FinalType,
 
   #ifdef oosmos_ORTHO
     OOSMOS_OrthoType,
     OOSMOS_OrthoRegionType,
   #endif
+
+  OOSMOS_StateMachineType
 } OOSMOS_eTypes;
 
 struct OOSMOS_sStateTag {
-  oosmos_sState  * pParent;
-  OOSMOS_tCode     pCode;
-  oosmos_sTimeout  Timeout;
+  oosmos_sState        * m_pParent;
+  OOSMOS_tCode           m_pCode;
+  oosmos_sTimeout        m_Timeout;
+  oosmos_sStateMachine * m_pStateMachine;
 
   oosmos_DebugCode(
-    oosmos_sStateMachine * pStateMachine;
-    const char *           pName;
+    const char *         m_pName;
   )
 
-  oosmos_sTimeout AsyncTimeout;
+  oosmos_sTimeout m_ThreadTimeout;
 
   //
-  // The stored __LINE__ number of the current Async-type call.
+  // The stored __LINE__ number of the current Thread-type call.
   //
-  int AsyncContext;
+  int32_t m_ThreadContext;
 
   //
-  // A user could attempt to make a Async-type call without grouping it within a
-  // AsyncBegin/AsyncEnd.  They will not get a syntax error.  This flag helps remind
-  // them of the requirement at run time.
-  //
-  int HasAsyncBlockBegin:1;
-
-  //
-  // Following a successful AsyncWaitEvent-type call, we can drop into another
-  // AsyncWaitEvent-type call.  We don't want the spent event being handled
-  // by the subsequent function.  We must cycle back through another INSTATE
-  // with a fresh event.
-  //
-  int AsyncDirtyEvent:1;
-
-  //
-  // Flag that helps a Async sequence exit (if a transition occurred) or
+  // Flag that helps a Thread sequence exit (if a transition occurred) or
   // continue.
   //
-  int TransitionOccurred:1;
+  unsigned int m_TransitionOccurred:1;
 
   //
-  // Support for oosmos_AsyncYield.
+  // Support for oosmos_ThreadYield.
   //
-  int HasYielded:1;
+  unsigned int m_ThreadHasYielded:1;
 
   //
   // Really an eTypes enumeration, but ANSI won't allow an enum on a bit field.
   //
-  int Type:4;
+  unsigned int m_Type:4;
 };
 
 struct OOSMOS_sCompositeTag {
-  oosmos_sState     State;
-  oosmos_sState   * pDefault;
+  oosmos_sState     m_State;
+  oosmos_sState   * m_pDefault;
 };
 
 struct OOSMOS_sRegionTag {
-  oosmos_sComposite Composite;
-  oosmos_sState   * pCurrent;
-  void            * pObject;
+  oosmos_sComposite m_Composite;
+  oosmos_sState   * m_pCurrent;
 };
 
 #ifdef oosmos_ORTHO
-  struct OOSMOS_sOrthoRegionTag
-  {
-    oosmos_sRegion        Region;
-    oosmos_sOrthoRegion * pNextOrthoRegion;
+  struct OOSMOS_sOrthoRegionTag {
+    oosmos_sRegion        m_Region;
+    oosmos_sOrthoRegion * m_pNextOrthoRegion;
   };
 
   struct OOSMOS_sOrthoTag {
-    oosmos_sState         State;
-    oosmos_sOrthoRegion * pFirstOrthoRegion;
+    oosmos_sState         m_State;
+    oosmos_sOrthoRegion * m_pFirstOrthoRegion;
   };
 #endif
 
-struct OOSMOS_sStateMachineTag
-{
-  oosmos_sRegion         Region;
+struct OOSMOS_sStateMachineTag {
+  oosmos_sRegion         m_Region;
 
-  oosmos_sQueue        * pEventQueue;
-  void                 * pCurrentEvent;
-  oosmos_sStateMachine * pNext;
+  oosmos_sQueue        * m_pEventQueue;
+  oosmos_sEvent        * m_pCurrentEvent;
+  oosmos_sStateMachine * m_pNext;
+  void                 * m_pObject;
 
   oosmos_DebugCode(
-    const char * (*pEventNameConverter)(int);
-    bool         Debug;
+    const char * (*m_pEventNameConverter)(int);
+    const char * m_pFileName;
+    bool         m_Debug;
   )
 
-  uint16_t CurrentEventSize;
-  bool     IsStarted;
+  uint16_t m_CurrentEventSize;
+  bool     m_IsStarted;
 };
 
 #define OOSMOS_xstr(s) OOSMOS_str(s)
 
+// To reduce footprint, only materialize these strings when compiling for debug.
 #ifdef oosmos_DEBUG
   #define OOSMOS_str(s) #s
+  #define OOSMOS_FILE __FILE__
 #else
   #define OOSMOS_str(s) ""
-#endif
-
-#ifdef __cplusplus
-  extern "C" {
+  #define OOSMOS_FILE ""
 #endif
 
 //--------
 extern void OOSMOS_EndProgram(int);
 
 //--------
-extern void OOSMOS_StateMachineDetach(oosmos_sStateMachine * pStateMachine);
+extern void OOSMOS_StateMachineDetach(const oosmos_sStateMachine * pStateMachine);
 
 #define oosmos_StateMachineDetach(pObject, StateMachine) \
           OOSMOS_StateMachineDetach(&(pObject)->StateMachine)
 
 //--------
-extern void OOSMOS_StateMachineInit(const char * pName, oosmos_sStateMachine * pStateMachine, oosmos_sState * pDefault, oosmos_sQueue * pEventQueue,
+extern void OOSMOS_StateMachineInit(const char * pFileName, const char * pName, oosmos_sStateMachine * pStateMachine, oosmos_sState * pDefault, oosmos_sQueue * pEventQueue,
                  void * pCurrentEvent, size_t CurrentEventSize, void * pObject);
 
 #define oosmos_StateMachineInit(pObject, StateMachine, Parent, Default)\
-        oosmos_QueueConstruct(&(pObject)->EventQueue, (pObject)->EventQueueData) \
-        OOSMOS_StateMachineInit(#StateMachine, &(pObject)->StateMachine, (oosmos_sState*) &(pObject)->Default, &(pObject)->EventQueue,\
-                 &(pObject)->CurrentEvent, sizeof((pObject)->EventQueueData[0]), (pObject))
+        oosmos_QueueConstruct(&(pObject)->m_EventQueue, (pObject)->m_EventQueueData) \
+        OOSMOS_StateMachineInit(__FILE__, OOSMOS_xstr(StateMachine), &(pObject)->StateMachine, (oosmos_sState*) &(pObject)->Default, &(pObject)->m_EventQueue,\
+                 &(pObject)->m_CurrentEvent, sizeof((pObject)->m_EventQueueData[0]), (pObject))
 
 #define oosmos_StateMachineInitNoQueue(pObject, StateMachine, Parent, Default)\
-        OOSMOS_StateMachineInit(#StateMachine, &(pObject)->StateMachine, (oosmos_sState*) &(pObject)->Default, NULL,\
-                 NULL, 0, (pObject))
+        OOSMOS_StateMachineInit(__FILE__, OOSMOS_xstr(StateMachine), &(pObject)->StateMachine, (oosmos_sState*) &(pObject)->Default, NULL, NULL, 0, (pObject))
 //--------
 extern void OOSMOS_CompositeInit(const char * pName, oosmos_sComposite *pComposite,
                        oosmos_sState *pParent, oosmos_sState * pDefault, OOSMOS_tCode pCode);
 #define oosmos_CompositeInit(pObject, Composite, Parent, Default) \
-        OOSMOS_CompositeInit(#Composite, &(pObject)->Composite, (oosmos_sState*) &(pObject)->Parent, (oosmos_sState*) &(pObject)->Default, Composite ## _Code)
+        OOSMOS_CompositeInit(OOSMOS_xstr(Composite), &(pObject)->Composite, (oosmos_sState*) &(pObject)->Parent, (oosmos_sState*) &(pObject)->Default, Composite ## _Code)
 
 #define oosmos_CompositeInitNoDefault(pObject, Composite, Parent) \
         OOSMOS_CompositeInit(OOSMOS_xstr(Composite), &(pObject)->Composite, (oosmos_sState*) &(pObject)->Parent, NULL, Composite ## _Code)
@@ -315,81 +354,93 @@ extern void OOSMOS_CompositeInit(const char * pName, oosmos_sComposite *pComposi
 extern void OOSMOS_LeafInit(const char * pName, oosmos_sState *pState, oosmos_sState *pParent, OOSMOS_tCode pCode);
 
 #define oosmos_LeafInit(pObject, LeafState, Parent)\
-        OOSMOS_LeafInit(#LeafState, &(pObject)->LeafState, (oosmos_sState *) &(pObject)->Parent, LeafState ## _Code)
+        OOSMOS_LeafInit(OOSMOS_xstr(LeafState), &(pObject)->LeafState, (oosmos_sState *) &(pObject)->Parent, LeafState ## _Code)
 
 #define oosmos_LeafInitNoCode(pObject, LeafState, Parent)\
-        OOSMOS_LeafInit(#LeafState, &(pObject)->LeafState, (oosmos_sState *) &(pObject)->Parent, NULL)
+        OOSMOS_LeafInit(OOSMOS_xstr(LeafState), &(pObject)->LeafState, (oosmos_sState *) &(pObject)->Parent, NULL)
 #ifdef oosmos_ORTHO
 //--------
 extern void OOSMOS_OrthoInit(const char * pName, oosmos_sOrtho *pOrtho, oosmos_sState *pParent, OOSMOS_tCode pCode);
 
 #define oosmos_OrthoInit(pObject, Ortho, Parent)\
-        OOSMOS_OrthoInit(#Ortho, &(pObject)->Ortho, (oosmos_sState *) &(pObject)->Parent, Ortho ## _Code)
+        OOSMOS_OrthoInit(OOSMOS_xstr(Ortho), &(pObject)->Ortho, (oosmos_sState *) &(pObject)->Parent, Ortho ## _Code)
 
 #define oosmos_OrthoInitNoCode(pObject, Ortho, Parent)\
-        OOSMOS_OrthoInit(#Ortho, &(pObject)->Ortho, (oosmos_sState *) &(pObject)->Parent, NULL)
+        OOSMOS_OrthoInit(OOSMOS_xstr(Ortho), &(pObject)->Ortho, (oosmos_sState *) &(pObject)->Parent, NULL)
 //--------
 extern void OOSMOS_OrthoRegionInit(const char * pName, oosmos_sOrthoRegion * pOrthoRegion,
-                              oosmos_sOrtho * pOrthoParent, oosmos_sState * pDefault, OOSMOS_tCode pHandler, void * pObject);
+                                   oosmos_sOrtho * pOrthoParent, oosmos_sState * pDefault, OOSMOS_tCode pHandler);
 
 #define oosmos_OrthoRegionInit(pObject, OrthoRegion, Parent, Default) \
-        OOSMOS_OrthoRegionInit(#OrthoRegion, &(pObject)->OrthoRegion, &(pObject)->Parent, (oosmos_sState*) &(pObject)->Default, OrthoRegion ## _Code, (pObject))
+        OOSMOS_OrthoRegionInit(OOSMOS_xstr(OrthoRegion), &(pObject)->OrthoRegion, &(pObject)->Parent, (oosmos_sState*) &(pObject)->Default, OrthoRegion ## _Code)
 
 #define oosmos_OrthoRegionInitNoCode(pObject, OrthoRegion, Parent, Default) \
-        OOSMOS_OrthoRegionInit(#OrthoRegion, &(pObject)->OrthoRegion, &(pObject)->Parent, (oosmos_sState*) &(pObject)->Default, NULL, (pObject))
+        OOSMOS_OrthoRegionInit(OOSMOS_xstr(OrthoRegion), &(pObject)->OrthoRegion, &(pObject)->Parent, (oosmos_sState*) &(pObject)->Default, NULL)
 #endif
 //--------
 extern void OOSMOS_ChoiceInit(const char * pName, oosmos_sState *pState, oosmos_sState *pParent, OOSMOS_tCode pCode);
 
 #define oosmos_ChoiceInit(pObject, State, Parent)\
-        OOSMOS_ChoiceInit(#State, &(pObject)->State, (oosmos_sState*) &(pObject)->Parent, State ## _Code)
+        OOSMOS_ChoiceInit(OOSMOS_xstr(State), &(pObject)->State, (oosmos_sState*) &(pObject)->Parent, State ## _Code)
 //--------
 extern void OOSMOS_FinalInit(const char * pName, oosmos_sState *pState, oosmos_sState *pParent, OOSMOS_tCode pCode);
 
 #define oosmos_FinalInit(pObject, State, Parent)\
-        OOSMOS_FinalInit(#State, &(pObject)->State, (oosmos_sState*) &(pObject)->Parent, State ## _Code)
+        OOSMOS_FinalInit(OOSMOS_xstr(State), &(pObject)->State, (oosmos_sState*) &(pObject)->Parent, State ## _Code)
 
 #define oosmos_FinalInitNoCode(pObject, State, Parent)\
-        OOSMOS_FinalInit(#State, &(pObject)->State, (oosmos_sState*) &(pObject)->Parent, NULL)
+        OOSMOS_FinalInit(OOSMOS_xstr(State), &(pObject)->State, (oosmos_sState*) &(pObject)->Parent, NULL)
 //--------
-extern bool OOSMOS_Transition(oosmos_sRegion * pRegion, oosmos_sState * pToState);
+extern bool OOSMOS_TransitionAction(oosmos_sState * pFromState, oosmos_sState * pToState, const oosmos_sEvent * pEvent, OOSMOS_tAction pActionCode);
 
-#define oosmos_Transition(pRegion, pToState)\
-        OOSMOS_Transition(pRegion, (oosmos_sState*) pToState)
+#define oosmos_TransitionAction(pObject, pFromState, ToState, pEvent, ActionCode) \
+        OOSMOS_TransitionAction(pFromState, (oosmos_sState*) (&(pObject)->ToState), pEvent, ActionCode)
+
+extern bool OOSMOS_Transition(oosmos_sState * pFromState, oosmos_sState * pToState);
+
+#define oosmos_Transition(pObject, pFromState, ToState) \
+        OOSMOS_Transition(pFromState, (oosmos_sState*) (&(pObject)->ToState))
 //--------
 extern bool OOSMOS_IsInState(const oosmos_sStateMachine * pStateMachine, const oosmos_sState * pState);
 
-#define oosmos_IsInState(pStateMachine, pState) \
-        OOSMOS_IsInState(pStateMachine, (oosmos_sState*) pState)
+#define oosmos_IsInState(pObject, pState) \
+        OOSMOS_IsInState(&((pObject)->ROOT), (oosmos_sState*) (pState))
+//--------
+#define oosmos_RunStateMachine(pObject) \
+  OOSMOS_RunStateMachine(&(pObject)->ROOT)
+
+extern void OOSMOS_RunStateMachine(oosmos_sStateMachine * pStateMachine);
 //--------
 
-extern void oosmos_RunStateMachine(oosmos_sStateMachine * pStateMachine);
 extern void oosmos_RunStateMachines(void);
 
-extern bool oosmos_StateTimeoutSeconds(oosmos_sRegion * pRegion, uint32_t TimeoutInSeconds);
-extern bool oosmos_StateTimeoutMS(oosmos_sRegion * pRegion, uint32_t TimeoutInMS);
-extern bool oosmos_StateTimeoutUS(oosmos_sRegion * pRegion, uint32_t TimeoutInUS);
+extern bool oosmos_StateTimeoutSeconds(oosmos_sState * pState, uint32_t TimeoutInSeconds);
+extern bool oosmos_StateTimeoutMS(oosmos_sState * pState, uint32_t TimeoutInMS);
+extern bool oosmos_StateTimeoutUS(oosmos_sState * pState, uint32_t TimeoutInUS);
+//--------
+extern void OOSMOS_PushEventCodeToStateMachine(const oosmos_sStateMachine * pStateMachine, int EventCode);
+extern void OOSMOS_PushEventToStateMachine(const oosmos_sStateMachine * pStateMachine, const void * pEvent, size_t EventSize);
 
-extern bool oosmos_PushEventToQueue(oosmos_sQueue * pNotifyQueue, int EventCode);
-extern bool oosmos_PushEventToStateMachine(oosmos_sStateMachine * pStateMachine, int EventCode);
+#define oosmos_PushEventCode(pObject, EventCode) \
+  OOSMOS_PushEventCodeToStateMachine(&((pObject)->ROOT), EventCode)
 
-#define oosmos_SendEvent(pObject, EventCode) \
-  oosmos_PushEventToStateMachine(&((pObject)->StateMachine), EventCode)
+#define OOSMOS_CompileTimeAssert(cond) \
+    typedef char OOSMOS_CompileTimeAssertArray[(cond) ? 1 : 0]
 
+#define oosmos_PushEvent(pObject, Event) \
+  /* Catch common error of passing &Event instead of Event. */ \
+  OOSMOS_CompileTimeAssert(sizeof(Event) != sizeof(void *)); \
+  OOSMOS_PushEventToStateMachine(&((pObject)->ROOT), &(Event), sizeof(Event))
+//--------
 #ifdef oosmos_DEBUG
-  extern void oosmos_Debug(oosmos_sStateMachine * pStateMachine, bool Debug, const char * (*pEventName)(int));
+  #define oosmos_Debug(pObject, Debug, pEventName) \
+    OOSMOS_Debug(&(pObject)->ROOT, Debug, pEventName)
+
+  extern void OOSMOS_Debug(oosmos_sStateMachine * pStateMachine, bool Debug, const char * (*pEventName)(int));
 #else
   #define oosmos_Debug(pStateMachine, Debug, pEventName)
 #endif
-
-#define oosmos_TransitionAction(pRegion_, pToState_, Code_)                             \
-  do {                                                                                  \
-    oosmos_sState * pLCA_ = OOSMOS_LCA((pRegion_)->pCurrent, (oosmos_sState*)(pToState_)); \
-                                                                                        \
-    OOSMOS_Exit((pRegion_), (pRegion_)->pCurrent, pLCA_);                               \
-    do { Code_ } while(0);                                                              \
-    OOSMOS_Enter((pRegion_), pLCA_, (oosmos_sState*)(pToState_));                       \
-  } while(0);
+//--------
 
 typedef void (*oosmos_tOutOfMemory)(const char*, int, const char*);
 
@@ -398,10 +449,11 @@ typedef void (*oosmos_tOutOfMemory)(const char*, int, const char*);
     if (Count > Elements-1) {                                              \
       oosmos_tOutOfMemory pOutOfMemory = OutOfMemory;                      \
                                                                            \
-      if (pOutOfMemory != NULL)                                            \
-        pOutOfMemory(__FILE__, __LINE__, # Type);                          \
+      if (pOutOfMemory != NULL) {                                          \
+        pOutOfMemory(OOSMOS_FILE, __LINE__, # Type);                       \
+      }                                                                    \
                                                                            \
-      while (true);                                                        \
+      oosmos_FOREVER();                                                    \
     }                                                                      \
     else {                                                                 \
       Pointer = &List[Count++];                                            \
@@ -412,144 +464,184 @@ typedef void (*oosmos_tOutOfMemory)(const char*, int, const char*);
   Type * Pointer;                                                                 \
   OOSMOS_Allocate(List, Count, Type, Pointer, Elements, OutOfMemory);
 
-#define oosmos_Allocate(Pointer, Type, Elements, OutOfMemory)            \
-  Type * Pointer;                                                        \
-                                                                         \
-  {                                                                      \
-    static Type List[Elements];                                          \
-    static int  Count = 0;                                               \
-    OOSMOS_Allocate(List, Count, Type, Pointer, Elements, OutOfMemory);  \
+#define oosmos_Allocate(Pointer, Type, Elements, OutOfMemory)                          \
+  Type * Pointer;                                                                      \
+                                                                                       \
+  {                                                                                    \
+    static Type OOSMOS_List[Elements];                                                 \
+    static int  OOSMOS_Count = 0;                                                      \
+    OOSMOS_Allocate(OOSMOS_List, OOSMOS_Count, Type, Pointer, Elements, OutOfMemory);  \
   }
 
-#define oosmos_ENTER    -1
-#define oosmos_EXIT     -2
-#define oosmos_INSTATE  -3
-#define oosmos_TIMEOUT  -4
-#define oosmos_DEFAULT  -5
-#define oosmos_COMPLETE -6
+#define oosmos_EventCode(pEvent) ((pEvent)->m_Code)
+
+#define oosmos_EventQueue(pObject) (&((pObject)->m_EventQueue))
+
+#define oosmos_ENTER    (-1)
+#define oosmos_EXIT     (-2)
+#define oosmos_POLL     (-3)
+#define oosmos_TIMEOUT  (-4)
+#define oosmos_DEFAULT  (-5)
+#define oosmos_COMPLETE (-6)
 
 
 //
-// oosmos_AsyncDelayMS
+// oosmos_ThreadDelayMS
 //
-// oosmos_AsyncWaitCond
-// oosmos_AsyncWaitCond_TimeoutMS
-// oosmos_AsyncWaitCond_TimeoutMS_Event
-// oosmos_AsyncWaitCond_TimeoutMS_Exit
+// oosmos_ThreadWaitCond
+// oosmos_ThreadWaitCond_TimeoutMS
+// oosmos_ThreadWaitCond_TimeoutMS_Event
+// oosmos_ThreadWaitCond_TimeoutMS_Exit
 //
-// oosmos_AsyncWaitEvent
-// oosmos_AsyncWaitEvent_TimeoutMS
-// oosmos_AsyncWaitEvent_TimeoutMS_Event
-// oosmos_AsyncWaitEvent_TimeoutMS_Exit
+// oosmos_ThreadWaitEvent
+// oosmos_ThreadWaitEvent_TimeoutMS
+// oosmos_ThreadWaitEvent_TimeoutMS_Event
+// oosmos_ThreadWaitEvent_TimeoutMS_Exit
 //
-// oosmos_AsyncYield
+// oosmos_ThreadYield
 //
 
+extern bool OOSMOS_ThreadYield(oosmos_sState * pState);
 
-extern bool OOSMOS_AsyncYield(oosmos_sRegion * pRegion);
+extern bool OOSMOS_ThreadDelayMS(oosmos_sState * pState, uint32_t MS);
 
-extern bool OOSMOS_AsyncDelayMS(oosmos_sRegion * pRegion, int MS);
+extern bool OOSMOS_ThreadWaitCond(oosmos_sState * pState, bool Condition);
 
-extern bool OOSMOS_AsyncWaitCond(oosmos_sRegion * pRegion, bool Condition);
+extern bool OOSMOS_ThreadWaitCond_TimeoutMS(oosmos_sState * pState,
+                       uint32_t TimeoutMS, bool * pTimeoutStatus, bool Condition);
 
-extern bool OOSMOS_AsyncWaitCond_TimeoutMS(oosmos_sRegion * pRegion,
-                       int TimeoutMS, bool * pTimeoutStatus, bool Condition);
+extern bool OOSMOS_ThreadWaitCond_TimeoutMS_Event(oosmos_sState * pState,
+                       uint32_t TimeoutMS, int NotificationEventCode, bool Condition);
 
-extern bool OOSMOS_AsyncWaitCond_TimeoutMS_Event(oosmos_sRegion * pRegion,
-                       int TimeoutMS, int NotificationEventCode, bool Condition);
+extern bool OOSMOS_ThreadWaitCond_TimeoutMS_Exit(oosmos_sState * pState,
+                       uint32_t TimeoutMS, bool Condition);
 
-extern bool OOSMOS_AsyncWaitCond_TimeoutMS_Exit(oosmos_sRegion * pRegion,
-                       int TimeoutMS, bool Condition);
+extern bool OOSMOS_ThreadWaitEvent(const oosmos_sState * pState, int WaitEventCode);
 
-extern bool OOSMOS_AsyncWaitEvent(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent,
-                       int WaitEventCode);
+extern bool OOSMOS_ThreadWaitEvent_TimeoutMS(oosmos_sState * pState,
+                       uint32_t TimeoutMS, bool * pTimedOut, int WaitEventCode);
 
-extern bool OOSMOS_AsyncWaitEvent_TimeoutMS(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent,
-                       int TimeoutMS, bool * pTimedOut, int WaitEventCode);
+extern bool OOSMOS_ThreadWaitEvent_TimeoutMS_Event(oosmos_sState * pState,
+                       uint32_t TimeoutMS, int NotificationEventCode, int WaitEventCode);
 
-extern bool OOSMOS_AsyncWaitEvent_TimeoutMS_Event(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent,
-                       int TimeoutMS, int NotificationEventCode, int WaitEventCode);
-
-extern bool OOSMOS_AsyncWaitEvent_TimeoutMS_Exit(oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent,
-                       int TimeoutMS, int WaitEventCode);
+extern bool OOSMOS_ThreadWaitEvent_TimeoutMS_Exit(oosmos_sState * pState,
+                       uint32_t TimeoutMS, int WaitEventCode);
 
 //
-// Use the Protothread __LINE__ trick to implement asynchronous functions.  Asynchronous
+// Use the Protothread __LINE__ trick to implement OOSMOS thread functions. OOSMOS thread
 // functions block the object, not the entire thread of execution.
 //
 // Very powerful.
 //
 
+#define OOSMOS_THREAD_CONTEXT_BEGIN   (-1)
+#define OOSMOS_THREAD_CONTEXT_FINALLY (-2)
+#define OOSMOS_THREAD_CONTEXT_END     (-3)
 
-#define oosmos_AsyncBegin(pRegion) switch ((pRegion)->pCurrent->AsyncContext) { \
-                                    case 0: \
-                                      (pRegion)->pCurrent->HasAsyncBlockBegin = 1
+#define oosmos_ThreadBegin() \
+                                    switch (pState->m_ThreadContext) { \
+                                      case OOSMOS_THREAD_CONTEXT_BEGIN:
 
-#define oosmos_AsyncDelayMS(pRegion, MS) \
-                                    case __LINE__: (pRegion)->pCurrent->AsyncContext = __LINE__; \
-                                      if (!OOSMOS_AsyncDelayMS(pRegion, (MS))) \
-                                        return false
+#define oosmos_ThreadDelayMS(MS) \
+                                      /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
+                                      /*lint -fallthrough*/ \
+                                      case __LINE__: pState->m_ThreadContext = __LINE__; \
+                                        if (!OOSMOS_ThreadDelayMS(pState, (MS))) \
+                                          return
 
-#define oosmos_AsyncYield(pRegion) \
-                                    case __LINE__: (pRegion)->pCurrent->AsyncContext = __LINE__; \
-                                      if (!OOSMOS_AsyncYield(pRegion)) \
-                                        return false
+#define oosmos_ThreadYield() \
+                                      /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
+                                      /*lint -fallthrough*/ \
+                                      case __LINE__: pState->m_ThreadContext = __LINE__; \
+                                        if (!OOSMOS_ThreadYield(pState)) \
+                                          return
 
-#define oosmos_AsyncWaitCond(pRegion, Cond) \
-                                    case __LINE__: (pRegion)->pCurrent->AsyncContext = __LINE__; \
-                                      if (!(Cond)) \
-                                        return false
+#define oosmos_ThreadWaitCond(Cond) \
+                                      /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
+                                      /*lint -fallthrough*/ \
+                                      case __LINE__: pState->m_ThreadContext = __LINE__; \
+                                        if (!(Cond)) \
+                                          return
 
-#define oosmos_AsyncWaitCond_TimeoutMS(pRegion, TimeoutMS, pTimeoutStatus, Cond) \
-                                    case __LINE__: (pRegion)->pCurrent->AsyncContext = __LINE__; \
-                                      if (!OOSMOS_AsyncWaitCond_TimeoutMS(pRegion, TimeoutMS, pTimeoutStatus, Cond)) \
-                                        return false
+#define oosmos_ThreadWaitCond_TimeoutMS(TimeoutMS, pTimeoutStatus, Cond) \
+                                      /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
+                                      /*lint -fallthrough*/ \
+                                      case __LINE__: pState->m_ThreadContext = __LINE__; \
+                                        if (!OOSMOS_ThreadWaitCond_TimeoutMS(pState, TimeoutMS, pTimeoutStatus, Cond)) \
+                                          return
 
-#define oosmos_AsyncWaitCond_TimeoutMS_Event(pRegion, TimeoutMS, NotificationEventCode, Cond) \
-                                    case __LINE__: (pRegion)->pCurrent->AsyncContext = __LINE__; \
-                                      if (!OOSMOS_AsyncWaitCond_TimeoutMS_Event(pRegion, TimeoutMS, NotificationEventCode, Cond)) \
-                                        return false
+#define oosmos_ThreadWaitCond_TimeoutMS_Event(TimeoutMS, NotificationEventCode, Cond) \
+                                      /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
+                                      /*lint -fallthrough*/ \
+                                      case __LINE__: pState->m_ThreadContext = __LINE__; \
+                                        if (!OOSMOS_ThreadWaitCond_TimeoutMS_Event(pState, TimeoutMS, NotificationEventCode, Cond)) \
+                                          return
 
-#define oosmos_AsyncWaitCond_TimeoutMS_Exit(pRegion, TimeoutMS, Cond) \
-                                    case __LINE__: (pRegion)->pCurrent->AsyncContext = __LINE__; \
-                                      if (!OOSMOS_AsyncWaitCond_TimeoutMS_Exit(pRegion, TimeoutMS, Cond)) \
-                                        return false
+#define oosmos_ThreadWaitCond_TimeoutMS_Exit(TimeoutMS, Cond) \
+                                      /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
+                                      /*lint -fallthrough*/ \
+                                      case __LINE__: pState->m_ThreadContext = __LINE__; \
+                                        if (!OOSMOS_ThreadWaitCond_TimeoutMS_Exit(pState, TimeoutMS, Cond)) \
+                                          return
 
-#define oosmos_AsyncWaitEvent(pRegion, pEvent, WaitEventCode) \
-                                    case __LINE__: (pRegion)->pCurrent->AsyncContext = __LINE__; \
-                                      if (!OOSMOS_AsyncWaitEvent(pRegion, pEvent, WaitEventCode)) \
-                                        return false
+#define oosmos_ThreadWaitEvent(WaitEventCode) \
+                                      /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
+                                      /*lint -fallthrough*/ \
+                                      case __LINE__: pState->m_ThreadContext = __LINE__; \
+                                        if (!OOSMOS_ThreadWaitEvent(pState, WaitEventCode)) \
+                                          return
 
-#define oosmos_AsyncWaitEvent_TimeoutMS(pRegion, pEvent, TimeoutMS, pTimeoutResult, WaitEventCode) \
-                                    case __LINE__: (pRegion)->pCurrent->AsyncContext = __LINE__; \
-                                      if (!OOSMOS_AsyncWaitEvent_TimeoutMS(pRegion, pEvent, TimeoutMS, pTimeoutResult, WaitEventCode)) \
-                                        return false
+#define oosmos_ThreadWaitEvent_TimeoutMS(TimeoutMS, pTimeoutResult, WaitEventCode) \
+                                      /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
+                                      /*lint -fallthrough*/ \
+                                      case __LINE__: pState->m_ThreadContext = __LINE__; \
+                                        if (!OOSMOS_ThreadWaitEvent_TimeoutMS(pState, TimeoutMS, pTimeoutResult, WaitEventCode)) \
+                                          return
 
-#define oosmos_AsyncWaitEvent_TimeoutMS_Event(pRegion, pEvent, TimeoutMS, NotificationEventCode, WaitEventCode) \
-                                    case __LINE__: (pRegion)->pCurrent->AsyncContext = __LINE__; \
-                                      if (!OOSMOS_AsyncWaitEvent_TimeoutMS_Event(pRegion, pEvent, TimeoutMS, NotificationEventCode, WaitEventCode)) \
-                                        return false
+#define oosmos_ThreadWaitEvent_TimeoutMS_Event(TimeoutMS, NotificationEventCode, WaitEventCode) \
+                                      /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
+                                      /*lint -fallthrough*/ \
+                                      case __LINE__: pState->m_ThreadContext = __LINE__; \
+                                        if (!OOSMOS_ThreadWaitEvent_TimeoutMS_Event(pState, TimeoutMS, NotificationEventCode, WaitEventCode)) \
+                                          return
 
-#define oosmos_AsyncWaitEvent_TimeoutMS_Exit(pRegion, pEvent, TimeoutMS, WaitEventCode) \
-                                    case __LINE__: (pRegion)->pCurrent->AsyncContext = __LINE__; \
-                                      if (!OOSMOS_AsyncWaitEvent_TimeoutMS_Exit(pRegion, pEvent, TimeoutMS, WaitEventCode)) \
-                                        return false
+#define oosmos_ThreadWaitEvent_TimeoutMS_Exit(TimeoutMS, WaitEventCode) \
+                                      /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
+                                      /*lint -fallthrough*/ \
+                                      case __LINE__: pState->m_ThreadContext = __LINE__; \
+                                        if (!OOSMOS_ThreadWaitEvent_TimeoutMS_Exit(pState, TimeoutMS, WaitEventCode)) \
+                                          return
 
-#define oosmos_AsyncExit(pRegion) \
-                                      (pRegion)->pCurrent->AsyncContext = -2; \
-                                      return false
+#define oosmos_ThreadExit() \
+                                        pState->m_ThreadContext = OOSMOS_THREAD_CONTEXT_FINALLY; \
+                                        return
 
-#define oosmos_AsyncFinally(pRegion) \
-                                    case -2: (pRegion)->pCurrent->AsyncContext = -1
+#define oosmos_ThreadFinally() \
+                                      /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
+                                      case OOSMOS_THREAD_CONTEXT_FINALLY: pState->m_ThreadContext = OOSMOS_THREAD_CONTEXT_END
 
-#define oosmos_AsyncEnd(pRegion)     default: \
-                                      break; \
-                                  } do {} while(0)
+#define oosmos_ThreadEnd() \
+                                      /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
+                                      /*lint -fallthrough*/ \
+                                      default: pState->m_ThreadContext = OOSMOS_THREAD_CONTEXT_END; \
+                                        (void) oosmos_ThreadComplete(pState); \
+                                    } return
 
-typedef struct
-{
-  oosmos_sQueue * pNotifyQueue;
-  oosmos_sEvent   Event;
+//
+// General notes:
+// 1. lint directives are embedded to suppress fallthrough messages as well as
+//    "case/default within for loop" messages (646).
+//
+
+//
+// Note the following regarding the oosmos_ThreadEnd macro:
+// 1. It must be the last statement in the function.
+// 2. It causes the delivery of a completion event to the state.
+//
+
+typedef struct {
+  oosmos_sQueue * m_pNotifyQueue;
+  oosmos_sEvent   m_Event;
 } oosmos_sSubscriberList;
 
 //--------
@@ -559,19 +651,19 @@ extern void OOSMOS_SubscriberListInit(oosmos_sSubscriberList * pSubscriberList, 
 //--------
 #define oosmos_SubscriberListNotify(Subscriber) \
         OOSMOS_SubscriberListNotify(Subscriber, sizeof(Subscriber)/sizeof(Subscriber[0]))
-extern bool OOSMOS_SubscriberListNotify(oosmos_sSubscriberList * pSubscriberList, size_t ListElements);
+extern void OOSMOS_SubscriberListNotify(const oosmos_sSubscriberList * pSubscriberList, size_t ListElements);
 //--------
 #define oosmos_SubscriberListNotifyWithArgs(Subscriber, Event) \
         OOSMOS_SubscriberListNotifyWithArgs(Subscriber, &Event, sizeof(Event), sizeof(Subscriber)/sizeof(Subscriber[0]))
-extern bool OOSMOS_SubscriberListNotifyWithArgs(oosmos_sSubscriberList * pSubscriberList, void * pEvent, size_t EventSize, size_t ListElements);
+extern void OOSMOS_SubscriberListNotifyWithArgs(const oosmos_sSubscriberList * pSubscriberList, void * pEvent, size_t EventSize, size_t ListElements);
 //--------
 #define oosmos_SubscriberListAdd(Subscriber, pNotifyQueue, EventCode, pContext) \
         OOSMOS_SubscriberListAdd(Subscriber, sizeof(Subscriber)/sizeof(Subscriber[0]), pNotifyQueue, EventCode, pContext)
 extern void OOSMOS_SubscriberListAdd(oosmos_sSubscriberList * pSubscriberList, size_t ListElements, oosmos_sQueue * pNotifyQueue, int EventCode, void * pContext);
 
-extern void oosmos_DelayUS(int US);
-extern void oosmos_DelayMS(int MS);
-extern void oosmos_DelaySeconds(int Seconds);
+extern void oosmos_DelayUS(uint32_t US);
+extern void oosmos_DelayMS(uint32_t MS);
+extern void oosmos_DelaySeconds(uint32_t Seconds);
 
 extern void oosmos_TimeoutInMS(oosmos_sTimeout * pTimeout, uint32_t Milliseconds);
 extern void oosmos_TimeoutInUS(oosmos_sTimeout * pTimeout, uint32_t Microseconds);
@@ -583,27 +675,29 @@ extern void OOSMOS_QueueConstruct(oosmos_sQueue * pQueue, void * pQueueData, siz
 #define oosmos_QueueConstruct(pQueue, pQueueData) \
   OOSMOS_QueueConstruct((pQueue), (pQueueData),sizeof(pQueueData),sizeof((pQueueData)[0]));
 
-extern bool oosmos_QueuePush(oosmos_sQueue * pQueue, const void * pElement, size_t ElementSize);
+extern void oosmos_QueuePush(oosmos_sQueue * pQueue, const void * pElement, size_t ElementSize);
 extern bool oosmos_QueuePop(oosmos_sQueue * pQueue, void * pElement, size_t ElementSize);
 extern void oosmos_QueueSetBehaviorFunc(oosmos_sQueue * pQueue, oosmos_eQueueFullBehavior (*pFunc)(void *), void * pContext);
 
+#define oosmos_GetCurrentEvent(pState) \
+  ((const oosmos_sEvent *) OOSMOS_GetCurrentEvent(pState))
+extern oosmos_sEvent * OOSMOS_GetCurrentEvent(const oosmos_sState * pState);
+
+extern bool oosmos_ThreadComplete(oosmos_sState *);
+
 typedef struct OOSMOS_sActiveObjectTag oosmos_sActiveObject;
 
-struct OOSMOS_sActiveObjectTag
-{
-  void * pObject;
-  void (*pFunction)(void * pObject);
-  oosmos_sActiveObject * pNext;
+struct OOSMOS_sActiveObjectTag {
+  void * m_pObject;
+  void (*m_pFunction)(void * pObject);
+  oosmos_sActiveObject * m_pNext;
 };
 
 extern void oosmos_RegisterActiveObject(void * pObject, void (*pFunction)(void *), oosmos_sActiveObject * pActiveObject);
+extern uint32_t oosmos_GetFreeRunningMicroseconds(void);
 
-extern oosmos_sState * OOSMOS_LCA(oosmos_sState * pSource, oosmos_sState * pTarget);
-extern void OOSMOS_Exit(oosmos_sRegion * pRegion, oosmos_sState * pSource, const oosmos_sState * pLCA);
-extern void OOSMOS_Enter(oosmos_sRegion * pRegion, const oosmos_sState * pLCA, oosmos_sState * pTarget);
-
-extern float oosmos_AnalogMapAccurate(float Value, float InMin, float InMax, float OutMin, float OutMax);
-extern long  oosmos_AnalogMapFast(long Value, long InMin, long InMax, long OutMin, long OutMax);
+extern float   oosmos_AnalogMapAccurate(float Value, float InMin, float InMax, float OutMin, float OutMax);
+extern int32_t oosmos_AnalogMapFast(int32_t Value, int32_t InMin, int32_t InMax, int32_t OutMin, int32_t OutMax);
 
 #define oosmos_Min(a,b) (((a)<(b))?(a):(b))
 #define oosmos_Max(a,b) (((a)>(b))?(a):(b))
@@ -612,6 +706,4 @@ extern long  oosmos_AnalogMapFast(long Value, long InMin, long InMax, long OutMi
   }
 #endif
 
-
 #endif
-

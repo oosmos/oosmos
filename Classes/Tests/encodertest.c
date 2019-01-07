@@ -1,7 +1,7 @@
 //
 // OOSMOS encodertest Class
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,13 +25,15 @@
 #include "encoder.h"
 #include "prt.h"
 #include "encodertest.h"
+#include <stdbool.h>
+#include <stddef.h>
 
 #define MAX_ENCODERTESTS 2
 
-typedef enum
+enum
 {
   ChangeEvent = 1,
-} eEvents;
+};
 
 struct encodertestTag
 {
@@ -44,7 +46,7 @@ struct encodertestTag
 static bool Idle_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
 {
   encodertest * pExample = (encodertest *) pObject;
-  
+
   switch (pEvent->Code) {
     case ChangeEvent: {
       prtFormatted("Encoder %p %d\n", pExample, encoderGetCount(pExample->m_pEncoder));
@@ -63,7 +65,7 @@ extern encodertest * encodertestNew(pin * pPinA, pin * pPinB, int Max)
   //                     ======================================================
   oosmos_StateMachineInit(pEncoderTest, StateMachine, NULL,         Idle_State);
     oosmos_LeafInit      (pEncoderTest, Idle_State,   StateMachine            );
-    
+
   encoder * pEncoder = encoderNew(pPinA, pPinB, Max);
   encoderSubscribeChangeEvent(pEncoder, &pEncoderTest->EventQueue, ChangeEvent, NULL);
 

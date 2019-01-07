@@ -1,7 +1,7 @@
 //
 // OOSMOS prt Class
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,18 +22,20 @@
 
 #define MaxBuffer 100
 
+#include "prt.h"
+#include "oosmos.h"
+#include <stdbool.h>
 #include <stdarg.h>
 #include <stdio.h>
-#include "oosmos.h" 
-#include "prt.h" 
 
 static void Init()
 {
   static bool First = true;
 
-  if (!First)
+  if (!First) {
     return;
-    
+  }
+
   First = false;
 
   #if defined(ARDUINO)
@@ -45,24 +47,22 @@ static void Init()
   #endif
 }
 
-extern bool prtFormatted(const char * pFormat, ...)
+extern void prtFormatted(const char * pFormat, ...)
 {
-  static char Buffer[MaxBuffer];
+  char Buffer[MaxBuffer];
 
-  va_list ArgList;
+  va_list ArgList; //lint -e438
   va_start(ArgList, pFormat);
-  vsnprintf(Buffer, MaxBuffer, pFormat, ArgList);
+    (void) vsnprintf(Buffer, MaxBuffer, pFormat, ArgList);
   va_end(ArgList);
-  
+
   Init();
-  
+
   #if defined(ARDUINO)
     Serial.print(Buffer);
   #elif defined(__PIC32MX)
     DBPRINTF("%s", Buffer);
   #else
     printf("%s", Buffer);
-  #endif  
-
-  return true;
+  #endif
 }

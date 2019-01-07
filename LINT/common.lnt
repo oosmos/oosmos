@@ -1,0 +1,23 @@
+co-msc110.lnt
+
+-i../Source
+-i../Classes
+-i../Classes/Tests
+
+// Unit mode.  Suppress messages about globals not referenced.
+-u
+
+-A(C99)
+
+// >>>>> Microsoft header file issues...
+
+// Suppress error for long comment in a microsoft header file.
+-e91
+
+// Suppress errors generated due to "syntax errors" microsoft header files.
+-e10
+
+// Suppress "No data may follow an incomplete array"
+-libh(winioctl.h)
+-elib(157)
+

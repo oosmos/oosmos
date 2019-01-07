@@ -1,7 +1,7 @@
 //
 // OOSMOS listener Class
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -36,28 +36,33 @@ struct listenerTag
   void (*m_pAcceptedFunc)(sock *);
 };
 
-static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static void ListeningThread(listener * pListener, oosmos_sState * pState)
+{
+  oosmos_ThreadBegin();
+    for (;;) {
+      sock * pNewSock;
+
+      printf("Waiting for incoming connections...\n");
+
+      oosmos_ThreadWaitCond(
+        sockAccepted(pListener->m_pSock, &pNewSock)
+      );
+      pListener->m_pAcceptedFunc(pNewSock);
+    }
+  oosmos_ThreadEnd();
+}
+
+static bool Running_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   listener * pListener = (listener *) pObject;
 
-  switch (pEvent->Code) {
+  switch (oosmos_EventCode(pEvent)) {
     case oosmos_ENTER:
       sockListen(pListener->m_pSock, 60009, 50);
       return true;
 
-    case oosmos_INSTATE:
-      oosmos_AsyncBegin(pRegion);
-        while (true) {
-          sock * pNewSock;
-
-          printf("Waiting for incoming connections...\n");
-
-          oosmos_AsyncWaitCond(pRegion,
-            sockAccepted(pListener->m_pSock, &pNewSock)
-          );
-          pListener->m_pAcceptedFunc(pNewSock);
-        }
-      oosmos_AsyncEnd(pRegion);
+    case oosmos_POLL:
+      ListeningThread(pListener, pState);
       return true;
   }
 

@@ -1,0 +1,95 @@
+//    iar-co-arm-v810.lnt
+//    IAR ARM v8 compiler settings.
+
+
+//  MODIFY to point to your IAR Embedded Workbench installation
+-i"C:\Program Files (x86)\IAR Systems\Embedded Workbench ARM 8.0\arm\inc\c"
+-i"C:\Program Files (x86)\IAR Systems\Embedded Workbench ARM 8.0\arm\inc"
+-i"C:\Program Files (x86)\IAR Systems\Embedded Workbench ARM 8.0\arm\CMSIS\Include"
++libdir("C:\Program Files (x86)\IAR Systems\Embedded Workbench ARM 8.0\arm\inc\c")
++libdir("C:\Program Files (x86)\IAR Systems\Embedded Workbench ARM 8.0\arm\inc")
++libdir("C:\Program Files (x86)\IAR Systems\Embedded Workbench ARM 8.0\arm\CMSIS\Include")
+
+//
+//    EWARM Size of Scalars
+//
+-si4
+-sl4
+-sp4
+-sf4
+-sd8
+
+//
+//    EWARM extended keywords
+//
+-d__absolute=       // Makes references to the object use absolute addressing
+-d__arm=            // Makes a function execute in ARM mode
+-d__big_endian=     // Declares a variable to use the big-endian byte order
+-d__fiq=            // Declares a fast interrupt function
+-d__interwork=      // Declares a function to be callable from both ARM and Thumb mode
+-d__irq=            // Declares an interrupt function
+-d__little_endian=	// Declares a variable to use the little-endian byte order
+-d__nested=         // Allows an __irq declared interrupt function to be nested, that is, interruptible by the same type of interrupt
+-d__pcrel=          // Used internally by the compiler for constant data when the --ropi compiler option is used
+-d__ramfunc=        // Makes a function execute in RAM
+-d__stackless=      // Makes a function callable without a working stack
+-d__swi=            // Declares a software interrupt function
+-d__thumb=          // Makes a function execute in Thumb mode
+-d__weak=           // Declares a symbol to be externally weakly linked
+
+// This symbol determines properties for class objects.
+-d__construction_by_bitwise_copy_allowed(x)=true
+
+// This symbol determines properties for class objects.
+-d__assignment_by_bitwise_copy_allowed(x)=true
+
+// These symbols determine properties for class objects and they function like the
+// sizeof operator. The symbols are true when a class, base class, or member
+// (recursively) has a user-defined constructor or destructor, respectively.
+-d__has_destructor(x)=true
+-d__has_constructor(x)=true
+
+// These symbols are used as memory attributes internally by the compiler, and they
+// might have to be used as arguments in certain templates.
+-d__code
+-d__data
+
+// Determines the allowed range for a parameter to an intrinsic function and that the
+// parameter must be of type const.
+-d__constrange(x,y)=const
+
+// Determines the class memory. A class memory determines which memory a class
+// object can reside
+-d__memory_of(x)=true
+
+
+// MODIFY
+// for problems with internal compiler library files: ichooser, iutility and xmemory...etc..
+// ------------------------------------------------------------------------------------------
+-elib(10)           // Brooks: Usually missing ',' or ')'
+-elib(19)           // Usually about stray semicolons
+-elib(101)          // Brooks: Usually unknown identifier
+-elib(132)          // Brooks: Usually unexpected function definition
+-elib(1076)         // Anonymous union assumed to be 'static'"
+-elibsym(1512)      // Base class destructor is non-virtual
+-elib(46)           // For bitfields with non-int fields
+
+
+
+//
+//    EWARM extended defines
+//
+//-header(C:\software\lint\ewarm\iar-ewarm-predefined_macros_V810_for_PC-lint.h)
+
+
+//  ***************************************************************************
+//
+//  IAR Systems
+//
+//  File name:  iar-co-arm-v810.lnt
+//
+//  Revision:   0.3 (alpha)
+//
+//  Modified:   2011-11-03
+//
+//  ***************************************************************************

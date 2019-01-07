@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.3.0">
+  <help_text/>
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>30</x>
+      <y>110</y>
+      <w>410</w>
+      <h>500</h>
+    </coordinates>
+    <panel_attributes>Ortho
+--
+POLL:
+  PollOrtho(pTest);
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>70</x>
+      <y>210</y>
+      <w>330</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>B1
+--
+POLL:
+  PollB1(pTest);    
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>90</x>
+      <y>260</y>
+      <w>290</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>C1
+--
+POLL:
+  PollC1(pTest); 
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>70</x>
+      <y>10</y>
+      <w>30</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>70</x>
+      <y>0</y>
+      <w>20</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>type=initial</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>20</x>
+      <y>360</y>
+      <w>440</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;420.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>50</x>
+      <y>160</y>
+      <w>370</w>
+      <h>190</h>
+    </coordinates>
+    <panel_attributes>A1
+--
+POLL:
+  ThreadA1(pTest, pState);   
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>70</x>
+      <y>440</y>
+      <w>330</w>
+      <h>130</h>
+    </coordinates>
+    <panel_attributes>B2
+--
+POLL:
+  PollB2(pTest);     
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>90</x>
+      <y>490</y>
+      <w>290</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>C2
+--
+POLL:
+  PollC2(pTest); 
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>50</x>
+      <y>390</y>
+      <w>370</w>
+      <h>200</h>
+    </coordinates>
+    <panel_attributes>A2
+--
+POLL:
+  PollA2(pTest); 
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>210</x>
+      <y>600</y>
+      <w>150</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>[CheckCounts(pTest)]
+lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>30</x>
+      <y>720</y>
+      <w>410</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>Done
+--
+ENTER:
+  printf("SUCCESS!\nTerminating program.\n");
+  oosmos_EndProgram(1);
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>30</x>
+      <y>40</y>
+      <w>410</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>TestingNullTransitionWithoutPoll
+--
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>70</x>
+      <y>80</y>
+      <w>30</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>30</x>
+      <y>640</y>
+      <w>410</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>TestNullTransitionWithPoll
+--
+POLL:
+  ThreadTestNull(pTest, pState);
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>210</x>
+      <y>680</y>
+      <w>30</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+</diagram>

@@ -1,16 +1,16 @@
 //
-// OOSMOS Blink Example 
-// 
-// Copyright (C) 2014-2016  OOSMOS, LLC
-// 
+// OOSMOS Blink Example
+//
+// Copyright (C) 2014-2018  OOSMOS, LLC
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, version 2 of the License ("GPLv2").
-// 
-// This software may be used without the GPLv2 restrictions by entering 
-// into a commercial license agreement with OOSMOS, LLC.  
-// See <http://www.oosmos.com/licensing/>.
-// 
+//
+// This software may be used without the GPLv2 restrictions by entering
+// into a commercial license agreement with OOSMOS, LLC.
+// See <https://oosmos.com/licensing/>.
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -30,14 +30,14 @@ static void SetupToggle(int Pin, int OnTimeMS, int OffTimeMS)
   toggleNew(pPin, OnTimeMS, OffTimeMS);
 }
 
-extern void setup() 
-{  
+extern void setup()
+{
   SetupToggle(13, 2000, 2000);
   SetupToggle(12, 100, 100);
   SetupToggle(11, 50, 1500);
 }
 
-extern void loop() 
+extern void loop()
 {
   oosmos_RunStateMachines();
 }

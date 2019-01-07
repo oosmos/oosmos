@@ -1,0 +1,11 @@
+[
+  {
+    "enabled":       true,
+    "uxf_filename":  "threadtest.uxf",
+    "filename":      "threadtest.c",
+    "type":          "threadtest",
+    "object_ptr":    "pThreadTest",
+    "thread_events":  [ "evDone" ],
+    "queue_size":    3
+  }
+]

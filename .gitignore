@@ -49,9 +49,9 @@
 **/switchtest.c
 **/switchtest.cpp
 
-**/synctest.h
-**/synctest.c
-**/synctest.cpp
+**/threadtest.h
+**/threadtest.c
+**/threadtest.cpp
 
 **/lcd.h
 **/lcd.c

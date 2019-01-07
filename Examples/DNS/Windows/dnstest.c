@@ -1,7 +1,7 @@
 //
-// OOSMOS dnstest 
+// OOSMOS dnstest
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,9 +20,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <stdio.h>
 #include "oosmos.h"
 #include "dns.h"
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
 
 #define MAX_TESTS   15
 #define MAX_ANSWERS 3
@@ -48,14 +50,14 @@ static void Run(void * pObject)
     return;
 
   printf("Checking %s...\n", pDnsTest->pDomain);
-  
+
   if (dnsQuery(pDnsTest->pDNS, pDnsTest->pDomain, pDnsTest->IP, MAX_ANSWERS)) {
     int Answer;
 
     for (Answer = 0; Answer < MAX_ANSWERS; Answer++) {
       const uint32_t IP = pDnsTest->IP[Answer];
 
-      if (IP == 0) 
+      if (IP == 0)
         break;
 
       printf("%s[%d]: %d.%d.%d.%d\n", pDnsTest->pDomain, Answer, IP>>24 & 0xff, IP>>16 & 0xff, IP>>8 & 0xff, IP & 0xff);

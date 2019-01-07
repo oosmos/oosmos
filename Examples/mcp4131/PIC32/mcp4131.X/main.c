@@ -1,7 +1,7 @@
 //
-// OOSMOS - mcp4131 Example 
+// OOSMOS - mcp4131 Example
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,6 +24,7 @@
 #include "pin.h"
 #include "oosmos.h"
 #include "mcp4131test.h"
+#include <stddef.h>
 
 #pragma config FPLLMUL = MUL_20, FPLLIDIV = DIV_2, FPLLODIV = DIV_1, FWDTEN = OFF
 #pragma config POSCMOD = HS, FNOSC = PRIPLL, FPBDIV = DIV_1
@@ -43,7 +44,7 @@ extern int main(void)
   // Allocate chip select pin for an SPI slave.
   //
   pin * pCS1  = pinNew(IOPORT_B, BIT_10, pinOut, pinActiveLow);   // Expansion pin J10-47
-  
+
   //
   // Allocate chip select pin for another SPI slave.
   //
@@ -59,6 +60,7 @@ extern int main(void)
   //
   // Run.
   //
-  while (true)
+  for (;;) {
     oosmos_RunStateMachines();
+  }
 }

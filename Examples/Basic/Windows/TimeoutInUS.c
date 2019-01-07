@@ -1,7 +1,7 @@
 //
 // OOSMOS TimeoutInUS Example
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,8 +20,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <stdio.h>
 #include "oosmos.h"
+#include <stdio.h>
 
 static const int WaitTimeUS = 1000 * 1000; // One second
 
@@ -39,7 +39,7 @@ extern int main(void)
 
   printf("Waiting for %d microseconds...\n", WaitTimeUS);
 
-  while (true) {
+  for (;;) {
     //
     // Check if the time has expired.
     //
@@ -49,7 +49,7 @@ extern int main(void)
     printf("Running...\n");
 
     //
-    // Be polite. Prevent 100% CPU usage on multi-tasked 
+    // Be polite. Prevent 100% CPU usage on multi-tasked
     // machines (e.g. Windows or Linux).
     //
     oosmos_DelayMS(75);

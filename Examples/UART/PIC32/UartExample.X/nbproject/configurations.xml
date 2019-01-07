@@ -83,7 +83,7 @@
         <property key="use-cci" value="false"/>
         <property key="use-iar" value="false"/>
         <property key="use-indirect-calls" value="false"/>
-        <appendMe value="-Wno-unused-variable"/>
+        <appendMe value="-std=gnu99 -fgnu89-inline"/>
       </C32>
       <C32-AS>
       </C32-AS>

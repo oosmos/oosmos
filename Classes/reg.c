@@ -1,7 +1,7 @@
 //
 // OOSMOS reg Class
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,8 @@
 //
 
 #include "reg.h"
+#include "oosmos.h"
+#include <stdint.h>
 
 struct regTag
 {
@@ -28,24 +30,24 @@ struct regTag
   float m_Slope;
 };
 
-static float MeanOfX(const regSample * pSamples, int Samples)
+static float MeanOfX(const regSample * pSamples, uint32_t Samples)
 {
   float Sum = 0.0f;
-  int SampleIndex;
 
-  for (SampleIndex = 0; SampleIndex < Samples; SampleIndex++)
+  for (uint32_t SampleIndex = 0; SampleIndex < Samples; SampleIndex++) {
     Sum += pSamples[SampleIndex].X;
+  }
 
   return Sum / Samples;
 }
 
-static float MeanOfY(const regSample * pSamples, int Samples)
+static float MeanOfY(const regSample * pSamples, uint32_t Samples)
 {
   float Sum = 0.0f;
-  int SampleIndex;
 
-  for (SampleIndex = 0; SampleIndex < Samples; SampleIndex++)
+  for (uint32_t SampleIndex = 0; SampleIndex < Samples; SampleIndex++) {
     Sum += pSamples[SampleIndex].Y;
+  }
 
   return Sum / Samples;
 }
@@ -58,16 +60,15 @@ extern reg * regNew(void)
   return pReg;
 }
 
-extern void regSamples(reg * pReg, const regSample * pSamples, int Samples)
+extern void regSamples(reg * pReg, const regSample * pSamples, uint32_t Samples)
 {
   const float MeanX = MeanOfX(pSamples, Samples);
   const float MeanY = MeanOfY(pSamples, Samples);
 
   float SumXY = 0.0f;
   float SumXX = 0.0f;
-  int SampleIndex;
 
-  for (SampleIndex = 0; SampleIndex < Samples; SampleIndex++) {
+  for (uint32_t SampleIndex = 0; SampleIndex < Samples; SampleIndex++) {
     const regSample * pSample = &pSamples[SampleIndex];
 
     const float XiMinusMeanX = pSample->X - MeanX;
@@ -76,6 +77,8 @@ extern void regSamples(reg * pReg, const regSample * pSamples, int Samples)
     SumXY += XiMinusMeanX * YiMinusMeanY;
     SumXX += XiMinusMeanX * XiMinusMeanX;
   }
+
+  oosmos_ASSERT(SumXX > 0.0f);
 
   pReg->m_Slope     = SumXY / SumXX;
   pReg->m_Intercept = MeanY - pReg->m_Slope * MeanX;

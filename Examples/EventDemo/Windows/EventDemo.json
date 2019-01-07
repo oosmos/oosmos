@@ -1,0 +1,26 @@
+[
+  {
+    "enabled":      true,
+    "uxf_filename": "Control.uxf",
+    "filename":     "control.c",
+    "type":         "control",
+    "object_ptr":   "pControl",
+    "queue_size":   3
+  },
+  {
+    "enabled":      true,
+    "uxf_filename": "Motor.uxf",
+    "filename":     "motor.c",
+    "type":         "motor",
+    "object_ptr":   "pMotor",
+    "queue_size":   3
+  },
+  {
+    "enabled":      true,
+    "uxf_filename": "Pump.uxf",
+    "filename":     "pump.c",
+    "type":         "pump",
+    "object_ptr":   "pPump",
+    "queue_size":   3
+  }
+]

@@ -1,7 +1,7 @@
 //
 // tok class - Part of OOSMOS
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,10 +20,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <string.h>
-#include <stdlib.h>
 #include "oosmos.h"
 #include "tok.h"
+#include <string.h>
+#include <stdlib.h>
 
 struct tokTag
 {
@@ -33,34 +33,43 @@ struct tokTag
 
 extern const char * tokParse(tok * pTok, const char * pDelimiters)
 {
-   char  * pStart;
-   char  * pEnd;
-   char  * pIndex = pTok->m_pIndex;
+  oosmos_POINTER_GUARD(pTok);
+  oosmos_POINTER_GUARD(pDelimiters);
 
-   if (*pIndex == '\0')
-      return NULL;
+  char  * pStart;
+  char  * pEnd;
+  char  * pIndex = pTok->m_pIndex;
 
-   pStart = pIndex + strspn(pIndex, pDelimiters);
+  if (*pIndex == '\0') {
+    return NULL;
+  }
 
-   if (*pStart == '\0')
-      return NULL;
+  pStart = pIndex + strspn(pIndex, pDelimiters);
 
-   pEnd = pStart + strcspn(pStart, pDelimiters);
+  if (*pStart == '\0') {
+    return NULL;
+  }
 
-   if (*pEnd == '\0') {
-      pTok->m_pIndex = pEnd;
-      return pStart;
-   }
+  pEnd = pStart + strcspn(pStart, pDelimiters);
 
-   *pEnd = '\0';
-   pTok->m_pIndex = pEnd + 1;
+  if (*pEnd == '\0') {
+    pTok->m_pIndex = pEnd;
+    return pStart;
+  }
 
-   return pStart;
+  *pEnd = '\0';
+  pTok->m_pIndex = pEnd + 1;
+
+  return pStart;
 }
 
 extern tok * tokNew(const char * pUserString)
 {
+  oosmos_POINTER_GUARD(pUserString);
+
   tok * pTok = (tok *) malloc(sizeof(tok));
+
+  oosmos_POINTER_GUARD(pTok);
 
   pTok->m_pUserString = malloc(strlen(pUserString)+1);
   strcpy(pTok->m_pUserString, pUserString);

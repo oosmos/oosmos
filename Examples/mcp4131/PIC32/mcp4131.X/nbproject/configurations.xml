@@ -74,7 +74,7 @@
         <property key="enable-unroll-loops" value="false"/>
         <property key="exclude-floating-point" value="false"/>
         <property key="extra-include-directories"
-                  value="..\..\..\..\Source;..\..\..\..\Classes;..\..\..\..\Classes\Tests"/>
+                  value="..\..\..\..\Classes;..\..\..\..\Source;..\..\..\..\Classes\Tests"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="false"/>

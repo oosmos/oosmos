@@ -1,7 +1,7 @@
 //
 // OOSMOS pin Class
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,6 +24,8 @@
 #define pin_h
 
 #include "oosmos.h"
+#include <stdbool.h>
+#include <stdint.h>
 
 typedef struct pinTag pin;
 
@@ -31,20 +33,20 @@ typedef enum
 {
   pinOut = 1,
   pinIn,
-  pinInOut,
+  pinInOut
 } pin_eDirection;
 
 typedef enum
 {
   pinActiveLow = 1,
-  pinActiveHigh,
+  pinActiveHigh
 } pin_eLogic;
 
-extern void pinOn(pin * pPin);
-extern void pinOff(pin * pPin);
+extern void pinOn(const pin * pPin);
+extern void pinOff(const pin * pPin);
 
-extern bool pinIsOn(pin * pPin);
-extern bool pinIsOff(pin * pPin);
+extern bool pinIsOn(const pin * pPin);
+extern bool pinIsOff(const pin * pPin);
 
 #if defined(ARDUINO) || defined(oosmos_RASPBERRY_PI)
   extern pin * pinNew(int PinNumber, pin_eDirection, pin_eLogic Logic);
@@ -57,6 +59,11 @@ extern bool pinIsOff(pin * pPin);
   extern pin * pinNew(PinName Pin, pin_eDirection, pin_eLogic Logic);
   extern pin * pinNew_Debounce(PinName Pin, pin_eDirection, pin_eLogic Logic, uint8_t DebounceTimeMS);
   extern int pinGetPinName(pin * pPin);
+#elif defined(__IAR_SYSTEMS_ICC__)
+  extern pin * pinNew(GPIO_TypeDef* Port, uint16_t Pin, const pin_eDirection Direction, const pin_eLogic Logic);
+  extern pin * pinNew_Debounce(GPIO_TypeDef* Port, const uint16_t Bit, const pin_eDirection Direction, const pin_eLogic Logic, const uint8_t DebounceTimeMS);
+#elif defined(_MSC_VER)
+  extern pin * pinNew(char Key, pin_eLogic Logic);
 #endif
 
 #endif

@@ -1,7 +1,7 @@
 //
 // util class - Part of OOSMOS
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,11 +20,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include "util.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
-#include "util.h"
 
 extern void utilHexDump(const void * pBuffer, const size_t TotalBytes)
 {
@@ -46,8 +46,9 @@ extern void utilHexDump(const void * pBuffer, const size_t TotalBytes)
         pCurrent += 16;
       }
 
-      if (Bytes == TotalBytes)
+      if (Bytes == TotalBytes) {
         return;
+      }
 
       pDump  = Dump;
       pAscii = Ascii;
@@ -63,8 +64,8 @@ extern void utilHexDump(const void * pBuffer, const size_t TotalBytes)
     // This is a very fast, straight-through, binary-to-hex ASCII conversion.
     //
     const uint8_t Byte = *pByte;
-    *pDump++ = "0123456789ABCDEF"[(Byte >>  4) & 0xF];
-    *pDump++ = "0123456789ABCDEF"[(Byte >>  0) & 0xF];
+    *pDump++ = (uint8_t) "0123456789ABCDEF"[(Byte >>  4) & 0xF];
+    *pDump++ = (uint8_t) "0123456789ABCDEF"[(Byte      ) & 0xF];
     *pDump++ = ' ';
 
     *pAscii++ = isprint(Byte) ? Byte : '.';

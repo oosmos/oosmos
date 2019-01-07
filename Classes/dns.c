@@ -1,7 +1,7 @@
 //
 // OOSMOS dns Class
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,15 +24,16 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdbool.h>
 
-#include "oosmos.h"
 #include "sock.h"
 #include "dns.h"
 
 #ifdef _WIN32
   #include <winsock2.h>
-  #include <Ws2tcpip.h>
-  #include <iphlpapi.h>
+  #include <inaddr.h>     // for IN_ADDR, s_addr
+  #include <minwindef.h>  // for MAKEWORD, WORD
+  #include <winerror.h>   // for WSAEWOULDBLOCK, WSAECONNABORTED, WSAECONNREFUSED
 
   typedef SOCKET dns_tSocket;
 
@@ -79,24 +80,24 @@ struct dnsTag
 
 typedef struct
 {
-  uint8_t TransactionID[2]; 
+  uint8_t TransactionID[2];
 
   uint8_t Flags[2];
 
-  uint8_t Questions[2];  
-  uint8_t Answers[2]; 
+  uint8_t Questions[2];
+  uint8_t Answers[2];
   uint8_t AuthorityRRs[2];
   uint8_t AdditionalRRs[2];
 } tHeader;
 
-typedef struct 
+typedef struct
 {
-  // Variable length 'Name' precedes these fields 
+  // Variable length 'Name' precedes these fields
   uint8_t Type[2];
   uint8_t Class[2];
 } tQuestionTail;
 
-typedef struct 
+typedef struct
 {
   uint8_t Name[2];
   uint8_t Type[2];
@@ -126,19 +127,19 @@ static void Init(void)
     #else
       // DNS the harder way... Interrogate platform-dependent elements.
       #ifdef _WIN32
-        FIXED_INFO   Dummy; 
+        FIXED_INFO   Dummy;
         ULONG        Size = sizeof(Dummy);
         FIXED_INFO * pFixedInfo = &Dummy;
-  
+
         GetNetworkParams(pFixedInfo, &Size);
-  
+
         pFixedInfo = malloc(Size);
         GetNetworkParams(pFixedInfo, &Size);
         NameServerIP = sockDotToIP_HostByteOrder(pFixedInfo->DnsServerList.IpAddress.String);
         free(pFixedInfo);
       #else
         char IP[80];
-    
+
         FILE * pFile = fopen("/etc/resolv.conf", "r");
           fscanf(pFile, "nameserver %s\n", IP);
         fclose(pFile);
@@ -159,13 +160,13 @@ static int dnsGetLastError(void)
 #endif
 }
 
-// 
+//
 // Convert 'cnn.com\x0' to '\x3cnn\x3com\x0'.
 //
 static size_t DomainToDnsDomain(const char * pDomain, uint8_t * pDnsDomain)
 {
   size_t Bytes = 0;
-  
+
   do {
     char * pDot   = strchr(pDomain, '.');
     size_t Length = pDot == NULL ? strlen(pDomain) : (size_t)(pDot-pDomain);
@@ -173,8 +174,9 @@ static size_t DomainToDnsDomain(const char * pDomain, uint8_t * pDnsDomain)
     *pDnsDomain++ = (uint8_t) Length;
     Bytes += Length;
 
-    while (Length-- > 0)
+    while (Length-- > 0) {
       *pDnsDomain++ = *pDomain++;
+    }
 
     Bytes += 1;
   } while (*pDomain++ != 0);
@@ -192,9 +194,8 @@ extern bool dnsQuery(dns * pDns, const char * pHost, uint32_t * pIP, int MaxIPs)
   int Bytes;
 
   if (pDns->dnsQuery.bFirst) {
-    tHeader * pHeader = (tHeader * ) Buffer;
     uint16_t ID;
-    uint16_t Flags; // Standard Query 
+    uint16_t Flags; // Standard Query
     uint16_t Questions;
     uint16_t Answers;
     uint16_t AuthorityRRs;
@@ -206,22 +207,20 @@ extern bool dnsQuery(dns * pDns, const char * pHost, uint32_t * pIP, int MaxIPs)
     uint16_t Class;
     size_t QuerySize;
 
-
     const uint16_t DnsPort = 53;
 
     memset(&SockAddr, 0, sizeof(SockAddr));
     SockAddr.sin_family      = AF_INET;
     SockAddr.sin_port        = htons(DnsPort);
     SockAddr.sin_addr.s_addr = htonl(NameServerIP);
- 
 
-    pHeader = (tHeader * ) Buffer;
+    tHeader * pHeader = (tHeader * ) Buffer;
 
     ID = TransactionID++;
     pHeader->TransactionID[0] = (uint8_t) (ID >> 8);
     pHeader->TransactionID[1] = (uint8_t) (ID);
 
-    Flags = 0x0100; // Standard Query 
+    Flags = 0x0100; // Standard Query
     pHeader->Flags[0] = (uint8_t) (Flags >> 8);
     pHeader->Flags[1] = (uint8_t) (Flags);
 
@@ -243,7 +242,7 @@ extern bool dnsQuery(dns * pDns, const char * pHost, uint32_t * pIP, int MaxIPs)
 
     pQuestionName = (uint8_t *) (pHeader + 1);
     NameSize = DomainToDnsDomain(pHost, pQuestionName);
- 
+
     pQuestionTail = (tQuestionTail * ) (pQuestionName + NameSize);
     Type = 1;
     pQuestionTail->Type[0] = (uint8_t) (Type >> 8);
@@ -263,7 +262,7 @@ extern bool dnsQuery(dns * pDns, const char * pHost, uint32_t * pIP, int MaxIPs)
     return false;
   }
 
-  Bytes = recvfrom(pDns->Socket, Buffer, sizeof(Buffer), 0, 
+  Bytes = recvfrom(pDns->Socket, Buffer, sizeof(Buffer), 0,
                                         (struct sockaddr *) &SockAddr, &SockAddrSize);
   if (Bytes == -1) {
     if (dnsGetLastError() == dnsEWOULDBLOCK) {
@@ -275,28 +274,28 @@ extern bool dnsQuery(dns * pDns, const char * pHost, uint32_t * pIP, int MaxIPs)
 
   {
     const tHeader * pHeader = (tHeader *) Buffer;
-  
+
     const uint16_t Answers = (uint8_t) (pHeader->Answers[0] << 8) |
                              (uint8_t) (pHeader->Answers[1]);
-  
-    const uint8_t * pQuery = (const uint8_t *) (pHeader + 1);
-    const int QueryNameLen = strlen((const char *) pQuery);
-  
+
+    const uint8_t * pQuery       = (const uint8_t *) (pHeader + 1);
+    const size_t    QueryNameLen = strlen((const char *) pQuery);
+
     const tAnswer * pAnswer = (tAnswer *) (pQuery + (QueryNameLen + 1) + sizeof(tQuestionTail));
 
     int Count;
-  
+
     memset(pIP, 0, sizeof(*pIP) * MaxIPs);
-  
+
     for (Count = 1; Count <= Answers; Count++) {
       *pIP = pAnswer->Address[0] << 24 |
              pAnswer->Address[1] << 16 |
              pAnswer->Address[2] << 8  |
              pAnswer->Address[3];
-  
+
       if (Count == MaxIPs)
         break;
-    
+
       pAnswer++;
       pIP++;
     }

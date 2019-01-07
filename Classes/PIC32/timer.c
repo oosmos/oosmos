@@ -1,7 +1,7 @@
 //
 // OOSMOS timer Class
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,7 +21,8 @@
 //
 
 #include "timer.h"
-#include "oosmos.h"
+#include <stdbool.h>
+#include <stddef.h>
 
 struct timerTag
 {
@@ -118,7 +119,7 @@ static void CalculateTimerConfiguration(const float WallClockTimeSec,
   const float PrescalerFloat = pPrescalerData->PrescalerFloat;
   const float Frequency = (oosmos_GetClockSpeedInMHz()*1000000) / PrescalerFloat;
   const float TotalTicks = WallClockTimeSec * Frequency;
-  
+
   *pOverflowCount  = TotalTicks / (1<<TimerResolution);
   *pRemainingTicks = TotalTicks - (*pOverflowCount * (1<<TimerResolution));
 }
@@ -157,23 +158,23 @@ extern void timerStart(timer * pTimer, const timerCalc * pTimerCalc)
   pTimer->m_OverflowCount = pTimer->m_TimerCalc.OverflowCount;
 
   switch (pTimer->m_TimerNumber) {
-    case 1: 
+    case 1:
       OpenTimer1(T1_ON | T1_SOURCE_INT | PrescalerBits, Ticks);
       ConfigIntTimer1((pCallback == NULL ? T1_INT_OFF : T1_INT_ON) | PriorityBits);
       break;
-    case 2: 
+    case 2:
       OpenTimer2(T2_ON | T2_SOURCE_INT | PrescalerBits, Ticks);
       ConfigIntTimer2((pCallback == NULL ? T2_INT_OFF : T2_INT_ON) | PriorityBits);
       break;
-    case 3: 
+    case 3:
       OpenTimer3(T3_ON | T3_SOURCE_INT | PrescalerBits, Ticks);
       ConfigIntTimer3((pCallback == NULL ? T3_INT_OFF : T3_INT_ON) | PriorityBits);
       break;
-    case 4: 
+    case 4:
       OpenTimer4(T4_ON | T4_SOURCE_INT | PrescalerBits, Ticks);
       ConfigIntTimer4((pCallback == NULL ? T4_INT_OFF : T4_INT_ON) | PriorityBits);
       break;
-    case 5: 
+    case 5:
       OpenTimer5(T5_ON | T5_SOURCE_INT | PrescalerBits, Ticks);
       ConfigIntTimer5((pCallback == NULL ? T5_INT_OFF : T5_INT_ON) | PriorityBits);
       break;
@@ -239,7 +240,7 @@ extern int timerDisableInterrupt(timer * pTimer)
     case 3: PreviousSetting = mT3GetIntEnable(); mT3IntEnable(0); break;
     case 4: PreviousSetting = mT4GetIntEnable(); mT4IntEnable(0); break;
     case 5: PreviousSetting = mT5GetIntEnable(); mT5IntEnable(0); break;
-    default: while (true);
+    default: oosmos_FOREVER();
   }
 
   return PreviousSetting;
@@ -253,7 +254,7 @@ extern void timerEnableInterrupt(timer * pTimer, const int PreviousSetting)
     case 3: mT3IntEnable(PreviousSetting); break;
     case 4: mT4IntEnable(PreviousSetting); break;
     case 5: mT5IntEnable(PreviousSetting); break;
-    default: while (true);
+    default: oosmos_FOREVER();
   }
 }
 
@@ -273,7 +274,7 @@ extern timer * timerNew(const int TimerNumber, const int Priority)
   pTimer->m_TimerIndex  = TimerNumber-1;
   pTimer->m_InUse       = true;
   pTimer->m_Priority    = Priority;
-  
+
   const uint16_t Vector = TimerData[TimerIndex].Vector;
   INTSetVectorPriority(Vector, Priority);
 

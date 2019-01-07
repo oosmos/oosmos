@@ -1,7 +1,7 @@
 //
 // OOSMOS - EventDemo example, pump object
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,27 +20,35 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <stddef.h>
-#include <stdio.h>
 #include "oosmos.h"
 #include "pump.h"
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdio.h>
+#include <stdint.h>
 
-typedef enum
+//>>>EVENTS
+enum {
+  evDownPressed = 1,
+  evStart = 2,
+  evStop = 3,
+  evUpPressed = 4
+};
+//<<<EVENTS
+
+typedef union {
+  oosmos_sEvent Event;
+} uEvents;
+
+struct pumpTag
 {
-  StartEvent = 1,
-  StopEvent,
+  uint32_t PumpSpeed;
 
-  UpPressedEvent,
-  DownPressedEvent,
-} eEvents;
-
-struct pumpTag 
-{
-  int PumpSpeed;
-
-  oosmos_sStateMachine(StateMachine, oosmos_sEvent, 3);
-    oosmos_sLeaf       Idle_State;
-    oosmos_sLeaf       Pumping_State;
+//>>>DECL
+  oosmos_sStateMachine(ROOT, uEvents, 3);
+    oosmos_sLeaf Idle_State;
+    oosmos_sLeaf Pumping_State;
+//<<<DECL
 };
 
 #ifndef pumpMAX
@@ -53,86 +61,93 @@ struct pumpTag
   static const char * EventNames(int EventCode)
   {
     switch (EventCode) {
-      NameCase(StartEvent)
-      NameCase(StopEvent)
-      NameCase(UpPressedEvent)
-      NameCase(DownPressedEvent)
+      NameCase(evStart)
+      NameCase(evStop)
+      NameCase(evUpPressed)
+      NameCase(evDownPressed)
       default: return "--No Event Name--";
     }
   }
 #endif
 
-static bool Idle_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static void Thread(const pump * pPump, oosmos_sState * pState)
+{
+  oosmos_ThreadBegin();
+    for (;;) {
+      printf("pump: PUMPING...\n");
+      oosmos_ThreadDelayMS((10 - pPump->PumpSpeed) * 200);
+    }
+  oosmos_ThreadEnd();
+}
+
+//>>>CODE
+static bool Idle_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   pump * pPump = (pump *) pObject;
 
-  switch (pEvent->Code) {
-    case StartEvent:
-      return oosmos_Transition(pRegion, &pPump->Pumping_State);
+  switch (oosmos_EventCode(pEvent)) {
+    case evStart: {
+      return oosmos_Transition(pPump, pState, Pumping_State);
+    }
   }
 
   return false;
 }
 
-static bool Pumping_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool Pumping_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   pump * pPump = (pump *) pObject;
 
-  switch (pEvent->Code) {
-    case StopEvent:
-      return oosmos_Transition(pRegion, &pPump->Idle_State);
-
-    case UpPressedEvent:
+  switch (oosmos_EventCode(pEvent)) {
+    case oosmos_POLL: {
+      Thread(pPump, pState);
+      return true;
+    }
+    case evUpPressed: {
       pPump->PumpSpeed = oosmos_Min(10, pPump->PumpSpeed+1);
-      printf("pump: PUMPING SPEED %d...\n", pPump->PumpSpeed);
       return true;
-
-    case DownPressedEvent:
+    }
+    case evDownPressed: {
       pPump->PumpSpeed = oosmos_Max(1, pPump->PumpSpeed-1);
-      printf("pump: PUMPING SPEED %d...\n", pPump->PumpSpeed);
       return true;
-
-    case oosmos_INSTATE:
-      oosmos_AyncBegin(pRegion);
-        while (true) {
-          printf("pump: PUMPING...\n");
-          oosmos_AyncDelayMS(pRegion, (10-pPump->PumpSpeed) * 200);
-        }
-      oosmos_AyncEnd(pRegion);
-      return true;
+    }
+    case evStop: {
+      return oosmos_Transition(pPump, pState, Idle_State);
+    }
   }
 
   return false;
 }
+//<<<CODE
 
-extern pump * pumpNew(key * pUpKey, key * pDownKey)
+extern pump * pumpNew(sw * pUpSwitch, sw * pDownSwitch)
 {
   oosmos_Allocate(pPump, pump, pumpMAX, NULL);
 
   pPump->PumpSpeed = 5;
 
-  keySubscribePressedEvent(pUpKey,   &pPump->EventQueue, UpPressedEvent);
-  keySubscribePressedEvent(pDownKey, &pPump->EventQueue, DownPressedEvent);
+  swSubscribeCloseEvent(pUpSwitch,   oosmos_EventQueue(pPump), evUpPressed,   NULL);
+  swSubscribeCloseEvent(pDownSwitch, oosmos_EventQueue(pPump), evDownPressed, NULL);
 
-  //                             StateName      Parent        Default
-  //                     ================================================
-  oosmos_StateMachineInit(pPump, StateMachine,  NULL,         Idle_State);
-    oosmos_LeafInit      (pPump, Idle_State,    StateMachine            );
-    oosmos_LeafInit      (pPump, Pumping_State, StateMachine            );
+//>>>INIT
+  oosmos_StateMachineInit(pPump, ROOT, NULL, Idle_State);
+    oosmos_LeafInit(pPump, Idle_State, ROOT);
+    oosmos_LeafInit(pPump, Pumping_State, ROOT);
+//<<<INIT
 
-  oosmos_DebugCode(
-    oosmos_Debug(&pPump->StateMachine, true, EventNames);
-  )
+#if 1
+  oosmos_Debug(pPump, true, EventNames);
+#endif
 
   return pPump;
 }
 
-extern void pumpOn(pump * pMotor)
+extern void pumpOn(const pump * pPump)
 {
-  oosmos_SendEvent(pMotor, StartEvent);
+  oosmos_PushEventCode(pPump, evStart);
 }
 
-extern void pumpOff(pump * pMotor)
+extern void pumpOff(const pump * pPump)
 {
-  oosmos_SendEvent(pMotor, StopEvent);
+  oosmos_PushEventCode(pPump, evStop);
 }

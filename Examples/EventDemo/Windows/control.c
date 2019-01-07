@@ -1,7 +1,7 @@
 //
 // OOSMOS EventDemo example, control object
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,25 +20,33 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include "oosmos.h"
+#include "control.h"
+#include "motor.h"
+#include "pump.h"
+#include "pin.h"
+#include "sw.h"
+#include <stdbool.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "oosmos.h"
-#include "control.h"
-#include "key.h"
-#include "motor.h"
-#include "pump.h"
 
-typedef enum
-{
-  StopPressedEvent = 1,
-  StopReleasedEvent,
-  MovePressedEvent,
-  PumpPressedEvent,
-  Option1PressedEvent,
-  Option2PressedEvent,
-  QuitPressedEvent,
-} eEvents;
+//>>>EVENTS
+enum {
+  evMovePressed = 1,
+  evOption1Pressed = 2,
+  evOption2Pressed = 3,
+  evPumpPressed = 4,
+  evQuitPressed = 5,
+  evStopPressed = 6,
+  evStopReleased = 7
+};
+//<<<EVENTS
+
+typedef union {
+  oosmos_sEvent Event;
+} uEvents;
 
 struct controlTag
 {
@@ -47,17 +55,19 @@ struct controlTag
   bool    m_Option1;
   bool    m_Option2;
 
-  oosmos_sStateMachine   (StateMachine, oosmos_sEvent, 3);
-    oosmos_sLeaf          StartingUp_State;
-    oosmos_sOrtho         Operational_State;
-      oosmos_sOrthoRegion Operational_MotorControl_State;
-        oosmos_sLeaf      Operational_MotorControl_Idle_State;
-        oosmos_sLeaf      Operational_MotorControl_Moving_State;
-      oosmos_sOrthoRegion Operational_PumpControl_State;
-        oosmos_sLeaf      Operational_PumpControl_Idle_State;
-        oosmos_sLeaf      Operational_PumpControl_Pumping_State;
-    oosmos_sLeaf          StopPressed_State;
-    oosmos_sLeaf          Termination_State;
+//>>>DECL
+  oosmos_sStateMachine(ROOT, uEvents, 3);
+    oosmos_sLeaf StartingUp_State;
+    oosmos_sOrtho Operational_State;
+      oosmos_sOrthoRegion Operational_Region1_State;
+        oosmos_sLeaf Operational_Region1_Moving_State;
+        oosmos_sLeaf Operational_Region1_Idle_State;
+      oosmos_sOrthoRegion Operational_Region2_State;
+        oosmos_sLeaf Operational_Region2_Idle_State;
+        oosmos_sLeaf Operational_Region2_Pumping_State;
+    oosmos_sLeaf StopPressed_State;
+    oosmos_sLeaf Terminated_State;
+//<<<DECL
 };
 
 #ifdef oosmos_DEBUG
@@ -66,13 +76,13 @@ struct controlTag
   static const char * EventNames(int EventCode)
   {
     switch (EventCode) {
-      NameCase(StopPressedEvent)
-      NameCase(StopReleasedEvent)
-      NameCase(MovePressedEvent)
-      NameCase(PumpPressedEvent)
-      NameCase(QuitPressedEvent)
-      NameCase(Option1PressedEvent)
-      NameCase(Option2PressedEvent)
+      NameCase(evStopPressed)
+      NameCase(evStopReleased)
+      NameCase(evMovePressed)
+      NameCase(evPumpPressed)
+      NameCase(evQuitPressed)
+      NameCase(evOption1Pressed)
+      NameCase(evOption2Pressed)
       default: return "--No Event Name--";
     }
   }
@@ -81,191 +91,209 @@ struct controlTag
 static void ToggleOption1(control * pControl)
 {
   pControl->m_Option1 = !(pControl->m_Option1);
+  oosmos_DebugPrint("Option1: %d\n", pControl->m_Option1);
 }
 
 static void ToggleOption2(control * pControl)
 {
   pControl->m_Option2 = !(pControl->m_Option2);
+  oosmos_DebugPrint("Option2: %d\n", pControl->m_Option1);
 }
 
-static bool StartingUp_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+//>>>CODE
+static bool StartingUp_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   control * pControl = (control *) pObject;
 
-  switch (pEvent->Code) {
-    case oosmos_ENTER:
-       return oosmos_StateTimeoutSeconds(pRegion, 1);
-    case oosmos_TIMEOUT:
-      return oosmos_Transition(pRegion, &pControl->Operational_State);
+  switch (oosmos_EventCode(pEvent)) {
+    case oosmos_ENTER: {
+      return oosmos_StateTimeoutSeconds(pState, (uint32_t) 1);
+    }
+    case oosmos_TIMEOUT: {
+      return oosmos_Transition(pControl, pState, Operational_State);
+    }
   }
 
   return false;
 }
 
-static bool Operational_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool Operational_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   control * pControl = (control *) pObject;
 
-  switch (pEvent->Code) {
-    case StopPressedEvent:
-      return oosmos_Transition(pRegion, &pControl->StopPressed_State);
-    case QuitPressedEvent:
-      return oosmos_Transition(pRegion, &pControl->Termination_State);
+  switch (oosmos_EventCode(pEvent)) {
+    case evStopPressed: {
+      return oosmos_Transition(pControl, pState, StopPressed_State);
+    }
+    case evQuitPressed: {
+      return oosmos_Transition(pControl, pState, Terminated_State);
+    }
   }
 
   return false;
 }
 
-static bool Operational_MotorControl_Idle_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool StopPressed_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   control * pControl = (control *) pObject;
 
-  switch (pEvent->Code) {
-    case MovePressedEvent:
-      return oosmos_Transition(pRegion, &pControl->Operational_MotorControl_Moving_State);
+  switch (oosmos_EventCode(pEvent)) {
+    case evOption1Pressed: {
+      ToggleOption1(pControl);
+      return true;
+    }
+    case evOption2Pressed: {
+      ToggleOption2(pControl);
+      return true;
+    }
+    case evStopReleased: {
+      return oosmos_Transition(pControl, pState, Operational_State);
+    }
   }
 
   return false;
 }
 
-static bool Operational_MotorControl_Moving_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool Operational_Region1_Moving_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   control * pControl = (control *) pObject;
 
-  switch (pEvent->Code) {
-    case oosmos_ENTER:
+  switch (oosmos_EventCode(pEvent)) {
+    case oosmos_ENTER: {
       motorOn(pControl->m_pMotor);
       return true;
-    case oosmos_EXIT:
+    }
+    case oosmos_EXIT: {
       motorOff(pControl->m_pMotor);
       return true;
-    case MovePressedEvent:
-      return oosmos_Transition(pRegion, &pControl->Operational_MotorControl_State);
+    }
+    case evMovePressed: {
+      return oosmos_Transition(pControl, pState, Operational_Region1_Idle_State);
+    }
   }
 
   return false;
 }
 
-static bool Operational_PumpControl_Idle_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool Operational_Region1_Idle_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   control * pControl = (control *) pObject;
 
-  switch (pEvent->Code) {
-    case PumpPressedEvent:
-      return oosmos_Transition(pRegion, &pControl->Operational_PumpControl_Pumping_State);
+  switch (oosmos_EventCode(pEvent)) {
+    case evMovePressed: {
+      return oosmos_Transition(pControl, pState, Operational_Region1_Moving_State);
+    }
   }
 
   return false;
 }
 
-static bool Operational_PumpControl_Pumping_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool Terminated_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
+{
+  switch (oosmos_EventCode(pEvent)) {
+    case oosmos_ENTER: {
+      exit(1);
+    }
+  }
+
+  oosmos_UNUSED(pState);
+  return false;
+}
+
+static bool Operational_Region2_Idle_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   control * pControl = (control *) pObject;
 
-  switch (pEvent->Code) {
-    case oosmos_ENTER:
+  switch (oosmos_EventCode(pEvent)) {
+    case evPumpPressed: {
+      return oosmos_Transition(pControl, pState, Operational_Region2_Pumping_State);
+    }
+  }
+
+  return false;
+}
+
+static bool Operational_Region2_Pumping_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
+{
+  control * pControl = (control *) pObject;
+
+  switch (oosmos_EventCode(pEvent)) {
+    case oosmos_ENTER: {
       pumpOn(pControl->m_pPump);
       return true;
-    case oosmos_EXIT:
+    }
+    case oosmos_EXIT: {
       pumpOff(pControl->m_pPump);
       return true;
-    case PumpPressedEvent:
-      return oosmos_Transition(pRegion, &pControl->Operational_PumpControl_State);
+    }
+    case evPumpPressed: {
+      return oosmos_Transition(pControl, pState, Operational_Region2_Idle_State);
+    }
   }
 
   return false;
 }
-
-static bool StopPressed_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
-{
-  control * pControl = (control *) pObject;
-
-  switch (pEvent->Code) {
-    case StopReleasedEvent:
-      return oosmos_Transition(pRegion, &pControl->Operational_State);
-    case Option1PressedEvent:
-      ToggleOption1(pControl);
-
-      printf("control: Option1: %s\n", pControl->m_Option1 ? "true" : "false");
-      return true;
-    case Option2PressedEvent:
-      ToggleOption2(pControl);
-
-      printf("control: Option2: %s\n", pControl->m_Option2 ? "true" : "false");
-      return true;
-  }
-
-  return false;
-}
-
-static bool Termination_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
-{
-  switch (pEvent->Code) {
-    case oosmos_ENTER:
-      exit(1);
-  }
-
-  return false;
-}
+//<<<CODE
 
 extern control * controlNew(void)
 {
-  key * pStopKey;
-  key * pMoveKey;
-  key * pQuitKey;
-
-  key * pPumpKey;
-  key * pUpKey;
-  key * pDownKey;
-  key * pOption1Key;
-  key * pOption2Key;
-
   oosmos_Allocate(pControl, control, 1, NULL);
 
-  pStopKey    = keyNew('s');
-  pMoveKey    = keyNew('m');
-  pQuitKey    = keyNew('q');
+  oosmos_sQueue * const pControlEventQueue = &pControl->m_EventQueue;
 
-  pPumpKey    = keyNew('p');
-  pUpKey      = keyNew('u');
-  pDownKey    = keyNew('d');
-  pOption1Key = keyNew('1');
-  pOption2Key = keyNew('2');
+  pin * pStopPin   = pinNew('s', pinActiveHigh);
+  sw * pStopSwitch = swNew(pStopPin);
+  swSubscribeCloseEvent(pStopSwitch,    pControlEventQueue, evStopPressed, NULL);
+  swSubscribeOpenEvent(pStopSwitch,     pControlEventQueue, evStopReleased, NULL);
 
-  {
-    oosmos_sQueue * const pControlEventQueue = &pControl->EventQueue;
+  pin * pMovePin   = pinNew('m', pinActiveHigh);
+  sw * pMoveSwitch = swNew(pMovePin);
+  swSubscribeCloseEvent(pMoveSwitch,    pControlEventQueue, evMovePressed, NULL);
 
-    keySubscribePressedEvent(pStopKey,    pControlEventQueue, StopPressedEvent);
-    keySubscribeReleasedEvent(pStopKey,   pControlEventQueue, StopReleasedEvent);
-    keySubscribePressedEvent(pMoveKey,    pControlEventQueue, MovePressedEvent);
-    keySubscribePressedEvent(pPumpKey,    pControlEventQueue, PumpPressedEvent);
-    keySubscribePressedEvent(pQuitKey,    pControlEventQueue, QuitPressedEvent);
-    keySubscribePressedEvent(pOption1Key, pControlEventQueue, Option1PressedEvent);
-    keySubscribePressedEvent(pOption2Key, pControlEventQueue, Option2PressedEvent);
-  }
+  pin * pQuitPin   = pinNew('q', pinActiveHigh);
+  sw * pQuitSwitch = swNew(pQuitPin);
+  swSubscribeCloseEvent(pQuitSwitch,    pControlEventQueue, evQuitPressed, NULL);
+
+  pin * pPumpPin   = pinNew('p', pinActiveHigh);
+  sw * pPumpSwitch = swNew(pPumpPin);
+  swSubscribeCloseEvent(pPumpSwitch,    pControlEventQueue, evPumpPressed, NULL);
+
+  pin * pOption1Pin   = pinNew('1', pinActiveHigh);
+  sw * pOption1Switch = swNew(pOption1Pin);
+  swSubscribeCloseEvent(pOption1Switch, pControlEventQueue, evOption1Pressed, NULL);
+
+  pin * pOption2Pin   = pinNew('2', pinActiveHigh);
+  sw * pOption2Switch = swNew(pOption2Pin);
+  swSubscribeCloseEvent(pOption2Switch, pControlEventQueue, evOption2Pressed, NULL);
+
+  pin * pUpPin   = pinNew('u', pinActiveHigh);
+  sw * pUpSwitch = swNew(pUpPin);
+
+  pin * pDownPin   = pinNew('d', pinActiveHigh);
+  sw * pDownSwitch = swNew(pDownPin);
 
   pControl->m_pMotor  = motorNew();
-  pControl->m_pPump   = pumpNew(pUpKey, pDownKey);
+  pControl->m_pPump   = pumpNew(pUpSwitch, pDownSwitch);
   pControl->m_Option1 = false;
   pControl->m_Option2 = false;
 
-  //                                         StateName                              Parent                          Default
-  //                              ======================================================================================================================
-  oosmos_StateMachineInit         (pControl, StateMachine,                          NULL,                           StartingUp_State                   );
-    oosmos_LeafInit               (pControl, StartingUp_State,                      StateMachine                                                       );
-    oosmos_OrthoInit              (pControl, Operational_State,                     StateMachine                                                       );
-      oosmos_OrthoRegionInitNoCode(pControl, Operational_MotorControl_State,        Operational_State,              Operational_MotorControl_Idle_State);
-        oosmos_LeafInit           (pControl, Operational_MotorControl_Idle_State,   Operational_MotorControl_State                                     );
-        oosmos_LeafInit           (pControl, Operational_MotorControl_Moving_State, Operational_MotorControl_State                                     );
-      oosmos_OrthoRegionInitNoCode(pControl, Operational_PumpControl_State,         Operational_State,              Operational_PumpControl_Idle_State );
-        oosmos_LeafInit           (pControl, Operational_PumpControl_Idle_State,    Operational_PumpControl_State                                      );
-        oosmos_LeafInit           (pControl, Operational_PumpControl_Pumping_State, Operational_PumpControl_State                                      );
-    oosmos_LeafInit               (pControl, StopPressed_State,                     StateMachine                                                       );
-    oosmos_LeafInit               (pControl, Termination_State,                     StateMachine                                                       );
+//>>>INIT
+  oosmos_StateMachineInit(pControl, ROOT, NULL, StartingUp_State);
+    oosmos_LeafInit(pControl, StartingUp_State, ROOT);
+    oosmos_OrthoInit(pControl, Operational_State, ROOT);
+      oosmos_OrthoRegionInitNoCode(pControl, Operational_Region1_State, Operational_State, Operational_Region1_Idle_State);
+        oosmos_LeafInit(pControl, Operational_Region1_Moving_State, Operational_Region1_State);
+        oosmos_LeafInit(pControl, Operational_Region1_Idle_State, Operational_Region1_State);
+      oosmos_OrthoRegionInitNoCode(pControl, Operational_Region2_State, Operational_State, Operational_Region2_Idle_State);
+        oosmos_LeafInit(pControl, Operational_Region2_Idle_State, Operational_Region2_State);
+        oosmos_LeafInit(pControl, Operational_Region2_Pumping_State, Operational_Region2_State);
+    oosmos_LeafInit(pControl, StopPressed_State, ROOT);
+    oosmos_LeafInit(pControl, Terminated_State, ROOT);
+//<<<INIT
 
-  oosmos_DebugCode(
-    oosmos_Debug(&pControl->StateMachine, true, EventNames);
-  )
+#if 1
+  oosmos_Debug(pControl, true, EventNames);
+#endif
 
   return pControl;
 }

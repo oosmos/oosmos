@@ -1,29 +1,27 @@
 #!/usr/bin/python
 ''' Overview:
 
-    There are a lot of redundant file in these examples.  We could have attempted to 
+    There are a lot of redundant file in these examples.  We could have attempted to
     create a system of include directories and libraries, common elements and makefiles,
     as is traditionally done, but much of that would render these examples highly
-    platform dependent.  To maximize portablility, we simply keep common files in 
+    platform dependent.  To maximize portablility, we simply keep common files in
     one place and then copy them into the project directories where they are needed
     and render them read-only.
-  
-    This means that you can navigate to any of the examples and all the files that it 
+
+    This means that you can navigate to any of the examples and all the files that it
     depends on are in that directory.
-  
+
     Source
       oosmos.h
       oosmos.c
-  
+
     Classes
       Holds common classes that are reused by many examples.
 
     Examples
-      Contains all the examples. 
+      Contains all the examples.
 '''
-import os
-import glob
-import platform
+
 import oosmos
 
 #
@@ -60,7 +58,7 @@ def Main():
   oosmos.Clean('Examples', 'exe obj ilk pdb')
 
   print('Populating from Classes Into Examples...')
-  
+
   #
   # Blink
   #
@@ -68,11 +66,12 @@ def Main():
   Copy('Classes', 'h c', 'Examples/Blink/ESP8266/BlinkExample',       'h cpp', 'pin toggle')
   Copy('Classes', 'h c', 'Examples/Blink/ChipKit/BlinkExample',       'h cpp', 'pin toggle')
   oosmos.CopyFileReadOnly('Examples/Blink/Arduino/BlinkExample/BlinkExample.ino', 'Examples/Blink/ChipKit/BlinkExample/BlinkExample.ino')
-  Copy('Classes', 'h c', 'Examples/Blink/Galileo/BlinkExample',       'h cpp', 'pin toggle')
-  oosmos.CopyFileReadOnly('Examples/Blink/Arduino/BlinkExample/BlinkExample.ino', 'Examples/Blink/Galileo/BlinkExample/BlinkExample.ino')
   Copy('Classes', 'h c', 'Examples/Blink/mbed',                       'h cpp', 'pin toggle')
   Copy('Classes', 'h c', 'Examples/Blink/MSP430/BlinkExample',        'h cpp', 'pin toggle')
   Copy('Classes', 'h c', 'Examples/Blink/LightBlueBean/BlinkExample', 'h cpp', 'pin toggle')
+
+  Copy('Classes', 'h', 'Examples/Blink/STM32/Blink/Inc', 'h', 'pin toggle')
+  Copy('Classes', 'c', 'Examples/Blink/STM32/Blink/Src', 'c', 'pin toggle')
 
   Copy('Classes', 'h c', 'Examples/Blink/RaspberryPi',                'h c',   'pin prt toggle')
 
@@ -88,17 +87,18 @@ def Main():
   #
   Copy('Classes', 'h c', 'Examples/Keyer/Arduino/KeyerExample',     'h cpp', 'keyer pin prt')
 
+  Copy('Classes', 'h', 'Examples/Keyer/STM32/Keyer/Inc',            'h', 'keyer pin toggle')
+  Copy('Classes', 'c', 'Examples/Keyer/STM32/Keyer/Src',            'c', 'keyer pin toggle')
+
   Copy('Classes', 'h c', 'Examples/Keyer/MSP430/KeyerExample',      'h cpp', 'keyer pin prt')
 
   Copy('Classes', 'h c', 'Examples/Keyer/ChipKit/KeyerExample',     'h cpp', 'keyer pin')
   oosmos.CopyFileReadOnly('Examples/Keyer/Arduino/KeyerExample/KeyerExample.ino', 'Examples/Keyer/ChipKit/KeyerExample/KeyerExample.ino')
 
-  Copy('Classes', 'h c', 'Examples/Keyer/Galileo/KeyerExample',     'h cpp', 'keyer pin')
-  oosmos.CopyFileReadOnly('Examples/Keyer/Arduino/KeyerExample/KeyerExample.ino', 'Examples/Keyer/Galileo/KeyerExample/KeyerExample.ino')
 
   #
   # LCD
-  # 
+  #
   Copy('Classes',       'h c', 'Examples/LCD/Arduino/LcdExample', 'h cpp', 'pin lcd')
   Copy('Classes/Tests', 'h c', 'Examples/LCD/Arduino/LcdExample', 'h cpp', 'lcdtest', not IncludeOosmos)
 
@@ -121,10 +121,10 @@ def Main():
   Copy('Classes/Tests', 'h c', 'Examples/Switch/Arduino/SwitchExample', 'h cpp', 'switchtest', not IncludeOosmos)
 
   #
-  # Async
+  # Thread
   #
-  Copy('Classes',       'h c', 'Examples/Async/Arduino/AsyncExample',  'h cpp', 'prt')
-  Copy('Classes/Tests', 'h c', 'Examples/Async/Arduino/AsyncExample',  'h cpp', 'asynctest')
+  Copy('Classes',       'h c', 'Examples/Thread/Arduino/ThreadExample',  'h cpp', 'prt')
+  Copy('Classes/Tests', 'h c', 'Examples/Thread/Arduino/ThreadExample',  'h cpp', 'threadtest')
 
 IncludeOosmos = True
 

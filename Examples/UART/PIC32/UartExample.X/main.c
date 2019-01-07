@@ -1,7 +1,7 @@
 //
 // OOSMOS - PIC32 UART exmample main program.
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,13 +22,15 @@
 
 #include "oosmos.h"
 #include "uart.h"
+#include <stdbool.h>
+#include <stddef.h>
 
 typedef struct testTag test;
 
-typedef enum
+enum
 {
   uartIncomingByte,
-} eEvents;
+};
 
 struct testTag
 {
@@ -38,20 +40,21 @@ struct testTag
     oosmos_sLeaf       Running_State;
 };
 
-static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool Running_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   test * pTest = (test *) pObject;
 
-  switch (pEvent->Code) {
+  switch (oosmos_EventCode(pEvent)) {
     case oosmos_ENTER:
       uartSendString(pTest->m_pUART, "\r\nStarting...\r\n");
-      return oosmos_StateTimeoutSeconds(pRegion, 1);
+      return oosmos_StateTimeoutSeconds(pState, 1);
     case oosmos_TIMEOUT:
       uartSendString(pTest->m_pUART, "Hello world.\r\n");
-      return oosmos_StateTimeoutSeconds(pRegion, 1);
+      return oosmos_StateTimeoutSeconds(pState, 1);
     case uartIncomingByte: {
       uart_sReceivedByteEvent * pUartEvent = (uart_sReceivedByteEvent *) pEvent;
       DBPRINTF("Incoming Byte: %c (%02x)\n", pUartEvent->Byte, pUartEvent->Byte);
+      oosmos_UNUSED(pUartEvent);
       return true;
     }
   }
@@ -83,9 +86,10 @@ extern int main(void)
   uart * pUART = uartNew(2, 9600);
   test * pTest = testNew(pUART);
 
-  uartSubscribe(pUART, &pTest->EventQueue, uartIncomingByte, NULL);
+  uartSubscribe(pUART, oosmos_EventQueue(pTest), uartIncomingByte, NULL);
   uartStart(pUART);
 
-  while (true)
+  for (;;) {
     oosmos_RunStateMachines();
+  }
 }

@@ -1,7 +1,7 @@
 //
 // OOSMOS sock Class
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,6 +22,11 @@
 
 #ifndef sock_h
 #define sock_h
+
+#include "oosmos.h"
+#include <stddef.h>
+#include <stdint.h>
+#include <stdbool.h>
 
 typedef struct sockTag sock;
 
@@ -40,7 +45,7 @@ extern bool sockSend(sock * pSock, const void * pData, size_t Bytes);
 extern bool sockClose(sock * pSock);
 
 extern bool sockReceive(sock * pSock, void * pBuffer, size_t BufferSize, size_t * pBytesReceived);
-extern bool sockReceiveUntilContent(sock * pSock, void * pBufferArg, size_t BufferSize, const void * pContent, 
+extern bool sockReceiveUntilContent(sock * pSock, void * pBufferArg, size_t BufferSize, const void * pContent,
                                     size_t ContentLength, size_t * pBytesReceived);
 
 extern void sockSubscribeClosedEvent(sock * pSock, oosmos_sQueue * pEventQueue, int ClosedEventCode, void * pContext);

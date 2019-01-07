@@ -1,7 +1,7 @@
 //
 // OOSMOS mcp4131test Class
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,6 +25,8 @@
 #include "oosmos.h"
 #include "pin.h"
 #include "spi.h"
+#include <stdbool.h>
+#include <stddef.h>
 
 #ifndef mcp4131testMAX
 #define mcp4131testMAX 2
@@ -40,41 +42,41 @@ struct mcp4131testTag {
   mcp4131 * m_pMCP4131;
 };
 
-static bool RampingUp_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool RampingUp_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   mcp4131test * pMCP4131test = (mcp4131test *) pObject;
 
-  switch (pEvent->Code) {
+  switch (oosmos_EventCode(pEvent)) {
     case oosmos_ENTER:
       pMCP4131test->m_Resistance = 127;
-      return oosmos_StateTimeoutMS(pRegion, pMCP4131test->m_RampDelayTimeMS);
+      return oosmos_StateTimeoutMS(pState, pMCP4131test->m_RampDelayTimeMS);
     case oosmos_TIMEOUT:
       mcp4131SetResistance(pMCP4131test->m_pMCP4131, pMCP4131test->m_Resistance--);
 
       if (pMCP4131test->m_Resistance == 0)
-        return oosmos_Transition(pRegion, &pMCP4131test->RampingDown_State);
+        return oosmos_Transition(pMCP4131test, pState, RampingDown_State);
 
-      return oosmos_StateTimeoutMS(pRegion, pMCP4131test->m_RampDelayTimeMS);
+      return oosmos_StateTimeoutMS(pState, pMCP4131test->m_RampDelayTimeMS);
   }
 
   return false;
 }
 
-static bool RampingDown_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool RampingDown_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   mcp4131test * pMCP4131test = (mcp4131test *) pObject;
 
-  switch (pEvent->Code) {
+  switch (oosmos_EventCode(pEvent)) {
     case oosmos_ENTER:
       pMCP4131test->m_Resistance = 0;
-      return oosmos_StateTimeoutMS(pRegion, pMCP4131test->m_RampDelayTimeMS);
+      return oosmos_StateTimeoutMS(pState, pMCP4131test->m_RampDelayTimeMS);
     case oosmos_TIMEOUT:
       mcp4131SetResistance(pMCP4131test->m_pMCP4131, pMCP4131test->m_Resistance++);
 
       if (pMCP4131test->m_Resistance == 127)
-        return oosmos_Transition(pRegion, &pMCP4131test->RampingUp_State);
-      
-      return oosmos_StateTimeoutMS(pRegion, pMCP4131test->m_RampDelayTimeMS);
+        return oosmos_Transition(pMCP4131test, pState, RampingUp_State);
+
+      return oosmos_StateTimeoutMS(pState, pMCP4131test->m_RampDelayTimeMS);
   }
 
   return false;

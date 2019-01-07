@@ -1,7 +1,7 @@
 //
 // OOSMOS reg Class
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,16 +23,18 @@
 #ifndef reg_h
 #define reg_h
 
+#include <stdint.h>
+
 typedef struct regTag reg;
 
-typedef struct 
+typedef struct
 {
   float X;
   float Y;
 } regSample;
 
 extern reg * regNew(void);
-extern void regSamples(reg * pReg, const regSample * pSamples, int Samples);
+extern void regSamples(reg * pReg, const regSample * pSamples, uint32_t Samples);
 extern float regPredictY(const reg * pReg, float X);
 
 #endif

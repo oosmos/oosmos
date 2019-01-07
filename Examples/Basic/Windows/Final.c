@@ -1,7 +1,7 @@
 //
 // OOSMOS Final Example
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,98 +20,106 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <stdio.h>
 #include "oosmos.h"
+#include <stdio.h>
+#include <stdbool.h>
 
-static const int isLeft  = 1;
-static const int isRight = 0;
+//<<<EVENTS
+//>>>EVENTS
 
 typedef struct testTag test;
 
 struct testTag
 {
-  oosmos_sStateMachineNoQueue(StateMachine);
-    oosmos_sComposite         A_State;
-      oosmos_sChoice          Choice;
-      oosmos_sLeaf            Left_State;
-      oosmos_sLeaf            Right_State;
-      oosmos_sFinal           FinalA_State;
-    oosmos_sLeaf              B_State;
+//>>>DECL
+  oosmos_sStateMachineNoQueue(ROOT);
+    oosmos_sComposite A_State;
+      oosmos_sLeaf A_Choice1_State;
+      oosmos_sLeaf A_Left_State;
+      oosmos_sLeaf A_Right_State;
+      oosmos_sFinal A_Final1_State;
+    oosmos_sLeaf B_State;
+//<<<DECL
 };
 
-static bool A_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool IsLeft(void)
 {
-  test * pThis = (test *) pObject;
-
-  switch (pEvent->Code) {
-    case oosmos_DEFAULT:
-      printf("Initializing...\n");
-      break;
-    case oosmos_COMPLETE:
-      oosmos_TransitionAction(pRegion, &pThis->B_State, { printf("A-to-B action\n"); } );
-      return true;
-  } 
-
-  return false;
+  return true;
 }
 
-static bool Choice_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+//>>>CODE
+static bool A_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
-  test * pThis = (test *) pObject;
+  test * pTest = (test *) pObject;
 
-  switch (pEvent->Code) {
-    case oosmos_ENTER:
-      if (isLeft)
-        return oosmos_Transition(pRegion, &pThis->Left_State);
-      else if (isRight)
-        return oosmos_Transition(pRegion, &pThis->Right_State);
+  switch (oosmos_EventCode(pEvent)) {
+    case oosmos_COMPLETE: {
+      return oosmos_Transition(pTest, pState, B_State);
+    }
   }
 
   return false;
 }
 
-static bool Left_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool A_Choice1_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
-  test * pThis = (test *) pObject;
+  test * pTest = (test *) pObject;
 
-  switch (pEvent->Code) {
-    case oosmos_COMPLETE:
-      oosmos_TransitionAction(pRegion, &pThis->FinalA_State, { printf("Left-to-FinalA action\n"); } );
-      return true;
-  } 
+  if (oosmos_EventCode(pEvent) == oosmos_ENTER) {
+    if (IsLeft()) {
+      return oosmos_Transition(pTest, pState, A_Left_State);
+    }
+    else {
+      return oosmos_Transition(pTest, pState, A_Right_State);
+    }
+  }
 
   return false;
 }
 
-static bool Right_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool A_Left_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
-  test * pThis = (test *) pObject;
+  test * pTest = (test *) pObject;
 
-  switch (pEvent->Code) {
-    case oosmos_COMPLETE:
-      oosmos_TransitionAction(pRegion, &pThis->FinalA_State, { printf("Right-to-FinalA action\n"); } );
-      return true;
-  } 
+  switch (oosmos_EventCode(pEvent)) {
+    case oosmos_COMPLETE: {
+      return oosmos_Transition(pTest, pState, A_Final1_State);
+    }
+  }
 
   return false;
 }
+
+static bool A_Right_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
+{
+  test * pTest = (test *) pObject;
+
+  switch (oosmos_EventCode(pEvent)) {
+    case oosmos_COMPLETE: {
+      return oosmos_Transition(pTest, pState, A_Final1_State);
+    }
+  }
+
+  return false;
+}
+//<<<CODE
 
 
 static test * testNew(void)
 {
   oosmos_Allocate(pTest, test, 1, NULL);
 
-  //                                       StateName     Parent          Default
-  //                            ==================================================
-  oosmos_StateMachineInitNoQueue(pTest,    StateMachine, NULL,           A_State );
-    oosmos_CompositeInit        (pTest,    A_State,      StateMachine,   Choice  );
-      oosmos_ChoiceInit         (pTest,    Choice,       A_State                 );
-      oosmos_LeafInit           (pTest,    Left_State,   A_State                 );
-      oosmos_LeafInit           (pTest,    Right_State,  A_State                 );
-      oosmos_FinalInitNoCode    (pTest,    FinalA_State, A_State                 );
-    oosmos_LeafInitNoCode       (pTest,    B_State,      StateMachine            );
+//>>>INIT
+  oosmos_StateMachineInitNoQueue(pTest, ROOT, NULL, A_State);
+    oosmos_CompositeInit(pTest, A_State, ROOT, A_Choice1_State);
+      oosmos_LeafInit(pTest, A_Choice1_State, A_State);
+      oosmos_LeafInit(pTest, A_Left_State, A_State);
+      oosmos_LeafInit(pTest, A_Right_State, A_State);
+      oosmos_FinalInitNoCode(pTest, A_Final1_State, A_State);
+    oosmos_LeafInitNoCode(pTest, B_State, ROOT);
+//<<<INIT
 
-  oosmos_Debug(&pTest->StateMachine, true, NULL);
+  oosmos_Debug(pTest, true, NULL);
 
   return pTest;
 }
@@ -120,14 +128,12 @@ extern int main(void)
 {
   test * pTest = (test *) testNew();
 
-  while (true) {
+  for (;;) {
     oosmos_RunStateMachines();
 
-    if (oosmos_IsInState(&pTest->StateMachine, &pTest->B_State)) {
+    if (oosmos_IsInState(pTest, &pTest->B_State)) {
       printf("SUCCESS.\n");
       break;
     }
   }
-
-  return 0;
 }

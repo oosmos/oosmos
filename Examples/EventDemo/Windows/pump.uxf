@@ -1,91 +1,110 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<diagram program="umlet" version="13.0">
+<diagram program="umlet" version="14.3.0">
+  <help_text>// Uncomment the following line to change the fontsize and font:
+fontsize=10
+fontfamily=Monospaced //possible: SansSerif,Serif,Monospaced
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Welcome to UMLet!
+//
+// Double-click on elements to add them to the diagram, or to copy them
+// Edit elements by modifying the text in this panel
+// Hold Ctrl to select multiple elements
+// Use Ctrl+mouse to select via lasso
+//
+// Use +/- or Ctrl+mouse wheel to zoom
+// Drag a whole relation at its central square icon
+//
+// Press Ctrl+C to copy the whole diagram to the system clipboard (then just paste it to, eg, Word)
+// Edit the files in the "palettes" directory to create your own element palettes
+//
+// Select "Custom Elements &gt; New..." to create new element types
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+
+// This text will be stored with each diagram;  use it for notes.</help_text>
   <zoom_level>10</zoom_level>
   <element>
-    <type>com.umlet.element.custom.InitialState</type>
+    <id>UMLSpecialState</id>
     <coordinates>
-      <x>80</x>
-      <y>50</y>
+      <x>50</x>
+      <y>10</y>
       <w>20</w>
       <h>20</h>
     </coordinates>
-    <panel_attributes/>
+    <panel_attributes>type=initial</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
-    <type>com.umlet.element.Relation</type>
+    <id>Relation</id>
     <coordinates>
-      <x>60</x>
+      <x>50</x>
       <y>20</y>
-      <w>50</w>
-      <h>90</h>
+      <w>30</w>
+      <h>60</h>
     </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>30;70;30;30</additional_attributes>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
   </element>
   <element>
-    <type>com.umlet.element.custom.State</type>
+    <id>UMLState</id>
     <coordinates>
-      <x>60</x>
-      <y>90</y>
-      <w>60</w>
-      <h>210</h>
+      <x>20</x>
+      <y>60</y>
+      <w>80</w>
+      <h>110</h>
     </coordinates>
     <panel_attributes>Idle
---</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <type>com.umlet.element.custom.State</type>
-    <coordinates>
-      <x>220</x>
-      <y>90</y>
-      <w>350</w>
-      <h>210</h>
-    </coordinates>
-    <panel_attributes>Pumping
 --
-INSTATE:
-  oosmos_SyncBegin(pRegion);
-    while (true) {
-      printf("pump: PUMPING...\n");
-      oosmos_SyncDelayMS(pRegion, (10-pPump-&gt;PumpSpeed) * 200);
-    }
-  oosmos_SyncEnd(pRegion);
- 
-UpPressedEvent: 
-  pPump-&gt;PumpSpeed = oosmos_Min(10, pPump-&gt;PumpSpeed+1);
- 
-DownPressedEvent:
-  pPump-&gt;PumpSpeed = oosmos_Max(1, pPump-&gt;PumpSpeed-1);
- 
-
- 
+valign=top
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
-    <type>com.umlet.element.Relation</type>
+    <id>UMLState</id>
     <coordinates>
-      <x>90</x>
-      <y>150</y>
-      <w>150</w>
-      <h>60</h>
+      <x>190</x>
+      <y>60</y>
+      <w>430</w>
+      <h>120</h>
     </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
-StopEvent</panel_attributes>
-    <additional_attributes>30;40;130;40</additional_attributes>
+    <panel_attributes>Pumping
+--
+POLL:
+  Thread(pPump, pState);
+  
+evUpPressed:
+  pPump-&gt;PumpSpeed = oosmos_Min(10, pPump-&gt;PumpSpeed+1);
+
+evDownPressed:
+  pPump-&gt;PumpSpeed = oosmos_Max(1, pPump-&gt;PumpSpeed-1);
+valign=top
+</panel_attributes>
+    <additional_attributes/>
   </element>
   <element>
-    <type>com.umlet.element.Relation</type>
+    <id>Relation</id>
     <coordinates>
       <x>90</x>
-      <y>100</y>
-      <w>150</w>
-      <h>60</h>
+      <y>80</y>
+      <w>120</w>
+      <h>40</h>
     </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
-StartEvent</panel_attributes>
-    <additional_attributes>130;40;30;40</additional_attributes>
+    <panel_attributes>evStart
+lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;20.0;100.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>90</x>
+      <y>110</y>
+      <w>120</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>evStop
+lt=-&gt;</panel_attributes>
+    <additional_attributes>100.0;20.0;10.0;20.0</additional_attributes>
   </element>
 </diagram>

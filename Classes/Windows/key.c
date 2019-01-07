@@ -1,7 +1,7 @@
 //
 // OOSMOS key Class
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,9 +22,10 @@
 
 #include <windows.h>
 
-#include <stdio.h>
 #include "oosmos.h"
 #include "key.h"
+#include <stdio.h>
+#include <stdbool.h>
 
 typedef enum {
   Up_State = 1,
@@ -49,40 +50,46 @@ struct keyTag
 static HANDLE hStdin;
 
 //
-// Poll the console for this object's character.  
+// Poll the console for this object's character.
 //
 // Peek at the buffer.  If it does not contain this object's character, return.
 //
-// If the buffer does contain this object's character, determine if the key is up 
-// or down and store it in the by-reference pKeyState argument and clear the 
+// If the buffer does contain this object's character, determine if the key is up
+// or down and store it in the by-reference pKeyState argument and clear the
 // buffer.
 //
 static bool IsMyChar(key * pKey, eStates * pKeyState)
 {
   DWORD            NumRead;
   INPUT_RECORD     irInBuf[128];
-  DWORD            I;
 
-  if (PeekConsoleInput(hStdin, irInBuf, 128, &NumRead) && NumRead == 0)
+  if (PeekConsoleInput(hStdin, irInBuf, 128, &NumRead) && NumRead == 0) {
     return false;
+  }
 
-  for (I = 0; I < NumRead; I++) {
-    KEY_EVENT_RECORD KER = irInBuf[I].Event.KeyEvent;
-
-    if (KER.uChar.AsciiChar != pKey->m_Char)
+  for (DWORD I = 0; I < NumRead; I++) {
+    if (irInBuf[I].EventType != KEY_EVENT) {
       continue;
+    }
+
+    const KEY_EVENT_RECORD KER = irInBuf[I].Event.KeyEvent;
+
+    if (KER.uChar.AsciiChar != pKey->m_Char) {
+      continue;
+    }
 
     *pKeyState = KER.bKeyDown ? Down_State : Up_State;
-    
-    ReadConsoleInput(hStdin, irInBuf, 128, &NumRead);
+
+//    ReadConsoleInput(hStdin, irInBuf, 128, &NumRead);
     return true;
   }
 
   //
   // Purge accumulated unrecognized characters.
   //
-  if (NumRead > 10)
+  if (NumRead > 10) {
     ReadConsoleInput(hStdin, irInBuf, 128, &NumRead);
+  }
 
   return false;
 }
@@ -94,8 +101,9 @@ static void StateMachine(void * pObject)
 
   switch (pKey->m_State) {
     case Up_State:
-      if (!IsMyChar(pKey, &KeyState))
+      if (!IsMyChar(pKey, &KeyState)) {
         return;
+      }
 
       if (KeyState == Down_State) {
         printf("key: ****************** %c pressed\n", pKey->m_Char);
@@ -106,8 +114,9 @@ static void StateMachine(void * pObject)
       break;
 
     case Down_State:
-      if (!IsMyChar(pKey, &KeyState))
+      if (!IsMyChar(pKey, &KeyState)) {
         return;
+      }
 
       if (KeyState == Up_State) {
         printf("key: ****************** %c released\n", pKey->m_Char);

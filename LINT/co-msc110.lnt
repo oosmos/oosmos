@@ -1,0 +1,447 @@
+/* Date Stamp */ -d"_lint_co_msc110_lnt=co-msc110.lnt modified 17-Feb-2014"
+/* To document usage use: -message( "Using " _lint_co_msc110_lnt ) */
+// ---------------------------------------------------------------------
+// This file is provided by Gimpel Software (www.gimpel.com) for use with
+// its products PC-lint and FlexeLint.
+//
+// Redistribution and use of this file, with or without modification, is
+// permitted provided that any such redistribution retains this notice.
+// ---------------------------------------------------------------------
+//    co-msc110.lnt
+//    Compiler Options for Microsoft C/C++ Version 17.00
+//         (Visual Studio 2012)
+//    This file contains options to allow PC-lint to process source
+//    files for your compiler.  It is used as follows:
+//
+//    lint  co-msc110.lnt  source-file(s)
+//
+//          (See macros-msc.c and/or macros-msc.cpp for details.)
+
+
+// Compiler identification and dialect:
+    -cmsc           // Microsoft compiler
+    -A(C++2011)     // ISO C++ 2011 (when in C++ mode)
+    +fan            // allow anonymous unions (even in C mode)
+    -$              // $ can be used in identifiers
+
+
+// Preprocessor options (Note: see also "PREDEFINED MACROS" below.)
+    +fdi    // For #include "a.h", search directory of the including file.
+    +compiler(search_actively_including_stack)  // Extends +fdi
+    +compiler(comma_from_macro_expansion_does_not_delimit_macro_args)
+
+    // Special preprocessor macros:
+        -d__TIMESTAMP__="Mon Jan 01 00:00:00 2010"
+        -d__COUNTER__=__lint__COUNTER__
+        -d__FUNCDNAME__="MyFunc"
+        -d__FUNCSIG__="MyFunc"
+        -d__FUNCTION__=___function___
+
+
+    // Important support code to process at the outset of each translation
+    // unit:
+        -header(co-msc110.h)
+
+    // Preprocessing command words:
+        +ppw(import)          // activate #import
+        +ppw(using)           // ignore #using for now.
+
+
+
+// Fundamental types:
+    -si4    // integers are 4 bytes
+    -sp4    // pointers are 4 bytes too.
+    -sld8   // sizeof(long double) is 8.
+    +fll    // enable long long
+
+
+// Microsoft-specific reserved words:
+    +rw(__inline)         // activate the __inline keyword
+    -rw_asgn(__nullptr,nullptr)
+    -rw(char16_t)
+    -rw(char32_t)
+    +rw(__ptr64)            // additional qualifier
+    +rw_asgn(__thiscall,fortran) // additional qualifier
+
+    +rw(__restrict)
+    +rw(__underlying_type)  // used to implement std::underlying_type
+
+    // type trait operator keywords:
+        +rw(__has_assign)
+        +rw(__has_copy)
+        +rw(__has_finalizer)
+        +rw(__has_nothrow_assign)
+        +rw(__has_nothrow_constructor)
+        +rw(__has_nothrow_copy)
+        +rw(__has_trivial_assign)
+        +rw(__has_trivial_constructor)
+        +rw(__has_trivial_copy)
+        +rw(__has_trivial_destructor)
+
+        +rw(__has_user_destructor)
+        +rw(__has_virtual_destructor)
+        +rw(__is_abstract)
+        +rw(__is_base_of)
+        +rw(__is_class)
+        +rw(__is_convertible)
+        +rw(__is_convertible_to)
+        +rw(__is_delegate)
+        +rw(__is_empty)
+        +rw(__is_enum)
+        +rw(__is_interface_class)
+        +rw(__is_literal_type)
+        +rw(__is_pod)
+        +rw(__is_polymorphic)
+        +rw(__is_ref_array)
+        +rw(__is_ref_class)
+        +rw(__is_sealed)
+        +rw(__is_simple_value_class)
+        +rw(__is_union)
+        +rw(__is_value_class)
+        +rw(__is_trivially_copyable)
+
+        +rw(__is_trivial)
+        +rw(__has_trivial_move_constructor)
+        +rw(__has_trivial_move_assign)
+        +rw(__has_nothrow_move_assign)
+        +rw(__is_standard_layout)
+
+
+    // Partial support for the "old" (VC++ 2003) Managed Extensions
+    // syntax:
+        +rw( __gc, __value, __nogc, __pin, __ptr32, __ptr64 )
+
+        +rw( __allowed_on_parameter )
+        +rw(  __allowed_on_function )
+        +rw(  __allowed_on_typedecl )
+        +rw(  __allowed_on_return )
+        +rw(  __allowed_on_struct )
+        +rw( __allowed_on_function_or_typedecl )
+        +rw( __allowed_on_field )
+        +rw( __allowed_on_parameter_or_return )
+        +rw( __allowed_on_function )
+
+    // Reserved words currently presented to Lint as preprocessor macros:
+        -d_declspec=__declspec  // the single '_' version is occasionally used
+        -d_inline=__inline    // _inline is the same as __inline
+        -d"__uuidof()= /*lint --e(50,69,1924) */ (_GUID)0"
+        -d_stdcall=__stdcall    // make _stdcall equivalent to __stdcall
+        -d__interface=class     // treat an interface the same as a class
+        -d__unaligned=          // pass over the __unaligned keyword
+        -d__w64=                // ignore this identifier
+        -d__pragma(x)=          // ignore the pragma extension
+
+        -"d__identifier(x)=___identifier x"
+                                // treat C++ keyword x as an identifier
+
+        -d"initonly=" // Compiler should catch miss-uses.
+                    // Lint can just skip over it.
+        -d"literal=static const"    // Documentation says they are
+                                    // equivalent for member data.
+
+        // __try_cast is like dynamic_cast (except the former throws where
+        // the latter returns 0).
+
+        -d__try_cast=dynamic_cast
+
+
+// Common suppressions for library headers:
+    -wlib(1)    // sets the warning level within library headers to 1
+    -elib(1111) // Some VC++ headers contain explicit specializations at class
+                // scope.
+    -elib(19)   // useless declarations (lone semicolons)
+    -elib(43)   // vacuous array within _MIDL_FORMAT_STRING
+    -elib(123)  // function-like macro name used as non macro
+    -elib(146)  // assuming binary constant
+    -elib(149)  // default argument found in C code.
+
+    -elib(165)  // (Error -- An unscoped enumeration cannot be
+                // forward-declared without an enum-base (int is assumed))
+                // This is needed to cope with ill-formed enum forward
+                // declarations in generated COM .tlh files. Example: unless
+                // invoked with /Za, cl.exe version 17.00 is silent about:
+                //
+                //      enum E; // Error (need body or enum-base)
+
+    -elib(1040) // (Error -- Symbol 'Symbol' is not a legal declaration within
+                // class 'Name') - The WTL IFileDialogEvents implementation
+                // violates this rule
+
+    -elib(1015) // GetDefaultThreads not found in class
+    -elib(1065) // same name declared as "C" and not "C"
+    -elib(1066) // same name declared as "C" and not "C"
+    -elib(1081) // suspicious object argument to an object parameter
+
+
+// Common suppressions for library symbols (which take effect when Lint is
+// not processing library source code--e.g., during analysis at one of the
+// "Wrap-up" times):
+
+    -elibsym(1512)          // base class destructor not virtual
+
+
+// Function semantics/function mimicry:
+    -function( wcstombs(1) )    // remove the check for a NULL first arg to wcstombs()
+    -function(exit,_exit)       // _exit() is like exit()
+    -function(exit,_assert)     // _assert() is like exit()
+
+    lib-ole.lnt // OLE Automation library semantics
+
+    // printf()-like and scanf()-like semantics:
+        +fwm    // wprintf format codes are not standard
+
+        //  wide-char variants of the printf-scanf family:
+            -wprintf( 1, wprintf )
+            -wprintf( 3, fwprintf, swprintf )
+            -wscanf( 1, wscanf )
+            -wscanf( 2, fwscanf, swscanf )
+
+        // substitutions for sprintf:
+            -printf( 3, StringCbPrintfA )
+            -printf( 3, StringCchPrintfA )
+            -wprintf( 3, StringCbPrintfW )
+            -wprintf( 3, StringCchPrintfW )
+
+// Other common suppressions (which apply to both library and non-library
+// code):
+    // Simple suppressions:
+        -e19    // Suppress errors about lone semicolons
+        -e46    // allows bit-fields to be other than int or unsigned
+        -e793   // inhibit 'ANSI limit reached' --
+                // limits are impractically low with MSVC headers
+
+    // Suppressions that apply at points of macro expansion:
+        -emacro(506,assert)     // don't warn about constant value Boolean
+        -emacro(734,putc)       // don't complain about items being too large.
+        -emacro(415,_FP_SEG)    // access of out-of-bounds pointer
+        -emacro(740,FP_SEG,FP_OFF)  // unusual casts
+        -emacro((???),va_arg)   // the va_arg() macro can yield 415, 416, 661, 662
+                                // 796 and 797 (out-of-bounds errors).
+        -emacro((???),va_start) // the same applies to va_start
+        -emacro(413,offsetof)   // use of NULL pointer creates a stir
+        -emacro(545,offsetof)   // addressing an array member is OK
+        -emacro(845,RGB)        // a common use of RGB uses a operator that produces a 0
+        -emacro(571,__isascii)  // don't warn about the unusual cast
+        -emacro(522,UNREFERENCED_PARAMETER)  // don't complain about a lack of
+                                             // side-effects
+        -emacro(648,CDN_*)      // ignore unsigned overflow
+        -emacro(648,OIVN_*)     // ignore unsigned overflow
+        -emacro(648,TTN_*)      // ignore unsigned overflow
+        -emacro(648,TVN_*)      // ignore unsigned overflow
+        -emacro(648,TBN_*)      // ignore unsigned overflow
+
+        // Added for VS2012:
+            -emacro(534,	TEST_METHOD)													// (Warning -- Ignoring return value of function)
+            -emacro(708,	TEST_METHOD, TEST_METHOD_INITIALIZE, TEST_METHOD_CLEANUP)		// (Information -- union initialization)
+            -emacro(785,	TEST_METHOD_INITIALIZE, TEST_METHOD_CLEANUP)	 				// (Information -- Too few initializers for aggregate 's_Metadata' of type 'const Microsoft::VisualStudio::CppUnitTestFramework::MethodMetadata')
+            -emacro(1773,	TEST_METHOD, TEST_METHOD_INITIALIZE, TEST_METHOD_CLEANUP)		// (Information -- Attempt to cast away const (or volatile))
+
+    // esym suppressions:
+        -esym(18,Data_t::Data_t) // definition not matching declaration
+        -esym(40,DLGPROC)       // used before being defined
+        -esym(123,min,max)    // allows users to use min, max as variables
+        -esym(628,eof)    // failure to provide argument information for eof()
+        -esym(773,L_tmpnam)     // defined with an unparenthesized '+'
+        -esym(438,_acp)         // USES_CONVERSION assigns to _acp.
+
+        //  The following functions exhibit variable return modes.
+        //  That is, they may equally-usefully be called for a value
+        //  as called just for their effects.  Accordingly we inhibit
+        //  Warning 534 for these functions.
+        //  Feel free to add to or subtract from this list.
+            -esym(534,close,creat,fclose,fflush,_flsbuf,fprintf,fputc)
+            -esym(534,fputs,fscanf,fseek,fwrite,lseek,memcpy,memmove,memset)
+            -esym(534,printf,puts,scanf,sprintf,sscanf,strcat,strcpy)
+            -esym(534,strncat,strncpy,unlink,write)
+            -esym(534,*operator<<,*operator>>)
+
+        // The following options are required by most compilers to
+        // noiselessly process iostream.h
+            -esym(1702,operator<<,operator>>)  // both a member and an ordinary function
+
+        -esym(123,FD_SET)        // defined as macro and as typedef
+        -esym(1726,endl,ends)    // taking the address of an overloaded function
+
+
+        // Additional supressions for VS2012
+        -esym(1932,		Microsoft::VisualStudio::CppUnitTestFramework::TestClass<*>)	// (Elective Note -- Base class is not abstract -- More Effective C++ #33)
+
+
++e1942      // This Elective Note alerts the user to the non-standard
+            // way in which MS handles originally-dependent base classes.
+            // E.g.  template<class T> class A : T { ... x ... };
+            // Should T be searched for "x" during instantiation?
+            // the standard says "no", MS does.
+
+
+//
+// PREDEFINED MACROS
+// (Note: these are options that should be commented out if you use the
+// automatic macro generator (macros-msc.cpp)
+
+// Note, a macro option of the form:
+//   -dA{1}
+// has the same effect as:
+//   -dA=1
+// or:
+//   -d"A=1"
+// The curly-brace version of the syntax is appropriate for
+// macro-scavenging (the method we used to generate the macro options
+// below).  For details, see notes on the -scavenge() option in section
+// 5.8.3 in the Lint manual.  See also the macro generator file,
+// macros-msc.cpp, which follows the form of -scavenge() output.
+
+// We generated the options in this section with the following commands:
+//    %VSInstallDir%\vc\bin\vcvars32.bat
+//    cl /EP /C macros-msc.cpp
+// The options for other build configurations will probably differ (which
+// is why you should comment out the following if you use the macro
+// generator).
+
+// Also note: some of the following are defined for C++ mode but not for C
+// mode; but there's no need to comment them out here because they are
+// conditionally #undef'd in co-msc110.h.
+
+    -d_CPPRTTI{1}
+    //
+    // Defined for code compiled with /GR (Enable Run-Time Type
+    // Information).
+    //
+
+    -d_INTEGRAL_MAX_BITS{64}
+    //
+    // Reports the maximum size (in bits) for an integral type.
+    //
+
+    // NOTE:
+    // When generating 64-bit code, the definition for _M_IX86 must be
+    // commented out.
+    -d_M_IX86{600}
+    //
+    // Defined for x86 processors. See the "Values for _M_IX86 table" (in
+    // Microsoft's preprocessor documentation) for more information. This
+    // is not defined for x64 processors.
+    //
+
+    -d_M_IX86_FP{0}
+    //
+    // Expands to a value indicating which /arch compiler option was used:
+    //
+    // 0 if /arch was not used.
+    //
+    // 1 if /arch:SSE was used.
+    //
+    // 2 if /arch:SSE2 was used.
+    //
+    // See /arch (Minimum CPU Architecture) for more information.
+    //
+
+    -d_MSC_BUILD{1}
+    //
+    // Evaluates to the revision number component of the compiler's
+    // version number. The revision number is the fourth component of the
+    // period-delimited version number. For example, if the version number
+    // of the Visual C++ compiler is 15.00.20706.01, the _MSC_BUILD macro
+    // evaluates to 1.
+    //
+
+    -d_MSC_EXTENSIONS{1}
+    //
+    // This macro is defined when you compile with the /Ze compiler option
+    // (the default). Its value, when defined, is 1.
+    //
+
+    -d_MSC_FULL_VER{170050727}
+    //
+    // Evaluates to the major, minor, and build number components of the
+    // compiler's version number. The major number is the first component
+    // of the period-delimited version number, the minor number is the
+    // second component, and the build number is the third component. For
+    // example, if the version number of the Visual C++ compiler is
+    // 15.00.20706.01, the _MSC_FULL_VER macro evaluates to 150020706.
+    // Type cl /? at the command line to view the compiler's version
+    // number.
+    //
+
+    -d_MSC_VER{1700}
+    //
+    // Evaluates to the major and minor number components of the
+    // compiler's version number. The major number is the first component
+    // of the period-delimited version number and the minor number is the
+    // second component.
+    //
+    // For example, if the version number of the Visual C++ compiler is
+    // 15.00.20706.01, the _MSC_VER macro evaluates to 1500.
+    //
+    // In Visual Studio 2012, _MSC_VER is defined as 1700.
+    //
+
+    -d_MT{1}
+    //
+    // Defined when /MD or /MDd (Multithreaded DLL) or /MT or /MTd
+    // (Multithreaded) is specified.
+    //
+
+    -d_NATIVE_WCHAR_T_DEFINED{1}
+    //
+    // Defined when /Zc:wchar_t is used.
+    //
+
+    -d_WCHAR_T_DEFINED{1}
+    //
+    // Defined when /Zc:wchar_t is used or if wchar_t is defined in a
+    // system header file included in your project.
+    //
+
+    -d_WIN32{1}
+    //
+    // Defined for applications for Win32 and Win64. Always defined.
+    //
+
+  /**** Undocumented predefined macros follow ****/
+
+    -d_NATIVE_NULLPTR_SUPPORTED{1}
+
+// When compiling with /J, use:
+    //+fcu                      // Plain char is unsigned
+    //-d_CHAR_UNSIGNED
+
+// When compiling with /clr, /clr:pure or /clr:safe, use:
+    //-d__cplusplus_cli=200406  // for all 3
+    //-d_M_CEE_PURE             // for /clr:pure
+    //-d_M_CEE_SAFE             // for /clr:safe
+    //-d_MANAGED                // for /clr
+
+// When using any /clr form, use:
+    //-d_M_CEE
+
+
+// When compiling with /GX or /EH, use:
+    //-d_CPPUNWIND      // Enable Exception Handling
+
+// When compiling for Win64, use:
+    //-d_WIN64
+
+// When compiling with /Wp64, use:
+    //-d_Wp64           // 64-bit portability
+
+// Be sure to define your platform if any of the following apply:
+    //-d_M_ALPHA    // For DEC ALPHA platforms
+    //-d_M_IA64     // For Itanium 64-bit processors
+    //-d_M_X64      // For x64 processors
+
+// When compiling with the /RTC option, use:
+    //-d__MSVC_RUNTIME_CHECKS  // Using such checks
+
+// When compiling with /openmp, use:
+    //-d_OPENMP=200203         // OpenMP specification date
+
+// When compiling with /Zl, use:
+    //-d_VC_NODEFAULTLIB       // Omit default library name in *.obj file
+
+/*  DLL's  or Multithreads?  Enable the following:
+
+    -d_AFXDLL   // making a DLL
+    -d_DLL      // ditto
+
+ */

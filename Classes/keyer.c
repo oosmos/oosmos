@@ -1,7 +1,7 @@
 //
 // OOSMOS keyer Class
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,152 +22,200 @@
 
 #include "oosmos.h"
 #include "keyer.h"
-#include "prt.h"
+#include "pin.h"
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 
 struct keyerTag
 {
-  oosmos_sStateMachineNoQueue(StateMachine);
-    oosmos_sLeaf              Idle_State;
-    oosmos_sComposite         Dah_State;
-      oosmos_sLeaf            Dah_Tone_State;
-    oosmos_sComposite         Dit_State;
-      oosmos_sLeaf            Dit_Tone_State;
+//>>>DECL
+  oosmos_sStateMachineNoQueue(ROOT);
+    oosmos_sLeaf DahSound_State;
+    oosmos_sLeaf Idle_State;
+    oosmos_sLeaf Choice2_State;
+    oosmos_sLeaf Choice1_State;
+    oosmos_sLeaf DitSound_State;
+//<<<DECL
 
   pin * m_pDahPin;
   pin * m_pDitPin;
   pin * m_pSpeakerPin;
-  
-  int m_DitTimeMS;
-  int m_DahTimeMS;
-  int m_SpaceTimeMS;
-   
-  struct {
-    struct {
-      bool m_DitWasPressed;
-    } Dah;
-  
-    struct {
-      bool m_DahWasPressed;
-    } Dit;
-  } m_StateData;
+
+  uint32_t m_DitTimeMS;
+  uint32_t m_DahTimeMS;
+  uint32_t m_SpaceTimeMS;
+
+  bool m_DitWasPressed;
+  bool m_DahWasPressed;
 };
 
-static void CheckDahIsPressed(keyer * pKeyer)
+static void CheckDahIsPressedPoll(keyer * pKeyer)
 {
-  if (!pKeyer->m_StateData.Dit.m_DahWasPressed && pinIsOn(pKeyer->m_pDahPin))
-    pKeyer->m_StateData.Dit.m_DahWasPressed = true;
-}
-
-static void CheckDitIsPressed(keyer * pKeyer)
-{
-  if (!pKeyer->m_StateData.Dah.m_DitWasPressed && pinIsOn(pKeyer->m_pDitPin))
-    pKeyer->m_StateData.Dah.m_DitWasPressed = true;
-}
-
-static bool Idle_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
-{
-  keyer * pKeyer = (keyer *) pObject;
-
-  switch (pEvent->Code) {
-    case oosmos_INSTATE:
-      if (pinIsOn(pKeyer->m_pDahPin))
-        return oosmos_Transition(pRegion, &pKeyer->Dah_State);
-      else if (pinIsOn(pKeyer->m_pDitPin))
-        return oosmos_Transition(pRegion, &pKeyer->Dit_State);
+  if (!pKeyer->m_DahWasPressed && pinIsOn(pKeyer->m_pDahPin)) {
+    pKeyer->m_DahWasPressed = true;
   }
-
-  return false;
 }
 
-static bool Dah_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static void CheckDitIsPressedPoll(keyer * pKeyer)
+{
+  if (!pKeyer->m_DitWasPressed && pinIsOn(pKeyer->m_pDitPin)) {
+    pKeyer->m_DitWasPressed = true;
+  }
+}
+
+static bool DahWasPressed(const keyer * pKeyer)
+{
+  return pKeyer->m_DahWasPressed;
+}
+
+static bool DitWasPressed(const keyer * pKeyer)
+{
+  return pKeyer->m_DitWasPressed;
+}
+
+static bool IsDitPressed(const keyer * pKeyer)
+{
+  return pinIsOn(pKeyer->m_pDitPin);
+}
+
+static bool IsDahPressed(const keyer * pKeyer)
+{
+  return pinIsOn(pKeyer->m_pDahPin);
+}
+
+static void DitThread(const keyer * pKeyer, oosmos_sState * pState)
+{
+  oosmos_ThreadBegin();
+    pinOn(pKeyer->m_pSpeakerPin);
+    oosmos_ThreadDelayMS(pKeyer->m_DitTimeMS);
+    pinOff(pKeyer->m_pSpeakerPin);
+
+    oosmos_ThreadDelayMS(pKeyer->m_SpaceTimeMS);
+  oosmos_ThreadEnd();
+}
+
+static void DahThread(const keyer * pKeyer, oosmos_sState * pState)
+{
+  oosmos_ThreadBegin();
+    pinOn(pKeyer->m_pSpeakerPin);
+    oosmos_ThreadDelayMS(pKeyer->m_DahTimeMS);
+    pinOff(pKeyer->m_pSpeakerPin);
+
+    oosmos_ThreadDelayMS(pKeyer->m_SpaceTimeMS);
+  oosmos_ThreadEnd();
+}
+
+//>>>CODE
+static bool DahSound_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   keyer * pKeyer = (keyer *) pObject;
 
-  switch (pEvent->Code) {
-    case oosmos_ENTER:
-      pKeyer->m_StateData.Dah.m_DitWasPressed = false;
-      return true; 
-    case oosmos_INSTATE: 
-      CheckDitIsPressed(pKeyer);
+  switch (oosmos_EventCode(pEvent)) {
+    case oosmos_ENTER: {
+      pKeyer->m_DitWasPressed = false;
       return true;
-  }
-
-  return false;
-}
-
-static bool Dah_Tone_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
-{
-  keyer * pKeyer = (keyer *) pObject;
-
-  switch (pEvent->Code) {
-    case oosmos_INSTATE:
-      oosmos_AsyncBegin(pRegion);
-        pinOn(pKeyer->m_pSpeakerPin);
-        oosmos_AsyncDelayMS(pRegion, pKeyer->m_DahTimeMS);
-        pinOff(pKeyer->m_pSpeakerPin);
-        oosmos_AsyncDelayMS(pRegion, pKeyer->m_SpaceTimeMS);
-      oosmos_AsyncEnd(pRegion);
-
-      if (pKeyer->m_StateData.Dah.m_DitWasPressed)
-        return oosmos_Transition(pRegion, &pKeyer->Dit_State);
-       
-      return oosmos_Transition(pRegion, &pKeyer->Idle_State);
-  }
-
-  return false;
-}
-
-static bool Dit_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
-{
-  keyer * pKeyer = (keyer *) pObject;
-  
-  switch (pEvent->Code) {
-    case oosmos_ENTER:
-      pKeyer->m_StateData.Dit.m_DahWasPressed = false;
-      return true; 
-    case oosmos_INSTATE: 
-      CheckDahIsPressed(pKeyer);
+    }
+    case oosmos_POLL: {
+      CheckDitIsPressedPoll(pKeyer);
+      DahThread(pKeyer, pState);
       return true;
+    }
+    case oosmos_COMPLETE: {
+      return oosmos_Transition(pKeyer, pState, Choice1_State);
+    }
   }
 
   return false;
 }
 
-static bool Dit_Tone_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool Idle_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   keyer * pKeyer = (keyer *) pObject;
 
-  switch (pEvent->Code) {
-    case oosmos_INSTATE:
-      oosmos_AsyncBegin(pRegion);
-        pinOn(pKeyer->m_pSpeakerPin);
-        oosmos_AsyncDelayMS(pRegion, pKeyer->m_DitTimeMS);
-        pinOff(pKeyer->m_pSpeakerPin);
-        oosmos_AsyncDelayMS(pRegion, pKeyer->m_SpaceTimeMS);
-      oosmos_AsyncEnd(pRegion);
-
-      if (pKeyer->m_StateData.Dit.m_DahWasPressed)
-        return oosmos_Transition(pRegion, &pKeyer->Dah_State);
-
-      return oosmos_Transition(pRegion, &pKeyer->Idle_State);
+  switch (oosmos_EventCode(pEvent)) {
+    case oosmos_POLL: {
+      if (IsDahPressed(pKeyer)) {
+        return oosmos_Transition(pKeyer, pState, DahSound_State);
+      }
+      if (IsDitPressed(pKeyer)) {
+        return oosmos_Transition(pKeyer, pState, DitSound_State);
+      }
+      return true;
+    }
   }
 
   return false;
 }
 
-extern keyer * keyerNew(pin * pDahPin, pin * pDitPin, pin * pSpeakerPin, const int WPM)
+static bool Choice2_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
-  oosmos_Allocate(pKeyer, keyer, 2, NULL);
-   
-  //                                     State Name      Parent        Default
-  //                             =====================================================
-  oosmos_StateMachineInitNoQueue(pKeyer, StateMachine,   NULL,         Idle_State    );
-    oosmos_LeafInit             (pKeyer, Idle_State,     StateMachine                );
-     oosmos_CompositeInit       (pKeyer, Dah_State,      StateMachine, Dah_Tone_State);
-       oosmos_LeafInit          (pKeyer, Dah_Tone_State, Dah_State                   );
-     oosmos_CompositeInit       (pKeyer, Dit_State,      StateMachine, Dit_Tone_State);
-       oosmos_LeafInit          (pKeyer, Dit_Tone_State, Dit_State                   );
-    
+  keyer * pKeyer = (keyer *) pObject;
+
+  if (oosmos_EventCode(pEvent) == oosmos_ENTER) {
+    if (DahWasPressed(pKeyer)) {
+      return oosmos_Transition(pKeyer, pState, DahSound_State);
+    }
+    else {
+      return oosmos_Transition(pKeyer, pState, Idle_State);
+    }
+  }
+
+  return false;
+}
+
+static bool Choice1_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
+{
+  keyer * pKeyer = (keyer *) pObject;
+
+  if (oosmos_EventCode(pEvent) == oosmos_ENTER) {
+    if (DitWasPressed(pKeyer)) {
+      return oosmos_Transition(pKeyer, pState, DitSound_State);
+    }
+    else {
+      return oosmos_Transition(pKeyer, pState, Idle_State);
+    }
+  }
+
+  return false;
+}
+
+static bool DitSound_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
+{
+  keyer * pKeyer = (keyer *) pObject;
+
+  switch (oosmos_EventCode(pEvent)) {
+    case oosmos_ENTER: {
+      pKeyer->m_DahWasPressed = false;
+      return true;
+    }
+    case oosmos_POLL: {
+      CheckDahIsPressedPoll(pKeyer);
+      DitThread(pKeyer, pState);
+      return true;
+    }
+    case oosmos_COMPLETE: {
+      return oosmos_Transition(pKeyer, pState, Choice2_State);
+    }
+  }
+
+  return false;
+}
+//<<<CODE
+
+extern keyer * keyerNew(pin * pDahPin, pin * pDitPin, pin * pSpeakerPin, uint32_t WPM)
+{
+  oosmos_Allocate(pKeyer, keyer, 1, NULL);
+
+//>>>INIT
+  oosmos_StateMachineInitNoQueue(pKeyer, ROOT, NULL, Idle_State);
+    oosmos_LeafInit(pKeyer, DahSound_State, ROOT);
+    oosmos_LeafInit(pKeyer, Idle_State, ROOT);
+    oosmos_LeafInit(pKeyer, Choice2_State, ROOT);
+    oosmos_LeafInit(pKeyer, Choice1_State, ROOT);
+    oosmos_LeafInit(pKeyer, DitSound_State, ROOT);
+//<<<INIT
+
   pKeyer->m_pDahPin     = pDahPin;
   pKeyer->m_pDitPin     = pDitPin;
   pKeyer->m_pSpeakerPin = pSpeakerPin;
@@ -175,9 +223,9 @@ extern keyer * keyerNew(pin * pDahPin, pin * pDitPin, pin * pSpeakerPin, const i
   pKeyer->m_DahTimeMS   = pKeyer->m_DitTimeMS * 3;
   pKeyer->m_SpaceTimeMS = pKeyer->m_DitTimeMS;
 
-  oosmos_DebugCode(
-    oosmos_Debug(&pKeyer->StateMachine, true, NULL);
-  )
-    
+#if 0
+  oosmos_Debug(pKeyer, true, NULL);
+#endif
+
   return pKeyer;
 }

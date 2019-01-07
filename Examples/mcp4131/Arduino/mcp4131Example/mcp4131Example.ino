@@ -1,7 +1,7 @@
 //
 // OOSMOS - The Object-Oriented State Machine Operating System
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,19 +30,19 @@ extern void setup()
   //
   // Create an SPI bus.
   //
-  pin * pCLK  = pinNew(13, pinOut, pinActiveHigh); 
-  pin * pMOSI = pinNew(12, pinOut, pinActiveLow); 
+  pin * pCLK  = pinNew(13, pinOut, pinActiveHigh);
+  pin * pMOSI = pinNew(12, pinOut, pinActiveLow);
   spi * pSPI  = spiNew(pCLK, pMOSI, NULL);
 
   //
   // Allocate chip select pin for an SPI slave.
   //
-  pin * pCS1  = pinNew(10, pinOut, pinActiveLow);  
-  
+  pin * pCS1  = pinNew(10, pinOut, pinActiveLow);
+
   //
   // Allocate chip select pin for another SPI slave.
   //
-  pin * pCS2  = pinNew(9, pinOut, pinActiveLow); 
+  pin * pCS2  = pinNew(9, pinOut, pinActiveLow);
 
   //
   // Create tests for two mcp4131 devices on that SPI bus. The tests will create

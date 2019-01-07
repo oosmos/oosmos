@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -7,7 +7,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -35,13 +35,13 @@ static void SetupEncoderTest(int PinA, int PinB, int Max)
   encodertestNew(pPinA, pPinB, Max);
 }
 
-extern void setup() 
+extern void setup()
 {
   SetupEncoderTest(9, 10, 20);
   SetupEncoderTest(11, 12, 40);
 }
 
-extern void loop() 
+extern void loop()
 {
   oosmos_RunStateMachines();
 }

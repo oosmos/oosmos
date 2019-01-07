@@ -1,0 +1,7 @@
+-D_MSC_VER
+
+// >>>>> Various symbols not referenced (due to preprocessor selection).
+-e751
+-e528
+-e754
+// <<<<<

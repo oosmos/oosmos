@@ -1,109 +1,114 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<diagram program="umlet" version="13.2">
+<diagram program="umlet" version="14.2">
   <zoom_level>10</zoom_level>
   <element>
-    <type>com.baselet.element.old.element.State</type>
+    <id>UMLState</id>
     <coordinates>
-      <x>20</x>
-      <y>70</y>
-      <w>90</w>
-      <h>30</h>
+      <x>50</x>
+      <y>90</y>
+      <w>100</w>
+      <h>40</h>
     </coordinates>
-    <panel_attributes>**MS**
---</panel_attributes>
+    <panel_attributes>MS
+--
+valign=top</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
-    <type>com.baselet.element.old.element.InitialState</type>
+    <id>UMLState</id>
     <coordinates>
       <x>50</x>
-      <y>30</y>
+      <y>180</y>
+      <w>100</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>Seconds
+--
+valign=top</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>50</x>
+      <y>260</y>
+      <w>100</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>US
+--
+valign=top</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>90</x>
+      <y>50</y>
+      <w>30</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>90</x>
+      <y>40</y>
       <w>20</w>
       <h>20</h>
     </coordinates>
-    <panel_attributes/>
+    <panel_attributes>type=initial</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
-    <type>com.baselet.element.old.element.Relation</type>
+    <id>Relation</id>
     <coordinates>
-      <x>30</x>
-      <y>0</y>
-      <w>50</w>
-      <h>90</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>30;70;30;30</additional_attributes>
-  </element>
-  <element>
-    <type>com.baselet.element.old.element.Relation</type>
-    <coordinates>
-      <x>30</x>
-      <y>70</y>
-      <w>50</w>
+      <x>90</x>
+      <y>120</y>
+      <w>120</w>
       <h>80</h>
     </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
-</panel_attributes>
-    <additional_attributes>30;60;30;30</additional_attributes>
+    <panel_attributes>TIMEOUT(1000 ms)
+lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
   </element>
   <element>
-    <type>com.baselet.element.old.element.State</type>
+    <id>Relation</id>
     <coordinates>
-      <x>20</x>
-      <y>190</y>
-      <w>90</w>
-      <h>30</h>
+      <x>90</x>
+      <y>210</y>
+      <w>110</w>
+      <h>70</h>
     </coordinates>
-    <panel_attributes>**US**
---</panel_attributes>
-    <additional_attributes/>
+    <panel_attributes>TIMEOUT(1 sec)
+lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
   </element>
   <element>
-    <type>com.baselet.element.old.element.State</type>
+    <id>Relation</id>
     <coordinates>
-      <x>20</x>
-      <y>130</y>
-      <w>90</w>
-      <h>30</h>
+      <x>90</x>
+      <y>290</y>
+      <w>130</w>
+      <h>70</h>
     </coordinates>
-    <panel_attributes>**Seconds**
---</panel_attributes>
-    <additional_attributes/>
+    <panel_attributes>TIMEOUT(100000 us)
+lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
   </element>
   <element>
-    <type>com.baselet.element.old.element.Relation</type>
-    <coordinates>
-      <x>30</x>
-      <y>130</y>
-      <w>50</w>
-      <h>80</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
-</panel_attributes>
-    <additional_attributes>30;60;30;30</additional_attributes>
-  </element>
-  <element>
-    <type>com.baselet.element.old.element.Relation</type>
-    <coordinates>
-      <x>30</x>
-      <y>190</y>
-      <w>50</w>
-      <h>80</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
-</panel_attributes>
-    <additional_attributes>30;60;30;30</additional_attributes>
-  </element>
-  <element>
-    <type>com.baselet.element.old.element.FinalState</type>
+    <id>UMLState</id>
     <coordinates>
       <x>50</x>
-      <y>250</y>
-      <w>20</w>
-      <h>20</h>
+      <y>340</y>
+      <w>100</w>
+      <h>40</h>
     </coordinates>
-    <panel_attributes/>
+    <panel_attributes>Done
+--
+valign=top</panel_attributes>
     <additional_attributes/>
   </element>
 </diagram>

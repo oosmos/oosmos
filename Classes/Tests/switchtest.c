@@ -1,7 +1,7 @@
 //
 // OOSMOS switchtest Class
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,15 +25,17 @@
 #include "sw.h"
 #include "prt.h"
 #include "switchtest.h"
+#include <stdbool.h>
+#include <stddef.h>
 
-#ifndef MAX_SWITCHTESTS 
+#ifndef MAX_SWITCHTESTS
 #define MAX_SWITCHTESTS 2
 #endif
 
-typedef enum {
+enum {
   OpenEvent = 1,
   ClosedEvent,
-} eEvents;
+};
 
 struct switchtestTag
 {
@@ -41,15 +43,17 @@ struct switchtestTag
     oosmos_sLeaf       Idle_State;
 };
 
-static bool Idle_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool Idle_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   switchtest * pSwitchTest = (switchtest *) pObject;
-  
-  switch (pEvent->Code) {
+
+  switch (oosmos_EventCode(pEvent)) {
     case OpenEvent:
-      return prtFormatted("Switch %p opened\n", pSwitchTest);
+      prtFormatted("Switch %p opened\n", pSwitchTest);
+      return true;
     case ClosedEvent:
-      return prtFormatted("Switch %p closed\n", pSwitchTest);
+      prtFormatted("Switch %p closed\n", pSwitchTest);
+      return true;
   }
 
   return false;
@@ -58,16 +62,16 @@ static bool Idle_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosm
 extern switchtest * switchtestNew(pin * pPin)
 {
   oosmos_Allocate(pSwitchTest, switchtest, MAX_SWITCHTESTS, NULL);
-  
+
   //                                   StateName     Parent        Default
   //                     =====================================================
   oosmos_StateMachineInit(pSwitchTest, StateMachine, NULL,         Idle_State);
     oosmos_LeafInit      (pSwitchTest, Idle_State,   StateMachine            );
-  
+
   sw * pSwitch = swNew(pPin);
-  
-  swSubscribeOpenEvent(pSwitch, &pSwitchTest->EventQueue, OpenEvent, NULL);
-  swSubscribeCloseEvent(pSwitch, &pSwitchTest->EventQueue, ClosedEvent, NULL);
-  
+
+  swSubscribeOpenEvent(pSwitch, oosmos_EventQueue(pSwitchTest), OpenEvent, NULL);
+  swSubscribeCloseEvent(pSwitch, oosmos_EventQueue(pSwitchTest), ClosedEvent, NULL);
+
   return pSwitchTest;
 }

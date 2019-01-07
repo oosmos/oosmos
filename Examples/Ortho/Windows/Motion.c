@@ -1,7 +1,7 @@
 //
 // OOSMOS motion Example
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,187 +20,217 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <stdio.h>
 #include "oosmos.h"
+#include <stdbool.h>
+#include <stdio.h>
 
-typedef enum
+//>>>EVENTS
+enum {
+  evDownCommand = 1,
+  evLowerLimitSwitchClosed = 2,
+  evLowerLimitSwitchOpen = 3,
+  evStopCommand = 4,
+  evUpCommand = 5,
+  evUpperLimitSwitchClosed = 6,
+  evUpperLimitSwitchOpen = 7
+};
+//<<<EVENTS
+
+typedef struct motionTag motion;
+
+typedef union {
+  oosmos_sEvent Base;
+} uEvents;
+
+struct motionTag
 {
-  UpCommandEvent = 1,
-  DownCommandEvent,
-  StopCommandEvent,
-
-  UpperLimitSwitchOpenEvent,
-  UpperLimitSwitchClosedEvent,
-
-  LowerLimitSwitchOpenEvent,
-  LowerLimitSwitchClosedEvent,
-} eEvents;
-
-typedef struct motorTag motor;
-
-struct motorTag
-{
-  oosmos_sStateMachine   (StateMachine, oosmos_sEvent, 3);
-    oosmos_sOrtho         Ortho_State;
-      oosmos_sOrthoRegion Limits_State;
-        oosmos_sChoice    Limits_Choice_State;
-        oosmos_sLeaf      Limits_InBounds_State;
-        oosmos_sLeaf      Limits_AtUpperLimit_State;
-        oosmos_sLeaf      Limits_AtLowerLimit_State;
-      oosmos_sOrthoRegion Motion_State;
-        oosmos_sLeaf      Motion_Stopped_State;
-        oosmos_sComposite Motion_Moving_State;
-          oosmos_sLeaf    Motion_Moving_Up_State;
-          oosmos_sLeaf    Motion_Moving_Down_State;
+//>>>DECL
+  oosmos_sStateMachine(ROOT, uEvents, 3);
+    oosmos_sOrtho Active_State;
+      oosmos_sOrthoRegion Active_Region1_State;
+        oosmos_sComposite Active_Region1_Limits_State;
+          oosmos_sLeaf Active_Region1_Limits_AtUpperLimit_State;
+          oosmos_sLeaf Active_Region1_Limits_InBounds_State;
+          oosmos_sLeaf Active_Region1_Limits_Choice1_State;
+          oosmos_sLeaf Active_Region1_Limits_AtLowerLimit_State;
+      oosmos_sOrthoRegion Active_Region2_State;
+        oosmos_sComposite Active_Region2_Moving_State;
+          oosmos_sLeaf Active_Region2_Moving_Up_State;
+          oosmos_sLeaf Active_Region2_Moving_Down_State;
+        oosmos_sLeaf Active_Region2_Stopped_State;
+//<<<DECL
 };
 
 static int Failures = 0;
 
-#ifdef oosmos_DEBUG
+#if 1
   #define NameCase(Name) case Name: return #Name;
 
   static const char * EventNames(int EventCode)
   {
     switch(EventCode) {
-      NameCase(UpCommandEvent)
-      NameCase(DownCommandEvent)
-      NameCase(StopCommandEvent)
+      NameCase(evUpCommand)
+      NameCase(evDownCommand)
+      NameCase(evStopCommand)
 
-      NameCase(UpperLimitSwitchClosedEvent)
-      NameCase(UpperLimitSwitchOpenEvent)
+      NameCase(evUpperLimitSwitchClosed)
+      NameCase(evUpperLimitSwitchOpen)
 
-      NameCase(LowerLimitSwitchClosedEvent)
-      NameCase(LowerLimitSwitchOpenEvent)
+      NameCase(evLowerLimitSwitchClosed)
+      NameCase(evLowerLimitSwitchOpen)
       default: return "--No Event Name--";
     }
   }
 #endif
 
-static bool Limits_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool IsUpperLimitSwitchOpen(void) {
+  return true;
+}
+
+static bool IsLowerLimitSwitchOpen(void) {
+  return false;
+}
+
+//>>>CODE
+static bool Active_Region1_Limits_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
-  motor * pMotor = (motor *) pObject;
- 
-  switch (pEvent->Code) {
-    case LowerLimitSwitchOpenEvent:
-      return oosmos_Transition(pRegion, &pMotor->Limits_AtLowerLimit_State);
+  motion * pMotion = (motion *) pObject;
 
-    case UpperLimitSwitchOpenEvent:
-      return oosmos_Transition(pRegion, &pMotor->Limits_AtUpperLimit_State);
-
-    case LowerLimitSwitchClosedEvent:
-    case UpperLimitSwitchClosedEvent:
-      return oosmos_Transition(pRegion, &pMotor->Limits_InBounds_State);
+  switch (oosmos_EventCode(pEvent)) {
+    case evUpperLimitSwitchOpen: {
+      return oosmos_Transition(pMotion, pState, Active_Region1_Limits_AtUpperLimit_State);
+    }
+    case evUpperLimitSwitchClosed: {
+      return oosmos_Transition(pMotion, pState, Active_Region1_Limits_InBounds_State);
+    }
+    case evLowerLimitSwitchClosed: {
+      return oosmos_Transition(pMotion, pState, Active_Region1_Limits_InBounds_State);
+    }
+    case evLowerLimitSwitchOpen: {
+      return oosmos_Transition(pMotion, pState, Active_Region1_Limits_AtLowerLimit_State);
+    }
   }
 
   return false;
 }
 
-static bool Limits_Choice_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool Active_Region1_Limits_Choice1_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
-  motor * pMotor = (motor *) pObject;
+  motion * pMotion = (motion *) pObject;
 
-  switch (pEvent->Code) {
-  case oosmos_ENTER:
-//
-//    if (0)                     
-//      return oosmos_Transition(pRegion, &pMotor->Limits_AtUpperLimit_State);
-//    else if (0)
-//      return oosmos_Transition(pRegion, &pMotor->Limits_AtLowerLimit_State);
-//    else
-//
-        return oosmos_Transition(pRegion, &pMotor->Limits_InBounds_State);
+  if (oosmos_EventCode(pEvent) == oosmos_ENTER) {
+    if (IsUpperLimitSwitchOpen()) {
+      return oosmos_Transition(pMotion, pState, Active_Region1_Limits_AtUpperLimit_State);
+    }
+    else if (IsLowerLimitSwitchOpen()) {
+      return oosmos_Transition(pMotion, pState, Active_Region1_Limits_AtLowerLimit_State);
+    }
+    else {
+      return oosmos_Transition(pMotion, pState, Active_Region1_Limits_InBounds_State);
+    }
   }
 
   return false;
 }
 
-static bool Motion_Stopped_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool Active_Region2_Moving_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
-  motor * pMotor = (motor *) pObject;
+  motion * pMotion = (motion *) pObject;
 
-  switch (pEvent->Code) {
-    case UpCommandEvent:
-      return oosmos_Transition(pRegion, &pMotor->Motion_Moving_Up_State);
-    case DownCommandEvent:
-      return oosmos_Transition(pRegion, &pMotor->Motion_Moving_Down_State);
+  switch (oosmos_EventCode(pEvent)) {
+    case evStopCommand: {
+      return oosmos_Transition(pMotion, pState, Active_Region2_Stopped_State);
+    }
   }
 
   return false;
 }
 
-static bool Motion_Moving_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool Active_Region2_Stopped_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
-  motor * pMotor = (motor *) pObject;
+  motion * pMotion = (motion *) pObject;
 
-  switch (pEvent->Code) {
-    case StopCommandEvent:
-      return oosmos_Transition(pRegion, &pMotor->Motion_Stopped_State);
+  switch (oosmos_EventCode(pEvent)) {
+    case evUpCommand: {
+      return oosmos_Transition(pMotion, pState, Active_Region2_Moving_Up_State);
+    }
+    case evDownCommand: {
+      return oosmos_Transition(pMotion, pState, Active_Region2_Moving_Down_State);
+    }
   }
 
   return false;
 }
 
-static bool Motion_Moving_Up_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool Active_Region2_Moving_Up_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
-  motor * pMotor = (motor *) pObject;
+  motion * pMotion = (motion *) pObject;
 
-  switch (pEvent->Code) {
-    case DownCommandEvent:
-      return oosmos_Transition(pRegion, &pMotor->Motion_Moving_Down_State);
-    case UpperLimitSwitchOpenEvent:
-      return oosmos_Transition(pRegion, &pMotor->Motion_Stopped_State);
+  switch (oosmos_EventCode(pEvent)) {
+    case evDownCommand: {
+      return oosmos_Transition(pMotion, pState, Active_Region2_Moving_Down_State);
+    }
+    case evUpperLimitSwitchOpen: {
+      return oosmos_Transition(pMotion, pState, Active_Region2_Stopped_State);
+    }
   }
 
   return false;
 }
 
-static bool Motion_Moving_Down_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool Active_Region2_Moving_Down_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
-  motor * pMotor = (motor *) pObject;
+  motion * pMotion = (motion *) pObject;
 
-  switch (pEvent->Code) {
-    case UpCommandEvent:
-      return oosmos_Transition(pRegion, &pMotor->Motion_Moving_Up_State);
-    case LowerLimitSwitchOpenEvent:
-      return oosmos_Transition(pRegion, &pMotor->Motion_Stopped_State);
+  switch (oosmos_EventCode(pEvent)) {
+    case evUpCommand: {
+      return oosmos_Transition(pMotion, pState, Active_Region2_Moving_Up_State);
+    }
+    case evLowerLimitSwitchOpen: {
+      return oosmos_Transition(pMotion, pState, Active_Region2_Stopped_State);
+    }
   }
 
   return false;
 }
+//<<<CODE
 
-static motor * motorNew(void)
+static motion * motionNew(void)
 {
-  oosmos_Allocate(pMotor, motor, 2, NULL);
+  oosmos_Allocate(pMotion, motion, 2, NULL);
 
-  //                                          StateName                  Parent              Default
-  //                                 =============================================================================
-  oosmos_StateMachineInit            (pMotor, StateMachine,              NULL,               Ortho_State         );
-    oosmos_OrthoInitNoCode           (pMotor, Ortho_State,               StateMachine                            );
-      oosmos_OrthoRegionInit         (pMotor, Limits_State,              Ortho_State,        Limits_Choice_State );
-        oosmos_ChoiceInit            (pMotor, Limits_Choice_State,       Limits_State                            );
-        oosmos_LeafInitNoCode        (pMotor, Limits_InBounds_State,     Limits_State                            );
-        oosmos_LeafInitNoCode        (pMotor, Limits_AtUpperLimit_State, Limits_State                            );
-        oosmos_LeafInitNoCode        (pMotor, Limits_AtLowerLimit_State, Limits_State                            );
-      oosmos_OrthoRegionInitNoCode   (pMotor, Motion_State,              Ortho_State,        Motion_Stopped_State);
-        oosmos_LeafInit              (pMotor, Motion_Stopped_State,      Motion_State                            );
-        oosmos_CompositeInitNoDefault(pMotor, Motion_Moving_State,       Motion_State                            );
-          oosmos_LeafInit            (pMotor, Motion_Moving_Up_State,    Motion_Moving_State                     );
-          oosmos_LeafInit            (pMotor, Motion_Moving_Down_State,  Motion_Moving_State                     );
+//>>>INIT
+  oosmos_StateMachineInit(pMotion, ROOT, NULL, Active_State);
+    oosmos_OrthoInitNoCode(pMotion, Active_State, ROOT);
+      oosmos_OrthoRegionInitNoCode(pMotion, Active_Region1_State, Active_State, Active_Region1_Limits_State);
+        oosmos_CompositeInit(pMotion, Active_Region1_Limits_State, Active_Region1_State, Active_Region1_Limits_Choice1_State);
+          oosmos_LeafInitNoCode(pMotion, Active_Region1_Limits_AtUpperLimit_State, Active_Region1_Limits_State);
+          oosmos_LeafInitNoCode(pMotion, Active_Region1_Limits_InBounds_State, Active_Region1_Limits_State);
+          oosmos_LeafInit(pMotion, Active_Region1_Limits_Choice1_State, Active_Region1_Limits_State);
+          oosmos_LeafInitNoCode(pMotion, Active_Region1_Limits_AtLowerLimit_State, Active_Region1_Limits_State);
+      oosmos_OrthoRegionInitNoCode(pMotion, Active_Region2_State, Active_State, Active_Region2_Stopped_State);
+        oosmos_CompositeInit(pMotion, Active_Region2_Moving_State, Active_Region2_State, Active_Region2_Moving_Up_State);
+          oosmos_LeafInit(pMotion, Active_Region2_Moving_Up_State, Active_Region2_Moving_State);
+          oosmos_LeafInit(pMotion, Active_Region2_Moving_Down_State, Active_Region2_Moving_State);
+        oosmos_LeafInit(pMotion, Active_Region2_Stopped_State, Active_Region2_State);
+//<<<INIT
 
-  oosmos_Debug(&pMotor->StateMachine, true, EventNames);
+#if 1
+  oosmos_Debug(pMotion, true, EventNames);
+#endif
 
-  return pMotor;
+  return pMotion;
 }
 
-static void QueueEvent(motor * pMotor, int EventCode)
+static void QueueEvent(motion * pMotion, int EventCode)
 {
-  oosmos_SendEvent(pMotor, EventCode); 
-  oosmos_RunStateMachine(&pMotor->StateMachine); 
+  oosmos_PushEventCode(pMotion, EventCode);
+  oosmos_RunStateMachine(pMotion);
 }
 
-static void TestState(motor * pMotor, void * pState)
+static void TestState(const motion * pMotion, const void * pState)
 {
-  if (!oosmos_IsInState(&pMotor->StateMachine, pState)) {
+  if (!oosmos_IsInState(pMotion, pState)) {
     printf("FAILURE.\n");
     Failures += 1;
   }
@@ -208,26 +238,26 @@ static void TestState(motor * pMotor, void * pState)
 
 extern int main(void)
 {
-  motor * pMotor = motorNew();
+  motion * pMotion = motionNew();
 
-  QueueEvent(pMotor, UpCommandEvent);
-  TestState(pMotor, &pMotor->Motion_Moving_Up_State);
+  QueueEvent(pMotion, evUpCommand);
+  TestState(pMotion, &pMotion->Active_Region2_Moving_Up_State);
 
-  QueueEvent(pMotor, UpperLimitSwitchOpenEvent);
-  TestState(pMotor, &pMotor->Motion_Stopped_State);
-  TestState(pMotor, &pMotor->Limits_AtUpperLimit_State);
+  QueueEvent(pMotion, evUpperLimitSwitchOpen);
+  TestState(pMotion, &pMotion->Active_Region2_Stopped_State);
+  TestState(pMotion, &pMotion->Active_Region1_Limits_AtUpperLimit_State);
 
-  QueueEvent(pMotor, DownCommandEvent);
-  TestState(pMotor, &pMotor->Motion_Moving_Down_State);
+  QueueEvent(pMotion, evDownCommand);
+  TestState(pMotion, &pMotion->Active_Region2_Moving_Down_State);
 
-  QueueEvent(pMotor, LowerLimitSwitchClosedEvent);
-  TestState(pMotor, &pMotor->Limits_InBounds_State);
+  QueueEvent(pMotion, evLowerLimitSwitchClosed);
+  TestState(pMotion, &pMotion->Active_Region1_Limits_InBounds_State);
 
-  QueueEvent(pMotor, UpCommandEvent);
-  TestState(pMotor, &pMotor->Motion_Moving_Up_State);
+  QueueEvent(pMotion, evUpCommand);
+  TestState(pMotion, &pMotion->Active_Region2_Moving_Up_State);
 
-  QueueEvent(pMotor, StopCommandEvent);
-  TestState(pMotor, &pMotor->Motion_Stopped_State);
+  QueueEvent(pMotion, evStopCommand);
+  TestState(pMotion, &pMotion->Active_Region2_Stopped_State);
 
   if (Failures > 0) {
     printf("%d FAILURES\n", Failures);

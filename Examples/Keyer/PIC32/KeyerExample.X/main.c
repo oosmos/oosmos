@@ -1,7 +1,7 @@
 //
-// OOSMOS - KeyerExample PIC32 main program 
+// OOSMOS - KeyerExample PIC32 main program
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +23,7 @@
 #include "oosmos.h"
 #include "pin.h"
 #include "keyer.h"
+#include <stdbool.h>
 
 #pragma config FPLLMUL = MUL_20, FPLLIDIV = DIV_2, FPLLODIV = DIV_1, FWDTEN = OFF
 #pragma config POSCMOD = HS, FNOSC = PRIPLL, FPBDIV = DIV_1
@@ -34,12 +35,12 @@ extern int main(void)
   pin * pDahPin     = pinNew(IOPORT_C, BIT_1, pinIn,  pinActiveLow);
   pin * pDitPin     = pinNew(IOPORT_C, BIT_2, pinIn,  pinActiveLow);
   pin * pSpeakerPin = pinNew(IOPORT_C, BIT_3, pinOut, pinActiveHigh);
-    
+
   const int WPM = 15;
 
   keyerNew(pDahPin, pDitPin, pSpeakerPin, WPM);
 
-  while (true) {
+  for (;;) {
     oosmos_RunStateMachines();
   }
 }

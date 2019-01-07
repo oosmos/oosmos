@@ -1,7 +1,7 @@
 //
 // OOSMOS client Class
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,18 +20,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <stdio.h> 
-#include <stdlib.h> 
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "oosmos.h"
 #include "client.h"
 #include "sock.h"
 
-typedef enum
+enum
 {
   ConnectionTimeoutEvent = 1,
   ClosedEvent,
-} eEvents;
+};
 
 struct clientTag
 {
@@ -44,38 +44,42 @@ struct clientTag
   char         m_Buffer[100];
 };
 
-static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static void ClientThread(client * pClient, oosmos_sState * pState, uint32_t IP_HostByteOrder)
+{
+  oosmos_ThreadBegin();
+    oosmos_ThreadWaitCond_TimeoutMS_Event(2000, ConnectionTimeoutEvent,
+      sockConnect(pClient->m_pSock, IP_HostByteOrder, pClient->m_Port)
+    );
+
+    printf("%p: CONNECTED\n", (void *) pClient->m_pSock);
+
+    for (;;) {
+      size_t BytesReceived;
+
+      printf("%p: Sending...\n", (void *) pClient->m_pSock);
+      oosmos_ThreadWaitCond(
+        sockSend(pClient->m_pSock, "123456", sizeof("123456"))
+      );
+
+      printf("%p: Waiting for incoming data...\n", (void *) pClient->m_pSock);
+
+      oosmos_ThreadWaitCond(
+        sockReceive(pClient->m_pSock, pClient->m_Buffer, sizeof(pClient->m_Buffer), &BytesReceived)
+      );
+      printf("%p: Client side Received '%s', BytesReceived: %u\n", (void *) pClient->m_pSock, pClient->m_Buffer, (unsigned) BytesReceived);
+
+    }
+  oosmos_ThreadEnd();
+}
+
+static bool Running_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   client * pClient = (client *) pObject;
 
-  switch (pEvent->Code) {
-    case oosmos_INSTATE: {
+  switch (oosmos_EventCode(pEvent)) {
+    case oosmos_POLL: {
       const uint32_t IP_HostByteOrder = sockDotToIP_HostByteOrder(pClient->m_pHost);
-
-      oosmos_AsyncBegin(pRegion);
-        oosmos_AsyncWaitCond_TimeoutMS_Event(pRegion, 2000, ConnectionTimeoutEvent,
-          sockConnect(pClient->m_pSock, IP_HostByteOrder, pClient->m_Port)
-        );
-
-        printf("%p: CONNECTED\n", (void *) pClient->m_pSock);
-
-        while (true) {
-          size_t BytesReceived;
-
-          printf("%p: Sending...\n", (void *) pClient->m_pSock);
-          oosmos_AsyncWaitCond(pRegion,
-            sockSend(pClient->m_pSock, "123456", sizeof("123456"))
-          );
-
-          printf("%p: Waiting for incoming data...\n", (void *) pClient->m_pSock);
-           
-          oosmos_AsyncWaitCond(pRegion,
-            sockReceive(pClient->m_pSock, pClient->m_Buffer, sizeof(pClient->m_Buffer), &BytesReceived)
-          );
-          printf("%p: Client side Received '%s', BytesReceived: %u\n", (void *) pClient->m_pSock, pClient->m_Buffer, (unsigned) BytesReceived);
-
-        }
-      oosmos_AsyncEnd(pRegion);
+      ClientThread(pClient, pState, IP_HostByteOrder);
       return true;
     }
 
@@ -104,7 +108,7 @@ extern client * clientNew(const char * pHost, int Port)
   pClient->m_pHost = pHost;
   pClient->m_Port  = Port;
 
-  sockSubscribeClosedEvent(pClient->m_pSock, &pClient->EventQueue, ClosedEvent, NULL);
+  sockSubscribeClosedEvent(pClient->m_pSock, oosmos_EventQueue(pClient), ClosedEvent, NULL);
 
   return pClient;
 }

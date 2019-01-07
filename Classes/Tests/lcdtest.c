@@ -1,7 +1,7 @@
 //
 // OOSMOS lcdtest Class
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,14 +24,16 @@
 #include "pin.h"
 #include "lcd.h"
 #include "lcdtest.h"
+#include <stdbool.h>
+#include <stddef.h>
 
 #ifndef lcdtstMAX
 #define lcdtestMAX 1
 #endif
 
-typedef enum {
+enum {
   DoneEvent = 1,
-} eEvents;
+};
 
 struct lcdtestTag
 {
@@ -43,45 +45,52 @@ struct lcdtestTag
   long  m_Count;
 };
 
-static bool Initializing_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static void InitThread(lcdtest * pLcdTest, oosmos_sState * pState)
+{
+  oosmos_ThreadBegin();
+    lcdClear(pLcdTest->m_pLCD);
+    oosmos_DelaySeconds(1);
+
+    lcdSetCursor(pLcdTest->m_pLCD, 0, 0);
+    lcdPrint(pLcdTest->m_pLCD, "Hello world");
+  oosmos_ThreadEnd();
+}
+
+static void RunningThread(lcdtest * pLcdTest, oosmos_sState * pState)
+{
+  oosmos_ThreadBegin();
+    for (pLcdTest->m_Count = 1;; pLcdTest->m_Count++) {
+      lcdSetCursor(pLcdTest->m_pLCD, 1, 0);
+      lcdPrint(pLcdTest->m_pLCD, "Count: %ld", pLcdTest->m_Count);
+
+      oosmos_ThreadDelayMS(300);
+    }
+  oosmos_ThreadEnd();
+}
+
+static bool Initializing_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   lcdtest * pLcdTest = (lcdtest *) pObject;
 
-  lcd * pLCD = pLcdTest->m_pLCD;
 
-  switch (pEvent->Code) {
-    case oosmos_INSTATE:
-      oosmos_AsyncBegin(pRegion);
-        lcdClear(pLCD);
-        oosmos_DelaySeconds(1);
-
-        lcdSetCursor(pLCD, 0, 0);
-        lcdPrint(pLCD, "Hello world");
-      oosmos_AsyncEnd(pRegion);
-
-      return oosmos_Transition(pRegion, &pLcdTest->Running_State);
+  switch (oosmos_EventCode(pEvent)) {
+    case oosmos_POLL:
+      InitThread(pLcdTest, pState);
+      return true;
+    case oosmos_COMPLETE:
+      return oosmos_Transition(pLcdTest, pState, Running_State);
   }
 
   return false;
 }
 
-static bool Running_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool Running_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   lcdtest * pLcdTest = (lcdtest *) pObject;
 
-  lcd * pLCD = pLcdTest->m_pLCD;
-
-  switch (pEvent->Code) {
-    case oosmos_INSTATE:
-      oosmos_AsyncBegin(pRegion);
-        for (pLcdTest->m_Count = 1;; pLcdTest->m_Count++) {
-          lcdSetCursor(pLcdTest->m_pLCD, 1, 0);         
-          lcdPrint(pLcdTest->m_pLCD, "Count: %ld", pLcdTest->m_Count);
-
-          oosmos_AsyncDelayMS(pRegion, 300);
-        }
-      oosmos_AsyncEnd(pRegion);
-
+  switch (oosmos_EventCode(pEvent)) {
+    case oosmos_POLL:
+      RunningThread(pLcdTest, pState);
       return true;
   }
 
@@ -102,6 +111,6 @@ extern lcdtest * lcdtestNew(pin * pRS, pin * pE,
   lcd * pLCD = lcdNew(pRS, NULL, pE, pData4, pData5, pData6, pData7);
 
   pLcdTest->m_pLCD = pLCD;
-  
+
   return pLcdTest;
 }

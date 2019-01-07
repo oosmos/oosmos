@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>420</x>
+      <y>80</y>
+      <w>50</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>Off
+--
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>200</x>
+      <y>90</y>
+      <w>240</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>TIMEOUT(pToggle-&gt;m_TimeOnMS)
+lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;20.0;220.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>200</x>
+      <y>130</y>
+      <w>240</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>TIMEOUT(pToggle-&gt;m_TimeOffMS)
+lt=-&gt;</panel_attributes>
+    <additional_attributes>220.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>30</x>
+      <y>80</y>
+      <w>180</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>On
+--
+ENTER:
+  pinOn(pToggle-&gt;m_pPin);
+EXIT:
+  pinOff(pToggle-&gt;m_pPin);
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>40</x>
+      <y>30</y>
+      <w>20</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>type=initial</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>40</x>
+      <y>40</y>
+      <w>30</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+</diagram>

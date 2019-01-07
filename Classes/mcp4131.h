@@ -1,7 +1,7 @@
 //
 // OOSMOS mcp4131 Class
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,13 +23,13 @@
 #ifndef mcp4131_h
 #define mcp4131_h
 
-#include "pin.h"
 #include "spi.h"
+#include <stdint.h>
 
 typedef struct mcp4131Tag mcp4131;
 
 extern mcp4131 * mcp4131New(spi_sSlave * pSlave);
-extern void mcp4131SetResistance(mcp4131 * pMCP, int Resistance);
+extern void mcp4131SetResistance(const mcp4131 * pMCP, uint8_t Resistance);
 
 #endif
 

@@ -1,0 +1,54 @@
+// suppress "repeated include"
+-elib(537)
+-e537
+
+// suppress "extern used with definition"
+-e508
+
+// Suppress "do { } while(0)".
+-emacro(717, oosmos_POINTER_GUARD, oosmos_ASSERT, oosmos_FOREVER)
+
+// Suppress "constant value boolean".
+-emacro(506, oosmos_POINTER_GUARD, oosmos_ASSERT, oosmos_FOREVER)
+
+// Suppress complaint about arguments.
+-esym(123, oosmos_sStateMachine)
+
+// Suppress message about missing default in switch statement.
+-efunc(744, *_State_Code)
+// Suppress message about making parameters const in State Code.
+-efunc(818, *_State_Code)
+// Suppress message about parameters unreferenced in State Code.
+-efunc(715, *_State_Code)
+
+// Suppress "extern used with definition".
+-e508
+
+// Suppress complaints about oosmos_Allocate.
+-emacro(774, oosmos_Allocate)
+-emacro(778, oosmos_Allocate)
+
+// Suppress "unusual pointer cast".
+-emacro(740, oosmos_*Init)
+-emacro(740, oosmos_*InitNoCode)
+-emacro(740, oosmos_IsInState)
+
+-efunc(613, *_State_Code)
+
+// 
+// Suppress "control flows into case/default".
+-emacro(616, oosmos_Thread*)
+-emacro(825, oosmos_Thread*)
+
+// Suppress "case/default within for loop".
+-emacro(646, oosmos_Thread*)
+
+// Suppress messages about "local union member" not referenced.
+-e754
+-esym(770, uEvents)
+-esym(631, uEvents)
+-esym(452, uEvents)
+
+// suppress message about 'int to bool' conversion.  Probably pc-lint bug.
+//-esym(747, OOSMOS_Debug)
+-emacro(747, oosmos_Debug)

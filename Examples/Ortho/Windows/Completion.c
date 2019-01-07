@@ -1,7 +1,7 @@
 //
 // OOSMOS Completion Example
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,31 +20,39 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <stdio.h>
 #include "oosmos.h"
+#include <stdbool.h>
+#include <stdio.h>
 
-typedef enum
-{
-  MoveA_Event = 1,
-  MoveB_Event,
-  Stop_Event,
-} eEvents;
+//>>>EVENTS
+enum {
+  evA = 1,
+  evB = 2,
+  evStop = 3
+};
+//<<<EVENTS
 
 typedef struct testTag test;
 
+typedef union {
+  oosmos_sEvent Base;
+} uEvents;
+
 struct testTag
 {
-  oosmos_sStateMachine   (StateMachine, oosmos_sEvent, 10);
-    oosmos_sOrtho         Ortho_State;
-      oosmos_sOrthoRegion Ortho_RegionA_State;
-        oosmos_sLeaf      Ortho_RegionA_Idle_State;
-        oosmos_sLeaf      Ortho_RegionA_Moving_State;
-        oosmos_sFinal     Ortho_RegionA_Final_State;
-      oosmos_sOrthoRegion Ortho_RegionB_State;
-        oosmos_sLeaf      Ortho_RegionB_Idle_State;
-        oosmos_sLeaf      Ortho_RegionB_Moving_State;
-        oosmos_sFinal     Ortho_RegionB_Final_State;
-    oosmos_sLeaf          CompleteState;
+//>>>DECL
+  oosmos_sStateMachine(ROOT, uEvents, 3);
+    oosmos_sOrtho Ortho_State;
+      oosmos_sOrthoRegion Ortho_Region1_State;
+        oosmos_sLeaf Ortho_Region1_Moving_State;
+        oosmos_sLeaf Ortho_Region1_Idle_State;
+        oosmos_sFinal Ortho_Region1_Final1_State;
+      oosmos_sOrthoRegion Ortho_Region2_State;
+        oosmos_sLeaf Ortho_Region2_Idle_State;
+        oosmos_sLeaf Ortho_Region2_Moving_State;
+        oosmos_sFinal Ortho_Region2_Final2_State;
+    oosmos_sLeaf Complete_State;
+//<<<DECL
 };
 
 #ifdef oosmos_DEBUG
@@ -53,111 +61,122 @@ struct testTag
   static const char * EventNames(int EventCode)
   {
     switch(EventCode) {
-      NameCase(MoveA_Event)
-      NameCase(MoveB_Event)
-      NameCase(Stop_Event)
+      NameCase(evA)
+      NameCase(evB)
+      NameCase(evStop)
       default: return "--No Event Name--";
     }
   }
 #endif
 
-static bool Ortho_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+//>>>CODE
+static bool Ortho_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   test * pTest = (test *) pObject;
 
-  switch (pEvent->Code) {
-    case oosmos_COMPLETE:
-      return oosmos_Transition(pRegion, &pTest->CompleteState);
+  switch (oosmos_EventCode(pEvent)) {
+    case oosmos_COMPLETE: {
+      return oosmos_Transition(pTest, pState, Complete_State);
+    }
   }
 
   return false;
 }
 
-static bool Ortho_RegionA_Idle_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool Ortho_Region1_Moving_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   test * pTest = (test *) pObject;
 
-  switch (pEvent->Code) {
-    case MoveA_Event:
-      return oosmos_Transition(pRegion, &pTest->Ortho_RegionA_Moving_State);
+  switch (oosmos_EventCode(pEvent)) {
+    case evStop: {
+      return oosmos_Transition(pTest, pState, Ortho_Region1_Final1_State);
+    }
   }
 
   return false;
 }
 
-static bool Ortho_RegionA_Moving_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool Ortho_Region1_Idle_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   test * pTest = (test *) pObject;
 
-  switch (pEvent->Code) {
-    case Stop_Event:
-      return oosmos_Transition(pRegion, &pTest->Ortho_RegionA_Final_State);
+  switch (oosmos_EventCode(pEvent)) {
+    case evA: {
+      return oosmos_Transition(pTest, pState, Ortho_Region1_Moving_State);
+    }
   }
 
   return false;
 }
 
-static bool Ortho_RegionB_Idle_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool Ortho_Region2_Idle_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   test * pTest = (test *) pObject;
 
-  switch (pEvent->Code) {
-    case MoveB_Event:
-      return oosmos_Transition(pRegion, &pTest->Ortho_RegionB_Moving_State);
+  switch (oosmos_EventCode(pEvent)) {
+    case evB: {
+      return oosmos_Transition(pTest, pState, Ortho_Region2_Moving_State);
+    }
   }
 
   return false;
 }
 
-static bool Ortho_RegionB_Moving_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool Ortho_Region2_Moving_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   test * pTest = (test *) pObject;
 
-  switch (pEvent->Code) {
-    case Stop_Event:
-      return oosmos_Transition(pRegion, &pTest->Ortho_RegionB_Final_State);
+  switch (oosmos_EventCode(pEvent)) {
+    case evStop: {
+      return oosmos_Transition(pTest, pState, Ortho_Region2_Final2_State);
+    }
   }
 
   return false;
 }
 
-static bool CompleteState_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool Complete_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
-  switch (pEvent->Code) {
-    case oosmos_ENTER:
+  switch (oosmos_EventCode(pEvent)) {
+    case oosmos_ENTER: {
       printf("\n--Goal State Achieved--\n");
       return true;
+    }
   }
 
+  oosmos_UNUSED(pState);
   return false;
 }
+//<<<CODE
 
 static test * testNew(void)
 {
   oosmos_Allocate(pTest, test, 1, NULL);
 
-  //                                      StateName                   Parent                Default
-  //                              ===================================================================================
-  oosmos_StateMachineInit         (pTest, StateMachine,               NULL,                 Ortho_State             );
-    oosmos_OrthoInit              (pTest, Ortho_State,                StateMachine                                  );
-      oosmos_OrthoRegionInitNoCode(pTest, Ortho_RegionA_State,        Ortho_State,          Ortho_RegionA_Idle_State);
-        oosmos_LeafInit           (pTest, Ortho_RegionA_Idle_State,   Ortho_RegionA_State                           );
-        oosmos_LeafInit           (pTest, Ortho_RegionA_Moving_State, Ortho_RegionA_State                           );
-        oosmos_FinalInitNoCode    (pTest, Ortho_RegionA_Final_State,  Ortho_RegionA_State                           );
-      oosmos_OrthoRegionInitNoCode(pTest, Ortho_RegionB_State,        Ortho_State,          Ortho_RegionB_Idle_State);
-        oosmos_LeafInit           (pTest, Ortho_RegionB_Idle_State,   Ortho_RegionB_State                           );
-        oosmos_LeafInit           (pTest, Ortho_RegionB_Moving_State, Ortho_RegionB_State                           );
-        oosmos_FinalInitNoCode    (pTest, Ortho_RegionB_Final_State,  Ortho_RegionB_State                           );
-    oosmos_LeafInit               (pTest, CompleteState,              StateMachine                                  );
+//>>>INIT
+  oosmos_StateMachineInit(pTest, ROOT, NULL, Ortho_State);
+    oosmos_OrthoInit(pTest, Ortho_State, ROOT);
+      oosmos_OrthoRegionInitNoCode(pTest, Ortho_Region1_State, Ortho_State, Ortho_Region1_Idle_State);
+        oosmos_LeafInit(pTest, Ortho_Region1_Moving_State, Ortho_Region1_State);
+        oosmos_LeafInit(pTest, Ortho_Region1_Idle_State, Ortho_Region1_State);
+        oosmos_FinalInitNoCode(pTest, Ortho_Region1_Final1_State, Ortho_Region1_State);
+      oosmos_OrthoRegionInitNoCode(pTest, Ortho_Region2_State, Ortho_State, Ortho_Region2_Idle_State);
+        oosmos_LeafInit(pTest, Ortho_Region2_Idle_State, Ortho_Region2_State);
+        oosmos_LeafInit(pTest, Ortho_Region2_Moving_State, Ortho_Region2_State);
+        oosmos_FinalInitNoCode(pTest, Ortho_Region2_Final2_State, Ortho_Region2_State);
+    oosmos_LeafInit(pTest, Complete_State, ROOT);
+//<<<INIT
 
-  oosmos_Debug(&pTest->StateMachine, true, EventNames);
+#if 1
+  oosmos_Debug(pTest, true, EventNames);
+#endif
 
   return pTest;
 }
 
-static void QueueEvent(test * pTest, int EventCode)
+static void QueueEvent(const test * pTest, int EventCode)
 {
-  oosmos_SendEvent(pTest, EventCode);
+  oosmos_PushEventCode(pTest, EventCode);
   oosmos_RunStateMachines();
 }
 
@@ -165,11 +184,11 @@ extern int main(void)
 {
   test * pTest = testNew();
 
-  QueueEvent(pTest, MoveA_Event);
-  QueueEvent(pTest, MoveB_Event);
-  QueueEvent(pTest, Stop_Event);
+  QueueEvent(pTest, evA);
+  QueueEvent(pTest, evB);
+  QueueEvent(pTest, evStop);
 
-  if (oosmos_IsInState(&pTest->StateMachine, &pTest->CompleteState))
+  if (oosmos_IsInState(pTest, &pTest->Complete_State))
     printf("SUCCESS\n");
   else
     printf("FAILURE\n");

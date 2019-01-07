@@ -1,7 +1,7 @@
 //
 // OOSMOS mcp4131 Class
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +23,8 @@
 #include "oosmos.h"
 #include "mcp4131.h"
 #include "spi.h"
+#include <stddef.h>
+#include <stdint.h>
 
 #ifndef mcp4131MAX
 #define mcp4131MAX 2
@@ -38,16 +40,16 @@ extern mcp4131 * mcp4131New(spi_sSlave * pSlave)
   oosmos_Allocate(pMCP4131, mcp4131, mcp4131MAX, NULL);
 
   pMCP4131->m_pSlave = pSlave;
-  
+
   return pMCP4131;
 }
 
-extern void mcp4131SetResistance(mcp4131 * pMCP, const int Resistance)
+extern void mcp4131SetResistance(const mcp4131 * pMCP, uint8_t Resistance)
 {
   uint8_t Command[2];
 
   Command[0] = 0;
-  Command[1] = (uint8_t) Resistance;
+  Command[1] = Resistance;
 
   spiSendBytes(pMCP->m_pSlave, Command, sizeof(Command));
 }

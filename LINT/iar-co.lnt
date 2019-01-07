@@ -1,0 +1,89 @@
+//    iar-co.lnt
+//    Options for IAR compilers.
+
+            // while processing compiler (library) header files ...
+-wlib(1)    // sets the warning level within library headers to 1
+	    // (no warnings, just syntax errors).  Comment out if you
+	    // are actually linting library headers.  This
+	    // option makes obsolete options of the form -elib(axxx) where
+	    // xxx >= 400 which may be retained for historical reasons.
+
+-elib(652)  // suppress message about #define of earlier declared symbols
+-elib(537)  // repeated include files
+-elib(677)  // sizeof used within preprocessor statement
+
++fcu        // chars are unsigned
+
++rw(_gobble)              // activate the _gobble keyword
++rw(_to_brackets)
++dinterrupt=_to_brackets  // ignore "interrupt(...)"
+
+-d__intrinsic=  // Reserved for compiler internal use only
+-d__no_init=    // Supports non-volatile memory
+-d__noreturn=   // Informs the compiler that the function will not return
+-d__packed=     // Decreases data type alignment to 1
+-d__root=       // Ensures that a function or variable is included in the object code even if unused
+-d__task=       // Relaxes the rules for preserving registers
+
++rw(__nounwind)
+
+-d__section_begin=
+-d__segment_begin=
+-d__sfb=
+
+-d__section_end=
+-d__segment_end=
+-d__sfe=
+
+-d__section_size=
+-d__segment_size=
+-d__sfs=
+
+-esym(950,/?!,/?!<)		// Remove doxygen comments "//!" and "//!<" from warning 950.
+
+// ignore the pragma extension
+-d_Pragma(x)=
+
+//  The following functions exhibit variable return modes.
+//  That is, they may equally-usefully be called for a value
+//  as called just for their effects.  Accordingly we inhibit
+//  Warning 534 for these functions.
+//  Feel free to add to or subtract from this list.
+-esym(534,close,creat,fclose,fflush,_flsbuf,fprintf,fputc)
+-esym(534,fputs,fscanf,fseek,fwrite,lseek,memcpy,memmove,memset)
+-esym(534,printf,puts,scanf,sprintf,sscanf,strcat,strcpy)
+-esym(534,strncat,strncpy,unlink,write)
+
+// both a member and an ordinary function
+-esym(1702,operator<<,operator>>)  
+
+// The following options are required by most compilers to
+// noiselessly process iostream.h
+-elib(1717)     // empty prototypes
+-elib(522)      // function return value ignored
+-elib(1053)     // prototypes cannot be distinguished
+-elib(1721)     // unusual operator =() declaration
+-elib(1720)     // assignment op has non-const parameter
+-elib(655)      // bitwise operator combining compatible enum's
+-elib(641)      // converting enum's to int
+-elib(537)      // repeated include file (ios.h)
+-elib(1511)     // member (rdbuf) hides nonvirtual member
+-elib(1712)     // default constructor not defined for class
+-elib(1736)     // redundant access specifierd_NATIVE_WCHAR_T_DEFINED
+
+
+-efile(451,stdlib.h)  // Do not warn for include file guards in this standard C header file.
+-e537
+
+
+//  ***************************************************************************
+//  
+//  IAR Systems
+//  
+//  File name:  iar-co.lnt
+//  
+//  Revision:   0.3 (alpha)
+//  
+//  Modified:   2011-11-03
+//  
+//  ***************************************************************************

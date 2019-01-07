@@ -1,7 +1,7 @@
 //
 // OOSMOS sw Class
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,11 +24,11 @@
 #define swMaxSwitches 20
 #endif
 
-#ifndef swMaxCloseSubscribers 
+#ifndef swMaxCloseSubscribers
 #define swMaxCloseSubscribers 1
 #endif
 
-#ifndef swMaxOpenSubscribers 
+#ifndef swMaxOpenSubscribers
 #define swMaxOpenSubscribers 1
 #endif
 
@@ -37,18 +37,20 @@
 #include "oosmos.h"
 #include "pin.h"
 #include "sw.h"
+#include <stdbool.h>
+#include <stddef.h>
 
 typedef enum {
   Unknown_State = 1,
   Open_State,
-  Closed_State,
+  Closed_State
 } eStates;
 
 struct swTag
 {
   pin      * m_pPin;
   eStates    m_State;
-  
+
   oosmos_sActiveObject   m_ActiveObject;
   oosmos_sSubscriberList m_CloseEvent[swMaxCloseSubscribers];
   oosmos_sSubscriberList m_OpenEvent[swMaxOpenSubscribers];
@@ -61,6 +63,8 @@ extern sw * swNewDetached(pin * pPin)
   pSwitch->m_pPin  = pPin;
   pSwitch->m_State = Unknown_State;
 
+  oosmos_RegisterActiveObject(pSwitch, swRunStateMachine, &pSwitch->m_ActiveObject);
+
   oosmos_SubscriberListInit(pSwitch->m_CloseEvent);
   oosmos_SubscriberListInit(pSwitch->m_OpenEvent);
 
@@ -70,50 +74,67 @@ extern sw * swNewDetached(pin * pPin)
 extern sw * swNew(pin * pPin)
 {
   sw * pSwitch = swNewDetached(pPin);
-
-  oosmos_RegisterActiveObject(pSwitch, swRunStateMachine, &pSwitch->m_ActiveObject);
-
   return pSwitch;
 }
 
 extern void swSubscribeCloseEvent(sw * pSwitch, oosmos_sQueue * pQueue, int CloseEventCode, void * pContext)
 {
+  oosmos_POINTER_GUARD(pSwitch);
+
   oosmos_SubscriberListAdd(pSwitch->m_CloseEvent, pQueue, CloseEventCode, pContext);
 }
 
 extern void swSubscribeOpenEvent(sw * pSwitch, oosmos_sQueue * pQueue, int OpenEventCode, void * pContext)
 {
+  oosmos_POINTER_GUARD(pSwitch);
+
   oosmos_SubscriberListAdd(pSwitch->m_OpenEvent, pQueue, OpenEventCode, pContext);
+}
+
+static eStates PhysicalSwitchState(const sw * pSwitch)
+{
+  oosmos_POINTER_GUARD(pSwitch);
+
+  return pinIsOn(pSwitch->m_pPin) ? Closed_State : Open_State;
 }
 
 extern bool swIsOpen(const sw * pSwitch)
 {
-  return pSwitch->m_State == Open_State;
+  return !swIsClosed(pSwitch);
 }
 
 extern bool swIsClosed(const sw * pSwitch)
 {
-  return pSwitch->m_State == Closed_State;
+  oosmos_POINTER_GUARD(pSwitch);
+
+  if (pSwitch->m_State == Unknown_State) {
+    return PhysicalSwitchState(pSwitch) == Closed_State;
+  }
+  else {
+    return pSwitch->m_State == Closed_State;
+  }
 }
 
 extern void swRunStateMachine(void * pObject)
 {
+  oosmos_POINTER_GUARD(pObject);
+
   sw * pSwitch = (sw *) pObject;
-  
+
   switch (pSwitch->m_State) {
     case Open_State:
       if (pinIsOn(pSwitch->m_pPin)) {
-        pSwitch->m_State = Closed_State;     
+        pSwitch->m_State = Closed_State;
         oosmos_SubscriberListNotify(pSwitch->m_CloseEvent);
       }
-      
+
       break;
     case Closed_State:
       if (pinIsOff(pSwitch->m_pPin)) {
         pSwitch->m_State = Open_State;
         oosmos_SubscriberListNotify(pSwitch->m_OpenEvent);
       }
-  
+
       break;
     case Unknown_State:
       pSwitch->m_State = pinIsOn(pSwitch->m_pPin) ? Closed_State : Open_State;

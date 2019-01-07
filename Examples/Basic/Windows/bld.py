@@ -1,4 +1,5 @@
 import sys
+import os
 
 oosmos_dir = r'..\..\..'
 
@@ -6,6 +7,8 @@ sys.path.append(oosmos_dir)
 import oosmos
 
 oosmos_c = oosmos_dir+r'\Source\oosmos.c'
+
+os.system(oosmos_dir + r'\gen\gen.exe Basic.json')
 
 oosmos.cWindows.Compile(oosmos_dir, ['Final.c', oosmos_c])
 oosmos.cWindows.Compile(oosmos_dir, ['DelayMS.c', oosmos_c])

@@ -1,7 +1,7 @@
 //
 // OOSMOS EnterExit Example
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,90 +20,104 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <stdio.h>
 #include "oosmos.h"
+#include <stdbool.h>
+#include <stdio.h>
 
-typedef enum
-{
-  TweakEvent = 1,
-} eEvents;
+//>>>EVENTS
+enum {
+  evTweak = 1
+};
+//<<<EVENTS
 
 typedef struct testTag test;
 
+typedef union {
+  oosmos_sEvent Base;
+} uEvents;
+
 struct testTag
 {
-  oosmos_sStateMachine   (StateMachine, oosmos_sEvent, 3);
-    oosmos_sOrtho         Active_State;
-      oosmos_sOrthoRegion Active_Top_State;
-        oosmos_sLeaf      Active_Top_Moving_State;
-      oosmos_sOrthoRegion Active_Middle_State;
-        oosmos_sComposite Active_Middle_Idle_State;
-          oosmos_sLeaf    Active_Middle_Idle_Inner_State;
-      oosmos_sOrthoRegion Active_Base_State;
-        oosmos_sLeaf      Active_Base_Leaf_State;
-        oosmos_sLeaf      Active_Base_Running_State;
+//>>>DECL
+  oosmos_sStateMachine(ROOT, uEvents, 3);
+    oosmos_sOrtho Active_State;
+      oosmos_sOrthoRegion Active_Region1_State;
+        oosmos_sLeaf Active_Region1_Moving_State;
+      oosmos_sOrthoRegion Active_Region2_State;
+        oosmos_sComposite Active_Region2_Outer_State;
+          oosmos_sLeaf Active_Region2_Outer_Inner_State;
+      oosmos_sOrthoRegion Active_Region3_State;
+        oosmos_sLeaf Active_Region3_Leaf_State;
+        oosmos_sLeaf Active_Region3_Running_State;
+//<<<DECL
 };
 
-static bool Active_Middle_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+//>>>CODE
+static bool Active_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   test * pTest = (test *) pObject;
 
-  switch (pEvent->Code) {
-    case TweakEvent:
-      return oosmos_Transition(pRegion, &pTest->Active_Middle_Idle_State);
+  switch (oosmos_EventCode(pEvent)) {
+    case evTweak: {
+      return oosmos_Transition(pTest, pState, Active_Region2_Outer_State);
+    }
   }
 
   return false;
 }
 
-static bool Active_Base_Leaf_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool Active_Region3_Leaf_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   test * pTest = (test *) pObject;
 
-  switch (pEvent->Code) {
-    case oosmos_COMPLETE:
-      return oosmos_Transition(pRegion, &pTest->Active_Base_Running_State);
+  switch (oosmos_EventCode(pEvent)) {
+    case oosmos_COMPLETE: {
+      return oosmos_Transition(pTest, pState, Active_Region3_Running_State);
+    }
   }
 
   return false;
 }
+//<<<CODE
 
 static test * testNew(void)
 {
   oosmos_Allocate(pTest, test, 1, NULL);
 
-  //                                      StateName                       Parent                    Default
-  //                              =================================================================================================
-  oosmos_StateMachineInit         (pTest, StateMachine,                   NULL,                     Active_State                  );
-    oosmos_OrthoInitNoCode        (pTest, Active_State,                   StateMachine                                            );
-      oosmos_OrthoRegionInitNoCode(pTest, Active_Top_State,               Active_State,             Active_Top_Moving_State       );
-        oosmos_LeafInitNoCode     (pTest, Active_Top_Moving_State,        Active_Top_State                                        );
-      oosmos_OrthoRegionInit      (pTest, Active_Middle_State,            Active_State,             Active_Middle_Idle_State      );
-        oosmos_CompositeInitNoCode(pTest, Active_Middle_Idle_State,       Active_Middle_State,      Active_Middle_Idle_Inner_State);
-          oosmos_LeafInitNoCode   (pTest, Active_Middle_Idle_Inner_State, Active_Middle_Idle_State                                );
-      oosmos_OrthoRegionInitNoCode(pTest, Active_Base_State,              Active_State,             Active_Base_Leaf_State        );
-        oosmos_LeafInit           (pTest, Active_Base_Leaf_State,         Active_Base_State                                       );
-        oosmos_LeafInitNoCode     (pTest, Active_Base_Running_State,      Active_Base_State                                       );
+//>>>INIT
+  oosmos_StateMachineInit(pTest, ROOT, NULL, Active_State);
+    oosmos_OrthoInit(pTest, Active_State, ROOT);
+      oosmos_OrthoRegionInitNoCode(pTest, Active_Region1_State, Active_State, Active_Region1_Moving_State);
+        oosmos_LeafInitNoCode(pTest, Active_Region1_Moving_State, Active_Region1_State);
+      oosmos_OrthoRegionInitNoCode(pTest, Active_Region2_State, Active_State, Active_Region2_Outer_State);
+        oosmos_CompositeInitNoCode(pTest, Active_Region2_Outer_State, Active_Region2_State, Active_Region2_Outer_Inner_State);
+          oosmos_LeafInitNoCode(pTest, Active_Region2_Outer_Inner_State, Active_Region2_Outer_State);
+      oosmos_OrthoRegionInitNoCode(pTest, Active_Region3_State, Active_State, Active_Region3_Leaf_State);
+        oosmos_LeafInit(pTest, Active_Region3_Leaf_State, Active_Region3_State);
+        oosmos_LeafInitNoCode(pTest, Active_Region3_Running_State, Active_Region3_State);
+//<<<INIT
 
-  oosmos_Debug(&pTest->StateMachine, true, NULL);
+#if 1
+  oosmos_Debug(pTest, true, NULL);
+#endif
 
   return pTest;
 }
 
-static void QueueEventRoutine(test * pTest, int EventCode)
+static void QueueEventRoutine(const test * pTest, int EventCode)
 {
-  oosmos_SendEvent(pTest, EventCode);
+  oosmos_PushEventCode(pTest, EventCode);
   oosmos_RunStateMachines();
 }
 
 extern int main(void)
 {
-  test * pTest = testNew(); 
-  QueueEventRoutine(pTest, TweakEvent);
+  test * pTest = testNew();
+  QueueEventRoutine(pTest, evTweak);
 
-  if (oosmos_IsInState(&pTest->StateMachine, &pTest->Active_Middle_Idle_Inner_State))
+  if (oosmos_IsInState(pTest, &pTest->Active_Region2_Outer_Inner_State))
     printf("SUCCESS\n");
-  else 
+  else
     printf("FAILURE\n");
 
   return 0;

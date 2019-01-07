@@ -1,7 +1,7 @@
 //
 // OOSMOS encoder Class
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +23,7 @@
 #include "oosmos.h"
 #include "encoder.h"
 #include "pin.h"
+#include <stddef.h>
 
 #ifndef encoderMAX
 #define encoderMAX 3
@@ -32,7 +33,7 @@ typedef enum
 {
   EncoderA_Unknown = 1,
   EncoderA_High,
-  EncoderA_Low,
+  EncoderA_Low
 } eState;
 
 struct encoderTag
@@ -42,7 +43,7 @@ struct encoderTag
   int    m_Count;
   int    m_Max;
   eState m_State;
-  
+
   oosmos_sSubscriberList m_ChangeEventSubscribers[1];
   oosmos_sActiveObject   m_ActiveObject;
 };
@@ -50,7 +51,7 @@ struct encoderTag
 static void ActiveEncoder_Callback(void * pObject)
 {
   encoder * pEncoder = (encoder *) pObject;
-  
+
   switch (pEncoder->m_State) {
     case EncoderA_Unknown: {
       pEncoder->m_State = pinIsOn(pEncoder->m_pPinA) ? EncoderA_High : EncoderA_Low;
@@ -59,12 +60,12 @@ static void ActiveEncoder_Callback(void * pObject)
     case EncoderA_High: {
       if (pinIsOff(pEncoder->m_pPinA)) {
         pEncoder->m_State = EncoderA_Low;
-        
+
         if (pinIsOn(pEncoder->m_pPinB))
           pEncoder->m_Count = oosmos_Min(pEncoder->m_Max, pEncoder->m_Count + 1);
         else
           pEncoder->m_Count = oosmos_Max(0, pEncoder->m_Count - 1);
-        
+
         oosmos_SubscriberListNotify(pEncoder->m_ChangeEventSubscribers);
       }
       break;
@@ -72,7 +73,7 @@ static void ActiveEncoder_Callback(void * pObject)
     case EncoderA_Low: {
       if (pinIsOn(pEncoder->m_pPinA))
         pEncoder->m_State = EncoderA_High;
-      break;    
+      break;
     }
   }
 }
@@ -87,22 +88,22 @@ extern void encoderSubscribeChangeEvent(encoder * pEncoder, oosmos_sQueue * pQue
   oosmos_SubscriberListAdd(pEncoder->m_ChangeEventSubscribers, pQueue, EventCode, pContext);
 }
 
-extern int encoderGetCount(encoder * pEncoder)
+extern int encoderGetCount(const encoder * pEncoder)
 {
   return pEncoder->m_Count;
 }
 
-extern encoder * encoderNew(pin * pPinA, pin * pPinB, int Max) 
-{  
+extern encoder * encoderNew(pin * pPinA, pin * pPinB, int Max)
+{
   oosmos_Allocate(pEncoder, encoder, encoderMAX, NULL);
-    
+
   pEncoder->m_pPinA  = pPinA;
-  pEncoder->m_pPinB  = pPinB; 
+  pEncoder->m_pPinB  = pPinB;
   pEncoder->m_Count  = 0;
   pEncoder->m_Max    = Max;
   pEncoder->m_State  = EncoderA_Unknown;
-    
+
   oosmos_RegisterActiveObject(pEncoder, ActiveEncoder_Callback, &pEncoder->m_ActiveObject);
-    
+
   return pEncoder;
 }

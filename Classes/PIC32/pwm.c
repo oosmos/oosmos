@@ -1,7 +1,7 @@
 //
 // OOSMOS pwm Class
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,6 +22,9 @@
 
 #include "oosmos.h"
 #include "pwm.h"
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 
 struct pwmTag
 {
@@ -53,7 +56,7 @@ extern pwm * pwmNew(const int PwmNumber, pin * pPwmPin, timer * pTimer)
       pPWM->m_OcTimerSource = OC_TIMER3_SRC;
       break;
     default:
-      while (true);
+      oosmos_FOREVER();
   }
 
   return pPWM;
@@ -94,7 +97,8 @@ extern void pwmStart(pwm * pPWM)
       case 5: OpenOC5(OC_ON | OcTimerSource | OC_PWM_FAULT_PIN_DISABLE, DutyCycleTicks, 0); break;
     #endif
 
-    default: while (true);
+    default:
+      oosmos_FOREVER();                
   }
 }
 
@@ -121,6 +125,7 @@ extern void pwmStop(pwm * pPWM)
       case 5: CloseOC5(); break;
     #endif
 
-    default: while (true);
+    default:
+      oosmos_FOREVER();                
   }
 }

@@ -1,7 +1,7 @@
 //
 // OOSMOS StateTimeout Example
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,75 +20,89 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <stdio.h>
 #include "oosmos.h"
+#include <stdbool.h>
+#include <stdio.h>
 
 typedef struct testTag test;
 
+//<<<EVENTS
+//>>>EVENTS
+
 struct testTag
 {
-  oosmos_sStateMachineNoQueue(StateMachine);
-    oosmos_sLeaf              MS_State;
-    oosmos_sLeaf              Seconds_State;
-    oosmos_sLeaf              US_State;
-    oosmos_sFinal             Done_State;
+//>>>DECL
+  oosmos_sStateMachineNoQueue(ROOT);
+    oosmos_sLeaf MS_State;
+    oosmos_sLeaf Seconds_State;
+    oosmos_sLeaf US_State;
+    oosmos_sLeaf Done_State;
+//<<<DECL
 };
 
-static bool MS_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+//>>>CODE
+static bool MS_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   test * pTest = (test *) pObject;
 
-  switch (pEvent->Code) {
-    case oosmos_ENTER:
-      return oosmos_StateTimeoutMS(pRegion, 1000);
-    case oosmos_TIMEOUT:
-      return oosmos_Transition(pRegion, &pTest->Seconds_State);
+  switch (oosmos_EventCode(pEvent)) {
+    case oosmos_ENTER: {
+      return oosmos_StateTimeoutMS(pState, (uint32_t) 1000);
+    }
+    case oosmos_TIMEOUT: {
+      return oosmos_Transition(pTest, pState, Seconds_State);
+    }
   }
 
   return false;
 }
 
-static bool Seconds_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool Seconds_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   test * pTest = (test *) pObject;
 
-  switch (pEvent->Code) {
-    case oosmos_ENTER:
-      return oosmos_StateTimeoutSeconds(pRegion, 1);
-    case oosmos_TIMEOUT:
-      return oosmos_Transition(pRegion, &pTest->US_State);
+  switch (oosmos_EventCode(pEvent)) {
+    case oosmos_ENTER: {
+      return oosmos_StateTimeoutSeconds(pState, (uint32_t) 1);
+    }
+    case oosmos_TIMEOUT: {
+      return oosmos_Transition(pTest, pState, US_State);
+    }
   }
 
   return false;
 }
 
-static bool US_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool US_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   test * pTest = (test *) pObject;
 
-  switch (pEvent->Code) {
-    case oosmos_ENTER:
-      return oosmos_StateTimeoutUS(pRegion, 1000 * 1000);
-    case oosmos_TIMEOUT:
-      return oosmos_Transition(pRegion, &pTest->Done_State);
+  switch (oosmos_EventCode(pEvent)) {
+    case oosmos_ENTER: {
+      return oosmos_StateTimeoutUS(pState, (uint32_t) 100000);
+    }
+    case oosmos_TIMEOUT: {
+      return oosmos_Transition(pTest, pState, Done_State);
+    }
   }
 
   return false;
 }
+//<<<CODE
 
 static test * testNew(void)
 {
   oosmos_Allocate(pTest, test, 1, NULL);
 
-  //                                    StateName      Parent       Default
-  //                            =============================================
-  oosmos_StateMachineInitNoQueue(pTest, StateMachine,  NULL,        MS_State);
-    oosmos_LeafInit             (pTest, MS_State,      StateMachine         );
-    oosmos_LeafInit             (pTest, Seconds_State, StateMachine         );
-    oosmos_LeafInit             (pTest, US_State,      StateMachine         );
-    oosmos_FinalInitNoCode      (pTest, Done_State,    StateMachine         );
+//>>>INIT
+  oosmos_StateMachineInitNoQueue(pTest, ROOT, NULL, MS_State);
+    oosmos_LeafInit(pTest, MS_State, ROOT);
+    oosmos_LeafInit(pTest, Seconds_State, ROOT);
+    oosmos_LeafInit(pTest, US_State, ROOT);
+    oosmos_LeafInitNoCode(pTest, Done_State, ROOT);
+//<<<INIT
 
-  oosmos_Debug(&pTest->StateMachine, true, NULL);
+  oosmos_Debug(pTest, true, NULL);
 
   return pTest;
 }
@@ -97,14 +111,14 @@ extern int main(void)
 {
   test * pTest = testNew();
 
-  while (true) {
-    oosmos_sStateMachine * pStateMachine = &pTest->StateMachine;
+  for (;;) {
     oosmos_RunStateMachines();
 
-    if (oosmos_IsInState(pStateMachine, &pTest->Done_State))
+    if (oosmos_IsInState(pTest, &pTest->Done_State)) {
       break;
+    }
 
-    oosmos_DelayMS(100);
+    oosmos_DelayMS(50);
   }
 
   printf("SUCCESS\n");

@@ -1,7 +1,7 @@
 //
 // OOSMOS - The Object-Oriented State Machine Operating System
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,15 +37,15 @@ static void SetupToggle(int Pin, int OnTimeMS, int OffTimeMS)
   toggleNew(pPin, OnTimeMS, OffTimeMS);
 }
 
-extern void setup() 
-{  
-  SetupToggle(BUILTIN_LED, 2000, 100);
+extern void setup()
+{
+  SetupToggle(LED_BUILTIN, 100, 100);
 }
 
-extern void loop() 
+extern void loop()
 {
   oosmos_RunStateMachines();
-  
-  system_deep_sleep_set_option(4);
-  system_deep_sleep(10*1000);  // in uS...
+
+  //system_deep_sleep_set_option(4);
+  //system_deep_sleep(10*1000);  // in uS...
 }

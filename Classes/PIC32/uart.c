@@ -1,7 +1,7 @@
 //
 // OOSMOS uart Class
 //
-// Copyright (C) 2014-2016  OOSMOS, LLC
+// Copyright (C) 2014-2018  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <http://www.oosmos.com/licensing/>.
+// See <https://oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,16 +22,20 @@
 
 #include "oosmos.h"
 #include "uart.h"
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdarg.h>
 
 typedef enum
 {
   sendAwaitingCharToSend_State,
   sendAwaitingReady_State,
-  sendAwaitingComplete_State,
+  sendAwaitingComplete_State
 } eSendStates;
 
 struct uartTag
-{  
+{
   oosmos_sActiveObject   m_ActiveObject;
 
   oosmos_sQueue          m_SendDataQueue;
@@ -42,7 +46,7 @@ struct uartTag
   oosmos_sQueue          m_ReceiveDataQueue;
   uint8_t                m_ReceiveDataQueueData[10];
   oosmos_sSubscriberList m_ReceivedByteEventSubscribers[1];
-  
+
   uint8_t  m_PlibUartID;
   uint8_t  m_UartModule;
 };
@@ -106,7 +110,7 @@ static uint16_t GetPriorityBits(const int PriorityNumber)
     case 5: return INT_PRIORITY_LEVEL_5;
     case 6: return INT_PRIORITY_LEVEL_6;
     case 7: return INT_PRIORITY_LEVEL_7;
-    default: while(true);
+    default: oosmos_FOREVER();
   }
 }
 
@@ -120,7 +124,7 @@ static void RunReceiverStateMachine(void * pObject)
   EnableInterrupt(pUART);
 
   if (PopSuccess) {
-    uart_sReceivedByteEvent ReceivedByteEvent = { { 0, NULL }, Byte };
+    uart_sReceivedByteEvent ReceivedByteEvent = { oosmos_EMPTY_EVENT, Byte }; 
     oosmos_SubscriberListNotifyWithArgs(pUART->m_ReceivedByteEventSubscribers, ReceivedByteEvent);
   }
 }
@@ -128,11 +132,11 @@ static void RunReceiverStateMachine(void * pObject)
 static void RunSenderStateMachine(void * pObject)
 {
   uart * pUART = (uart *) pObject;
-  
+
   switch (pUART->m_SendState) {
     case sendAwaitingCharToSend_State: {
       const bool PopSuccess = oosmos_QueuePop(&pUART->m_SendDataQueue, &pUART->m_CharToSend, sizeof(pUART->m_CharToSend));
-      
+
       if (PopSuccess)
         pUART->m_SendState = sendAwaitingReady_State;
 
@@ -148,7 +152,7 @@ static void RunSenderStateMachine(void * pObject)
     case sendAwaitingComplete_State:
       if (UARTTransmissionHasCompleted(pUART->m_PlibUartID))
         pUART->m_SendState = sendAwaitingCharToSend_State;
-      
+
       break;
   }
 }
@@ -162,9 +166,8 @@ static void RunStateMachine(void * pObject)
 static void ISR(const int UartModule)
 {
   uart * pUART = UartList;
-  int Count;
 
-  for (Count = 1; Count <= UartCount; pUART++, Count++) {
+  for (int Count = 1; Count <= UartCount; pUART++, Count++) {
     if (UartModule <= pUART->m_UartModule)
       break;
   }
@@ -205,14 +208,15 @@ extern void uartSendString(uart * pUART, const char * pString)
 {
   uint8_t Char;
 
-  while (Char = *pString++, Char)
+  while (Char = *pString++, Char) {
     uartSendChar(pUART, Char);
+  }
 }
 
 extern void uartStart(uart * pUART)
 {
   const int PlibUartId = pUART->m_PlibUartID;
-    
+
   UARTEnable(PlibUartId, UART_ENABLE_FLAGS(UART_PERIPHERAL | UART_RX | UART_TX));
   EnableInterrupt(pUART);
 }
@@ -225,7 +229,7 @@ extern uart * uartNew(const int UartModule, const int BaudRate)
   oosmos_AllocateVisible(pUART, uart, UartList, UartCount, MaxUARTS, NULL);
 
   pUART->m_UartModule = UartModule;
- 
+
   const int PlibUartID = UartIndex_to_PlibUartId[UartModule-1];
   pUART->m_PlibUartID = PlibUartID;
 

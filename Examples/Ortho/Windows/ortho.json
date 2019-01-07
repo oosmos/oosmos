@@ -1,0 +1,26 @@
+[
+  {
+    "enabled":      true,
+    "uxf_filename": "Motion.uxf",
+    "filename":     "Motion.c",
+    "type":         "motion",
+    "object_ptr":   "pMotion",
+    "queue_size":   3
+  },
+  {
+    "enabled":      true,
+    "uxf_filename": "Completion.uxf",
+    "filename":     "Completion.c",
+    "type":         "test",
+    "object_ptr":   "pTest",
+    "queue_size":   3
+  },
+  {
+    "enabled":      true,
+    "uxf_filename": "EnterExit.uxf",
+    "filename":     "EnterExit.c",
+    "type":         "test",
+    "object_ptr":   "pTest",
+    "queue_size":   3
+  }
+]

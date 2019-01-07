@@ -1,0 +1,18 @@
+[
+  {
+    "enabled":      true,
+    "uxf_filename": "Final.uxf",
+    "filename":     "Final.c",
+    "type":         "test",
+    "object_ptr":   "pTest",
+    "queue_size":   0
+  },
+  {
+    "enabled":      true,
+    "uxf_filename": "StateTimeout.uxf",
+    "filename":     "StateTimeout.c",
+    "type":         "test",
+    "object_ptr":   "pTest",
+    "queue_size":   0
+  }
+]
