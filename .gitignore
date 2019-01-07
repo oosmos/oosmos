@@ -1,83 +1,138 @@
+#
+# Windows specific
+#
+**/*.exe
+**/*.obj
+**/*.pdb
+**/*.ilk
+**/*.suo
+**/*.sln
+**/*.VC.db
+**/settings
+
+#
+# STM specific
+#
+**/List/**
+**/Exe/**
+**/Obj/**
+**/*.dep
+
+
 **/build
 **/dist
 
-**/oosmos.h
-**/oosmos.c
-**/oosmos.cpp
+# ignore "populated" oosmos source files.
 
-**/pin.h
-**/pin.c
-**/pin.cpp
+Examples/**/oosmos.h
+Examples/**/oosmos.c
+Examples/**/oosmos.cpp
 
-**/toggle.h
-**/toggle.c
-**/toggle.cpp
+# ignore "populated" class files.
 
-**/spi.h
-**/spi.c
-**/spi.cpp
+Examples/**/accum.h
+Examples/**/accum.c
+Examples/**/accum.cpp
 
-**/uart.h
-**/uart.c
-**/uart.cpp
+Examples/**/btn.h
+Examples/**/btn.c
+Examples/**/btn.cpp
 
-**/sw.h
-**/sw.c
-**/sw.cpp
+Examples/**/dns.h
+Examples/**/dns.c
+Examples/**/dns.cpp
 
-**/matrix.h
-**/matrix.c
-**/matrix.cpp
+Examples/**/encoder.h
+Examples/**/encoder.c
+Examples/**/encoder.cpp
 
-**/matrixtest.h
-**/matrixtest.c
-**/matrixtest.cpp
+Examples/**/keyer.h
+Examples/**/keyer.c
+Examples/**/keyer.cpp
 
-**/prt.h
-**/prt.c
-**/prt.cpp
+Examples/**/keypad.h
+Examples/**/keypad.c
+Examples/**/keypad.cpp
 
-**/encoder.h
-**/encoder.c
-**/encoder.cpp
+Examples/**/lcd.h
+Examples/**/lcd.c
+Examples/**/lcd.cpp
 
-**/encodertest.h
-**/encodertest.c
-**/encodertest.cpp
+Examples/**/matrix.h
+Examples/**/matrix.c
+Examples/**/matrix.cpp
 
-**/switchtest.h
-**/switchtest.c
-**/switchtest.cpp
+Examples/**/mcp4131.h
+Examples/**/mcp4131.c
+Examples/**/mcp4131.cpp
 
-**/threadtest.h
-**/threadtest.c
-**/threadtest.cpp
+Examples/**/pin.h
+Examples/**/pin.c
+Examples/**/pin.cpp
 
-**/lcd.h
-**/lcd.c
-**/lcd.cpp
+Examples/**/prt.h
+Examples/**/prt.c
+Examples/**/prt.cpp
 
-**/lcdtest.h
-**/lcdtest.c
-**/lcdtest.cpp
+Examples/**/reg.h
+Examples/**/reg.c
+Examples/**/reg.cpp
 
-**/reg.h
-**/reg.c
-**/reg.cpp
+Examples/**/sock.h
+Examples/**/sock.c
+Examples/**/sock.cpp
 
-**/regtest.h
-**/regtest.c
-**/regtest.cpp
+Examples/**/spi.h
+Examples/**/spi.c
+Examples/**/spi.cpp
 
-**/mcp4131.h
-**/mcp4131.c
-**/mcp4131.cpp
+Examples/**/sw.h
+Examples/**/sw.c
+Examples/**/sw.cpp
 
-**/mcp4131test.h
-**/mcp4131test.c
-**/mcp4131test.cpp
+Examples/**/toggle.h
+Examples/**/toggle.c
+Examples/**/toggle.cpp
 
-**/keyer.h
-**/keyer.c
-**/keyer.cpp
- 
+Examples/**/uart.h
+Examples/**/uart.c
+Examples/**/uart.cpp
+
+Examples/**/tok.h
+Examples/**/tok.c
+Examples/**/tok.cpp
+
+# ignore "populated" class test files.
+
+Examples/**/encodertest.h
+Examples/**/encodertest.c
+Examples/**/encodertest.cpp
+
+Examples/**/lcdtest.h
+Examples/**/lcdtest.c
+Examples/**/lcdtest.cpp
+
+Examples/**/matrixtest.h
+Examples/**/matrixtest.c
+Examples/**/matrixtest.cpp
+
+Examples/**/mcp4131test.h
+Examples/**/mcp4131test.c
+Examples/**/mcp4131test.cpp
+
+Examples/**/regtest.h
+Examples/**/regtest.c
+Examples/**/regtest.cpp
+
+Examples/**/switchtest.h
+Examples/**/switchtest.c
+Examples/**/switchtest.cpp
+
+Examples/**/threadtest.h
+Examples/**/threadtest.c
+Examples/**/threadtest.cpp
+
+Examples/**/threadyieldtest.h
+Examples/**/threadyieldtest.c
+Examples/**/threadyieldtest.cpp
+
