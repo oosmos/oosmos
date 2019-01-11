@@ -201,18 +201,18 @@ static motion * motionNew(void)
 
 //>>>INIT
   oosmos_StateMachineInit(pMotion, ROOT, NULL, Active_State);
-    oosmos_OrthoInitNoCode(pMotion, Active_State, ROOT);
-      oosmos_OrthoRegionInitNoCode(pMotion, Active_Region1_State, Active_State, Active_Region1_Limits_State);
-        oosmos_CompositeInit(pMotion, Active_Region1_Limits_State, Active_Region1_State, Active_Region1_Limits_Choice1_State);
-          oosmos_LeafInitNoCode(pMotion, Active_Region1_Limits_AtUpperLimit_State, Active_Region1_Limits_State);
-          oosmos_LeafInitNoCode(pMotion, Active_Region1_Limits_InBounds_State, Active_Region1_Limits_State);
-          oosmos_LeafInit(pMotion, Active_Region1_Limits_Choice1_State, Active_Region1_Limits_State);
-          oosmos_LeafInitNoCode(pMotion, Active_Region1_Limits_AtLowerLimit_State, Active_Region1_Limits_State);
-      oosmos_OrthoRegionInitNoCode(pMotion, Active_Region2_State, Active_State, Active_Region2_Stopped_State);
-        oosmos_CompositeInit(pMotion, Active_Region2_Moving_State, Active_Region2_State, Active_Region2_Moving_Up_State);
-          oosmos_LeafInit(pMotion, Active_Region2_Moving_Up_State, Active_Region2_Moving_State);
-          oosmos_LeafInit(pMotion, Active_Region2_Moving_Down_State, Active_Region2_Moving_State);
-        oosmos_LeafInit(pMotion, Active_Region2_Stopped_State, Active_Region2_State);
+    oosmos_OrthoInit(pMotion, Active_State, ROOT, NULL);
+      oosmos_OrthoRegionInit(pMotion, Active_Region1_State, Active_State, Active_Region1_Limits_State, NULL);
+        oosmos_CompositeInit(pMotion, Active_Region1_Limits_State, Active_Region1_State, Active_Region1_Limits_Choice1_State, Active_Region1_Limits_State_Code);
+          oosmos_LeafInit(pMotion, Active_Region1_Limits_AtUpperLimit_State, Active_Region1_Limits_State, NULL);
+          oosmos_LeafInit(pMotion, Active_Region1_Limits_InBounds_State, Active_Region1_Limits_State, NULL);
+          oosmos_LeafInit(pMotion, Active_Region1_Limits_Choice1_State, Active_Region1_Limits_State, Active_Region1_Limits_Choice1_State_Code);
+          oosmos_LeafInit(pMotion, Active_Region1_Limits_AtLowerLimit_State, Active_Region1_Limits_State, NULL);
+      oosmos_OrthoRegionInit(pMotion, Active_Region2_State, Active_State, Active_Region2_Stopped_State, NULL);
+        oosmos_CompositeInit(pMotion, Active_Region2_Moving_State, Active_Region2_State, Active_Region2_Moving_Up_State, Active_Region2_Moving_State_Code);
+          oosmos_LeafInit(pMotion, Active_Region2_Moving_Up_State, Active_Region2_Moving_State, Active_Region2_Moving_Up_State_Code);
+          oosmos_LeafInit(pMotion, Active_Region2_Moving_Down_State, Active_Region2_Moving_State, Active_Region2_Moving_Down_State_Code);
+        oosmos_LeafInit(pMotion, Active_Region2_Stopped_State, Active_Region2_State, Active_Region2_Stopped_State_Code);
 //<<<INIT
 
 #if 1

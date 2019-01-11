@@ -92,8 +92,8 @@ static test * testNew(void)
 
 //>>>INIT
   oosmos_StateMachineInitNoQueue(pTest, ROOT, NULL, Running_State);
-    oosmos_LeafInit(pTest, Running_State, ROOT);
-    oosmos_LeafInit(pTest, Complete_State, ROOT);
+    oosmos_LeafInit(pTest, Running_State, ROOT, Running_State_Code);
+    oosmos_LeafInit(pTest, Complete_State, ROOT, Complete_State_Code);
 //<<<INIT
 
   oosmos_Debug(pTest, true, NULL);

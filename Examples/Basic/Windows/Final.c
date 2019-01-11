@@ -47,12 +47,21 @@ static bool IsLeft(void)
   return true;
 }
 
+static void Default(void)
+{
+  printf("In Default\n");
+}
+
 //>>>CODE
 static bool A_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   test * pTest = (test *) pObject;
 
   switch (oosmos_EventCode(pEvent)) {
+    case oosmos_DEFAULT: {
+      Default();
+      return true;
+    }
     case oosmos_COMPLETE: {
       return oosmos_Transition(pTest, pState, B_State);
     }
@@ -104,19 +113,18 @@ static bool A_Right_State_Code(void * pObject, oosmos_sState * pState, const oos
 }
 //<<<CODE
 
-
 static test * testNew(void)
 {
   oosmos_Allocate(pTest, test, 1, NULL);
 
 //>>>INIT
   oosmos_StateMachineInitNoQueue(pTest, ROOT, NULL, A_State);
-    oosmos_CompositeInit(pTest, A_State, ROOT, A_Choice1_State);
-      oosmos_LeafInit(pTest, A_Choice1_State, A_State);
-      oosmos_LeafInit(pTest, A_Left_State, A_State);
-      oosmos_LeafInit(pTest, A_Right_State, A_State);
-      oosmos_FinalInitNoCode(pTest, A_Final1_State, A_State);
-    oosmos_LeafInitNoCode(pTest, B_State, ROOT);
+    oosmos_CompositeInit(pTest, A_State, ROOT, A_Choice1_State, A_State_Code);
+      oosmos_LeafInit(pTest, A_Choice1_State, A_State, A_Choice1_State_Code);
+      oosmos_LeafInit(pTest, A_Left_State, A_State, A_Left_State_Code);
+      oosmos_LeafInit(pTest, A_Right_State, A_State, A_Right_State_Code);
+      oosmos_FinalInit(pTest, A_Final1_State, A_State, NULL);
+    oosmos_LeafInit(pTest, B_State, ROOT, NULL);
 //<<<INIT
 
   oosmos_Debug(pTest, true, NULL);

@@ -96,10 +96,10 @@ static test * testNew(void)
 
 //>>>INIT
   oosmos_StateMachineInitNoQueue(pTest, ROOT, NULL, MS_State);
-    oosmos_LeafInit(pTest, MS_State, ROOT);
-    oosmos_LeafInit(pTest, Seconds_State, ROOT);
-    oosmos_LeafInit(pTest, US_State, ROOT);
-    oosmos_LeafInitNoCode(pTest, Done_State, ROOT);
+    oosmos_LeafInit(pTest, MS_State, ROOT, MS_State_Code);
+    oosmos_LeafInit(pTest, Seconds_State, ROOT, Seconds_State_Code);
+    oosmos_LeafInit(pTest, US_State, ROOT, US_State_Code);
+    oosmos_LeafInit(pTest, Done_State, ROOT, NULL);
 //<<<INIT
 
   oosmos_Debug(pTest, true, NULL);

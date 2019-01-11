@@ -286,18 +286,18 @@ static test * testNew(void)
 
 //>>>INIT
   oosmos_StateMachineInitNoQueue(pTest, ROOT, NULL, TestingNullTransitionWithoutPoll_State);
-    oosmos_LeafInit(pTest, TestingNullTransitionWithoutPoll_State, ROOT);
-    oosmos_OrthoInit(pTest, Ortho_State, ROOT);
-      oosmos_OrthoRegionInitNoCode(pTest, Ortho_Region1_State, Ortho_State, Ortho_Region1_A1_State);
-        oosmos_CompositeInit(pTest, Ortho_Region1_A1_State, Ortho_Region1_State, Ortho_Region1_A1_B1_State);
-          oosmos_CompositeInit(pTest, Ortho_Region1_A1_B1_State, Ortho_Region1_A1_State, Ortho_Region1_A1_B1_C1_State);
-            oosmos_LeafInit(pTest, Ortho_Region1_A1_B1_C1_State, Ortho_Region1_A1_B1_State);
-      oosmos_OrthoRegionInitNoCode(pTest, Ortho_Region2_State, Ortho_State, Ortho_Region2_A2_State);
-        oosmos_CompositeInit(pTest, Ortho_Region2_A2_State, Ortho_Region2_State, Ortho_Region2_A2_B2_State);
-          oosmos_CompositeInit(pTest, Ortho_Region2_A2_B2_State, Ortho_Region2_A2_State, Ortho_Region2_A2_B2_C2_State);
-            oosmos_LeafInit(pTest, Ortho_Region2_A2_B2_C2_State, Ortho_Region2_A2_B2_State);
-    oosmos_LeafInit(pTest, TestNullTransitionWithPoll_State, ROOT);
-    oosmos_LeafInit(pTest, Done_State, ROOT);
+    oosmos_LeafInit(pTest, TestingNullTransitionWithoutPoll_State, ROOT, TestingNullTransitionWithoutPoll_State_Code);
+    oosmos_OrthoInit(pTest, Ortho_State, ROOT, Ortho_State_Code);
+      oosmos_OrthoRegionInit(pTest, Ortho_Region1_State, Ortho_State, Ortho_Region1_A1_State, NULL);
+        oosmos_CompositeInit(pTest, Ortho_Region1_A1_State, Ortho_Region1_State, Ortho_Region1_A1_B1_State, Ortho_Region1_A1_State_Code);
+          oosmos_CompositeInit(pTest, Ortho_Region1_A1_B1_State, Ortho_Region1_A1_State, Ortho_Region1_A1_B1_C1_State, Ortho_Region1_A1_B1_State_Code);
+            oosmos_LeafInit(pTest, Ortho_Region1_A1_B1_C1_State, Ortho_Region1_A1_B1_State, Ortho_Region1_A1_B1_C1_State_Code);
+      oosmos_OrthoRegionInit(pTest, Ortho_Region2_State, Ortho_State, Ortho_Region2_A2_State, NULL);
+        oosmos_CompositeInit(pTest, Ortho_Region2_A2_State, Ortho_Region2_State, Ortho_Region2_A2_B2_State, Ortho_Region2_A2_State_Code);
+          oosmos_CompositeInit(pTest, Ortho_Region2_A2_B2_State, Ortho_Region2_A2_State, Ortho_Region2_A2_B2_C2_State, Ortho_Region2_A2_B2_State_Code);
+            oosmos_LeafInit(pTest, Ortho_Region2_A2_B2_C2_State, Ortho_Region2_A2_B2_State, Ortho_Region2_A2_B2_C2_State_Code);
+    oosmos_LeafInit(pTest, TestNullTransitionWithPoll_State, ROOT, TestNullTransitionWithPoll_State_Code);
+    oosmos_LeafInit(pTest, Done_State, ROOT, Done_State_Code);
 //<<<INIT
 
 #if 1

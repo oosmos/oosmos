@@ -83,7 +83,7 @@ extern toggle * toggleNew(pin * pPin, uint32_t TimeOnMS, uint32_t TimeOffMS)
 
 //>>>INIT
   oosmos_StateMachineInitNoQueue(pToggle, ROOT, NULL, Running_State);
-    oosmos_LeafInit(pToggle, Running_State, ROOT);
+    oosmos_LeafInit(pToggle, Running_State, ROOT, Running_State_Code);
 //<<<INIT
 
   pToggle->m_pPin      = pPin;

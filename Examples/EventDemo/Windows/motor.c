@@ -110,8 +110,8 @@ extern motor * motorNew(void)
 
 //>>>INIT
   oosmos_StateMachineInit(pMotor, ROOT, NULL, Idle_State);
-    oosmos_LeafInit(pMotor, Idle_State, ROOT);
-    oosmos_LeafInit(pMotor, Moving_State, ROOT);
+    oosmos_LeafInit(pMotor, Idle_State, ROOT, Idle_State_Code);
+    oosmos_LeafInit(pMotor, Moving_State, ROOT, Moving_State_Code);
 //<<<INIT
 
 #if 1

@@ -76,11 +76,11 @@ extern threadyieldtest * threadyieldtestNew(const char * pID, int Iterations)
 {
   oosmos_Allocate(pThreadYieldtest, threadyieldtest, MAX_THREAD, NULL);
 
-  //                                           StateName      Parent        Default
-  //                              =======================================================
-  oosmos_StateMachineInitNoQueue  (pThreadYieldtest, StateMachine,  NULL,         Running_State);
-    oosmos_LeafInit               (pThreadYieldtest, Running_State, StateMachine               );
-    oosmos_LeafInitNoCode         (pThreadYieldtest, Final_State,   StateMachine               );
+  //                               StateName         Parent         Default
+  //                              ===================================================================
+  oosmos_StateMachineInitNoQueue  (pThreadYieldtest, StateMachine,  NULL,         Running_State     );
+    oosmos_LeafInit               (pThreadYieldtest, Running_State, StateMachine, Running_State_Code);
+    oosmos_LeafInit               (pThreadYieldtest, Final_State,   StateMachine, NULL              );
 
   pThreadYieldtest->m_pID        = pID;
   pThreadYieldtest->m_Iterations = Iterations;

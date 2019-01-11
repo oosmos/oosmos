@@ -138,14 +138,10 @@ static void TestB(threadtest * pThreadTest, oosmos_sState * pState)
 
     (void)prtFormatted("TestB threadWaitCond_TimeoutMS...\n");
 
-    oosmos_ThreadWaitCond_TimeoutMS(100, &TimedOut,
-      ConditionTrue()
-    );
+    oosmos_ThreadWaitCond_TimeoutMS(ConditionTrue(), 100, &TimedOut);
     pThreadTest->m_B_Successes += (TimedOut == false);
 
-    oosmos_ThreadWaitCond_TimeoutMS(100, &TimedOut,
-      ConditionFalse()
-    );
+    oosmos_ThreadWaitCond_TimeoutMS(ConditionFalse(), 100, &TimedOut);
     pThreadTest->m_B_Successes += (TimedOut == true);
     prtFormatted("TestB %s\n\n", pThreadTest->m_B_Successes == 3 ? "SUCCESS" : "FAILURE");
   oosmos_ThreadEnd();
@@ -159,14 +155,10 @@ static void TestC(threadtest * pThreadTest, oosmos_sState * pState)
 
     prtFormatted("TestC threadWaitCond_TimeoutMS_Event...\n");
 
-    oosmos_ThreadWaitCond_TimeoutMS_Event(100, evTimedOut1,
-      ConditionTrue()
-    );
+    oosmos_ThreadWaitCond_TimeoutMS_Event(ConditionTrue(), 100, evTimedOut1);
     pThreadTest->m_C_RightPath += 1;
 
-    oosmos_ThreadWaitCond_TimeoutMS_Event(100, evTimedOut2,
-      ConditionFalse()
-    );
+    oosmos_ThreadWaitCond_TimeoutMS_Event(ConditionFalse(), 100, evTimedOut2);
     pThreadTest->m_C_WrongPath += 1;
   oosmos_ThreadFinally();
     prtFormatted("TestC %s\n\n", pThreadTest->m_C_RightPath == 2 && pThreadTest->m_C_WrongPath == 0 ? "SUCCESS" : "FAILURE");
@@ -181,14 +173,10 @@ static void TestD(threadtest * pThreadTest, oosmos_sState * pState)
 
     prtFormatted("TestD threadWaitCond_TimeoutMS_Exit...\n");
 
-    oosmos_ThreadWaitCond_TimeoutMS_Exit(100,
-      ConditionTrue()
-    );
+    oosmos_ThreadWaitCond_TimeoutMS_Exit(ConditionTrue(), 100);
     pThreadTest->m_D_RightPath += 1;
 
-    oosmos_ThreadWaitCond_TimeoutMS_Exit(100,
-      ConditionFalse()
-    );
+    oosmos_ThreadWaitCond_TimeoutMS_Exit(ConditionFalse(), 100);
     pThreadTest->m_D_WrongPath += 1;
 
   oosmos_ThreadFinally();
@@ -205,14 +193,10 @@ static void TestE(threadtest * pThreadTest, oosmos_sState * pState)
 
     prtFormatted("TestE threadWaitCond_TimeoutMS_Exit...\n");
 
-    oosmos_ThreadWaitCond_TimeoutMS_Exit(100,
-      ConditionTrue()
-    );
+    oosmos_ThreadWaitCond_TimeoutMS_Exit(ConditionTrue(), 100);
     pThreadTest->m_E_RightPath += 1;
 
-    oosmos_ThreadWaitCond_TimeoutMS_Exit(100,
-      ConditionFalse()
-    );
+    oosmos_ThreadWaitCond_TimeoutMS_Exit(ConditionFalse(), 100);
     pThreadTest->m_E_WrongPath += 1;
 
   oosmos_ThreadFinally();
@@ -234,17 +218,13 @@ static void TestF(threadtest * pThreadTest, oosmos_sState * pState)
     // before the timeout.
     //
     oosmos_PushEventCode(pThreadTest, evPrint);
-    oosmos_ThreadWaitEvent_TimeoutMS_Event(100, evTimedOut1,
-      evDone
-    );
+    oosmos_ThreadWaitEvent_TimeoutMS_Event(evDone, 100, evTimedOut1);
     pThreadTest->m_F_RightPath += 1;
 
     //
     // We don't enqueue 'evPrint' so we don't expect an 'evDone' therefore it should time out.
     //
-    oosmos_ThreadWaitEvent_TimeoutMS_Event(100, evTimedOut2,
-      evDone
-    );
+    oosmos_ThreadWaitEvent_TimeoutMS_Event(evDone, 100, evTimedOut2);
     pThreadTest->m_F_WrongPath += 1;
   oosmos_ThreadFinally();
     prtFormatted("TestF %s\n\n", pThreadTest->m_F_RightPath == 2 && pThreadTest->m_F_WrongPath == 0 ? "SUCCESS" : "FAILURE");
@@ -264,17 +244,13 @@ static void TestG(threadtest * pThreadTest, oosmos_sState * pState)
     // before the timeout.
     //
     oosmos_PushEventCode(pThreadTest, evPrint);
-    oosmos_ThreadWaitEvent_TimeoutMS_Exit(100,
-      evDone
-    );
+    oosmos_ThreadWaitEvent_TimeoutMS_Exit(evDone, 100);
     pThreadTest->m_G_RightPath += 1;
 
     //
     // We don't enqueue 'evPrint' so we don't expect an 'evDone' therefore it should time out.
     //
-    oosmos_ThreadWaitEvent_TimeoutMS_Exit(100,
-      evDone
-    );
+    oosmos_ThreadWaitEvent_TimeoutMS_Exit(evDone, 100);
     pThreadTest->m_G_WrongPath += 1;
 
   oosmos_ThreadFinally();
@@ -422,7 +398,7 @@ static void OOSMOS_Action1(void * pObject, oosmos_sState * pState, const oosmos_
   threadtest * pThreadTest = (threadtest *) pObject;
 
   oosmos_PushEventCode(pThreadTest, evDone);
-
+  
   oosmos_UNUSED(pState);
   oosmos_UNUSED(pEvent);
 }
@@ -447,17 +423,17 @@ extern threadtest * threadtestNew(void)
 
 //>>>INIT
   oosmos_StateMachineInit(pThreadTest, ROOT, NULL, Running_State);
-    oosmos_OrthoInitNoCode(pThreadTest, Running_State, ROOT);
-      oosmos_OrthoRegionInitNoCode(pThreadTest, Running_Region1_State, Running_State, Running_Region1_A_State);
-        oosmos_LeafInit(pThreadTest, Running_Region1_A_State, Running_Region1_State);
-        oosmos_LeafInit(pThreadTest, Running_Region1_B_State, Running_Region1_State);
-        oosmos_LeafInit(pThreadTest, Running_Region1_C_State, Running_Region1_State);
-        oosmos_LeafInit(pThreadTest, Running_Region1_D_State, Running_Region1_State);
-        oosmos_LeafInit(pThreadTest, Running_Region1_E_State, Running_Region1_State);
-        oosmos_LeafInit(pThreadTest, Running_Region1_F_State, Running_Region1_State);
-        oosmos_LeafInit(pThreadTest, Running_Region1_G_State, Running_Region1_State);
-      oosmos_OrthoRegionInitNoCode(pThreadTest, Running_Region2_State, Running_State, Running_Region2_Printing_State);
-        oosmos_LeafInit(pThreadTest, Running_Region2_Printing_State, Running_Region2_State);
+    oosmos_OrthoInit(pThreadTest, Running_State, ROOT, NULL);
+      oosmos_OrthoRegionInit(pThreadTest, Running_Region1_State, Running_State, Running_Region1_A_State, NULL);
+        oosmos_LeafInit(pThreadTest, Running_Region1_A_State, Running_Region1_State, Running_Region1_A_State_Code);
+        oosmos_LeafInit(pThreadTest, Running_Region1_B_State, Running_Region1_State, Running_Region1_B_State_Code);
+        oosmos_LeafInit(pThreadTest, Running_Region1_C_State, Running_Region1_State, Running_Region1_C_State_Code);
+        oosmos_LeafInit(pThreadTest, Running_Region1_D_State, Running_Region1_State, Running_Region1_D_State_Code);
+        oosmos_LeafInit(pThreadTest, Running_Region1_E_State, Running_Region1_State, Running_Region1_E_State_Code);
+        oosmos_LeafInit(pThreadTest, Running_Region1_F_State, Running_Region1_State, Running_Region1_F_State_Code);
+        oosmos_LeafInit(pThreadTest, Running_Region1_G_State, Running_Region1_State, Running_Region1_G_State_Code);
+      oosmos_OrthoRegionInit(pThreadTest, Running_Region2_State, Running_State, Running_Region2_Printing_State, NULL);
+        oosmos_LeafInit(pThreadTest, Running_Region2_Printing_State, Running_Region2_State, Running_Region2_Printing_State_Code);
 //<<<INIT
 
 #ifdef threadtestDEBUG

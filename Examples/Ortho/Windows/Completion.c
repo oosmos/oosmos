@@ -155,16 +155,16 @@ static test * testNew(void)
 
 //>>>INIT
   oosmos_StateMachineInit(pTest, ROOT, NULL, Ortho_State);
-    oosmos_OrthoInit(pTest, Ortho_State, ROOT);
-      oosmos_OrthoRegionInitNoCode(pTest, Ortho_Region1_State, Ortho_State, Ortho_Region1_Idle_State);
-        oosmos_LeafInit(pTest, Ortho_Region1_Moving_State, Ortho_Region1_State);
-        oosmos_LeafInit(pTest, Ortho_Region1_Idle_State, Ortho_Region1_State);
-        oosmos_FinalInitNoCode(pTest, Ortho_Region1_Final1_State, Ortho_Region1_State);
-      oosmos_OrthoRegionInitNoCode(pTest, Ortho_Region2_State, Ortho_State, Ortho_Region2_Idle_State);
-        oosmos_LeafInit(pTest, Ortho_Region2_Idle_State, Ortho_Region2_State);
-        oosmos_LeafInit(pTest, Ortho_Region2_Moving_State, Ortho_Region2_State);
-        oosmos_FinalInitNoCode(pTest, Ortho_Region2_Final2_State, Ortho_Region2_State);
-    oosmos_LeafInit(pTest, Complete_State, ROOT);
+    oosmos_OrthoInit(pTest, Ortho_State, ROOT, Ortho_State_Code);
+      oosmos_OrthoRegionInit(pTest, Ortho_Region1_State, Ortho_State, Ortho_Region1_Idle_State, NULL);
+        oosmos_LeafInit(pTest, Ortho_Region1_Moving_State, Ortho_Region1_State, Ortho_Region1_Moving_State_Code);
+        oosmos_LeafInit(pTest, Ortho_Region1_Idle_State, Ortho_Region1_State, Ortho_Region1_Idle_State_Code);
+        oosmos_FinalInit(pTest, Ortho_Region1_Final1_State, Ortho_Region1_State, NULL);
+      oosmos_OrthoRegionInit(pTest, Ortho_Region2_State, Ortho_State, Ortho_Region2_Idle_State, NULL);
+        oosmos_LeafInit(pTest, Ortho_Region2_Idle_State, Ortho_Region2_State, Ortho_Region2_Idle_State_Code);
+        oosmos_LeafInit(pTest, Ortho_Region2_Moving_State, Ortho_Region2_State, Ortho_Region2_Moving_State_Code);
+        oosmos_FinalInit(pTest, Ortho_Region2_Final2_State, Ortho_Region2_State, NULL);
+    oosmos_LeafInit(pTest, Complete_State, ROOT, Complete_State_Code);
 //<<<INIT
 
 #if 1

@@ -139,12 +139,12 @@ static test * testNew(void)
 
 //>>>INIT
   oosmos_StateMachineInit(pTest, ROOT, NULL, A1_State);
-    oosmos_OrthoInitNoCode(pTest, A1_State, ROOT);
-      oosmos_OrthoRegionInitNoCode(pTest, A1_Region1_State, A1_State, A1_Region1_B1_State);
-        oosmos_LeafInit(pTest, A1_Region1_B1_State, A1_Region1_State);
-      oosmos_OrthoRegionInitNoCode(pTest, A1_Region2_State, A1_State, A1_Region2_EventDriver_State);
-        oosmos_LeafInit(pTest, A1_Region2_EventDriver_State, A1_Region2_State);
-    oosmos_LeafInit(pTest, Done_State, ROOT);
+    oosmos_OrthoInit(pTest, A1_State, ROOT, NULL);
+      oosmos_OrthoRegionInit(pTest, A1_Region1_State, A1_State, A1_Region1_B1_State, NULL);
+        oosmos_LeafInit(pTest, A1_Region1_B1_State, A1_Region1_State, A1_Region1_B1_State_Code);
+      oosmos_OrthoRegionInit(pTest, A1_Region2_State, A1_State, A1_Region2_EventDriver_State, NULL);
+        oosmos_LeafInit(pTest, A1_Region2_EventDriver_State, A1_Region2_State, A1_Region2_EventDriver_State_Code);
+    oosmos_LeafInit(pTest, Done_State, ROOT, Done_State_Code);
 //<<<INIT
 
 #if 1

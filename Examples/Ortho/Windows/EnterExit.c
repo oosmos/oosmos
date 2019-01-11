@@ -86,15 +86,15 @@ static test * testNew(void)
 
 //>>>INIT
   oosmos_StateMachineInit(pTest, ROOT, NULL, Active_State);
-    oosmos_OrthoInit(pTest, Active_State, ROOT);
-      oosmos_OrthoRegionInitNoCode(pTest, Active_Region1_State, Active_State, Active_Region1_Moving_State);
-        oosmos_LeafInitNoCode(pTest, Active_Region1_Moving_State, Active_Region1_State);
-      oosmos_OrthoRegionInitNoCode(pTest, Active_Region2_State, Active_State, Active_Region2_Outer_State);
-        oosmos_CompositeInitNoCode(pTest, Active_Region2_Outer_State, Active_Region2_State, Active_Region2_Outer_Inner_State);
-          oosmos_LeafInitNoCode(pTest, Active_Region2_Outer_Inner_State, Active_Region2_Outer_State);
-      oosmos_OrthoRegionInitNoCode(pTest, Active_Region3_State, Active_State, Active_Region3_Leaf_State);
-        oosmos_LeafInit(pTest, Active_Region3_Leaf_State, Active_Region3_State);
-        oosmos_LeafInitNoCode(pTest, Active_Region3_Running_State, Active_Region3_State);
+    oosmos_OrthoInit(pTest, Active_State, ROOT, Active_State_Code);
+      oosmos_OrthoRegionInit(pTest, Active_Region1_State, Active_State, Active_Region1_Moving_State, NULL);
+        oosmos_LeafInit(pTest, Active_Region1_Moving_State, Active_Region1_State, NULL);
+      oosmos_OrthoRegionInit(pTest, Active_Region2_State, Active_State, Active_Region2_Outer_State, NULL);
+        oosmos_CompositeInit(pTest, Active_Region2_Outer_State, Active_Region2_State, Active_Region2_Outer_Inner_State, NULL);
+          oosmos_LeafInit(pTest, Active_Region2_Outer_Inner_State, Active_Region2_Outer_State, NULL);
+      oosmos_OrthoRegionInit(pTest, Active_Region3_State, Active_State, Active_Region3_Leaf_State, NULL);
+        oosmos_LeafInit(pTest, Active_Region3_Leaf_State, Active_Region3_State, Active_Region3_Leaf_State_Code);
+        oosmos_LeafInit(pTest, Active_Region3_Running_State, Active_Region3_State, NULL);
 //<<<INIT
 
 #if 1

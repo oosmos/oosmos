@@ -131,8 +131,8 @@ extern pump * pumpNew(sw * pUpSwitch, sw * pDownSwitch)
 
 //>>>INIT
   oosmos_StateMachineInit(pPump, ROOT, NULL, Idle_State);
-    oosmos_LeafInit(pPump, Idle_State, ROOT);
-    oosmos_LeafInit(pPump, Pumping_State, ROOT);
+    oosmos_LeafInit(pPump, Idle_State, ROOT, Idle_State_Code);
+    oosmos_LeafInit(pPump, Pumping_State, ROOT, Pumping_State_Code);
 //<<<INIT
 
 #if 1

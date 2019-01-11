@@ -55,7 +55,7 @@ static void OOSMOS_Action1(void * pObject, oosmos_sState * pState, const oosmos_
   printf("Count: %d\n", Count);
   ActionCount = Count;
   printf("%s\n", oosmos_IsInState(pTest, &pTest->ROOT) ? "SUCCESS" : "FAILURE");
-
+  
   oosmos_UNUSED(pState);
   oosmos_UNUSED(pEvent);
 }
@@ -70,7 +70,7 @@ static bool A_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sE
       return true;
     }
     case oosmos_DEFAULT: {
-      Count = 0;
+      Count = 0; 
       printf("INITIAL\n");
       return true;
     }
@@ -154,13 +154,13 @@ static test * testNew(void)
 
 //>>>INIT
   oosmos_StateMachineInitNoQueue(pTest, ROOT, NULL, A_State);
-    oosmos_CompositeInit(pTest, A_State, ROOT, A_AA_State);
-      oosmos_LeafInit(pTest, A_AA_State, A_State);
-      oosmos_FinalInitNoCode(pTest, A_Final1_State, A_State);
-    oosmos_CompositeInit(pTest, B_State, ROOT, B_BB_State);
-      oosmos_LeafInit(pTest, B_BB_State, B_State);
-      oosmos_FinalInitNoCode(pTest, B_Final2_State, B_State);
-    oosmos_LeafInit(pTest, Exiting_State, ROOT);
+    oosmos_CompositeInit(pTest, A_State, ROOT, A_AA_State, A_State_Code);
+      oosmos_LeafInit(pTest, A_AA_State, A_State, A_AA_State_Code);
+      oosmos_FinalInit(pTest, A_Final1_State, A_State, NULL);
+    oosmos_CompositeInit(pTest, B_State, ROOT, B_BB_State, B_State_Code);
+      oosmos_LeafInit(pTest, B_BB_State, B_State, B_BB_State_Code);
+      oosmos_FinalInit(pTest, B_Final2_State, B_State, NULL);
+    oosmos_LeafInit(pTest, Exiting_State, ROOT, Exiting_State_Code);
 //<<<INIT
 
   oosmos_Debug(pTest, true, NULL);

@@ -39,7 +39,7 @@ static void TestAccurate(float Value, float InMin, float InMax, float OutMin, fl
   AccurateDistribution[IntResult]++;
 }
 
-static void TestFast(long Value, long InMin, long InMax, long OutMin, long OutMax)
+static void TestFast(int32_t Value, int32_t InMin, int32_t InMax, int32_t OutMin, int32_t OutMax))
 {
   const long Result = oosmos_AnalogMapFast(Value, InMin, InMax, OutMin, OutMax);
   printf("Value:%ld, InMin:%ld, InMax:%ld, OutMin:%ld, OutMax:%ld, Result:%ld\n", Value, InMin, InMax, OutMin, OutMax, Result);

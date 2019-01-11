@@ -209,11 +209,11 @@ extern keyer * keyerNew(pin * pDahPin, pin * pDitPin, pin * pSpeakerPin, uint32_
 
 //>>>INIT
   oosmos_StateMachineInitNoQueue(pKeyer, ROOT, NULL, Idle_State);
-    oosmos_LeafInit(pKeyer, DahSound_State, ROOT);
-    oosmos_LeafInit(pKeyer, Idle_State, ROOT);
-    oosmos_LeafInit(pKeyer, Choice2_State, ROOT);
-    oosmos_LeafInit(pKeyer, Choice1_State, ROOT);
-    oosmos_LeafInit(pKeyer, DitSound_State, ROOT);
+    oosmos_LeafInit(pKeyer, DahSound_State, ROOT, DahSound_State_Code);
+    oosmos_LeafInit(pKeyer, Idle_State, ROOT, Idle_State_Code);
+    oosmos_LeafInit(pKeyer, Choice2_State, ROOT, Choice2_State_Code);
+    oosmos_LeafInit(pKeyer, Choice1_State, ROOT, Choice1_State_Code);
+    oosmos_LeafInit(pKeyer, DitSound_State, ROOT, DitSound_State_Code);
 //<<<INIT
 
   pKeyer->m_pDahPin     = pDahPin;

@@ -279,16 +279,16 @@ extern control * controlNew(void)
 
 //>>>INIT
   oosmos_StateMachineInit(pControl, ROOT, NULL, StartingUp_State);
-    oosmos_LeafInit(pControl, StartingUp_State, ROOT);
-    oosmos_OrthoInit(pControl, Operational_State, ROOT);
-      oosmos_OrthoRegionInitNoCode(pControl, Operational_Region1_State, Operational_State, Operational_Region1_Idle_State);
-        oosmos_LeafInit(pControl, Operational_Region1_Moving_State, Operational_Region1_State);
-        oosmos_LeafInit(pControl, Operational_Region1_Idle_State, Operational_Region1_State);
-      oosmos_OrthoRegionInitNoCode(pControl, Operational_Region2_State, Operational_State, Operational_Region2_Idle_State);
-        oosmos_LeafInit(pControl, Operational_Region2_Idle_State, Operational_Region2_State);
-        oosmos_LeafInit(pControl, Operational_Region2_Pumping_State, Operational_Region2_State);
-    oosmos_LeafInit(pControl, StopPressed_State, ROOT);
-    oosmos_LeafInit(pControl, Terminated_State, ROOT);
+    oosmos_LeafInit(pControl, StartingUp_State, ROOT, StartingUp_State_Code);
+    oosmos_OrthoInit(pControl, Operational_State, ROOT, Operational_State_Code);
+      oosmos_OrthoRegionInit(pControl, Operational_Region1_State, Operational_State, Operational_Region1_Idle_State, NULL);
+        oosmos_LeafInit(pControl, Operational_Region1_Moving_State, Operational_Region1_State, Operational_Region1_Moving_State_Code);
+        oosmos_LeafInit(pControl, Operational_Region1_Idle_State, Operational_Region1_State, Operational_Region1_Idle_State_Code);
+      oosmos_OrthoRegionInit(pControl, Operational_Region2_State, Operational_State, Operational_Region2_Idle_State, NULL);
+        oosmos_LeafInit(pControl, Operational_Region2_Idle_State, Operational_Region2_State, Operational_Region2_Idle_State_Code);
+        oosmos_LeafInit(pControl, Operational_Region2_Pumping_State, Operational_Region2_State, Operational_Region2_Pumping_State_Code);
+    oosmos_LeafInit(pControl, StopPressed_State, ROOT, StopPressed_State_Code);
+    oosmos_LeafInit(pControl, Terminated_State, ROOT, Terminated_State_Code);
 //<<<INIT
 
 #if 1

@@ -99,10 +99,10 @@ extern keypad * keypadNew(matrix * pMatrix)
 {
   oosmos_Allocate(pKeypad, keypad, 1, NULL);
 
-  //                               StateName     Parent       Default
+  //                               StateName     Parent       
   //                     ================================================
   oosmos_StateMachineInit(pKeypad, ROOT,         NULL,        Idle_State);
-    oosmos_LeafInit      (pKeypad, Idle_State,   ROOT                   );
+    oosmos_LeafInit      (pKeypad, Idle_State,   ROOT,        Idle_State_Code);
 
   NewSwitchWithContext(pKeypad, pMatrix, 1, 1, "1");
   NewSwitchWithContext(pKeypad, pMatrix, 1, 2, "2");
