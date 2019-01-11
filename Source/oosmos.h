@@ -212,7 +212,6 @@ typedef struct OOSMOS_sOrthoTag        oosmos_sOrtho;
 typedef struct OOSMOS_sCompositeTag    oosmos_sComposite;
 typedef struct OOSMOS_sStateTag        oosmos_sLeaf;
 typedef struct OOSMOS_sOrthoRegionTag  oosmos_sOrthoRegion;
-typedef struct OOSMOS_sStateTag        oosmos_sChoice;
 typedef struct OOSMOS_sStateTag        oosmos_sFinal;
 
 typedef bool (*OOSMOS_tCode)(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent);
@@ -324,7 +323,6 @@ extern void OOSMOS_StateMachineDetach(const oosmos_sStateMachine * pStateMachine
 
 #define oosmos_StateMachineDetach(pObject, StateMachine) \
           OOSMOS_StateMachineDetach(&(pObject)->StateMachine)
-
 //--------
 extern void OOSMOS_StateMachineInit(const char * pFileName, const char * pName, oosmos_sStateMachine * pStateMachine, oosmos_sState * pDefault, oosmos_sQueue * pEventQueue,
                  void * pCurrentEvent, size_t CurrentEventSize, void * pObject);
@@ -339,43 +337,27 @@ extern void OOSMOS_StateMachineInit(const char * pFileName, const char * pName, 
 //--------
 extern void OOSMOS_CompositeInit(const char * pName, oosmos_sComposite *pComposite,
                        oosmos_sState *pParent, oosmos_sState * pDefault, OOSMOS_tCode pCode);
-#define oosmos_CompositeInit(pObject, Composite, Parent, Default) \
-        OOSMOS_CompositeInit(OOSMOS_xstr(Composite), &(pObject)->Composite, (oosmos_sState*) &(pObject)->Parent, (oosmos_sState*) &(pObject)->Default, Composite ## _Code)
-
-#define oosmos_CompositeInitNoDefault(pObject, Composite, Parent) \
-        OOSMOS_CompositeInit(OOSMOS_xstr(Composite), &(pObject)->Composite, (oosmos_sState*) &(pObject)->Parent, NULL, Composite ## _Code)
-
-#define oosmos_CompositeInitNoCode(pObject, Composite, Parent, Default) \
-        OOSMOS_CompositeInit(OOSMOS_xstr(Composite), &(pObject)->Composite, (oosmos_sState*) &(pObject)->Parent, (oosmos_sState*) &(pObject)->Default, NULL)
-
-#define oosmos_CompositeInitNoDefaultNoCode(pObject, Composite, Parent) \
-        OOSMOS_CompositeInit(OOSMOS_xstr(Composite), &(pObject)->Composite, (oosmos_sState*) &(pObject)->Parent, NULL, NULL)
+#define oosmos_CompositeInit(pObject, Composite, Parent, Default, Code) \
+        OOSMOS_CompositeInit(OOSMOS_xstr(Composite), &(pObject)->Composite, (oosmos_sState*) &(pObject)->Parent, (oosmos_sState*) &(pObject)->Default, Code)
 //--------
 extern void OOSMOS_LeafInit(const char * pName, oosmos_sState *pState, oosmos_sState *pParent, OOSMOS_tCode pCode);
 
-#define oosmos_LeafInit(pObject, LeafState, Parent)\
-        OOSMOS_LeafInit(OOSMOS_xstr(LeafState), &(pObject)->LeafState, (oosmos_sState *) &(pObject)->Parent, LeafState ## _Code)
+#define oosmos_LeafInit(pObject, LeafState, Parent, Code)\
+        OOSMOS_LeafInit(OOSMOS_xstr(LeafState), &(pObject)->LeafState, (oosmos_sState *) &(pObject)->Parent, Code)
 
-#define oosmos_LeafInitNoCode(pObject, LeafState, Parent)\
-        OOSMOS_LeafInit(OOSMOS_xstr(LeafState), &(pObject)->LeafState, (oosmos_sState *) &(pObject)->Parent, NULL)
 #ifdef oosmos_ORTHO
-//--------
+
 extern void OOSMOS_OrthoInit(const char * pName, oosmos_sOrtho *pOrtho, oosmos_sState *pParent, OOSMOS_tCode pCode);
 
-#define oosmos_OrthoInit(pObject, Ortho, Parent)\
-        OOSMOS_OrthoInit(OOSMOS_xstr(Ortho), &(pObject)->Ortho, (oosmos_sState *) &(pObject)->Parent, Ortho ## _Code)
-
-#define oosmos_OrthoInitNoCode(pObject, Ortho, Parent)\
-        OOSMOS_OrthoInit(OOSMOS_xstr(Ortho), &(pObject)->Ortho, (oosmos_sState *) &(pObject)->Parent, NULL)
+#define oosmos_OrthoInit(pObject, Ortho, Parent, Code)\
+        OOSMOS_OrthoInit(OOSMOS_xstr(Ortho), &(pObject)->Ortho, (oosmos_sState *) &(pObject)->Parent, Code)
 //--------
 extern void OOSMOS_OrthoRegionInit(const char * pName, oosmos_sOrthoRegion * pOrthoRegion,
                                    oosmos_sOrtho * pOrthoParent, oosmos_sState * pDefault, OOSMOS_tCode pHandler);
 
-#define oosmos_OrthoRegionInit(pObject, OrthoRegion, Parent, Default) \
-        OOSMOS_OrthoRegionInit(OOSMOS_xstr(OrthoRegion), &(pObject)->OrthoRegion, &(pObject)->Parent, (oosmos_sState*) &(pObject)->Default, OrthoRegion ## _Code)
+#define oosmos_OrthoRegionInit(pObject, OrthoRegion, Parent, Default, Code) \
+        OOSMOS_OrthoRegionInit(OOSMOS_xstr(OrthoRegion), &(pObject)->OrthoRegion, &(pObject)->Parent, (oosmos_sState*) &(pObject)->Default, Code)
 
-#define oosmos_OrthoRegionInitNoCode(pObject, OrthoRegion, Parent, Default) \
-        OOSMOS_OrthoRegionInit(OOSMOS_xstr(OrthoRegion), &(pObject)->OrthoRegion, &(pObject)->Parent, (oosmos_sState*) &(pObject)->Default, NULL)
 #endif
 //--------
 extern void OOSMOS_ChoiceInit(const char * pName, oosmos_sState *pState, oosmos_sState *pParent, OOSMOS_tCode pCode);
@@ -385,11 +367,8 @@ extern void OOSMOS_ChoiceInit(const char * pName, oosmos_sState *pState, oosmos_
 //--------
 extern void OOSMOS_FinalInit(const char * pName, oosmos_sState *pState, oosmos_sState *pParent, OOSMOS_tCode pCode);
 
-#define oosmos_FinalInit(pObject, State, Parent)\
-        OOSMOS_FinalInit(OOSMOS_xstr(State), &(pObject)->State, (oosmos_sState*) &(pObject)->Parent, State ## _Code)
-
-#define oosmos_FinalInitNoCode(pObject, State, Parent)\
-        OOSMOS_FinalInit(OOSMOS_xstr(State), &(pObject)->State, (oosmos_sState*) &(pObject)->Parent, NULL)
+#define oosmos_FinalInit(pObject, State, Parent, Code)\
+        OOSMOS_FinalInit(OOSMOS_xstr(State), &(pObject)->State, (oosmos_sState*) &(pObject)->Parent, Code)
 //--------
 extern bool OOSMOS_TransitionAction(oosmos_sState * pFromState, oosmos_sState * pToState, const oosmos_sEvent * pEvent, OOSMOS_tAction pActionCode);
 
@@ -484,7 +463,6 @@ typedef void (*oosmos_tOutOfMemory)(const char*, int, const char*);
 #define oosmos_DEFAULT  (-5)
 #define oosmos_COMPLETE (-6)
 
-
 //
 // oosmos_ThreadDelayMS
 //
@@ -503,29 +481,32 @@ typedef void (*oosmos_tOutOfMemory)(const char*, int, const char*);
 
 extern bool OOSMOS_ThreadYield(oosmos_sState * pState);
 
-extern bool OOSMOS_ThreadDelayMS(oosmos_sState * pState, uint32_t MS);
+extern bool OOSMOS_ThreadDelayMS(oosmos_sState * pState,
+                        uint32_t MS);
 
-extern bool OOSMOS_ThreadWaitCond(oosmos_sState * pState, bool Condition);
+extern bool OOSMOS_ThreadWaitCond(oosmos_sState * pState,
+                        bool Condition);
 
 extern bool OOSMOS_ThreadWaitCond_TimeoutMS(oosmos_sState * pState,
-                       uint32_t TimeoutMS, bool * pTimeoutStatus, bool Condition);
+                        bool Condition, uint32_t TimeoutMS, bool * pTimeoutStatus);
 
 extern bool OOSMOS_ThreadWaitCond_TimeoutMS_Event(oosmos_sState * pState,
-                       uint32_t TimeoutMS, int NotificationEventCode, bool Condition);
+                        bool Condition, uint32_t TimeoutMS, int NotificationEventCode);
 
 extern bool OOSMOS_ThreadWaitCond_TimeoutMS_Exit(oosmos_sState * pState,
-                       uint32_t TimeoutMS, bool Condition);
+                        bool Condition, uint32_t TimeoutMS);
 
-extern bool OOSMOS_ThreadWaitEvent(const oosmos_sState * pState, int WaitEventCode);
+extern bool OOSMOS_ThreadWaitEvent(const oosmos_sState * pState,
+                        int WaitEventCode);
 
 extern bool OOSMOS_ThreadWaitEvent_TimeoutMS(oosmos_sState * pState,
-                       uint32_t TimeoutMS, bool * pTimedOut, int WaitEventCode);
+                        int WaitEventCode, uint32_t TimeoutMS, bool * pTimedOut);
 
 extern bool OOSMOS_ThreadWaitEvent_TimeoutMS_Event(oosmos_sState * pState,
-                       uint32_t TimeoutMS, int NotificationEventCode, int WaitEventCode);
+                        int WaitEventCode, uint32_t TimeoutMS, int NotificationEventCode);
 
 extern bool OOSMOS_ThreadWaitEvent_TimeoutMS_Exit(oosmos_sState * pState,
-                       uint32_t TimeoutMS, int WaitEventCode);
+                        int WaitEventCode, uint32_t TimeoutMS);
 
 //
 // Use the Protothread __LINE__ trick to implement OOSMOS thread functions. OOSMOS thread
@@ -563,25 +544,25 @@ extern bool OOSMOS_ThreadWaitEvent_TimeoutMS_Exit(oosmos_sState * pState,
                                         if (!(Cond)) \
                                           return
 
-#define oosmos_ThreadWaitCond_TimeoutMS(TimeoutMS, pTimeoutStatus, Cond) \
+#define oosmos_ThreadWaitCond_TimeoutMS(Cond, TimeoutMS, pTimeoutStatus) \
                                       /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
                                       /*lint -fallthrough*/ \
                                       case __LINE__: pState->m_ThreadContext = __LINE__; \
-                                        if (!OOSMOS_ThreadWaitCond_TimeoutMS(pState, TimeoutMS, pTimeoutStatus, Cond)) \
+                                        if (!OOSMOS_ThreadWaitCond_TimeoutMS(pState, Cond, TimeoutMS, pTimeoutStatus)) \
                                           return
 
-#define oosmos_ThreadWaitCond_TimeoutMS_Event(TimeoutMS, NotificationEventCode, Cond) \
+#define oosmos_ThreadWaitCond_TimeoutMS_Event(Cond, TimeoutMS, NotificationEventCode) \
                                       /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
                                       /*lint -fallthrough*/ \
                                       case __LINE__: pState->m_ThreadContext = __LINE__; \
-                                        if (!OOSMOS_ThreadWaitCond_TimeoutMS_Event(pState, TimeoutMS, NotificationEventCode, Cond)) \
+                                        if (!OOSMOS_ThreadWaitCond_TimeoutMS_Event(pState, Cond, TimeoutMS, NotificationEventCode)) \
                                           return
 
-#define oosmos_ThreadWaitCond_TimeoutMS_Exit(TimeoutMS, Cond) \
+#define oosmos_ThreadWaitCond_TimeoutMS_Exit(Cond, TimeoutMS) \
                                       /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
                                       /*lint -fallthrough*/ \
                                       case __LINE__: pState->m_ThreadContext = __LINE__; \
-                                        if (!OOSMOS_ThreadWaitCond_TimeoutMS_Exit(pState, TimeoutMS, Cond)) \
+                                        if (!OOSMOS_ThreadWaitCond_TimeoutMS_Exit(pState, Cond, TimeoutMS)) \
                                           return
 
 #define oosmos_ThreadWaitEvent(WaitEventCode) \
@@ -591,25 +572,25 @@ extern bool OOSMOS_ThreadWaitEvent_TimeoutMS_Exit(oosmos_sState * pState,
                                         if (!OOSMOS_ThreadWaitEvent(pState, WaitEventCode)) \
                                           return
 
-#define oosmos_ThreadWaitEvent_TimeoutMS(TimeoutMS, pTimeoutResult, WaitEventCode) \
+#define oosmos_ThreadWaitEvent_TimeoutMS(WaitEventCode, TimeoutMS, pTimeoutResult) \
                                       /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
                                       /*lint -fallthrough*/ \
                                       case __LINE__: pState->m_ThreadContext = __LINE__; \
-                                        if (!OOSMOS_ThreadWaitEvent_TimeoutMS(pState, TimeoutMS, pTimeoutResult, WaitEventCode)) \
+                                        if (!OOSMOS_ThreadWaitEvent_TimeoutMS(pState, WaitEventCode, TimeoutMS, pTimeoutResult)) \
                                           return
 
-#define oosmos_ThreadWaitEvent_TimeoutMS_Event(TimeoutMS, NotificationEventCode, WaitEventCode) \
+#define oosmos_ThreadWaitEvent_TimeoutMS_Event(WaitEventCode, TimeoutMS, NotificationEventCode) \
                                       /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
                                       /*lint -fallthrough*/ \
                                       case __LINE__: pState->m_ThreadContext = __LINE__; \
-                                        if (!OOSMOS_ThreadWaitEvent_TimeoutMS_Event(pState, TimeoutMS, NotificationEventCode, WaitEventCode)) \
+                                        if (!OOSMOS_ThreadWaitEvent_TimeoutMS_Event(pState, WaitEventCode, TimeoutMS, NotificationEventCode)) \
                                           return
 
-#define oosmos_ThreadWaitEvent_TimeoutMS_Exit(TimeoutMS, WaitEventCode) \
+#define oosmos_ThreadWaitEvent_TimeoutMS_Exit(WaitEventCode, TimeoutMS) \
                                       /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
                                       /*lint -fallthrough*/ \
                                       case __LINE__: pState->m_ThreadContext = __LINE__; \
-                                        if (!OOSMOS_ThreadWaitEvent_TimeoutMS_Exit(pState, TimeoutMS, WaitEventCode)) \
+                                        if (!OOSMOS_ThreadWaitEvent_TimeoutMS_Exit(pState, WaitEventCode, TimeoutMS)) \
                                           return
 
 #define oosmos_ThreadExit() \
@@ -630,7 +611,7 @@ extern bool OOSMOS_ThreadWaitEvent_TimeoutMS_Exit(oosmos_sState * pState,
 //
 // General notes:
 // 1. lint directives are embedded to suppress fallthrough messages as well as
-//    "case/default within for loop" messages (646).
+//    "case/default within for loop" messages.
 //
 
 //

@@ -1473,7 +1473,7 @@ extern bool OOSMOS_ThreadDelayMS(oosmos_sState * pState, uint32_t MS)
 }
 
 
-extern bool OOSMOS_ThreadWaitCond_TimeoutMS(oosmos_sState * pState, uint32_t TimeoutMS, bool * pTimeoutStatus, bool Condition)
+extern bool OOSMOS_ThreadWaitCond_TimeoutMS(oosmos_sState * pState, bool Condition, uint32_t TimeoutMS, bool * pTimeoutStatus)
 {
   oosmos_POINTER_GUARD(pState);
   oosmos_POINTER_GUARD(pTimeoutStatus);
@@ -1491,7 +1491,7 @@ extern bool OOSMOS_ThreadWaitCond_TimeoutMS(oosmos_sState * pState, uint32_t Tim
   return false;
 }
 
-extern bool OOSMOS_ThreadWaitCond_TimeoutMS_Event(oosmos_sState * pState, uint32_t TimeoutMS, int NotificationEventCode, bool Condition)
+extern bool OOSMOS_ThreadWaitCond_TimeoutMS_Event(oosmos_sState * pState,  bool Condition, uint32_t TimeoutMS, int NotificationEventCode)
 {
   oosmos_POINTER_GUARD(pState);
 
@@ -1501,9 +1501,7 @@ extern bool OOSMOS_ThreadWaitCond_TimeoutMS_Event(oosmos_sState * pState, uint32
   }
 
   if (ThreadTimeoutMS(pState, TimeoutMS)) {
-    oosmos_sEvent TimeoutEvent;
-    TimeoutEvent.m_Code     = NotificationEventCode;
-    TimeoutEvent.m_pContext = NULL;
+    const oosmos_sEvent TimeoutEvent = { NotificationEventCode, NULL};
 
     pState->m_TransitionOccurred = false;
 
@@ -1519,7 +1517,7 @@ extern bool OOSMOS_ThreadWaitCond_TimeoutMS_Event(oosmos_sState * pState, uint32
   return false;
 }
 
-extern bool OOSMOS_ThreadWaitCond_TimeoutMS_Exit(oosmos_sState * pState, uint32_t TimeoutMS, bool Condition)
+extern bool OOSMOS_ThreadWaitCond_TimeoutMS_Exit(oosmos_sState * pState, bool Condition, uint32_t TimeoutMS)
 {
   oosmos_POINTER_GUARD(pState);
 
@@ -1550,7 +1548,7 @@ extern bool OOSMOS_ThreadWaitEvent(const oosmos_sState * pState, int WaitEventCo
   return false;
 }
 
-extern bool OOSMOS_ThreadWaitEvent_TimeoutMS(oosmos_sState * pState, uint32_t TimeoutMS, bool * pTimedOut, int WaitEventCode)
+extern bool OOSMOS_ThreadWaitEvent_TimeoutMS(oosmos_sState * pState, int WaitEventCode, uint32_t TimeoutMS, bool * pTimedOut)
 {
   oosmos_POINTER_GUARD(pState);
   oosmos_POINTER_GUARD(pTimedOut);
@@ -1571,7 +1569,7 @@ extern bool OOSMOS_ThreadWaitEvent_TimeoutMS(oosmos_sState * pState, uint32_t Ti
   return false;
 }
 
-extern bool OOSMOS_ThreadWaitEvent_TimeoutMS_Event(oosmos_sState * pState, uint32_t TimeoutMS, int NotificationEventCode, int WaitEventCode)
+extern bool OOSMOS_ThreadWaitEvent_TimeoutMS_Event(oosmos_sState * pState, int WaitEventCode, uint32_t TimeoutMS, int NotificationEventCode)
 {
   oosmos_POINTER_GUARD(pState);
 
@@ -1600,7 +1598,7 @@ extern bool OOSMOS_ThreadWaitEvent_TimeoutMS_Event(oosmos_sState * pState, uint3
   return false;
 }
 
-extern bool OOSMOS_ThreadWaitEvent_TimeoutMS_Exit(oosmos_sState * pState, uint32_t TimeoutMS, int WaitEventCode)
+extern bool OOSMOS_ThreadWaitEvent_TimeoutMS_Exit(oosmos_sState * pState, int WaitEventCode, uint32_t TimeoutMS)
 {
   oosmos_POINTER_GUARD(pState);
 
