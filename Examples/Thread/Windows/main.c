@@ -27,10 +27,8 @@
 
 extern int main(void)
 {
-  int I;
-
-  for (I = 1; I <= THREAD_TESTS; I++) {
-    (void)threadtestNew();
+  for (int I = 1; I <= THREAD_TESTS; I++) {
+    (void) threadtestNew();
   }
 
   for (;;) {

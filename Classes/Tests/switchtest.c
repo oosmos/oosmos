@@ -32,46 +32,57 @@
 #define MAX_SWITCHTESTS 2
 #endif
 
+//>>>EVENTS
 enum {
-  OpenEvent = 1,
-  ClosedEvent,
+  evClosed = 1,
+  evOpen = 2
 };
+//<<<EVENTS
+
+typedef union {
+    oosmos_sEvent Base;
+} uEvents;
 
 struct switchtestTag
 {
-  oosmos_sStateMachine(StateMachine, oosmos_sEvent, 2);
-    oosmos_sLeaf       Idle_State;
+//>>>DECL
+  oosmos_sStateMachine(ROOT, uEvents, 3);
+    oosmos_sLeaf Idle_State;
+//<<<DECL
 };
 
+//>>>CODE
 static bool Idle_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
-  switchtest * pSwitchTest = (switchtest *) pObject;
-
   switch (oosmos_EventCode(pEvent)) {
-    case OpenEvent:
-      prtFormatted("Switch %p opened\n", pSwitchTest);
+    case evOpen: {
+      printf("Open\n");
       return true;
-    case ClosedEvent:
-      prtFormatted("Switch %p closed\n", pSwitchTest);
+    }
+    case evClosed: {
+      printf("Close\n");
       return true;
+    }
   }
 
+  oosmos_UNUSED(pState);
   return false;
 }
+//<<<CODE
 
 extern switchtest * switchtestNew(pin * pPin)
 {
   oosmos_Allocate(pSwitchTest, switchtest, MAX_SWITCHTESTS, NULL);
 
-  //                                   StateName     Parent        Default
-  //                     =====================================================
-  oosmos_StateMachineInit(pSwitchTest, StateMachine, NULL,         Idle_State);
-    oosmos_LeafInit      (pSwitchTest, Idle_State,   StateMachine            );
+//>>>INIT
+  oosmos_StateMachineInit(pSwitchTest, ROOT, NULL, Idle_State);
+    oosmos_LeafInit(pSwitchTest, Idle_State, ROOT, Idle_State_Code);
+//<<<INIT
 
   sw * pSwitch = swNew(pPin);
 
-  swSubscribeOpenEvent(pSwitch, oosmos_EventQueue(pSwitchTest), OpenEvent, NULL);
-  swSubscribeCloseEvent(pSwitch, oosmos_EventQueue(pSwitchTest), ClosedEvent, NULL);
+  swSubscribeOpenEvent(pSwitch, oosmos_EventQueue(pSwitchTest), evOpen, NULL);
+  swSubscribeCloseEvent(pSwitch, oosmos_EventQueue(pSwitchTest), evClosed, NULL);
 
   return pSwitchTest;
 }

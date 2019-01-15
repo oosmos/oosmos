@@ -170,11 +170,11 @@ static test * testNew(void)
 
 //>>>INIT
   oosmos_StateMachineInit(pTest, ROOT, NULL, Active_State);
-    oosmos_CompositeInit(pTest, Active_State, ROOT, Active_Idle_State);
-      oosmos_CompositeInit(pTest, Active_Running_State, Active_State, Active_Running_Toggling_State);
-        oosmos_LeafInit(pTest, Active_Running_Toggling_State, Active_Running_State);
-      oosmos_LeafInit(pTest, Active_Idle_State, Active_State);
-    oosmos_LeafInit(pTest, Done_State, ROOT);
+    oosmos_CompositeInit(pTest, Active_State, ROOT, Active_Idle_State, Active_State_Code);
+      oosmos_CompositeInit(pTest, Active_Running_State, Active_State, Active_Running_Toggling_State, Active_Running_State_Code);
+        oosmos_LeafInit(pTest, Active_Running_Toggling_State, Active_Running_State, Active_Running_Toggling_State_Code);
+      oosmos_LeafInit(pTest, Active_Idle_State, Active_State, Active_Idle_State_Code);
+    oosmos_LeafInit(pTest, Done_State, ROOT, Done_State_Code);
 //<<<INIT
 
   oosmos_Debug(pTest, true, NULL);

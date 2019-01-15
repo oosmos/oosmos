@@ -28,10 +28,10 @@ fontfamily=Monospaced //possible: SansSerif,Serif,Monospaced
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>40</x>
-      <y>0</y>
+      <x>20</x>
+      <y>20</y>
       <w>420</w>
-      <h>790</h>
+      <h>850</h>
     </coordinates>
     <panel_attributes>Running
 --
@@ -42,8 +42,8 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>30</x>
-      <y>680</y>
+      <x>10</x>
+      <y>780</y>
       <w>450</w>
       <h>30</h>
     </coordinates>
@@ -53,15 +53,15 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>60</x>
-      <y>70</y>
+      <x>40</x>
+      <y>90</y>
       <w>380</w>
       <h>60</h>
     </coordinates>
-    <panel_attributes>A
+    <panel_attributes>DelayMS
 --
 POLL:
-  TestA(pThreadTest, pState);
+  DelayMS_Thread(pThreadTest, pState);
 valign=top
 </panel_attributes>
     <additional_attributes/>
@@ -69,8 +69,8 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>60</x>
-      <y>710</y>
+      <x>40</x>
+      <y>800</y>
       <w>90</w>
       <h>60</h>
     </coordinates>
@@ -83,15 +83,15 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>60</x>
-      <y>150</y>
+      <x>40</x>
+      <y>260</y>
       <w>380</w>
       <h>60</h>
     </coordinates>
-    <panel_attributes>B
+    <panel_attributes>WaitCond_TimeoutMS
 --
 POLL:
-  TestB(pThreadTest, pState);
+  WaitCond_TimeoutMS_Thread(pThreadTest, pState);
 valign=top
 </panel_attributes>
     <additional_attributes/>
@@ -99,15 +99,15 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>60</x>
-      <y>230</y>
+      <x>40</x>
+      <y>340</y>
       <w>380</w>
       <h>90</h>
     </coordinates>
-    <panel_attributes>C
+    <panel_attributes>WaitCond_TimeoutMS_Event
 --
 POLL:
-  TestC(pThreadTest, pState);
+  WaitCond_TimeoutMS_Event_Thread(pThreadTest, pState);
 evTimedOut1:
   pThreadTest-&gt;m_C_WrongPath += 1;
 evTimedOut2:
@@ -119,15 +119,15 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>60</x>
-      <y>340</y>
+      <x>40</x>
+      <y>450</y>
       <w>380</w>
       <h>60</h>
     </coordinates>
-    <panel_attributes>D
+    <panel_attributes>WaitCond_TimeoutMS_Exit
 --
 POLL:
-  TestD(pThreadTest, pState);
+  WaitCond_TimeoutMS_Exit_Thread(pThreadTest, pState);
 valign=top
 </panel_attributes>
     <additional_attributes/>
@@ -135,15 +135,15 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>60</x>
-      <y>420</y>
+      <x>40</x>
+      <y>530</y>
       <w>380</w>
       <h>60</h>
     </coordinates>
-    <panel_attributes>E
+    <panel_attributes>WaitEvent
 --
 POLL:
-  TestE(pThreadTest, pState);
+  WaitEvent_Thread(pThreadTest, pState);
 valign=top
 </panel_attributes>
     <additional_attributes/>
@@ -151,15 +151,15 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>60</x>
-      <y>500</y>
+      <x>40</x>
+      <y>610</y>
       <w>380</w>
       <h>90</h>
     </coordinates>
-    <panel_attributes>F
+    <panel_attributes>WaitEvent_TimeoutMS_Event
 --
 POLL:
-  TestF(pThreadTest, pState);
+  WaitEvent_TimeoutMS_Event_Thread(pThreadTest, pState);
 evTimedOut1:
   pThreadTest-&gt;m_F_WrongPath += 1;
 evTimedOut2:
@@ -171,15 +171,15 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>60</x>
-      <y>610</y>
+      <x>40</x>
+      <y>720</y>
       <w>380</w>
       <h>60</h>
     </coordinates>
-    <panel_attributes>G
+    <panel_attributes>WaitEvent_TimeoutMS_Exit
 --
 POLL:
-  TestG(pThreadTest, pState);
+  WaitEvent_TimeoutMS_Exit_Thread(pThreadTest, pState);
 valign=top
 </panel_attributes>
     <additional_attributes/>
@@ -187,8 +187,8 @@ valign=top
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>130</x>
-      <y>30</y>
+      <x>110</x>
+      <y>50</y>
       <w>20</w>
       <h>20</h>
     </coordinates>
@@ -198,8 +198,8 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>130</x>
-      <y>40</y>
+      <x>110</x>
+      <y>60</y>
       <w>30</w>
       <h>50</h>
     </coordinates>
@@ -209,29 +209,18 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>130</x>
-      <y>120</y>
+      <x>110</x>
+      <y>140</y>
       <w>30</w>
-      <h>50</h>
+      <h>60</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>130</x>
-      <y>200</y>
-      <w>30</w>
-      <h>50</h>
-    </coordinates>
-    <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>130</x>
+      <x>110</x>
       <y>310</y>
       <w>30</w>
       <h>50</h>
@@ -242,8 +231,8 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>130</x>
-      <y>390</y>
+      <x>110</x>
+      <y>420</y>
       <w>30</w>
       <h>50</h>
     </coordinates>
@@ -253,8 +242,8 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>130</x>
-      <y>470</y>
+      <x>110</x>
+      <y>500</y>
       <w>30</w>
       <h>50</h>
     </coordinates>
@@ -264,7 +253,7 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>130</x>
+      <x>110</x>
       <y>580</y>
       <w>30</w>
       <h>50</h>
@@ -275,14 +264,53 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>140</x>
-      <y>720</y>
+      <x>110</x>
+      <y>690</y>
+      <w>30</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>120</x>
+      <y>810</y>
       <w>320</w>
       <h>60</h>
     </coordinates>
     <panel_attributes>evPrint/
+printf("Printing...\n");
 oosmos_PushEventCode(pThreadTest, evDone);
 lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;40.0;50.0;40.0;50.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>40</x>
+      <y>180</y>
+      <w>380</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>WaitCond
+--
+POLL:
+  WaitCond_Thread(pThreadTest, pState);
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>110</x>
+      <y>230</y>
+      <w>30</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
   </element>
 </diagram>

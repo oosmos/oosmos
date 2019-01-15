@@ -66,9 +66,7 @@ static void InterrogateColumns(const matrix * pMatrix)
   const int RowIndex = pMatrix->m_CurrentRowIndex;
   const int Columns  = pMatrix->m_Columns;
 
-  int ColumnIndex;
-
-  for (ColumnIndex = 0; ColumnIndex < Columns; ColumnIndex++) {
+  for (int ColumnIndex = 0; ColumnIndex < Columns; ColumnIndex++) {
     sw * pSwitch = pMatrix->m_pSwitch[RowIndex][ColumnIndex];
 
     if (pSwitch != NULL) {
@@ -139,36 +137,28 @@ extern matrix * matrixNew(int Rows, int Columns, ...)
   pMatrix->m_Rows    = 0;
   pMatrix->m_Columns = 0;
 
-  int RowIndex;
-
-  for (RowIndex = 0; RowIndex < matrixMAX_ROWS; RowIndex++) {
+  for (int RowIndex = 0; RowIndex < matrixMAX_ROWS; RowIndex++) {
     pMatrix->m_pRowPins[RowIndex] = NULL;
 
-    int ColumnIndex;
-
-    for (ColumnIndex = 0; ColumnIndex < matrixMAX_COLS; ColumnIndex++) {
+    for (int ColumnIndex = 0; ColumnIndex < matrixMAX_COLS; ColumnIndex++) {
       pMatrix->m_pColumnPins[ColumnIndex]       = NULL;
       pMatrix->m_pSwitch[RowIndex][ColumnIndex] = NULL;
     }
   }
 
-  //                                      StateName      Parent        Default
+  //                                      StateName      Parent  
   //                            =====================================================
   oosmos_StateMachineInitNoQueue(pMatrix, ROOT,          NULL,         Running_State);
-    oosmos_LeafInit             (pMatrix, Running_State, ROOT                       );
+    oosmos_LeafInit             (pMatrix, Running_State, ROOT,         Running_State_Code);
 
   va_list ArgList;
   va_start(ArgList, Columns);
 
-  int Row;
-
-  for (Row = 1; Row <= Rows; Row += 1) {
+  for (int Row = 1; Row <= Rows; Row += 1) {
     AddRow(pMatrix, Row, va_arg(ArgList, pin *));
   }
 
-  int Column;
-
-  for (Column = 1; Column <= Columns; Column += 1) {
+  for (int Column = 1; Column <= Columns; Column += 1) {
     AddColumn(pMatrix, Column, va_arg(ArgList, pin *));
   }
 

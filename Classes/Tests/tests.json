@@ -7,5 +7,14 @@
     "object_ptr":    "pThreadTest",
     "thread_events":  [ "evDone" ],
     "queue_size":    3
+  },
+  {
+    "enabled":       true,
+    "uxf_filename":  "SwitchTest.uxf",
+    "filename":      "switchtest.c",
+    "type":          "switchtest",
+    "object_ptr":    "pSwitchTest",
+    "thread_events":  [ "evOpen", "evClosed" ],
+    "queue_size":    3
   }
 ]
