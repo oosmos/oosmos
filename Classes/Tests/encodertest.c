@@ -47,7 +47,7 @@ static bool Idle_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosm
 {
   encodertest * pExample = (encodertest *) pObject;
 
-  switch (pEvent->Code) {
+  switch (oosmos_EventCode(pEvent)) {
     case ChangeEvent: {
       prtFormatted("Encoder %p %d\n", pExample, encoderGetCount(pExample->m_pEncoder));
       return true;
@@ -61,13 +61,13 @@ extern encodertest * encodertestNew(pin * pPinA, pin * pPinB, int Max)
 {
   oosmos_Allocate(pEncoderTest, encodertest, MAX_ENCODERTESTS, NULL);
 
-  //                                    StateName     Parent        Default
+  //                                    StateName     Parent        
   //                     ======================================================
   oosmos_StateMachineInit(pEncoderTest, StateMachine, NULL,         Idle_State);
-    oosmos_LeafInit      (pEncoderTest, Idle_State,   StateMachine            );
+    oosmos_LeafInit      (pEncoderTest, Idle_State,   StateMachine, NULL      );
 
   encoder * pEncoder = encoderNew(pPinA, pPinB, Max);
-  encoderSubscribeChangeEvent(pEncoder, &pEncoderTest->EventQueue, ChangeEvent, NULL);
+  encoderSubscribeChangeEvent(pEncoder, oosmos_EventQueue(pEncoderTest), ChangeEvent, NULL);
 
   pEncoderTest->m_pEncoder = pEncoder;
   return pEncoderTest;

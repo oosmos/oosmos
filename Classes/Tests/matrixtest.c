@@ -83,10 +83,10 @@ extern matrixtest * matrixtestNew(pin * pRow1, pin * pRow2, pin * pRow3, pin * p
 {
   oosmos_Allocate(pMatrixTest, matrixtest, 1, NULL);
 
-  //                                   StateName     Parent        Default
+  //                                   StateName     Parent        
   //                     =====================================================
   oosmos_StateMachineInit(pMatrixTest, StateMachine, NULL,         Idle_State);
-    oosmos_LeafInit      (pMatrixTest, Idle_State,   StateMachine            );
+    oosmos_LeafInit      (pMatrixTest, Idle_State,   StateMachine, NULL      );
 
   pMatrixTest -> m_pMatrix = matrixNew(3, 3, pRow1, pRow2, pRow3, pCol1, pCol2, pCol3);
 

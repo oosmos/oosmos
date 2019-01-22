@@ -21,28 +21,31 @@
 //
 
 #include <stdio.h>
+#include <stdint.h>
 #include "oosmos.h"
 
 #define ITERATIONS 25
 
+/*lint -e728 Suppress "Not explicitely initialized" */
 static int FastDistribution[ITERATIONS+1];
+/*lint -e728 Suppress "Not explicitely initialized" */
 static int AccurateDistribution[ITERATIONS+1];
 
 static void TestAccurate(float Value, float InMin, float InMax, float OutMin, float OutMax)
 {
   const float Result = oosmos_AnalogMapAccurate(Value, InMin, InMax, OutMin, OutMax);
-  long IntResult;
 
   printf("Value:%f, InMin:%f, InMax:%f, OutMin:%f, OutMax:%f, Result:%f\n", Value, InMin, InMax, OutMin, OutMax, Result);
 
-  IntResult = (long) (Result + .5f);
+  const long IntResult = (long) (Result + .5f);
   AccurateDistribution[IntResult]++;
 }
 
-static void TestFast(int32_t Value, int32_t InMin, int32_t InMax, int32_t OutMin, int32_t OutMax))
+static void TestFast(int32_t Value, int32_t InMin, int32_t InMax, int32_t OutMin, int32_t OutMax)
 {
-  const long Result = oosmos_AnalogMapFast(Value, InMin, InMax, OutMin, OutMax);
-  printf("Value:%ld, InMin:%ld, InMax:%ld, OutMin:%ld, OutMax:%ld, Result:%ld\n", Value, InMin, InMax, OutMin, OutMax, Result);
+  const int32_t Result = oosmos_AnalogMapFast(Value, InMin, InMax, OutMin, OutMax);
+  printf("Value:%ld, InMin:%ld, InMax:%ld, OutMin:%ld, OutMax:%ld, Result:%ld\n",
+         (long) Value, (long) InMin, (long) InMax, (long) OutMin, (long) OutMax, (long) Result);
 
   FastDistribution[Result]++;
 }
@@ -52,25 +55,27 @@ extern int main(void)
   const long Min = 1;
   const long Max = 1000;
 
-  int I;
-
   //
   // Test accurate implementation...
   //
-  for (I = Min; I <= Max; I++)
-    TestAccurate((float) I, (float) Min, (float) Max, 1, 25);
+  for (int I = Min; I <= Max; I++) {
+    TestAccurate((float) I, (float) Min, (float) Max, 1.0f, 25.0f);
+  }
 
-  for (I = 1; I <= ITERATIONS; I++)
+  for (int I = 1; I <= ITERATIONS; I++) {
     printf("%d\n", AccurateDistribution[I]);
+  }
 
   //
   // Test fast implementation...
   //
-  for (I = Min; I <= Max; I++)
+  for (int I = Min; I <= Max; I++) {
     TestFast(I, Min, Max, 1, 25);
+  }
 
-  for (I = 1; I <= ITERATIONS; I++)
+  for (int I = 1; I <= ITERATIONS; I++) {
     printf("%d\n", FastDistribution[I]);
+  }
 
   return 0;
 }

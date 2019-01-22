@@ -102,11 +102,11 @@ extern lcdtest * lcdtestNew(pin * pRS, pin * pE,
 {
   oosmos_Allocate(pLcdTest, lcdtest, lcdtestMAX, NULL);
 
-  //                                StateName                  Parent                 Default
-  //                      ============================================================================
-  oosmos_StateMachineInit(pLcdTest, StateMachine,              NULL,                  Initializing_State);
-    oosmos_LeafInit      (pLcdTest, Initializing_State,        StateMachine                             );
-    oosmos_LeafInit      (pLcdTest, Running_State,             StateMachine                             );
+  //                                StateName                  Parent                 
+  //                      ======================================================================
+  oosmos_StateMachineInit(pLcdTest, StateMachine,              NULL,         Initializing_State);
+    oosmos_LeafInit      (pLcdTest, Initializing_State,        StateMachine, NULL              );
+    oosmos_LeafInit      (pLcdTest, Running_State,             StateMachine, NULL              );
 
   lcd * pLCD = lcdNew(pRS, NULL, pE, pData4, pData5, pData6, pData7);
 
