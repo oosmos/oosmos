@@ -705,7 +705,7 @@ extern bool oosmos_ThreadComplete(oosmos_sState * pState)
   return true;
 }
 
-extern bool OOSMOS_TransitionAction(oosmos_sState * pState, oosmos_sState * pToState, const oosmos_sEvent * pEvent, OOSMOS_tAction pActionCode)
+extern bool OOSMOS_TransitionAction(oosmos_sState * pState, oosmos_sState * pToState, const oosmos_sEvent * pEvent, oosmos_tAction pActionCode)
 {
   oosmos_POINTER_GUARD(pState);
   oosmos_POINTER_GUARD(pToState);

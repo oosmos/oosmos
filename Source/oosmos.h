@@ -32,10 +32,6 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-#ifdef __cplusplus
-  extern "C" {
-#endif
-
 //
 // Include header files so the application doesn't have to.
 //
@@ -77,6 +73,11 @@
 #else
   #define oosmos_EndProgram(Code) OOSMOS_EndProgram(Code)
 #endif
+
+#ifdef __cplusplus
+  extern "C" {
+#endif
+
 
 typedef struct {
   uint32_t m_Start;
@@ -215,7 +216,7 @@ typedef struct OOSMOS_sOrthoRegionTag  oosmos_sOrthoRegion;
 typedef struct OOSMOS_sStateTag        oosmos_sFinal;
 
 typedef bool (*OOSMOS_tCode)(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent);
-typedef void (*OOSMOS_tAction)(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent);
+typedef void (*oosmos_tAction)(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent);
 
 typedef enum {
   OOSMOS_CompositeType = 1,
@@ -370,7 +371,7 @@ extern void OOSMOS_FinalInit(const char * pName, oosmos_sState *pState, oosmos_s
 #define oosmos_FinalInit(pObject, State, Parent, Code)\
         OOSMOS_FinalInit(OOSMOS_xstr(State), &(pObject)->State, (oosmos_sState*) &(pObject)->Parent, Code)
 //--------
-extern bool OOSMOS_TransitionAction(oosmos_sState * pFromState, oosmos_sState * pToState, const oosmos_sEvent * pEvent, OOSMOS_tAction pActionCode);
+extern bool OOSMOS_TransitionAction(oosmos_sState * pFromState, oosmos_sState * pToState, const oosmos_sEvent * pEvent, oosmos_tAction pActionCode);
 
 #define oosmos_TransitionAction(pObject, pFromState, ToState, pEvent, ActionCode) \
         OOSMOS_TransitionAction(pFromState, (oosmos_sState*) (&(pObject)->ToState), pEvent, ActionCode)
