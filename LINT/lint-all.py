@@ -13,6 +13,10 @@ OPTIONS = '-Doosmos_ORTHO -Doosmos_DEBUG'
 Lint('Action.c', 'oosmos-user.lnt')
 Lint('Poll.c', 'oosmos-user.lnt')
 
+DIR = 'Examples/AnalogMap/Windows'
+
+Lint('AnalogMap.c',          'oosmos-user.lnt')
+
 DIR = 'Examples/Basic/Windows'
 
 Lint('DelayMS.c',          'oosmos-user.lnt')
@@ -58,6 +62,7 @@ Lint('pin.c',          'oosmos-user.lnt pin.lnt')
 Lint('matrix.c',       'oosmos-user.lnt matrix.lnt')
 Lint('reg.c',          'oosmos-user.lnt')
 Lint('tok.c',          'oosmos-user.lnt')
+Lint('keyer.c',        'oosmos-user.lnt')
 Lint('keypad.c',       'oosmos-user.lnt')
 Lint('encoder.c',      'oosmos-user.lnt')
 Lint('accum.c',        'oosmos-user.lnt')
