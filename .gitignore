@@ -22,6 +22,8 @@
 **/build
 **/dist
 
+**/nbproject/**
+
 # ignore "populated" oosmos source files.
 
 Examples/**/oosmos.h
