@@ -147,9 +147,9 @@ extern matrix * matrixNew(int Rows, int Columns, ...)
   }
 
   //                                      StateName      Parent  
-  //                            =====================================================
-  oosmos_StateMachineInitNoQueue(pMatrix, ROOT,          NULL,         Running_State);
-    oosmos_LeafInit             (pMatrix, Running_State, ROOT,         Running_State_Code);
+  //                            ===================================================
+  oosmos_StateMachineInitNoQueue(pMatrix, ROOT,          NULL,  Running_State     );
+    oosmos_LeafInit             (pMatrix, Running_State, ROOT,  Running_State_Code);
 
   va_list ArgList;
   va_start(ArgList, Columns);
@@ -176,9 +176,7 @@ extern void matrixAssignSwitch(matrix * pMatrix, sw * pSwitch, const int Row, co
   // Check if this Row/Column slot has already been assigned.
   //
   if (pMatrix->m_pSwitch[RowIndex][ColumnIndex] != NULL) {
-    for (;;) {
-      continue;
-    }
+    oosmos_FOREVER();
   }
 
   pMatrix->m_pSwitch[RowIndex][ColumnIndex] = pSwitch;

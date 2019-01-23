@@ -44,7 +44,7 @@ struct uartTag
 #define MAX_UARTS 5
 
 static uart UartList[MAX_UARTS];
-static int  UartCount;
+static int  UartCount = 0;
 
 static void ReceiverStateMachine(void * pObject)
 {
@@ -55,8 +55,9 @@ static void ReceiverStateMachine(void * pObject)
     const bool PopSuccess = oosmos_QueuePop(&pUART->m_ReceiveDataQueue, &Byte, sizeof(Byte));
   //EnableInterrupt(pUART);
 
-  if (!PopSuccess)
+  if (!PopSuccess) {
     return;
+  }
 
   printf("Received %d\n", Byte);
 }
@@ -67,13 +68,12 @@ static void ISR(const int UartId)
   uart * pUART = UartList;
 
   for (Count = 0; Count < UartCount; pUART++, Count++) {
-    if (UartId != pUART->m_UartId)
+    if (UartId != pUART->m_UartId) {
       continue;
-
-    {
-      const uint8_t Byte = (uint8_t) UartId;
-      oosmos_QueuePush(&pUART->m_ReceiveDataQueue, &Byte, sizeof(Byte));
     }
+
+    const uint8_t Byte = (uint8_t) UartId;
+    oosmos_QueuePush(&pUART->m_ReceiveDataQueue, &Byte, sizeof(Byte));
 
     return;
   }
@@ -93,9 +93,9 @@ extern uart * uartNew(const int UartId)
 
 extern int main()
 {
-  uartNew(1);
-  uartNew(3);
-  uartNew(7);
+  (void) uartNew(1);
+  (void) uartNew(3);
+  (void) uartNew(7);
 
   // Simulate random interrupts...
 

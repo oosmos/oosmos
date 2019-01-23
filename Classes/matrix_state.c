@@ -32,8 +32,8 @@
 #define matrixMAX_COLS 8
 #endif
 
-const static int RowOnSettleTimeUS  = 200;
-const static int RowOffSettleTimeUS = 200;
+static const int RowOnSettleTimeUS  = 200;
+static const int RowOffSettleTimeUS = 200;
 
 #include "oosmos.h"
 #include "matrix.h"
@@ -56,7 +56,7 @@ struct matrixTag
   int m_Columns;
 };
 
-static void InterrogateColumns(matrix * pMatrix)
+static void InterrogateColumns(const matrix * pMatrix)
 {
   const int RowIndex = pMatrix->m_CurrentRowIndex;
   const int Columns  = pMatrix->m_Columns;
@@ -107,32 +107,54 @@ static void AddColumn(matrix * pMatrix, const int Column, pin * pPin)
   }
 }
 
-static bool RowTurningOn_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static void Action1(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
+{
+  matrix * pMatrix = (matrix *) pObject;
+
+  InterrogateColumns(pMatrix);
+
+  oosmos_UNUSED(pState);
+  oosmos_UNUSED(pEvent);
+}
+
+static bool RowTurningOn_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   matrix * pMatrix = (matrix *) pObject;
 
   switch (pEvent->m_Code) {
-    case oosmos_DEFAULT:
+    case oosmos_DEFAULT: {
       pMatrix->m_CurrentRowIndex = 0;
       return true;
+    }
     case oosmos_ENTER: {
       const int RowIndex = pMatrix->m_CurrentRowIndex;
       pin * pOutputPin   = pMatrix->m_pRowPins[RowIndex];
 
-      if (pOutputPin != NULL)
+      if (pOutputPin != NULL) {
         pinOn(pOutputPin);
+      }
 
-      return oosmos_StateTimeoutUS(pRegion, RowOnSettleTimeUS);
+      return oosmos_StateTimeoutUS(pState, RowOnSettleTimeUS);
     }
-    case oosmos_TIMEOUT:
-      oosmos_TransitionAction(pRegion, &pMatrix->RowTurningOff_State, InterrogateColumns(pMatrix); );
-      return true;
+    case oosmos_TIMEOUT: {
+      return oosmos_TransitionAction(pMatrix, pState, RowTurningOff_State, pEvent, Action1);
+    }
   }
 
   return false;
 }
 
-static bool RowTurningOff_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static void Action2(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
+{
+  matrix * pMatrix = (matrix *) pObject;
+
+  Advance(pMatrix);
+
+  oosmos_UNUSED(pState);
+  oosmos_UNUSED(pEvent);
+}
+
+static bool RowTurningOff_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   matrix * pMatrix = (matrix *) pObject;
 
@@ -141,14 +163,15 @@ static bool RowTurningOff_State_Code(void * pObject, oosmos_sRegion * pRegion, c
       const int RowIndex = pMatrix->m_CurrentRowIndex;
       pin * pOutputPin   = pMatrix->m_pRowPins[RowIndex];
 
-      if (pOutputPin != NULL)
+      if (pOutputPin != NULL) {
         pinOff(pOutputPin);
+      }
 
-      return oosmos_StateTimeoutUS(pRegion, RowOffSettleTimeUS);
+      return oosmos_StateTimeoutUS(pState, RowOffSettleTimeUS);
     }
-    case oosmos_TIMEOUT:
-      oosmos_TransitionAction(pRegion, &pMatrix->RowTurningOn_State, Advance(pMatrix); );
-      return true;
+    case oosmos_TIMEOUT: {
+      return oosmos_TransitionAction(pMatrix, pState, RowTurningOn_State, pEvent, Action2);
+    }
   }
 
   return false;
@@ -175,8 +198,8 @@ extern matrix * matrixNew(int Rows, int Columns, ...)
   }
 
   oosmos_StateMachineInitNoQueue(pMatrix, ROOT, NULL, RowTurningOn_State);
-    oosmos_LeafInit(pMatrix, RowTurningOn_State,  ROOT);
-    oosmos_LeafInit(pMatrix, RowTurningOff_State, ROOT);
+    oosmos_LeafInit(pMatrix, RowTurningOn_State,  ROOT, RowTurningOn_State_Code);
+    oosmos_LeafInit(pMatrix, RowTurningOff_State, ROOT, RowTurningOff_State_Code);
 
   va_list ArgList;
   va_start(ArgList, Columns);
@@ -195,6 +218,8 @@ extern matrix * matrixNew(int Rows, int Columns, ...)
 
   va_end(ArgList);
 
+  oosmos_UNUSED(ArgList);
+
   return pMatrix;
 }
 
@@ -207,7 +232,7 @@ extern void matrixAssignSwitch(matrix * pMatrix, sw * pSwitch, int Row, int Colu
   // Check if this Row/Column slot has already been assigned.
   //
   if (pMatrix->m_pSwitch[RowIndex][ColumnIndex] != NULL) {
-    for (;;);
+    oosmos_FOREVER();
   }
 
   pMatrix->m_pSwitch[RowIndex][ColumnIndex] = pSwitch;

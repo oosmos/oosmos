@@ -133,31 +133,27 @@ struct OOSMOS_sQueueTag {
 /*lint -e506 suppress "consant value boolean" */
 /*lint -e717 suppress "do { } while(0)" */
 #define oosmos_POINTER_GUARD(x) \
-       do {                     \
-         if ((x) == NULL) {     \
-           for (;;) {           \
-             continue;          \
-           }                    \
-         }                      \
-       } while (false)
+        do {                     \
+          if ((x) == NULL) {     \
+            oosmos_FOREVER();    \
+          }                      \
+        } while (false)
 
 /*lint -e506 suppress "consant value boolean" */
 /*lint -e717 suppress "do { } while(0)" */
 #define oosmos_FOREVER() \
-       do {              \
-         continue;       \
-       } while (true)
+        do {              \
+          continue;       \
+        } while (true)
 
 /*lint -e506 suppress "consant value boolean" */
 /*lint -e717 suppress "do { } while(0)" */
 #define oosmos_ASSERT(Condition) \
-       do {                      \
-         if (!(Condition)) {     \
-           do {                  \
-             continue;           \
-           } while (true);       \
-         }                       \
-       } while (false)
+        do {                      \
+          if (!(Condition)) {     \
+            oosmos_FOREVER();     \
+          }                       \
+        } while (false)
 
 typedef struct {
   int    m_Code;
@@ -426,6 +422,7 @@ typedef void (*oosmos_tOutOfMemory)(const char*, int, const char*);
 
 #define OOSMOS_Allocate(List, Count, Type, Pointer, Elements, OutOfMemory) \
   {                                                                        \
+    /*lint -e774 Suppress "if always evaluates to false" */                \
     if (Count > Elements-1) {                                              \
       oosmos_tOutOfMemory pOutOfMemory = OutOfMemory;                      \
                                                                            \

@@ -56,6 +56,10 @@ DIR = 'Examples/LinearRegression/Windows'
 
 Lint('main.c',         'oosmos-user.lnt')
 
+DIR = 'Examples/Interrupt/Windows'
+
+Lint('interrupt.c',         'oosmos-user.lnt')
+
 DIR = 'Classes'
 
 Lint('pin.c',          'oosmos-user.lnt pin.lnt')
@@ -69,6 +73,7 @@ Lint('accum.c',        'oosmos-user.lnt')
 Lint('btn.c',          'oosmos-user.lnt')
 Lint('sw.c',           'oosmos-user.lnt')
 Lint('toggle_state.c', 'oosmos-user.lnt')
+Lint('matrix_state.c', 'oosmos-user.lnt')
 Lint('toggle.c',       'oosmos-user.lnt')
 Lint('util.c',         'oosmos-user.lnt')
 
