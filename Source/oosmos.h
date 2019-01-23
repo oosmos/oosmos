@@ -480,8 +480,6 @@ typedef void (*oosmos_tOutOfMemory)(const char*, int, const char*);
 // oosmos_ThreadYield
 //
 
-extern bool OOSMOS_ThreadYield(oosmos_sState * pState);
-
 extern bool OOSMOS_ThreadDelayMS(oosmos_sState * pState,
                         uint32_t MS);
 
@@ -508,6 +506,8 @@ extern bool OOSMOS_ThreadWaitEvent_TimeoutMS_Event(oosmos_sState * pState,
 
 extern bool OOSMOS_ThreadWaitEvent_TimeoutMS_Exit(oosmos_sState * pState,
                         int WaitEventCode, uint32_t TimeoutMS);
+
+extern bool OOSMOS_ThreadYield(oosmos_sState * pState);
 
 //
 // Use the Protothread __LINE__ trick to implement OOSMOS thread functions. OOSMOS thread
