@@ -68,10 +68,10 @@ static test * testNew(uart * pUART)
 
   pTest->m_pUART = pUART;
 
-  //                             StateName      Parent       Default
-  //                     ===================================================
-  oosmos_StateMachineInit(pTest, StateMachine,  NULL,         Running_State);
-    oosmos_LeafInit      (pTest, Running_State, StateMachine               );
+  //                             StateName      Parent
+  //                     ========================================================
+  oosmos_StateMachineInit(pTest, StateMachine,  NULL,         Running_State     );
+    oosmos_LeafInit      (pTest, Running_State, StateMachine, Running_State_Code);
 
   return pTest;
 }

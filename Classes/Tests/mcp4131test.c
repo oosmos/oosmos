@@ -86,11 +86,11 @@ extern mcp4131test * mcp4131testNew(spi * pSPI, pin * pCS, const int RampDelayTi
 {
   oosmos_Allocate(pMCP4131test, mcp4131test, mcp4131testMAX, NULL);
 
-  //                                           StateName          Parent         Default
-  //                            =================================================================
-  oosmos_StateMachineInitNoQueue(pMCP4131test, StateMachine,      NULL,          RampingUp_State);
-    oosmos_LeafInit             (pMCP4131test, RampingUp_State,   StateMachine                  );
-    oosmos_LeafInit             (pMCP4131test, RampingDown_State, StateMachine                  );
+  //                                           StateName          Parent        
+  //                            ========================================================================
+  oosmos_StateMachineInitNoQueue(pMCP4131test, StateMachine,      NULL,          RampingUp_State       );
+    oosmos_LeafInit             (pMCP4131test, RampingUp_State,   StateMachine,  RampingUp_State_Code  );
+    oosmos_LeafInit             (pMCP4131test, RampingDown_State, StateMachine,  RampingDown_State_Code);
 
   spi_sSlave * pSlave = spiNewSlave(pSPI, pCS);
 
