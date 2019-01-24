@@ -2,7 +2,7 @@
 
 "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.1\arm\bin\armstlink2.dll" 
 
-"C:\dev\oosmos\oosmos\Examples\Blink\STM32\Blink\EWARM\Blink\Exe\Blink.out" 
+"C:\dev\www\oosmos.com\oosmos\Examples\Blink\STM32\Blink\EWARM\Blink\Exe\Blink.out" 
 
 --plugin="C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.1\arm\bin\armbat.dll" 
 

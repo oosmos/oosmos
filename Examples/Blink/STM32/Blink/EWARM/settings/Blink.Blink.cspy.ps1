@@ -23,9 +23,9 @@
 
 if ($debugfile -eq "")
 {
-& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.1\common\bin\cspybat" -f "C:\dev\oosmos\oosmos\Examples\Blink\STM32\Blink\EWARM\settings\Blink.Blink.general.xcl" --backend -f "C:\dev\oosmos\oosmos\Examples\Blink\STM32\Blink\EWARM\settings\Blink.Blink.driver.xcl" 
+& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.1\common\bin\cspybat" -f "C:\dev\www\oosmos.com\oosmos\Examples\Blink\STM32\Blink\EWARM\settings\Blink.Blink.general.xcl" --backend -f "C:\dev\www\oosmos.com\oosmos\Examples\Blink\STM32\Blink\EWARM\settings\Blink.Blink.driver.xcl" 
 }
 else
 {
-& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.1\common\bin\cspybat" -f "C:\dev\oosmos\oosmos\Examples\Blink\STM32\Blink\EWARM\settings\Blink.Blink.general.xcl" --debug_file=$debugfile --backend -f "C:\dev\oosmos\oosmos\Examples\Blink\STM32\Blink\EWARM\settings\Blink.Blink.driver.xcl" 
+& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.1\common\bin\cspybat" -f "C:\dev\www\oosmos.com\oosmos\Examples\Blink\STM32\Blink\EWARM\settings\Blink.Blink.general.xcl" --debug_file=$debugfile --backend -f "C:\dev\www\oosmos.com\oosmos\Examples\Blink\STM32\Blink\EWARM\settings\Blink.Blink.driver.xcl" 
 }
