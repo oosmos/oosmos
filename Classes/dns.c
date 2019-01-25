@@ -118,7 +118,7 @@ static void Init(void)
     #ifdef _WIN32
       WSADATA wsaData;
       WORD wVersionRequested = MAKEWORD(1, 1);
-      WSAStartup(wVersionRequested, &wsaData);
+      (void) WSAStartup(wVersionRequested, &wsaData);
     #endif
 
     #if 1
@@ -163,15 +163,15 @@ static int dnsGetLastError(void)
 //
 // Convert 'cnn.com\x0' to '\x3cnn\x3com\x0'.
 //
-static size_t DomainToDnsDomain(const char * pDomain, uint8_t * pDnsDomain)
+static size_t DomainToDnsDomain(const char * pDomain, char * pDnsDomain)
 {
   size_t Bytes = 0;
 
   do {
-    char * pDot   = strchr(pDomain, '.');
+    const char * pDot = strchr(pDomain, '.');
     size_t Length = pDot == NULL ? strlen(pDomain) : (size_t)(pDot-pDomain);
 
-    *pDnsDomain++ = (uint8_t) Length;
+    *pDnsDomain++ = (char) Length;
     Bytes += Length;
 
     while (Length-- > 0) {
@@ -200,7 +200,7 @@ extern bool dnsQuery(dns * pDns, const char * pHost, uint32_t * pIP, int MaxIPs)
     uint16_t Answers;
     uint16_t AuthorityRRs;
     uint16_t AdditionalRRs;
-    uint8_t * pQuestionName;
+    char   * pQuestionName;
     size_t NameSize;
     tQuestionTail * pQuestionTail;
     uint16_t Type;
@@ -229,6 +229,7 @@ extern bool dnsQuery(dns * pDns, const char * pHost, uint32_t * pIP, int MaxIPs)
     pHeader->Questions[1] = (uint8_t) (Questions);
 
     Answers = 0;
+    /*lint -e845 suppress "certain to be 0" */
     pHeader->Answers[0] = (uint8_t) (Answers >> 8);
     pHeader->Answers[1] = (uint8_t) (Answers);
 
@@ -240,7 +241,7 @@ extern bool dnsQuery(dns * pDns, const char * pHost, uint32_t * pIP, int MaxIPs)
     pHeader->AdditionalRRs[0] = (uint8_t) (AdditionalRRs >> 8);
     pHeader->AdditionalRRs[1] = (uint8_t) (AdditionalRRs);
 
-    pQuestionName = (uint8_t *) (pHeader + 1);
+    pQuestionName = (char *) (pHeader + 1);
     NameSize = DomainToDnsDomain(pHost, pQuestionName);
 
     pQuestionTail = (tQuestionTail * ) (pQuestionName + NameSize);
@@ -305,7 +306,7 @@ extern bool dnsQuery(dns * pDns, const char * pHost, uint32_t * pIP, int MaxIPs)
   return true;
 }
 
-extern dns * dnsNew()
+extern dns * dnsNew(void)
 {
   dns * pDns = malloc(sizeof(dns));
 

@@ -60,7 +60,7 @@ static void Run(void * pObject)
       if (IP == 0)
         break;
 
-      printf("%s[%d]: %d.%d.%d.%d\n", pDnsTest->pDomain, Answer, IP>>24 & 0xff, IP>>16 & 0xff, IP>>8 & 0xff, IP & 0xff);
+      printf("%s[%d]: %u.%u.%u.%u\n", pDnsTest->pDomain, Answer, IP>>24 & 0xff, IP>>16 & 0xff, IP>>8 & 0xff, IP & 0xff);
     }
 
     ActiveInstances -= 1;
@@ -85,12 +85,12 @@ static dnstest * dnstestNew(const char * pDomain)
 
 extern int main(void)
 {
-  dnstestNew("cnn.com");
-  dnstestNew("example.com");
-  dnstestNew("ibm.com");
-  dnstestNew("ycombinator.com");
-  dnstestNew("apple.com");
-  dnstestNew("google-public-dns-a.google.com.com");
+  (void) dnstestNew("cnn.com");
+  (void) dnstestNew("example.com");
+  (void) dnstestNew("ibm.com");
+  (void) dnstestNew("ycombinator.com");
+  (void) dnstestNew("apple.com");
+  (void) dnstestNew("google-public-dns-a.google.com.com");
 
   do  {
     oosmos_RunStateMachines();

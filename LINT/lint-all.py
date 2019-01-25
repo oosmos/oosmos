@@ -28,6 +28,10 @@ Lint('TimeoutInMS.c',      'oosmos-user.lnt')
 Lint('TimeoutInSeconds.c', 'oosmos-user.lnt')
 Lint('TimeoutInUS.c',      'oosmos-user.lnt')
 
+DIR = 'Examples/DNS/Windows'
+
+Lint('dnstest.c',          'oosmos-user.lnt')
+
 DIR = 'Examples/Ortho/Windows'
 
 Lint('EnterExit.c',  'oosmos-user.lnt')
