@@ -73,10 +73,10 @@ extern listener * listenerNew(int Port, void (*pAcceptedFunc)(sock *))
 {
   oosmos_Allocate(pListener, listener, 1, NULL);
 
-  //                                        StateName       Parent        Default
-  //                            ========================================================
-  oosmos_StateMachineInitNoQueue(pListener, StateMachine,   NULL,         Running_State);
-    oosmos_LeafInit             (pListener, Running_State,  StateMachine               );
+  //                                        StateName       Parent
+  //                            =============================================================
+  oosmos_StateMachineInitNoQueue(pListener, StateMachine,   NULL,         Running_State     );
+    oosmos_LeafInit             (pListener, Running_State,  StateMachine, Running_State_Code);
 
   pListener->m_pSock = sockNew();
   pListener->m_pAcceptedFunc = pAcceptedFunc;

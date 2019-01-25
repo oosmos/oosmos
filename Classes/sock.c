@@ -42,7 +42,7 @@
 
   typedef SOCKET sock_tSocket;
 
-  typedef uint32_t socklen_t;
+  typedef int      socklen_t;
   typedef uint32_t sendsize_t;
   typedef uint32_t recvsize_t;
   #define IOCTL    ioctlsocket
@@ -249,7 +249,7 @@ extern bool sockAccepted(sock * pListenerSock, sock ** ppNewSock)
 {
   struct sockaddr_in Server;
 
-  int ServerSize   = sizeof(Server);
+  socklen_t ServerSize = sizeof(Server);
   const sock_tSocket ServerSocket = accept(pListenerSock->m_Socket, (struct sockaddr *) &Server, &ServerSize);
 
   if (ServerSocket == sockINVALID_SOCKET) {
@@ -427,7 +427,7 @@ extern bool sockConnect(sock * pSock, uint32_t IP_HostByteOrder, int Port)
   const int Writable = FD_ISSET(pSock->m_Socket, &fd_out);
 
   char Code;
-  int SizeofCode = sizeof(Code);
+  socklen_t SizeofCode = sizeof(Code);
 
   getsockopt(pSock->m_Socket, SOL_SOCKET, SO_ERROR, &Code, &SizeofCode);
 

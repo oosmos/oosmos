@@ -82,10 +82,10 @@ extern server * serverNew(sock * pSock)
 
   printf("New Server %p.\n", (void *) pServer);
 
-  //                               StateName       Parent        Default
-  //                     ======================================================
-  oosmos_StateMachineInit(pServer, StateMachine,   NULL,         Running_State);
-    oosmos_LeafInit      (pServer, Running_State,  StateMachine               );
+  //                               StateName       Parent
+  //                     ===========================================================
+  oosmos_StateMachineInit(pServer, StateMachine,   NULL,         Running_State     );
+    oosmos_LeafInit      (pServer, Running_State,  StateMachine, Running_State_Code);
 
   pServer->m_pSock = pSock;
   sockSubscribeClosedEvent(pSock, oosmos_EventQueue(pServer), ClosedEvent, NULL);

@@ -99,10 +99,10 @@ extern client * clientNew(const char * pHost, int Port)
 {
   client * pClient = (client *) malloc(sizeof(client));
 
-  //                               StateName       Parent        Default
-  //                     ======================================================
-  oosmos_StateMachineInit(pClient, StateMachine,   NULL,         Running_State);
-    oosmos_LeafInit      (pClient, Running_State,  StateMachine               );
+  //                               StateName       Parent
+  //                     ===========================================================
+  oosmos_StateMachineInit(pClient, StateMachine,   NULL,         Running_State     );
+    oosmos_LeafInit      (pClient, Running_State,  StateMachine, Running_State_Code);
 
   pClient->m_pSock = sockNew();
   pClient->m_pHost = pHost;
