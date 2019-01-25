@@ -11,4 +11,4 @@ regtest_c = oosmos_dir+'/Classes/Tests/regtest.c'
 prt_c     = oosmos_dir+'/Classes/prt.c'
 oosmos_c  = oosmos_dir+'/Source/oosmos.c'
 
-oosmos.cLinux.Compile(oosmos_dir, 'main', ['main.c',regtest_c,reg_c,prt_c,oosmos_c])
+oosmos.cLinux.Compile(oosmos_dir, 'main', ['../Windows/main.c',regtest_c,reg_c,prt_c,oosmos_c])
