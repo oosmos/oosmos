@@ -32,9 +32,9 @@ typedef struct testTag test;
 
 //>>>EVENTS
 enum {
-  evQuit = 1,
-  evTogglePressed = 2,
-  evToggleReleased = 3
+  evQ_Pressed = 1,
+  evSpace_Pressed = 2,
+  evSpace_Released = 3
 };
 //<<<EVENTS
 
@@ -58,10 +58,8 @@ static void RunningThread(oosmos_sState * pState)
 {
   oosmos_ThreadBegin();
     for (;;) {
-      printf("true\n");
-      oosmos_ThreadDelayMS(50);
-      printf("false\n");
-      oosmos_ThreadDelayMS(50);
+      printf("Running...\n");
+      oosmos_ThreadDelayMS(750);
     }
   oosmos_ThreadEnd();
 }
@@ -71,9 +69,9 @@ static void TogglingThread(oosmos_sState * pState)
   oosmos_ThreadBegin();
     for (;;) {
       printf("ON\n");
-      oosmos_ThreadDelayMS(200);
+      oosmos_ThreadDelayMS(50);
       printf("OFF\n");
-      oosmos_ThreadDelayMS(200);
+      oosmos_ThreadDelayMS(50);
     }
   oosmos_ThreadEnd();
 }
@@ -84,7 +82,7 @@ static bool Active_State_Code(void * pObject, oosmos_sState * pState, const oosm
   test * pTest = (test *) pObject;
 
   switch (oosmos_EventCode(pEvent)) {
-    case evQuit: {
+    case evQ_Pressed: {
       return oosmos_Transition(pTest, pState, Done_State);
     }
   }
@@ -96,7 +94,7 @@ static bool Done_State_Code(void * pObject, oosmos_sState * pState, const oosmos
 {
   switch (oosmos_EventCode(pEvent)) {
     case oosmos_ENTER: {
-      printf("Terminating\n");
+      printf("Terminating.\n");
       exit(1);
     }
   }
@@ -114,8 +112,11 @@ static bool Active_Running_State_Code(void * pObject, oosmos_sState * pState, co
       RunningThread(pState);
       return true;
     }
+    case evSpace_Released: {
+      return oosmos_Transition(pTest, pState, Active_Idle_State);
+    }
     case oosmos_ENTER: {
-      return oosmos_StateTimeoutSeconds(pState, (uint32_t) 3);
+      return oosmos_StateTimeoutSeconds(pState, (uint32_t) 2);
     }
     case oosmos_TIMEOUT: {
       return oosmos_Transition(pTest, pState, Done_State);
@@ -130,8 +131,8 @@ static bool Active_Idle_State_Code(void * pObject, oosmos_sState * pState, const
   test * pTest = (test *) pObject;
 
   switch (oosmos_EventCode(pEvent)) {
-    case evTogglePressed: {
-      return oosmos_Transition(pTest, pState, Active_Running_Toggling_State);
+    case evSpace_Pressed: {
+      return oosmos_Transition(pTest, pState, Active_Running_State);
     }
   }
 
@@ -140,23 +141,18 @@ static bool Active_Idle_State_Code(void * pObject, oosmos_sState * pState, const
 
 static bool Active_Running_Toggling_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
-  test * pTest = (test *) pObject;
-
   switch (oosmos_EventCode(pEvent)) {
     case oosmos_ENTER: {
-      printf("Start Toggling\n");
+      printf("Start Toggling.\n");
       return true;
     }
     case oosmos_EXIT: {
-      printf("Stop Toggling\n");
+      printf("Stop Toggling.\n");
       return true;
     }
     case oosmos_POLL: {
       TogglingThread(pState);
       return true;
-    }
-    case evToggleReleased: {
-      return oosmos_Transition(pTest, pState, Active_Idle_State);
     }
   }
 
@@ -188,12 +184,12 @@ extern int main(void)
 
   pin * pTogglePin    = pinNew(' ', pinActiveHigh);
   btn * pToggleButton = btnNew(pTogglePin);
-  btnSubscribePressedEvent(pToggleButton,  oosmos_EventQueue(pTest), evTogglePressed,  NULL);
-  btnSubscribeReleasedEvent(pToggleButton, oosmos_EventQueue(pTest), evToggleReleased, NULL);
+  btnSubscribePressedEvent(pToggleButton,  oosmos_EventQueue(pTest), evSpace_Pressed,  NULL);
+  btnSubscribeReleasedEvent(pToggleButton, oosmos_EventQueue(pTest), evSpace_Released, NULL);
 
   pin * pQuitPin    = pinNew('q', pinActiveHigh);
   btn * pQuitButton = btnNew(pQuitPin);
-  btnSubscribePressedEvent(pQuitButton,  oosmos_EventQueue(pTest), evQuit, NULL);
+  btnSubscribePressedEvent(pQuitButton,  oosmos_EventQueue(pTest), evQ_Pressed, NULL);
 
   for (;;) {
     oosmos_RunStateMachines();
