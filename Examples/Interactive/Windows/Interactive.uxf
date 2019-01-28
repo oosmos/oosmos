@@ -4,9 +4,9 @@
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>40</x>
+      <x>50</x>
       <y>130</y>
-      <w>60</w>
+      <w>40</w>
       <h>140</h>
     </coordinates>
     <panel_attributes>Idle
@@ -17,19 +17,19 @@ valign=top</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>50</x>
-      <y>90</y>
+      <x>60</x>
+      <y>100</y>
       <w>30</w>
-      <h>60</h>
+      <h>50</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
   </element>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>50</x>
-      <y>80</y>
+      <x>60</x>
+      <y>90</y>
       <w>20</w>
       <h>20</h>
     </coordinates>
@@ -39,21 +39,21 @@ valign=top</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>90</x>
+      <x>80</x>
       <y>160</y>
-      <w>140</w>
+      <w>160</w>
       <h>40</h>
     </coordinates>
     <panel_attributes>evSpace_Pressed
 lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;20.0;120.0;20.0</additional_attributes>
+    <additional_attributes>10.0;20.0;140.0;20.0</additional_attributes>
   </element>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>220</x>
+      <x>240</x>
       <y>150</y>
-      <w>220</w>
+      <w>210</w>
       <h>110</h>
     </coordinates>
     <panel_attributes>Toggling
@@ -70,19 +70,19 @@ valign=top</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>90</x>
+      <x>80</x>
       <y>200</y>
-      <w>140</w>
+      <w>160</w>
       <h>40</h>
     </coordinates>
     <panel_attributes>evSpace_Released
 lt=-&gt;</panel_attributes>
-    <additional_attributes>120.0;20.0;10.0;20.0</additional_attributes>
+    <additional_attributes>140.0;20.0;10.0;20.0</additional_attributes>
   </element>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>20</x>
+      <x>30</x>
       <y>60</y>
       <w>460</w>
       <h>220</h>
@@ -95,10 +95,10 @@ valign=top</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>600</x>
+      <x>610</x>
       <y>60</y>
-      <w>180</w>
-      <h>250</h>
+      <w>170</w>
+      <h>220</h>
     </coordinates>
     <panel_attributes>Done
 --
@@ -111,7 +111,7 @@ valign=top</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>450</x>
+      <x>460</x>
       <y>180</y>
       <w>170</w>
       <h>40</h>
@@ -123,7 +123,7 @@ lt=-&gt;</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>470</x>
+      <x>480</x>
       <y>230</y>
       <w>150</w>
       <h>40</h>
@@ -157,7 +157,7 @@ lt=-&gt;</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>210</x>
+      <x>220</x>
       <y>90</y>
       <w>250</w>
       <h>180</h>
