@@ -165,10 +165,10 @@ extern httptest * httptestNew(const char * pHost, int Port, int ID)
 {
   httptest * pHttpTest = (httptest *) malloc(sizeof(httptest));
 
-  //                                 StateName       Parent  Default
-  //                     ==================================================
-  oosmos_StateMachineInit(pHttpTest, ROOT,           NULL,   Running_State);
-    oosmos_LeafInit      (pHttpTest, Running_State,  ROOT                 );
+  //                                 StateName       Parent
+  //                     =======================================================
+  oosmos_StateMachineInit(pHttpTest, ROOT,           NULL,   Running_State     );
+    oosmos_LeafInit      (pHttpTest, Running_State,  ROOT,   Running_State_Code);
 
   pHttpTest->m_pSock = sockNew();
   pHttpTest->m_pHost = pHost;

@@ -70,12 +70,12 @@ struct pumpTag
   }
 #endif
 
-static void Thread(const pump * pPump, oosmos_sState * pState)
+static void Thread(pump * pPump, oosmos_sState * pState)
 {
   oosmos_ThreadBegin();
     for (;;) {
-      printf("pump: PUMPING...\n");
-      oosmos_ThreadDelayMS((10 - pPump->PumpSpeed) * 200);
+      printf("PUMPING...\n");
+      oosmos_ThreadDelayMS(oosmos_Max(100, (10 - pPump->PumpSpeed) * 200));
     }
   oosmos_ThreadEnd();
 }

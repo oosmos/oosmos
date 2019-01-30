@@ -32,11 +32,11 @@ typedef struct testTag test;
 
 //>>>EVENTS
 enum {
-  evB_Pressed = 1,
-  evB_Released = 2,
-  evQ_Pressed = 3,
-  evSpace_Pressed = 4,
-  evSpace_Released = 5
+  ev_b_Pressed = 1,
+  ev_b_Released = 2,
+  ev_q_Pressed = 3,
+  ev_r_Pressed = 4,
+  ev_r_Released = 5
 };
 //<<<EVENTS
 
@@ -93,7 +93,7 @@ static bool Active_State_Code(void * pObject, oosmos_sState * pState, const oosm
   test * pTest = (test *) pObject;
 
   switch (oosmos_EventCode(pEvent)) {
-    case evQ_Pressed: {
+    case ev_q_Pressed: {
       return oosmos_Transition(pTest, pState, Done_State);
     }
   }
@@ -110,7 +110,7 @@ static bool Active_Running_State_Code(void * pObject, oosmos_sState * pState, co
       RunningThread(pState);
       return true;
     }
-    case evSpace_Released: {
+    case ev_r_Released: {
       return oosmos_Transition(pTest, pState, Active_Idle_State);
     }
   }
@@ -123,7 +123,7 @@ static bool Active_Idle_State_Code(void * pObject, oosmos_sState * pState, const
   test * pTest = (test *) pObject;
 
   switch (oosmos_EventCode(pEvent)) {
-    case evSpace_Pressed: {
+    case ev_r_Pressed: {
       return oosmos_Transition(pTest, pState, Active_Running_State);
     }
   }
@@ -140,7 +140,7 @@ static bool Active_Running_Flashing_State_Code(void * pObject, oosmos_sState * p
       FlashingThread(pState);
       return true;
     }
-    case evB_Pressed: {
+    case ev_b_Pressed: {
       return oosmos_Transition(pTest, pState, Active_Running_Beeping_State);
     }
   }
@@ -157,7 +157,7 @@ static bool Active_Running_Beeping_State_Code(void * pObject, oosmos_sState * pS
       BeepingThread(pState);
       return true;
     }
-    case evB_Released: {
+    case ev_b_Released: {
       return oosmos_Transition(pTest, pState, Active_Running_Flashing_State);
     }
   }
@@ -203,22 +203,22 @@ extern int main(void)
 {
   test * pTest = testNew();
 
-  pin * pSpace_Pin    = pinNew(' ', pinActiveHigh);
-  btn * pSpace_Button = btnNew(pSpace_Pin);
-  btnSubscribePressedEvent(pSpace_Button,  oosmos_EventQueue(pTest), evSpace_Pressed,  NULL);
-  btnSubscribeReleasedEvent(pSpace_Button, oosmos_EventQueue(pTest), evSpace_Released, NULL);
+  pin * p_r_Pin    = pinNew('r', pinActiveHigh);
+  btn * p_r_Button = btnNew(p_r_Pin);
+  btnSubscribePressedEvent(p_r_Button,  oosmos_EventQueue(pTest), ev_r_Pressed,  NULL);
+  btnSubscribeReleasedEvent(p_r_Button, oosmos_EventQueue(pTest), ev_r_Released, NULL);
 
-  pin * pB_Pin    = pinNew('b', pinActiveHigh);
-  btn * pB_Button = btnNew(pB_Pin);
-  btnSubscribePressedEvent(pB_Button,  oosmos_EventQueue(pTest), evB_Pressed,  NULL);
-  btnSubscribeReleasedEvent(pB_Button, oosmos_EventQueue(pTest), evB_Released, NULL);
+  pin * p_b_Pin    = pinNew('b', pinActiveHigh);
+  btn * p_b_Button = btnNew(p_b_Pin);
+  btnSubscribePressedEvent(p_b_Button,  oosmos_EventQueue(pTest), ev_b_Pressed,  NULL);
+  btnSubscribeReleasedEvent(p_b_Button, oosmos_EventQueue(pTest), ev_b_Released, NULL);
 
-  pin * pQ_Pin    = pinNew('q', pinActiveHigh);
-  btn * pQ_Button = btnNew(pQ_Pin);
-  btnSubscribePressedEvent(pQ_Button,  oosmos_EventQueue(pTest), evQ_Pressed, NULL);
+  pin * p_q_Pin    = pinNew('q', pinActiveHigh);
+  btn * p_q_Button = btnNew(p_q_Pin);
+  btnSubscribePressedEvent(p_q_Button,  oosmos_EventQueue(pTest), ev_q_Pressed,  NULL);
 
   for (;;) {
     oosmos_RunStateMachines();
-    oosmos_DelayMS(25);
+    oosmos_DelayMS(1);
   }
 }

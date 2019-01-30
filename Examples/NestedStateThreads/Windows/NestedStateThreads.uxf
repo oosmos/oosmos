@@ -44,7 +44,7 @@ valign=top</panel_attributes>
       <w>160</w>
       <h>40</h>
     </coordinates>
-    <panel_attributes>evSpace_Pressed
+    <panel_attributes>ev_r_Pressed
 lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;20.0;140.0;20.0</additional_attributes>
   </element>
@@ -71,7 +71,7 @@ valign=top</panel_attributes>
       <w>160</w>
       <h>40</h>
     </coordinates>
-    <panel_attributes>evSpace_Released
+    <panel_attributes>ev_r_Released
 lt=-&gt;</panel_attributes>
     <additional_attributes>140.0;20.0;10.0;20.0</additional_attributes>
   </element>
@@ -109,10 +109,10 @@ valign=top</panel_attributes>
     <coordinates>
       <x>100</x>
       <y>280</y>
-      <w>90</w>
+      <w>100</w>
       <h>70</h>
     </coordinates>
-    <panel_attributes>evQ_Pressed
+    <panel_attributes>ev_q_Pressed
 lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
   </element>
@@ -176,7 +176,7 @@ valign=top</panel_attributes>
       <w>150</w>
       <h>40</h>
     </coordinates>
-    <panel_attributes>evB_Pressed
+    <panel_attributes>ev_b_Pressed
 lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;20.0;130.0;20.0</additional_attributes>
   </element>
@@ -188,7 +188,7 @@ lt=-&gt;</panel_attributes>
       <w>150</w>
       <h>40</h>
     </coordinates>
-    <panel_attributes>evB_Released
+    <panel_attributes>ev_b_Released
 lt=-&gt;</panel_attributes>
     <additional_attributes>130.0;20.0;10.0;20.0</additional_attributes>
   </element>

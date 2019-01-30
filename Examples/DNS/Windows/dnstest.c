@@ -94,7 +94,7 @@ extern int main(void)
 
   do  {
     oosmos_RunStateMachines();
-    oosmos_DelayMS(5);
+    oosmos_DelayMS(1);
   } while (ActiveInstances > 0);
 
   return 0;

@@ -33,6 +33,6 @@ extern int main(int argc, char *argv[])
 
   for (;;) {
     oosmos_RunStateMachines();
-    oosmos_DelayMS(50);
+    oosmos_DelayMS(1);
   }
 }

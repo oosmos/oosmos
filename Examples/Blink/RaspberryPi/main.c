@@ -36,6 +36,6 @@ extern int main(void)
 
   for (;;) {
     oosmos_RunStateMachines();
-    oosmos_DelayMS(50);
+    oosmos_DelayMS(1);
   }
 }

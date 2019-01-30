@@ -324,6 +324,6 @@ extern int main(void)
   for (;;) {
     oosmos_RunStateMachines();
     printf("---\n");
-    oosmos_DelayMS(10);
+    oosmos_DelayMS(1);
   }
 }

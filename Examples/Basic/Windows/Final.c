@@ -143,5 +143,7 @@ extern int main(void)
       printf("SUCCESS.\n");
       break;
     }
+
+    oosmos_DelayMS(1);
   }
 }

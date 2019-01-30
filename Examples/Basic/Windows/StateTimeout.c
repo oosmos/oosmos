@@ -118,7 +118,7 @@ extern int main(void)
       break;
     }
 
-    oosmos_DelayMS(50);
+    oosmos_DelayMS(1);
   }
 
   printf("SUCCESS\n");
