@@ -32,9 +32,11 @@ typedef struct testTag test;
 
 //>>>EVENTS
 enum {
-  evQ_Pressed = 1,
-  evSpace_Pressed = 2,
-  evSpace_Released = 3
+  evB_Pressed = 1,
+  evB_Released = 2,
+  evQ_Pressed = 3,
+  evSpace_Pressed = 4,
+  evSpace_Released = 5
 };
 //<<<EVENTS
 
@@ -48,7 +50,8 @@ struct testTag
   oosmos_sStateMachine(ROOT, uEvents, 3);
     oosmos_sComposite Active_State;
       oosmos_sComposite Active_Running_State;
-        oosmos_sLeaf Active_Running_Toggling_State;
+        oosmos_sLeaf Active_Running_Flashing_State;
+        oosmos_sLeaf Active_Running_Beeping_State;
       oosmos_sLeaf Active_Idle_State;
     oosmos_sLeaf Done_State;
 //<<<DECL
@@ -58,20 +61,28 @@ static void RunningThread(oosmos_sState * pState)
 {
   oosmos_ThreadBegin();
     for (;;) {
-      printf("Running...\n");
+      printf("RUNNING...\n");
       oosmos_ThreadDelayMS(750);
     }
   oosmos_ThreadEnd();
 }
 
-static void TogglingThread(oosmos_sState * pState)
+static void FlashingThread(oosmos_sState * pState)
 {
   oosmos_ThreadBegin();
     for (;;) {
-      printf("ON\n");
+      printf("Flashing...\n");
       oosmos_ThreadDelayMS(50);
-      printf("OFF\n");
-      oosmos_ThreadDelayMS(50);
+    }
+  oosmos_ThreadEnd();
+}
+
+static void BeepingThread(oosmos_sState * pState)
+{
+  oosmos_ThreadBegin();
+    for (;;) {
+      printf("Beeping...\n");
+      oosmos_ThreadDelayMS(100);
     }
   oosmos_ThreadEnd();
 }
@@ -90,19 +101,6 @@ static bool Active_State_Code(void * pObject, oosmos_sState * pState, const oosm
   return false;
 }
 
-static bool Done_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
-{
-  switch (oosmos_EventCode(pEvent)) {
-    case oosmos_ENTER: {
-      printf("Terminating.\n");
-      exit(1);
-    }
-  }
-
-  oosmos_UNUSED(pState);
-  return false;
-}
-
 static bool Active_Running_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   test * pTest = (test *) pObject;
@@ -114,12 +112,6 @@ static bool Active_Running_State_Code(void * pObject, oosmos_sState * pState, co
     }
     case evSpace_Released: {
       return oosmos_Transition(pTest, pState, Active_Idle_State);
-    }
-    case oosmos_ENTER: {
-      return oosmos_StateTimeoutSeconds(pState, (uint32_t) 2);
-    }
-    case oosmos_TIMEOUT: {
-      return oosmos_Transition(pTest, pState, Done_State);
     }
   }
 
@@ -139,23 +131,51 @@ static bool Active_Idle_State_Code(void * pObject, oosmos_sState * pState, const
   return false;
 }
 
-static bool Active_Running_Toggling_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
+static bool Active_Running_Flashing_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
+{
+  test * pTest = (test *) pObject;
+
+  switch (oosmos_EventCode(pEvent)) {
+    case oosmos_POLL: {
+      FlashingThread(pState);
+      return true;
+    }
+    case evB_Pressed: {
+      return oosmos_Transition(pTest, pState, Active_Running_Beeping_State);
+    }
+  }
+
+  return false;
+}
+
+static bool Active_Running_Beeping_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
+{
+  test * pTest = (test *) pObject;
+
+  switch (oosmos_EventCode(pEvent)) {
+    case oosmos_POLL: {
+      BeepingThread(pState);
+      return true;
+    }
+    case evB_Released: {
+      return oosmos_Transition(pTest, pState, Active_Running_Flashing_State);
+    }
+  }
+
+  return false;
+}
+
+static bool Done_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   switch (oosmos_EventCode(pEvent)) {
     case oosmos_ENTER: {
-      printf("Start Toggling.\n");
-      return true;
-    }
-    case oosmos_EXIT: {
-      printf("Stop Toggling.\n");
-      return true;
-    }
-    case oosmos_POLL: {
-      TogglingThread(pState);
+      printf("Terminating.\n");
+      oosmos_EndProgram(1);
       return true;
     }
   }
 
+  oosmos_UNUSED(pState);
   return false;
 }
 //<<<CODE
@@ -167,8 +187,9 @@ static test * testNew(void)
 //>>>INIT
   oosmos_StateMachineInit(pTest, ROOT, NULL, Active_State);
     oosmos_CompositeInit(pTest, Active_State, ROOT, Active_Idle_State, Active_State_Code);
-      oosmos_CompositeInit(pTest, Active_Running_State, Active_State, Active_Running_Toggling_State, Active_Running_State_Code);
-        oosmos_LeafInit(pTest, Active_Running_Toggling_State, Active_Running_State, Active_Running_Toggling_State_Code);
+      oosmos_CompositeInit(pTest, Active_Running_State, Active_State, Active_Running_Flashing_State, Active_Running_State_Code);
+        oosmos_LeafInit(pTest, Active_Running_Flashing_State, Active_Running_State, Active_Running_Flashing_State_Code);
+        oosmos_LeafInit(pTest, Active_Running_Beeping_State, Active_Running_State, Active_Running_Beeping_State_Code);
       oosmos_LeafInit(pTest, Active_Idle_State, Active_State, Active_Idle_State_Code);
     oosmos_LeafInit(pTest, Done_State, ROOT, Done_State_Code);
 //<<<INIT
@@ -182,14 +203,19 @@ extern int main(void)
 {
   test * pTest = testNew();
 
-  pin * pTogglePin    = pinNew(' ', pinActiveHigh);
-  btn * pToggleButton = btnNew(pTogglePin);
-  btnSubscribePressedEvent(pToggleButton,  oosmos_EventQueue(pTest), evSpace_Pressed,  NULL);
-  btnSubscribeReleasedEvent(pToggleButton, oosmos_EventQueue(pTest), evSpace_Released, NULL);
+  pin * pSpace_Pin    = pinNew(' ', pinActiveHigh);
+  btn * pSpace_Button = btnNew(pSpace_Pin);
+  btnSubscribePressedEvent(pSpace_Button,  oosmos_EventQueue(pTest), evSpace_Pressed,  NULL);
+  btnSubscribeReleasedEvent(pSpace_Button, oosmos_EventQueue(pTest), evSpace_Released, NULL);
 
-  pin * pQuitPin    = pinNew('q', pinActiveHigh);
-  btn * pQuitButton = btnNew(pQuitPin);
-  btnSubscribePressedEvent(pQuitButton,  oosmos_EventQueue(pTest), evQ_Pressed, NULL);
+  pin * pB_Pin    = pinNew('b', pinActiveHigh);
+  btn * pB_Button = btnNew(pB_Pin);
+  btnSubscribePressedEvent(pB_Button,  oosmos_EventQueue(pTest), evB_Pressed,  NULL);
+  btnSubscribeReleasedEvent(pB_Button, oosmos_EventQueue(pTest), evB_Released, NULL);
+
+  pin * pQ_Pin    = pinNew('q', pinActiveHigh);
+  btn * pQ_Button = btnNew(pQ_Pin);
+  btnSubscribePressedEvent(pQ_Button,  oosmos_EventQueue(pTest), evQ_Pressed, NULL);
 
   for (;;) {
     oosmos_RunStateMachines();

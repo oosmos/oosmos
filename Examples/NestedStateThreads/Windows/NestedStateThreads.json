@@ -1,8 +1,8 @@
 [
   {
     "enabled":      true,
-    "uxf_filename": "Interactive.uxf",
-    "filename":     "Interactive.c",
+    "uxf_filename": "NestedStateThreads.uxf",
+    "filename":     "NestedStateThreads.c",
     "type":         "test",
     "object_ptr":   "pTest",
     "queue_size":   3

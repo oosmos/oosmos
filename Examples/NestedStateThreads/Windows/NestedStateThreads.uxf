@@ -40,7 +40,7 @@ valign=top</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>80</x>
-      <y>160</y>
+      <y>150</y>
       <w>160</w>
       <h>40</h>
     </coordinates>
@@ -52,18 +52,14 @@ lt=-&gt;</panel_attributes>
     <id>UMLState</id>
     <coordinates>
       <x>240</x>
-      <y>150</y>
-      <w>210</w>
-      <h>110</h>
+      <y>180</y>
+      <w>170</w>
+      <h>70</h>
     </coordinates>
-    <panel_attributes>Toggling
+    <panel_attributes>Flashing
 --
-ENTER:
-  printf("Start Toggling.\n");
 POLL:
-  TogglingThread(pState);
-EXIT:
-  printf("Stop Toggling.\n");  
+  FlashingThread(pState); 
 valign=top</panel_attributes>
     <additional_attributes/>
   </element>
@@ -71,7 +67,7 @@ valign=top</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>80</x>
-      <y>200</y>
+      <y>190</y>
       <w>160</w>
       <h>40</h>
     </coordinates>
@@ -84,8 +80,8 @@ lt=-&gt;</panel_attributes>
     <coordinates>
       <x>30</x>
       <y>60</y>
-      <w>460</w>
-      <h>220</h>
+      <w>710</w>
+      <h>230</h>
     </coordinates>
     <panel_attributes>Active
 --
@@ -95,42 +91,30 @@ valign=top</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>610</x>
-      <y>60</y>
-      <w>170</w>
-      <h>220</h>
+      <x>30</x>
+      <y>330</y>
+      <w>190</w>
+      <h>70</h>
     </coordinates>
     <panel_attributes>Done
 --
 ENTER:
   printf("Terminating.\n");
-  exit(1);
+  oosmos_EndProgram(1);
 valign=top</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>460</x>
-      <y>160</y>
-      <w>170</w>
-      <h>40</h>
-    </coordinates>
-    <panel_attributes>TIMEOUT(2 sec)
-lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;20.0;150.0;20.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>480</x>
-      <y>200</y>
-      <w>150</w>
-      <h>40</h>
+      <x>100</x>
+      <y>280</y>
+      <w>90</w>
+      <h>70</h>
     </coordinates>
     <panel_attributes>evQ_Pressed
 lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;20.0;130.0;20.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -159,7 +143,7 @@ lt=-&gt;</panel_attributes>
     <coordinates>
       <x>220</x>
       <y>90</y>
-      <w>250</w>
+      <w>500</w>
       <h>180</h>
     </coordinates>
     <panel_attributes>Running
@@ -167,6 +151,67 @@ lt=-&gt;</panel_attributes>
 POLL:
   RunningThread(pState);
 valign=top</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>530</x>
+      <y>180</y>
+      <w>170</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>Beeping
+--
+POLL:
+  BeepingThread(pState); 
+valign=top</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>400</x>
+      <y>180</y>
+      <w>150</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>evB_Pressed
+lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;20.0;130.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>400</x>
+      <y>210</y>
+      <w>150</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>evB_Released
+lt=-&gt;</panel_attributes>
+    <additional_attributes>130.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>280</x>
+      <y>150</y>
+      <w>30</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>280</x>
+      <y>140</y>
+      <w>20</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>type=initial</panel_attributes>
     <additional_attributes/>
   </element>
 </diagram>
