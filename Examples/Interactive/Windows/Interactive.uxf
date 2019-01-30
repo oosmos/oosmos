@@ -60,10 +60,10 @@ lt=-&gt;</panel_attributes>
 --
 ENTER:
   printf("Start Toggling.\n");
-EXIT:
-  printf("Stop Toggling.\n");
 POLL:
   TogglingThread(pState);
+EXIT:
+  printf("Stop Toggling.\n");  
 valign=top</panel_attributes>
     <additional_attributes/>
   </element>
@@ -112,7 +112,7 @@ valign=top</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>460</x>
-      <y>180</y>
+      <y>160</y>
       <w>170</w>
       <h>40</h>
     </coordinates>
@@ -124,7 +124,7 @@ lt=-&gt;</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>480</x>
-      <y>230</y>
+      <y>200</y>
       <w>150</w>
       <h>40</h>
     </coordinates>
