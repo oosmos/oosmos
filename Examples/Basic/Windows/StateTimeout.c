@@ -38,6 +38,7 @@ struct testTag
     oosmos_sLeaf US_State;
     oosmos_sLeaf Done_State;
 //<<<DECL
+  int m_TimeMS;
 };
 
 //>>>CODE
@@ -47,7 +48,7 @@ static bool MS_State_Code(void * pObject, oosmos_sState * pState, const oosmos_s
 
   switch (oosmos_EventCode(pEvent)) {
     case oosmos_ENTER: {
-      return oosmos_StateTimeoutMS(pState, (uint32_t) 1000);
+      return oosmos_StateTimeoutMS(pState, (uint32_t) pTest->m_TimeMS);
     }
     case oosmos_TIMEOUT: {
       return oosmos_Transition(pTest, pState, Seconds_State);
@@ -103,6 +104,8 @@ static test * testNew(void)
 //<<<INIT
 
   oosmos_Debug(pTest, true, NULL);
+
+  pTest->m_TimeMS = 1000;
 
   return pTest;
 }

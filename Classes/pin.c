@@ -395,6 +395,7 @@ extern pin * pinNew_Debounce(GPIO_TypeDef* Port, const uint16_t Bit, const pin_e
 }
 #elif defined(_MSC_VER)
   #include <windows.h>
+  #include <stdio.h>
 
   static bool   pinFirst = true;
   static bool   KeyIsDown[0xFF];

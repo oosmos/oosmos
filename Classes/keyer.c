@@ -32,7 +32,7 @@ struct keyerTag
 //>>>DECL
   oosmos_sStateMachineNoQueue(ROOT);
     oosmos_sLeaf DahSound_State;
-    oosmos_sLeaf Idle_State;
+    oosmos_sLeaf Silent_State;
     oosmos_sLeaf Choice2_State;
     oosmos_sLeaf Choice1_State;
     oosmos_sLeaf DitSound_State;
@@ -129,7 +129,7 @@ static bool DahSound_State_Code(void * pObject, oosmos_sState * pState, const oo
   return false;
 }
 
-static bool Idle_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
+static bool Silent_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   keyer * pKeyer = (keyer *) pObject;
 
@@ -157,7 +157,7 @@ static bool Choice2_State_Code(void * pObject, oosmos_sState * pState, const oos
       return oosmos_Transition(pKeyer, pState, DahSound_State);
     }
     else {
-      return oosmos_Transition(pKeyer, pState, Idle_State);
+      return oosmos_Transition(pKeyer, pState, Silent_State);
     }
   }
 
@@ -173,7 +173,7 @@ static bool Choice1_State_Code(void * pObject, oosmos_sState * pState, const oos
       return oosmos_Transition(pKeyer, pState, DitSound_State);
     }
     else {
-      return oosmos_Transition(pKeyer, pState, Idle_State);
+      return oosmos_Transition(pKeyer, pState, Silent_State);
     }
   }
 
@@ -208,9 +208,9 @@ extern keyer * keyerNew(pin * pDahPin, pin * pDitPin, pin * pSpeakerPin, uint32_
   oosmos_Allocate(pKeyer, keyer, 1, NULL);
 
 //>>>INIT
-  oosmos_StateMachineInitNoQueue(pKeyer, ROOT, NULL, Idle_State);
+  oosmos_StateMachineInitNoQueue(pKeyer, ROOT, NULL, Silent_State);
     oosmos_LeafInit(pKeyer, DahSound_State, ROOT, DahSound_State_Code);
-    oosmos_LeafInit(pKeyer, Idle_State, ROOT, Idle_State_Code);
+    oosmos_LeafInit(pKeyer, Silent_State, ROOT, Silent_State_Code);
     oosmos_LeafInit(pKeyer, Choice2_State, ROOT, Choice2_State_Code);
     oosmos_LeafInit(pKeyer, Choice1_State, ROOT, Choice1_State_Code);
     oosmos_LeafInit(pKeyer, DitSound_State, ROOT, DitSound_State_Code);
@@ -223,9 +223,7 @@ extern keyer * keyerNew(pin * pDahPin, pin * pDitPin, pin * pSpeakerPin, uint32_
   pKeyer->m_DahTimeMS   = pKeyer->m_DitTimeMS * 3;
   pKeyer->m_SpaceTimeMS = pKeyer->m_DitTimeMS;
 
-#if 0
   oosmos_Debug(pKeyer, true, NULL);
-#endif
 
   return pKeyer;
 }
