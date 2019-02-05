@@ -97,9 +97,7 @@ static test * testNew(void)
         oosmos_LeafInit(pTest, Active_Region3_Running_State, Active_Region3_State, NULL);
 //<<<INIT
 
-#if 1
   oosmos_Debug(pTest, true, NULL);
-#endif
 
   return pTest;
 }

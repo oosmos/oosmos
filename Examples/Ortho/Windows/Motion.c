@@ -63,25 +63,23 @@ struct motionTag
 
 static int Failures = 0;
 
-#if 1
-  #define NameCase(Name) case Name: return #Name;
+#define NameCase(Name) case Name: return #Name;
 
-  static const char * EventNames(int EventCode)
-  {
-    switch(EventCode) {
-      NameCase(evUpCommand)
-      NameCase(evDownCommand)
-      NameCase(evStopCommand)
+static const char * EventNames(int EventCode)
+{
+  switch(EventCode) {
+    NameCase(evUpCommand)
+    NameCase(evDownCommand)
+    NameCase(evStopCommand)
 
-      NameCase(evUpperLimitSwitchClosed)
-      NameCase(evUpperLimitSwitchOpen)
+    NameCase(evUpperLimitSwitchClosed)
+    NameCase(evUpperLimitSwitchOpen)
 
-      NameCase(evLowerLimitSwitchClosed)
-      NameCase(evLowerLimitSwitchOpen)
-      default: return "--No Event Name--";
-    }
+    NameCase(evLowerLimitSwitchClosed)
+    NameCase(evLowerLimitSwitchOpen)
+    default: return "--No Event Name--";
   }
-#endif
+}
 
 static bool IsUpperLimitSwitchOpen(void) {
   return true;

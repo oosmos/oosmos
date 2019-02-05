@@ -167,9 +167,7 @@ static test * testNew(void)
     oosmos_LeafInit(pTest, Complete_State, ROOT, Complete_State_Code);
 //<<<INIT
 
-#if 1
   oosmos_Debug(pTest, true, EventNames);
-#endif
 
   return pTest;
 }

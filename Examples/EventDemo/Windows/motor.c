@@ -114,9 +114,7 @@ extern motor * motorNew(void)
     oosmos_LeafInit(pMotor, Moving_State, ROOT, Moving_State_Code);
 //<<<INIT
 
-#if 1
   oosmos_Debug(pMotor, true, EventNames);
-#endif
 
   return pMotor;
 }

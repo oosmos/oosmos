@@ -291,9 +291,7 @@ extern control * controlNew(void)
     oosmos_LeafInit(pControl, Terminated_State, ROOT, Terminated_State_Code);
 //<<<INIT
 
-#if 1
   oosmos_Debug(pControl, true, EventNames);
-#endif
 
   return pControl;
 }

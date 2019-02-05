@@ -135,9 +135,7 @@ extern pump * pumpNew(sw * pUpSwitch, sw * pDownSwitch)
     oosmos_LeafInit(pPump, Pumping_State, ROOT, Pumping_State_Code);
 //<<<INIT
 
-#if 1
   oosmos_Debug(pPump, true, EventNames);
-#endif
 
   return pPump;
 }
