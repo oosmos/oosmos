@@ -28,6 +28,14 @@
 enum {
   evTweak = 1
 };
+
+static const char * EventNames(int EventCode)
+{
+  switch (EventCode) {
+    case evTweak: return "evTweak";
+    default: return "--No Event Name--";
+  }
+}
 //<<<EVENTS
 
 typedef struct testTag test;
@@ -95,9 +103,9 @@ static test * testNew(void)
       oosmos_OrthoRegionInit(pTest, Active_Region3_State, Active_State, Active_Region3_Leaf_State, NULL);
         oosmos_LeafInit(pTest, Active_Region3_Leaf_State, Active_Region3_State, Active_Region3_Leaf_State_Code);
         oosmos_LeafInit(pTest, Active_Region3_Running_State, Active_Region3_State, NULL);
-//<<<INIT
 
-  oosmos_Debug(pTest, true, NULL);
+  oosmos_Debug(pTest, EventNames);
+//<<<INIT
 
   return pTest;
 }

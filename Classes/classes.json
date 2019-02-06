@@ -4,7 +4,8 @@
     "uxf_filename": "keyer.uxf",
     "filename":     "keyer.c",
     "type":         "keyer",
-    "object_ptr":   "pKeyer"
+    "object_ptr":   "pKeyer",
+    "debug":        true
   },
   {
     "enabled":      true,

@@ -214,6 +214,8 @@ extern keyer * keyerNew(pin * pDahPin, pin * pDitPin, pin * pSpeakerPin, uint32_
     oosmos_LeafInit(pKeyer, Choice2_State, ROOT, Choice2_State_Code);
     oosmos_LeafInit(pKeyer, Choice1_State, ROOT, Choice1_State_Code);
     oosmos_LeafInit(pKeyer, DitSound_State, ROOT, DitSound_State_Code);
+
+  oosmos_Debug(pKeyer, NULL);
 //<<<INIT
 
   pKeyer->m_pDahPin     = pDahPin;
@@ -222,8 +224,6 @@ extern keyer * keyerNew(pin * pDahPin, pin * pDitPin, pin * pSpeakerPin, uint32_
   pKeyer->m_DitTimeMS   = 1200 / WPM;
   pKeyer->m_DahTimeMS   = pKeyer->m_DitTimeMS * 3;
   pKeyer->m_SpaceTimeMS = pKeyer->m_DitTimeMS;
-
-  oosmos_Debug(pKeyer, true, NULL);
 
   return pKeyer;
 }

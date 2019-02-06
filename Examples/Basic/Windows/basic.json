@@ -5,7 +5,8 @@
     "filename":     "Final.c",
     "type":         "test",
     "object_ptr":   "pTest",
-    "queue_size":   0
+    "queue_size":   0,
+    "debug":        true
   },
   {
     "enabled":      true,
@@ -13,6 +14,7 @@
     "filename":     "StateTimeout.c",
     "type":         "test",
     "object_ptr":   "pTest",
-    "queue_size":   0
+    "queue_size":   0,
+    "debug":        true
   }
 ]

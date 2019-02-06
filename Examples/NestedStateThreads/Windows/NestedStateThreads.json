@@ -5,6 +5,7 @@
     "filename":     "NestedStateThreads.c",
     "type":         "test",
     "object_ptr":   "pTest",
-    "queue_size":   3
+    "queue_size":   3,
+    "debug":        true
   }
 ]

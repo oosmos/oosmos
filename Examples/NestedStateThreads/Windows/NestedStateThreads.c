@@ -38,6 +38,18 @@ enum {
   ev_r_Pressed = 4,
   ev_r_Released = 5
 };
+
+static const char * EventNames(int EventCode)
+{
+  switch (EventCode) {
+    case ev_b_Pressed: return "ev_b_Pressed";
+    case ev_b_Released: return "ev_b_Released";
+    case ev_q_Pressed: return "ev_q_Pressed";
+    case ev_r_Pressed: return "ev_r_Pressed";
+    case ev_r_Released: return "ev_r_Released";
+    default: return "--No Event Name--";
+  }
+}
 //<<<EVENTS
 
 typedef union {
@@ -192,9 +204,9 @@ static test * testNew(void)
         oosmos_LeafInit(pTest, Active_Running_Beeping_State, Active_Running_State, Active_Running_Beeping_State_Code);
       oosmos_LeafInit(pTest, Active_Idle_State, Active_State, Active_Idle_State_Code);
     oosmos_LeafInit(pTest, Done_State, ROOT, Done_State_Code);
-//<<<INIT
 
-  oosmos_Debug(pTest, true, NULL);
+  oosmos_Debug(pTest, EventNames);
+//<<<INIT
 
   return pTest;
 }

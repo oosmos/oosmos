@@ -4,21 +4,24 @@
     "uxf_filename": "ThreadComplete.uxf",
     "filename":     "ThreadComplete.c",
     "type":         "test",
-    "object_ptr":   "pTest"
+    "object_ptr":   "pTest",
+    "debug":        true
   },
   {
     "enabled":      true,
     "uxf_filename": "Action.uxf",
     "filename":     "Action.c",
     "type":         "test",
-    "object_ptr":   "pTest"
+    "object_ptr":   "pTest",
+    "debug":        true
   },
   {
     "enabled":      true,
     "uxf_filename": "Poll.uxf",
     "filename":     "Poll.c",
     "type":         "test",
-    "object_ptr":   "pTest"
+    "object_ptr":   "pTest",
+    "debug":        true
   },
   {
     "enabled":      true,
@@ -27,6 +30,7 @@
     "type":         "test",
     "object_ptr":   "pTest",
     "thread_events": ["evTestEvent"],
-    "queue_size":   3
+    "queue_size":   3,
+    "debug":        true
   }
 ]

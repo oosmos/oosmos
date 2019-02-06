@@ -5,7 +5,8 @@
     "filename":     "Motion.c",
     "type":         "motion",
     "object_ptr":   "pMotion",
-    "queue_size":   3
+    "queue_size":   3,
+    "debug":        true
   },
   {
     "enabled":      true,
@@ -13,7 +14,8 @@
     "filename":     "Completion.c",
     "type":         "test",
     "object_ptr":   "pTest",
-    "queue_size":   3
+    "queue_size":   3,
+    "debug":        true
   },
   {
     "enabled":      true,
@@ -21,6 +23,7 @@
     "filename":     "EnterExit.c",
     "type":         "test",
     "object_ptr":   "pTest",
-    "queue_size":   3
+    "queue_size":   3,
+    "debug":        true
   }
 ]

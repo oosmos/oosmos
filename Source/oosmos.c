@@ -970,11 +970,11 @@ extern void OOSMOS_SubscriberListAdd(oosmos_sSubscriberList * pSubscriber, size_
 }
 
 #ifdef oosmos_DEBUG
-  extern void OOSMOS_Debug(oosmos_sStateMachine * pStateMachine, bool Debug, const char * (*pEventNameConverter)(int))
+  extern void OOSMOS_Debug(oosmos_sStateMachine * pStateMachine, const char * (*pEventNameConverter)(int))
   {
     oosmos_POINTER_GUARD(pStateMachine);
 
-    pStateMachine->m_Debug = Debug;
+    pStateMachine->m_Debug = true;
     pStateMachine->m_pEventNameConverter = pEventNameConverter;
   }
 #endif

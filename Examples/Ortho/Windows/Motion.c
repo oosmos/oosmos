@@ -34,6 +34,20 @@ enum {
   evUpperLimitSwitchClosed = 6,
   evUpperLimitSwitchOpen = 7
 };
+
+static const char * EventNames(int EventCode)
+{
+  switch (EventCode) {
+    case evDownCommand: return "evDownCommand";
+    case evLowerLimitSwitchClosed: return "evLowerLimitSwitchClosed";
+    case evLowerLimitSwitchOpen: return "evLowerLimitSwitchOpen";
+    case evStopCommand: return "evStopCommand";
+    case evUpCommand: return "evUpCommand";
+    case evUpperLimitSwitchClosed: return "evUpperLimitSwitchClosed";
+    case evUpperLimitSwitchOpen: return "evUpperLimitSwitchOpen";
+    default: return "--No Event Name--";
+  }
+}
 //<<<EVENTS
 
 typedef struct motionTag motion;
@@ -62,24 +76,6 @@ struct motionTag
 };
 
 static int Failures = 0;
-
-#define NameCase(Name) case Name: return #Name;
-
-static const char * EventNames(int EventCode)
-{
-  switch(EventCode) {
-    NameCase(evUpCommand)
-    NameCase(evDownCommand)
-    NameCase(evStopCommand)
-
-    NameCase(evUpperLimitSwitchClosed)
-    NameCase(evUpperLimitSwitchOpen)
-
-    NameCase(evLowerLimitSwitchClosed)
-    NameCase(evLowerLimitSwitchOpen)
-    default: return "--No Event Name--";
-  }
-}
 
 static bool IsUpperLimitSwitchOpen(void) {
   return true;
@@ -211,11 +207,9 @@ static motion * motionNew(void)
           oosmos_LeafInit(pMotion, Active_Region2_Moving_Up_State, Active_Region2_Moving_State, Active_Region2_Moving_Up_State_Code);
           oosmos_LeafInit(pMotion, Active_Region2_Moving_Down_State, Active_Region2_Moving_State, Active_Region2_Moving_Down_State_Code);
         oosmos_LeafInit(pMotion, Active_Region2_Stopped_State, Active_Region2_State, Active_Region2_Stopped_State_Code);
-//<<<INIT
 
-#if 1
-  oosmos_Debug(pMotion, true, EventNames);
-#endif
+  oosmos_Debug(pMotion, EventNames);
+//<<<INIT
 
   return pMotion;
 }

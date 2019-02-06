@@ -37,6 +37,15 @@ enum {
   evClosed = 1,
   evOpen = 2
 };
+
+static const char * EventNames(int EventCode)
+{
+  switch (EventCode) {
+    case evClosed: return "evClosed";
+    case evOpen: return "evOpen";
+    default: return "--No Event Name--";
+  }
+}
 //<<<EVENTS
 
 typedef union {
@@ -77,6 +86,8 @@ extern switchtest * switchtestNew(pin * pPin)
 //>>>INIT
   oosmos_StateMachineInit(pSwitchTest, ROOT, NULL, Idle_State);
     oosmos_LeafInit(pSwitchTest, Idle_State, ROOT, Idle_State_Code);
+
+  oosmos_Debug(pSwitchTest, EventNames);
 //<<<INIT
 
   sw * pSwitch = swNew(pPin);

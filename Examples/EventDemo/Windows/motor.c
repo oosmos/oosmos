@@ -30,6 +30,15 @@ enum {
   evStart = 1,
   evStop = 2
 };
+
+static const char * EventNames(int EventCode)
+{
+  switch (EventCode) {
+    case evStart: return "evStart";
+    case evStop: return "evStop";
+    default: return "--No Event Name--";
+  }
+}
 //<<<EVENTS
 
 typedef union {
@@ -47,19 +56,6 @@ struct motorTag
 
 #ifndef motorMAX
 #define motorMAX 3
-#endif
-
-#ifdef oosmos_DEBUG
-  #define NameCase(Name) case Name: return #Name;
-
-  static const char * EventNames(int EventCode)
-  {
-    switch (EventCode) {
-      NameCase(evStart)
-      NameCase(evStop)
-      default: return "--No Event Name--";
-    }
-  }
 #endif
 
 static void MovingThread(oosmos_sState * pState)
@@ -112,9 +108,9 @@ extern motor * motorNew(void)
   oosmos_StateMachineInit(pMotor, ROOT, NULL, Idle_State);
     oosmos_LeafInit(pMotor, Idle_State, ROOT, Idle_State_Code);
     oosmos_LeafInit(pMotor, Moving_State, ROOT, Moving_State_Code);
-//<<<INIT
 
-  oosmos_Debug(pMotor, true, EventNames);
+  oosmos_Debug(pMotor, EventNames);
+//<<<INIT
 
   return pMotor;
 }

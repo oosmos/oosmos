@@ -90,7 +90,5 @@ extern toggle * toggleNew(pin * pPin, uint32_t TimeOnMS, uint32_t TimeOffMS)
   pToggle->m_TimeOnMS  = TimeOnMS;
   pToggle->m_TimeOffMS = TimeOffMS;
 
-  oosmos_Debug(&pToggle->StateMachine, true, NULL);
-
   return pToggle;
 }

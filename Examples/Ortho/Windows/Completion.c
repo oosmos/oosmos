@@ -30,6 +30,16 @@ enum {
   evB = 2,
   evStop = 3
 };
+
+static const char * EventNames(int EventCode)
+{
+  switch (EventCode) {
+    case evA: return "evA";
+    case evB: return "evB";
+    case evStop: return "evStop";
+    default: return "--No Event Name--";
+  }
+}
 //<<<EVENTS
 
 typedef struct testTag test;
@@ -54,20 +64,6 @@ struct testTag
     oosmos_sLeaf Complete_State;
 //<<<DECL
 };
-
-#ifdef oosmos_DEBUG
-  #define NameCase(Name) case Name: return #Name;
-
-  static const char * EventNames(int EventCode)
-  {
-    switch(EventCode) {
-      NameCase(evA)
-      NameCase(evB)
-      NameCase(evStop)
-      default: return "--No Event Name--";
-    }
-  }
-#endif
 
 //>>>CODE
 static bool Ortho_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
@@ -165,9 +161,9 @@ static test * testNew(void)
         oosmos_LeafInit(pTest, Ortho_Region2_Moving_State, Ortho_Region2_State, Ortho_Region2_Moving_State_Code);
         oosmos_FinalInit(pTest, Ortho_Region2_Final2_State, Ortho_Region2_State, NULL);
     oosmos_LeafInit(pTest, Complete_State, ROOT, Complete_State_Code);
-//<<<INIT
 
-  oosmos_Debug(pTest, true, EventNames);
+  oosmos_Debug(pTest, EventNames);
+//<<<INIT
 
   return pTest;
 }

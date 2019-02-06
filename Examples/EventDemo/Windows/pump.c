@@ -34,6 +34,17 @@ enum {
   evStop = 3,
   evUpPressed = 4
 };
+
+static const char * EventNames(int EventCode)
+{
+  switch (EventCode) {
+    case evDownPressed: return "evDownPressed";
+    case evStart: return "evStart";
+    case evStop: return "evStop";
+    case evUpPressed: return "evUpPressed";
+    default: return "--No Event Name--";
+  }
+}
 //<<<EVENTS
 
 typedef union {
@@ -53,21 +64,6 @@ struct pumpTag
 
 #ifndef pumpMAX
 #define pumpMAX 3
-#endif
-
-#ifdef oosmos_DEBUG
-  #define NameCase(Name) case Name: return #Name;
-
-  static const char * EventNames(int EventCode)
-  {
-    switch (EventCode) {
-      NameCase(evStart)
-      NameCase(evStop)
-      NameCase(evUpPressed)
-      NameCase(evDownPressed)
-      default: return "--No Event Name--";
-    }
-  }
 #endif
 
 static void Thread(pump * pPump, oosmos_sState * pState)
@@ -133,9 +129,9 @@ extern pump * pumpNew(sw * pUpSwitch, sw * pDownSwitch)
   oosmos_StateMachineInit(pPump, ROOT, NULL, Idle_State);
     oosmos_LeafInit(pPump, Idle_State, ROOT, Idle_State_Code);
     oosmos_LeafInit(pPump, Pumping_State, ROOT, Pumping_State_Code);
-//<<<INIT
 
-  oosmos_Debug(pPump, true, EventNames);
+  oosmos_Debug(pPump, EventNames);
+//<<<INIT
 
   return pPump;
 }

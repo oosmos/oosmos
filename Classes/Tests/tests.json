@@ -6,7 +6,8 @@
     "type":          "threadtest",
     "object_ptr":    "pThreadTest",
     "thread_events":  [ "evDone" ],
-    "queue_size":    3
+    "queue_size":    3,
+    "debug":         true
   },
   {
     "enabled":       true,
@@ -15,6 +16,7 @@
     "type":          "switchtest",
     "object_ptr":    "pSwitchTest",
     "thread_events":  [ "evOpen", "evClosed" ],
-    "queue_size":    3
+    "queue_size":    3,
+    "debug":         true
   }
 ]

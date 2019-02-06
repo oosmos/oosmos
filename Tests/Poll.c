@@ -298,11 +298,9 @@ static test * testNew(void)
             oosmos_LeafInit(pTest, Ortho_Region2_A2_B2_C2_State, Ortho_Region2_A2_B2_State, Ortho_Region2_A2_B2_C2_State_Code);
     oosmos_LeafInit(pTest, TestNullTransitionWithPoll_State, ROOT, TestNullTransitionWithPoll_State_Code);
     oosmos_LeafInit(pTest, Done_State, ROOT, Done_State_Code);
-//<<<INIT
 
-#if 1
-  oosmos_Debug(pTest, true, NULL);
-#endif
+  oosmos_Debug(pTest, NULL);
+//<<<INIT
 
   pTest->m_Ortho    = 0;
 

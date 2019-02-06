@@ -125,9 +125,9 @@ static test * testNew(void)
       oosmos_LeafInit(pTest, A_Right_State, A_State, A_Right_State_Code);
       oosmos_FinalInit(pTest, A_Final1_State, A_State, NULL);
     oosmos_LeafInit(pTest, B_State, ROOT, NULL);
-//<<<INIT
 
-  oosmos_Debug(pTest, true, NULL);
+  oosmos_Debug(pTest, NULL);
+//<<<INIT
 
   return pTest;
 }

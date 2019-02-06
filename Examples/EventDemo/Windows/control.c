@@ -42,6 +42,20 @@ enum {
   evStopPressed = 6,
   evStopReleased = 7
 };
+
+static const char * EventNames(int EventCode)
+{
+  switch (EventCode) {
+    case evMovePressed: return "evMovePressed";
+    case evOption1Pressed: return "evOption1Pressed";
+    case evOption2Pressed: return "evOption2Pressed";
+    case evPumpPressed: return "evPumpPressed";
+    case evQuitPressed: return "evQuitPressed";
+    case evStopPressed: return "evStopPressed";
+    case evStopReleased: return "evStopReleased";
+    default: return "--No Event Name--";
+  }
+}
 //<<<EVENTS
 
 typedef union {
@@ -69,24 +83,6 @@ struct controlTag
     oosmos_sLeaf Terminated_State;
 //<<<DECL
 };
-
-#ifdef oosmos_DEBUG
-  #define NameCase(Name) case Name: return #Name;
-
-  static const char * EventNames(int EventCode)
-  {
-    switch (EventCode) {
-      NameCase(evStopPressed)
-      NameCase(evStopReleased)
-      NameCase(evMovePressed)
-      NameCase(evPumpPressed)
-      NameCase(evQuitPressed)
-      NameCase(evOption1Pressed)
-      NameCase(evOption2Pressed)
-      default: return "--No Event Name--";
-    }
-  }
-#endif
 
 static void ToggleOption1(control * pControl)
 {
@@ -289,9 +285,9 @@ extern control * controlNew(void)
         oosmos_LeafInit(pControl, Operational_Region2_Pumping_State, Operational_Region2_State, Operational_Region2_Pumping_State_Code);
     oosmos_LeafInit(pControl, StopPressed_State, ROOT, StopPressed_State_Code);
     oosmos_LeafInit(pControl, Terminated_State, ROOT, Terminated_State_Code);
-//<<<INIT
 
-  oosmos_Debug(pControl, true, EventNames);
+  oosmos_Debug(pControl, EventNames);
+//<<<INIT
 
   return pControl;
 }

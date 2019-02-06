@@ -5,7 +5,8 @@
     "filename":     "control.c",
     "type":         "control",
     "object_ptr":   "pControl",
-    "queue_size":   3
+    "queue_size":   3,
+    "debug":        true
   },
   {
     "enabled":      true,
@@ -13,7 +14,8 @@
     "filename":     "motor.c",
     "type":         "motor",
     "object_ptr":   "pMotor",
-    "queue_size":   3
+    "queue_size":   3,
+    "debug":        true
   },
   {
     "enabled":      true,
@@ -21,6 +23,7 @@
     "filename":     "pump.c",
     "type":         "pump",
     "object_ptr":   "pPump",
-    "queue_size":   3
+    "queue_size":   3,
+    "debug":        true
   }
 ]

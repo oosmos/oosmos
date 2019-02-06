@@ -101,9 +101,9 @@ static test * testNew(void)
     oosmos_LeafInit(pTest, Seconds_State, ROOT, Seconds_State_Code);
     oosmos_LeafInit(pTest, US_State, ROOT, US_State_Code);
     oosmos_LeafInit(pTest, Done_State, ROOT, NULL);
-//<<<INIT
 
-  oosmos_Debug(pTest, true, NULL);
+  oosmos_Debug(pTest, NULL);
+//<<<INIT
 
   pTest->m_TimeMS = 1000;
 

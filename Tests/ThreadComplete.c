@@ -94,9 +94,9 @@ static test * testNew(void)
   oosmos_StateMachineInitNoQueue(pTest, ROOT, NULL, Running_State);
     oosmos_LeafInit(pTest, Running_State, ROOT, Running_State_Code);
     oosmos_LeafInit(pTest, Complete_State, ROOT, Complete_State_Code);
-//<<<INIT
 
-  oosmos_Debug(pTest, true, NULL);
+  oosmos_Debug(pTest, NULL);
+//<<<INIT
 
   return pTest;
 }

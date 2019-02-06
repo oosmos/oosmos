@@ -409,12 +409,12 @@ extern void OOSMOS_PushEventToStateMachine(const oosmos_sStateMachine * pStateMa
   OOSMOS_PushEventToStateMachine(&((pObject)->ROOT), &(Event), sizeof(Event))
 //--------
 #ifdef oosmos_DEBUG
-  #define oosmos_Debug(pObject, Debug, pEventName) \
-    OOSMOS_Debug(&(pObject)->ROOT, Debug, pEventName)
+  #define oosmos_Debug(pObject, pEventName) \
+    OOSMOS_Debug(&(pObject)->ROOT, pEventName)
 
-  extern void OOSMOS_Debug(oosmos_sStateMachine * pStateMachine, bool Debug, const char * (*pEventName)(int));
+  extern void OOSMOS_Debug(oosmos_sStateMachine * pStateMachine, const char * (*pEventName)(int));
 #else
-  #define oosmos_Debug(pStateMachine, Debug, pEventName)
+  #define oosmos_Debug(pStateMachine, pEventName)
 #endif
 //--------
 

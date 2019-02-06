@@ -28,6 +28,14 @@
 enum {
   evTestEvent = 1
 };
+
+static const char * EventNames(int EventCode)
+{
+  switch (EventCode) {
+    case evTestEvent: return "evTestEvent";
+    default: return "--No Event Name--";
+  }
+}
 //<<<EVENTS
 
 typedef struct {
@@ -145,11 +153,9 @@ static test * testNew(void)
       oosmos_OrthoRegionInit(pTest, A1_Region2_State, A1_State, A1_Region2_EventDriver_State, NULL);
         oosmos_LeafInit(pTest, A1_Region2_EventDriver_State, A1_Region2_State, A1_Region2_EventDriver_State_Code);
     oosmos_LeafInit(pTest, Done_State, ROOT, Done_State_Code);
-//<<<INIT
 
-#if 1
-  oosmos_Debug(pTest, true, NULL);
-#endif
+  oosmos_Debug(pTest, NULL);
+//<<<INIT
 
   return pTest;
 }

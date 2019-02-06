@@ -27,11 +27,6 @@
 #include <stdbool.h>
 
 //
-// Change the following #undef to #define to enable debug output.
-//
-#undef threadtestDEBUG
-
-//
 // Adjust this in order to preallocate all 'threadtest' objects.
 // Use 1 for a memory constrained environment.
 //
@@ -46,21 +41,18 @@ enum {
   evTimedOut1 = 3,
   evTimedOut2 = 4
 };
-//<<<EVENTS
 
-#ifdef threadtestDEBUG
-  #define NameCase(Name) case Name: return #Name;
-
-  static const char * EventNames(int EventCode)
-  {
-    switch(EventCode) {
-      NameCase(evDone)
-      NameCase(evTimedOut)
-      NameCase(evPrint)
-      default: return "--No Event Name--";
-    }
+static const char * EventNames(int EventCode)
+{
+  switch (EventCode) {
+    case evDone: return "evDone";
+    case evPrint: return "evPrint";
+    case evTimedOut1: return "evTimedOut1";
+    case evTimedOut2: return "evTimedOut2";
+    default: return "--No Event Name--";
   }
-#endif
+}
+//<<<EVENTS
 
 typedef union {
   oosmos_sEvent Base;
@@ -489,11 +481,9 @@ extern threadtest * threadtestNew(void)
         oosmos_LeafInit(pThreadTest, Running_Region1_WaitEvent_TimeoutMS_Exit_State, Running_Region1_State, Running_Region1_WaitEvent_TimeoutMS_Exit_State_Code);
       oosmos_OrthoRegionInit(pThreadTest, Running_Region2_State, Running_State, Running_Region2_Printing_State, NULL);
         oosmos_LeafInit(pThreadTest, Running_Region2_Printing_State, Running_Region2_State, Running_Region2_Printing_State_Code);
-//<<<INIT
 
-#ifdef threadtestDEBUG
-  oosmos_Debug(pThreadTest, true, EventNames);
-#endif
+  oosmos_Debug(pThreadTest, EventNames);
+//<<<INIT
 
   return pThreadTest;
 }
