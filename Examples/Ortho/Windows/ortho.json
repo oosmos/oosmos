@@ -25,5 +25,14 @@
     "object_ptr":   "pTest",
     "queue_size":   3,
     "debug":        true
+  },
+  {
+    "enabled":      true,
+    "uxf_filename": "OrthoThreads.uxf",
+    "filename":     "OrthoThreads.c",
+    "type":         "ortho",
+    "object_ptr":   "pOrtho",
+    "queue_size":   0,
+    "debug":        true
   }
 ]
