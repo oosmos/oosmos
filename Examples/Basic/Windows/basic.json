@@ -16,5 +16,14 @@
     "object_ptr":   "pTest",
     "queue_size":   0,
     "debug":        true
+  },
+  {
+    "enabled":      true,
+    "uxf_filename": "AllEvents.uxf",
+    "filename":     "AllEvents.c",
+    "type":         "all",
+    "object_ptr":   "pAll",
+    "queue_size":   3,
+    "debug":        true
   }
 ]
