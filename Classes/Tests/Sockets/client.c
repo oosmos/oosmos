@@ -57,15 +57,11 @@ static void ClientThread(client * pClient, oosmos_sState * pState, uint32_t IP_H
       size_t BytesReceived;
 
       printf("%p: Sending...\n", (void *) pClient->m_pSock);
-      oosmos_ThreadWaitCond(
-        sockSend(pClient->m_pSock, "123456", sizeof("123456"))
-      );
+      oosmos_ThreadWaitCond(sockSend(pClient->m_pSock, "123456", sizeof("123456")));
 
       printf("%p: Waiting for incoming data...\n", (void *) pClient->m_pSock);
 
-      oosmos_ThreadWaitCond(
-        sockReceive(pClient->m_pSock, pClient->m_Buffer, sizeof(pClient->m_Buffer), &BytesReceived)
-      );
+      oosmos_ThreadWaitCond(sockReceive(pClient->m_pSock, pClient->m_Buffer, sizeof(pClient->m_Buffer), &BytesReceived));
       printf("%p: Client side Received '%s', BytesReceived: %u\n", (void *) pClient->m_pSock, pClient->m_Buffer, (unsigned) BytesReceived);
 
     }

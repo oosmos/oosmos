@@ -47,14 +47,10 @@ static void IncomingThread(server * pServer, oosmos_sState * pState)
   oosmos_ThreadBegin();
     for (;;) {
       printf("Waiting for incoming data...\n");
-      oosmos_ThreadWaitCond(
-        sockReceive(pServer->m_pSock, pServer->m_Buffer, sizeof(pServer->m_Buffer), &pServer->m_BytesReceived)
-      );
+      oosmos_ThreadWaitCond(sockReceive(pServer->m_pSock, pServer->m_Buffer, sizeof(pServer->m_Buffer), &pServer->m_BytesReceived));
       printf("Server side, String: '%s', BytesReceived: %u\n", pServer->m_Buffer, (unsigned) pServer->m_BytesReceived);
 
-      oosmos_ThreadWaitCond(
-        sockSend(pServer->m_pSock, pServer->m_Buffer, pServer->m_BytesReceived)
-      );
+      oosmos_ThreadWaitCond(sockSend(pServer->m_pSock, pServer->m_Buffer, pServer->m_BytesReceived));
     }
   oosmos_ThreadEnd();
 }

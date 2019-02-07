@@ -44,9 +44,7 @@ static void ListeningThread(listener * pListener, oosmos_sState * pState)
 
       printf("Waiting for incoming connections...\n");
 
-      oosmos_ThreadWaitCond(
-        sockAccepted(pListener->m_pSock, &pNewSock)
-      );
+      oosmos_ThreadWaitCond(sockAccepted(pListener->m_pSock, &pNewSock));
       pListener->m_pAcceptedFunc(pNewSock);
     }
   oosmos_ThreadEnd();
