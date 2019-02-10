@@ -29,7 +29,7 @@
 
 enum
 {
-  ClosedEvent = 1,
+  ClosedEvent = 1
 };
 
 struct serverTag

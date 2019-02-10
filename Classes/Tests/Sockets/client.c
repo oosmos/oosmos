@@ -30,7 +30,7 @@
 enum
 {
   ConnectionTimeoutEvent = 1,
-  ClosedEvent,
+  ClosedEvent
 };
 
 struct clientTag
@@ -47,9 +47,7 @@ struct clientTag
 static void ClientThread(client * pClient, oosmos_sState * pState, uint32_t IP_HostByteOrder)
 {
   oosmos_ThreadBegin();
-    oosmos_ThreadWaitCond_TimeoutMS_Event(2000, ConnectionTimeoutEvent,
-      sockConnect(pClient->m_pSock, IP_HostByteOrder, pClient->m_Port)
-    );
+    oosmos_ThreadWaitCond_TimeoutMS_Event(2000, ConnectionTimeoutEvent, sockConnect(pClient->m_pSock, IP_HostByteOrder, pClient->m_Port));
 
     printf("%p: CONNECTED\n", (void *) pClient->m_pSock);
 
@@ -63,7 +61,6 @@ static void ClientThread(client * pClient, oosmos_sState * pState, uint32_t IP_H
 
       oosmos_ThreadWaitCond(sockReceive(pClient->m_pSock, pClient->m_Buffer, sizeof(pClient->m_Buffer), &BytesReceived));
       printf("%p: Client side Received '%s', BytesReceived: %u\n", (void *) pClient->m_pSock, pClient->m_Buffer, (unsigned) BytesReceived);
-
     }
   oosmos_ThreadEnd();
 }
