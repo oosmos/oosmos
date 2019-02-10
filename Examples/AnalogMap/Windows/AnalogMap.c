@@ -26,9 +26,9 @@
 
 #define ITERATIONS 25
 
-/*lint -e728 Suppress "Not explicitely initialized" */
+/*lint -e728 Suppress "Not explicitly initialized" */
 static int FastDistribution[ITERATIONS+1];
-/*lint -e728 Suppress "Not explicitely initialized" */
+/*lint -e728 Suppress "Not explicitly initialized" */
 static int AccurateDistribution[ITERATIONS+1];
 
 static void TestAccurate(float Value, float InMin, float InMax, float OutMin, float OutMax)
