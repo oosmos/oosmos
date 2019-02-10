@@ -66,7 +66,7 @@ struct pumpTag
 #define pumpMAX 3
 #endif
 
-static void Thread(pump * pPump, oosmos_sState * pState)
+static void Thread(const pump * pPump, oosmos_sState * pState)
 {
   oosmos_ThreadBegin();
     for (;;) {

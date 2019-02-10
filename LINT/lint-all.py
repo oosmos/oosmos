@@ -45,8 +45,8 @@ Lint('pump.c',    'oosmos-user.lnt')
 Lint('motor.c',   'oosmos-user.lnt')
 Lint('main.c',    'oosmos-user.lnt')
 
-DIR = 'Examples/Interactive/Windows'
-Lint('Interactive.c',    'oosmos-user.lnt')
+DIR = 'Examples/NestedStateThreads/Windows'
+Lint('NestedStateThreads.c',    'oosmos-user.lnt')
 
 DIR = 'Examples/Thread/Windows'
 
