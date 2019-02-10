@@ -326,11 +326,11 @@ extern void OOSMOS_StateMachineInit(const char * pFileName, const char * pName, 
 
 #define oosmos_StateMachineInit(pObject, StateMachine, Parent, Default)\
         oosmos_QueueConstruct(&(pObject)->m_EventQueue, (pObject)->m_EventQueueData) \
-        OOSMOS_StateMachineInit(__FILE__, OOSMOS_xstr(StateMachine), &(pObject)->StateMachine, (oosmos_sState*) &(pObject)->Default, &(pObject)->m_EventQueue,\
+        OOSMOS_StateMachineInit(OOSMOS_FILE, OOSMOS_xstr(StateMachine), &(pObject)->StateMachine, (oosmos_sState*) &(pObject)->Default, &(pObject)->m_EventQueue,\
                  &(pObject)->m_CurrentEvent, sizeof((pObject)->m_EventQueueData[0]), (pObject))
 
 #define oosmos_StateMachineInitNoQueue(pObject, StateMachine, Parent, Default)\
-        OOSMOS_StateMachineInit(__FILE__, OOSMOS_xstr(StateMachine), &(pObject)->StateMachine, (oosmos_sState*) &(pObject)->Default, NULL, NULL, 0, (pObject))
+        OOSMOS_StateMachineInit(OOSMOS_FILE, OOSMOS_xstr(StateMachine), &(pObject)->StateMachine, (oosmos_sState*) &(pObject)->Default, NULL, NULL, 0, (pObject))
 //--------
 extern void OOSMOS_CompositeInit(const char * pName, oosmos_sComposite *pComposite,
                        oosmos_sState *pParent, oosmos_sState * pDefault, OOSMOS_tCode pCode);
