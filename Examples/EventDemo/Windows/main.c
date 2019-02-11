@@ -25,7 +25,7 @@
 
 extern int main(void)
 {
-  (void)controlNew();
+  (void) controlNew();
 
   for (;;) {
     oosmos_RunStateMachines();

@@ -112,7 +112,7 @@ static void Init(void)
     WSADATA wsaData;
 
     WORD wVersionRequested = MAKEWORD(1, 1);
-    (void)WSAStartup(wVersionRequested, &wsaData);
+    (void) WSAStartup(wVersionRequested, &wsaData);
     Started = true;
   }
 #else
@@ -179,7 +179,7 @@ static sock * New(sock_tSocket Socket)
   //
   {
     unsigned long IsNonBlocking = 1;
-    (void)IOCTL(Socket, FIONBIO, &IsNonBlocking);
+    (void) IOCTL(Socket, FIONBIO, &IsNonBlocking);
   }
 
   pSock->m_Socket         = Socket;
@@ -242,7 +242,7 @@ extern bool sockListen(sock * pSock, int Port, int Backlog)
     return false;
   }
 
-  (void)listen(pSock->m_Socket, Backlog);
+  (void) listen(pSock->m_Socket, Backlog);
   return true;
 }
 
