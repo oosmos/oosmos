@@ -139,11 +139,6 @@ extern matrix * matrixNew(int Rows, int Columns, ...)
 {
   oosmos_Allocate(pMatrix, matrix, matrixMAX, NULL);
 
-//>>>INIT
-  oosmos_StateMachineInitNoQueue(pMatrix, ROOT, NULL, Running_State);
-    oosmos_LeafInit(pMatrix, Running_State, ROOT, Running_State_Code);
-//<<<INIT
-
   pMatrix->m_Rows    = 0;
   pMatrix->m_Columns = 0;
 
@@ -155,6 +150,11 @@ extern matrix * matrixNew(int Rows, int Columns, ...)
       pMatrix->m_pSwitch[RowIndex][ColumnIndex] = NULL;
     }
   }
+
+//>>>INIT
+  oosmos_StateMachineInitNoQueue(pMatrix, ROOT, NULL, Running_State);
+    oosmos_LeafInit(pMatrix, Running_State, ROOT, Running_State_Code);
+//<<<INIT
 
   va_list ArgList;
   va_start(ArgList, Columns);
@@ -181,7 +181,9 @@ extern void matrixAssignSwitch(matrix * pMatrix, sw * pSwitch, int Row, int Colu
   // Check if this Row/Column slot has already been assigned.
   //
   if (pMatrix->m_pSwitch[RowIndex][ColumnIndex] != NULL) {
-    oosmos_FOREVER();
+    for (;;) {
+      continue;
+    }
   }
 
   pMatrix->m_pSwitch[RowIndex][ColumnIndex] = pSwitch;
