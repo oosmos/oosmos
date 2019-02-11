@@ -2,94 +2,19 @@
 <diagram program="umlet" version="14.3.0">
   <zoom_level>10</zoom_level>
   <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>80</x>
-      <y>30</y>
-      <w>220</w>
-      <h>70</h>
-    </coordinates>
-    <panel_attributes>/pMatrix-&gt;m_CurrentRowIndex = 0;
-lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>80</x>
-      <y>180</y>
-      <w>200</w>
-      <h>100</h>
-    </coordinates>
-    <panel_attributes>lt=-&gt;
-TIMEOUT(RowOnSettleTimeUS)/
-InterrogateColumns(pMatrix);</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;80.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>300</x>
-      <y>180</y>
-      <w>200</w>
-      <h>100</h>
-    </coordinates>
-    <panel_attributes>lt=-&gt;
-TIMEOUT(RowOffSettleTimeUS)/
-Advance(pMatrix);</panel_attributes>
-    <additional_attributes>10.0;80.0;10.0;10.0</additional_attributes>
-  </element>
-  <element>
     <id>UMLState</id>
     <coordinates>
-      <x>30</x>
-      <y>260</y>
-      <w>380</w>
-      <h>110</h>
-    </coordinates>
-    <panel_attributes>RowTurningOff
---
-ENTER:
-  const int RowIndex = pMatrix-&gt;m_CurrentRowIndex;
-  pin * pOutputPin   = pMatrix-&gt;m_pRowPins[RowIndex];
- 
-  if (pOutputPin != NULL) {
-    pinOff(pOutputPin);
-  }
-valign=top
-</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>UMLState</id>
-    <coordinates>
-      <x>30</x>
-      <y>80</y>
-      <w>380</w>
-      <h>110</h>
-    </coordinates>
-    <panel_attributes>RowTurningOn
---
-ENTER:
-  const int RowIndex = pMatrix-&gt;m_CurrentRowIndex;
-  pin * pOutputPin   = pMatrix-&gt;m_pRowPins[RowIndex];
- 
-  if (pOutputPin != NULL) {
-    pinOn(pOutputPin);
-  }
-valign=top
-</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>UMLSpecialState</id>
-    <coordinates>
-      <x>80</x>
+      <x>20</x>
       <y>20</y>
-      <w>20</w>
-      <h>20</h>
+      <w>380</w>
+      <h>110</h>
     </coordinates>
-    <panel_attributes>type=initial</panel_attributes>
+    <panel_attributes>Running
+--
+POLL:
+  Thread(pMatrix, pState);
+valign=top
+</panel_attributes>
     <additional_attributes/>
   </element>
 </diagram>
