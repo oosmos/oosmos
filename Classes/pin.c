@@ -456,6 +456,3 @@ extern pin * pinNew_Debounce(GPIO_TypeDef* Port, const uint16_t Bit, const pin_e
 #else
   #error pin.c: Unsupported platform.
 #endif
-
-
-
