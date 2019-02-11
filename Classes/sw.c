@@ -122,22 +122,25 @@ extern void swRunStateMachine(void * pObject)
   sw * pSwitch = (sw *) pObject;
 
   switch (pSwitch->m_State) {
-    case Open_State:
+    case Open_State: {
       if (pinIsOn(pSwitch->m_pPin)) {
         pSwitch->m_State = Closed_State;
         oosmos_SubscriberListNotify(pSwitch->m_CloseEvent);
       }
 
       break;
-    case Closed_State:
+    }
+    case Closed_State: {
       if (pinIsOff(pSwitch->m_pPin)) {
         pSwitch->m_State = Open_State;
         oosmos_SubscriberListNotify(pSwitch->m_OpenEvent);
       }
 
       break;
-    case Unknown_State:
+    }
+    case Unknown_State: {
       pSwitch->m_State = pinIsOn(pSwitch->m_pPin) ? Closed_State : Open_State;
       break;
+    }
   }
 }
