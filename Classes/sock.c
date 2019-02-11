@@ -214,8 +214,9 @@ extern uint32_t sockDotToIP_HostByteOrder(const char * pDot)
 extern bool sockIsIpAddress(const char * pString)
 {
   while (*pString != '\0') {
-    if (!(*pString == '.' || isdigit(*pString)))
+    if (!(*pString == '.' || isdigit(*pString))) {
       return false;
+    }
 
     pString++;
   }
