@@ -23,8 +23,6 @@
 #ifndef prt_h
 #define prt_h
 
-#include <stdbool.h>
-
 #if defined(ARDUINO)
   extern unsigned long prtArduinoBaudRate;
 #endif

@@ -47,8 +47,7 @@ struct matrixTag
 {
 //>>>DECL
   oosmos_sStateMachineNoQueue(ROOT);
-    oosmos_sLeaf RowTurningOn_State;
-    oosmos_sLeaf RowTurningOff_State;
+    oosmos_sLeaf Running_State;
 //<<<DECL
 
   pin * m_pRowPins[matrixMAX_ROWS];
@@ -120,79 +119,15 @@ static void AddColumn(matrix * pMatrix, const int Column, pin * pPin)
   }
 }
 
-static void Advance(matrix * pMatrix)
-{
-  const int RowIndex = pMatrix->m_CurrentRowIndex;
-
-  if (RowIndex < (pMatrix->m_Rows)-1) {
-    pMatrix->m_CurrentRowIndex = RowIndex+1;
-  }
-  else {
-    pMatrix->m_CurrentRowIndex = 0;
-  }
-}
-
 //>>>CODE
-static void OOSMOS_Action1(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
-{
-  matrix * pMatrix = (matrix *) pObject;
-
-  InterrogateColumns(pMatrix);
-  
-  oosmos_UNUSED(pState);
-  oosmos_UNUSED(pEvent);
-}
-
-static bool RowTurningOn_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
+static bool Running_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   matrix * pMatrix = (matrix *) pObject;
 
   switch (oosmos_EventCode(pEvent)) {
-    case oosmos_ENTER: {
-      const int RowIndex = pMatrix->m_CurrentRowIndex;
-      pin * pOutputPin   = pMatrix->m_pRowPins[RowIndex];
-      if (pOutputPin != NULL) {
-        pinOn(pOutputPin);
-      }
-      return oosmos_StateTimeoutMS(pState, (uint32_t) RowOnSettleTimeUS);
-    }
-    case oosmos_DEFAULT: {
-      pMatrix->m_CurrentRowIndex = 0;
+    case oosmos_POLL: {
+      Thread(pMatrix, pState);
       return true;
-    }
-    case oosmos_TIMEOUT: {
-      return oosmos_TransitionAction(pMatrix, pState, RowTurningOff_State, pEvent, OOSMOS_Action1);
-    }
-  }
-
-  return false;
-}
-
-static void OOSMOS_Action2(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
-{
-  matrix * pMatrix = (matrix *) pObject;
-
-  Advance(pMatrix);
-  
-  oosmos_UNUSED(pState);
-  oosmos_UNUSED(pEvent);
-}
-
-static bool RowTurningOff_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
-{
-  matrix * pMatrix = (matrix *) pObject;
-
-  switch (oosmos_EventCode(pEvent)) {
-    case oosmos_ENTER: {
-      const int RowIndex = pMatrix->m_CurrentRowIndex;
-      pin * pOutputPin   = pMatrix->m_pRowPins[RowIndex];
-      if (pOutputPin != NULL) {
-        pinOff(pOutputPin);
-      }
-      return oosmos_StateTimeoutMS(pState, (uint32_t) RowOffSettleTimeUS);
-    }
-    case oosmos_TIMEOUT: {
-      return oosmos_TransitionAction(pMatrix, pState, RowTurningOn_State, pEvent, OOSMOS_Action2);
     }
   }
 
@@ -217,9 +152,8 @@ extern matrix * matrixNew(int Rows, int Columns, ...)
   }
 
 //>>>INIT
-  oosmos_StateMachineInitNoQueue(pMatrix, ROOT, NULL, RowTurningOn_State);
-    oosmos_LeafInit(pMatrix, RowTurningOn_State, ROOT, RowTurningOn_State_Code);
-    oosmos_LeafInit(pMatrix, RowTurningOff_State, ROOT, RowTurningOff_State_Code);
+  oosmos_StateMachineInitNoQueue(pMatrix, ROOT, NULL, Running_State);
+    oosmos_LeafInit(pMatrix, Running_State, ROOT, Running_State_Code);
 //<<<INIT
 
   va_list ArgList;
@@ -247,7 +181,9 @@ extern void matrixAssignSwitch(matrix * pMatrix, sw * pSwitch, int Row, int Colu
   // Check if this Row/Column slot has already been assigned.
   //
   if (pMatrix->m_pSwitch[RowIndex][ColumnIndex] != NULL) {
-    oosmos_FOREVER();
+    for (;;) {
+      continue;
+    }
   }
 
   pMatrix->m_pSwitch[RowIndex][ColumnIndex] = pSwitch;

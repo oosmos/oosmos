@@ -79,7 +79,9 @@ Lint('sw.c',           'oosmos-user.lnt')
 Lint('toggle_state.c', 'oosmos-user.lnt')
 Lint('matrix_state.c', 'oosmos-user.lnt')
 Lint('toggle.c',       'oosmos-user.lnt')
+Lint('toggle_state.c', 'oosmos-user.lnt')
 Lint('util.c',         'oosmos-user.lnt')
+Lint('prt.c',          'oosmos-user.lnt')
 
 DIR = 'Source'
 
