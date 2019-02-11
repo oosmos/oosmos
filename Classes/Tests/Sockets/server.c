@@ -60,13 +60,14 @@ static bool Running_State_Code(void * pObject, oosmos_sState * pState, const oos
   server * pServer = (server *) pObject;
 
   switch (oosmos_EventCode(pEvent)) {
-    case oosmos_POLL:
+    case oosmos_POLL: {
       IncomingThread(pServer, pState);
       return true;
-
-    case ClosedEvent:
+    }
+    case ClosedEvent: {
       serverDelete(pServer);
       return true;
+    }
   }
 
   return false;

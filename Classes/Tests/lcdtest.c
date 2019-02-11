@@ -74,11 +74,13 @@ static bool Initializing_State_Code(void * pObject, oosmos_sState * pState, cons
 
 
   switch (oosmos_EventCode(pEvent)) {
-    case oosmos_POLL:
+    case oosmos_POLL: {
       InitThread(pLcdTest, pState);
       return true;
-    case oosmos_COMPLETE:
+    }
+    case oosmos_COMPLETE: {
       return oosmos_Transition(pLcdTest, pState, Running_State);
+    }
   }
 
   return false;
@@ -89,9 +91,10 @@ static bool Running_State_Code(void * pObject, oosmos_sState * pState, const oos
   lcdtest * pLcdTest = (lcdtest *) pObject;
 
   switch (oosmos_EventCode(pEvent)) {
-    case oosmos_POLL:
+    case oosmos_POLL: {
       RunningThread(pLcdTest, pState);
       return true;
+    }
   }
 
   return false;
@@ -102,7 +105,7 @@ extern lcdtest * lcdtestNew(pin * pRS, pin * pE,
 {
   oosmos_Allocate(pLcdTest, lcdtest, lcdtestMAX, NULL);
 
-  //                                StateName                  Parent                 
+  //                                StateName                  Parent
   //                      ======================================================================
   oosmos_StateMachineInit(pLcdTest, StateMachine,              NULL,         Initializing_State);
     oosmos_LeafInit      (pLcdTest, Initializing_State,        StateMachine, NULL              );

@@ -76,13 +76,14 @@ static bool Running_State_Code(void * pObject, oosmos_sState * pState, const oos
       return true;
     }
 
-    case ClosedEvent:
+    case ClosedEvent: {
       printf("Server closed.  Terminating...\n");
       exit(1);
-
-    case ConnectionTimeoutEvent:
+    }
+    case ConnectionTimeoutEvent: {
       printf("%p: Unable to connect to server: Timed out. Terminating.\n", (void *) pClient->m_pSock);
       exit(1);
+    }
   }
 
   return false;

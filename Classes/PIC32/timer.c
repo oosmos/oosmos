@@ -158,26 +158,31 @@ extern void timerStart(timer * pTimer, const timerCalc * pTimerCalc)
   pTimer->m_OverflowCount = pTimer->m_TimerCalc.OverflowCount;
 
   switch (pTimer->m_TimerNumber) {
-    case 1:
+    case 1: {
       OpenTimer1(T1_ON | T1_SOURCE_INT | PrescalerBits, Ticks);
       ConfigIntTimer1((pCallback == NULL ? T1_INT_OFF : T1_INT_ON) | PriorityBits);
       break;
-    case 2:
+    }
+    case 2: {
       OpenTimer2(T2_ON | T2_SOURCE_INT | PrescalerBits, Ticks);
       ConfigIntTimer2((pCallback == NULL ? T2_INT_OFF : T2_INT_ON) | PriorityBits);
       break;
-    case 3:
+    }
+    case 3: {
       OpenTimer3(T3_ON | T3_SOURCE_INT | PrescalerBits, Ticks);
       ConfigIntTimer3((pCallback == NULL ? T3_INT_OFF : T3_INT_ON) | PriorityBits);
       break;
-    case 4:
+    }
+    case 4: {
       OpenTimer4(T4_ON | T4_SOURCE_INT | PrescalerBits, Ticks);
       ConfigIntTimer4((pCallback == NULL ? T4_INT_OFF : T4_INT_ON) | PriorityBits);
       break;
-    case 5:
+    }
+    case 5: {
       OpenTimer5(T5_ON | T5_SOURCE_INT | PrescalerBits, Ticks);
       ConfigIntTimer5((pCallback == NULL ? T5_INT_OFF : T5_INT_ON) | PriorityBits);
       break;
+    }
   }
 }
 

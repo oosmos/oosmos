@@ -62,18 +62,22 @@ static bool Idle_State_Code(void * pObject, oosmos_sState * pState, const oosmos
   const char * pString = (const char *) pEvent->m_pContext;
 
   switch (oosmos_EventCode(pEvent)) {
-    case PressedEvent:
+    case PressedEvent: {
       prtFormatted("Pressed %s\n", pString);
       return true;
-    case ReleasedEvent:
+    }
+    case ReleasedEvent: {
       prtFormatted("Released %s\n", pString);
       return true;
-    case SpecialPressedEvent:
+    }
+    case SpecialPressedEvent: {
       prtFormatted("Pressed special %s\n", pString);
       return true;
-    case SpecialReleasedEvent:
+    }
+    case SpecialReleasedEvent: {
       prtFormatted("Released special %s\n", pString);
       return true;
+    }
   }
 
   return false;
@@ -83,7 +87,7 @@ extern matrixtest * matrixtestNew(pin * pRow1, pin * pRow2, pin * pRow3, pin * p
 {
   oosmos_Allocate(pMatrixTest, matrixtest, 1, NULL);
 
-  //                                   StateName     Parent        
+  //                                   StateName     Parent
   //                     =====================================================
   oosmos_StateMachineInit(pMatrixTest, StateMachine, NULL,         Idle_State);
     oosmos_LeafInit      (pMatrixTest, Idle_State,   StateMachine, NULL      );

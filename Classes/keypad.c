@@ -81,12 +81,14 @@ static bool Idle_State_Code(void * pObject, oosmos_sState * pState, const oosmos
       prtFormatted("Released %s\n", pString);
       return true;
     }
-    case FourPressedEvent:
+    case FourPressedEvent: {
       prtFormatted("Pressed Four\n");
       return true;
-    case FourReleasedEvent:
+    }
+    case FourReleasedEvent: {
       prtFormatted("Released Four\n");
       return true;
+    }
   }
 
   oosmos_UNUSED(pObject);
@@ -99,7 +101,7 @@ extern keypad * keypadNew(matrix * pMatrix)
 {
   oosmos_Allocate(pKeypad, keypad, 1, NULL);
 
-  //                               StateName     Parent       
+  //                               StateName     Parent
   //                     ================================================
   oosmos_StateMachineInit(pKeypad, ROOT,         NULL,        Idle_State);
     oosmos_LeafInit      (pKeypad, Idle_State,   ROOT,        Idle_State_Code);

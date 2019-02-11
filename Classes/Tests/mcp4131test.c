@@ -47,16 +47,18 @@ static bool RampingUp_State_Code(void * pObject, oosmos_sState * pState, const o
   mcp4131test * pMCP4131test = (mcp4131test *) pObject;
 
   switch (oosmos_EventCode(pEvent)) {
-    case oosmos_ENTER:
+    case oosmos_ENTER: {
       pMCP4131test->m_Resistance = 127;
       return oosmos_StateTimeoutMS(pState, pMCP4131test->m_RampDelayTimeMS);
-    case oosmos_TIMEOUT:
+    }
+    case oosmos_TIMEOUT: {
       mcp4131SetResistance(pMCP4131test->m_pMCP4131, pMCP4131test->m_Resistance--);
 
       if (pMCP4131test->m_Resistance == 0)
         return oosmos_Transition(pMCP4131test, pState, RampingDown_State);
 
       return oosmos_StateTimeoutMS(pState, pMCP4131test->m_RampDelayTimeMS);
+    }
   }
 
   return false;
@@ -67,16 +69,18 @@ static bool RampingDown_State_Code(void * pObject, oosmos_sState * pState, const
   mcp4131test * pMCP4131test = (mcp4131test *) pObject;
 
   switch (oosmos_EventCode(pEvent)) {
-    case oosmos_ENTER:
+    case oosmos_ENTER: {
       pMCP4131test->m_Resistance = 0;
       return oosmos_StateTimeoutMS(pState, pMCP4131test->m_RampDelayTimeMS);
-    case oosmos_TIMEOUT:
+    }
+    case oosmos_TIMEOUT: {
       mcp4131SetResistance(pMCP4131test->m_pMCP4131, pMCP4131test->m_Resistance++);
 
       if (pMCP4131test->m_Resistance == 127)
         return oosmos_Transition(pMCP4131test, pState, RampingUp_State);
 
       return oosmos_StateTimeoutMS(pState, pMCP4131test->m_RampDelayTimeMS);
+    }
   }
 
   return false;
@@ -86,7 +90,7 @@ extern mcp4131test * mcp4131testNew(spi * pSPI, pin * pCS, const int RampDelayTi
 {
   oosmos_Allocate(pMCP4131test, mcp4131test, mcp4131testMAX, NULL);
 
-  //                                           StateName          Parent        
+  //                                           StateName          Parent
   //                            ========================================================================
   oosmos_StateMachineInitNoQueue(pMCP4131test, StateMachine,      NULL,          RampingUp_State       );
     oosmos_LeafInit             (pMCP4131test, RampingUp_State,   StateMachine,  RampingUp_State_Code  );

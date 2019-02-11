@@ -108,19 +108,21 @@ extern void btnRunStateMachine(void * pObject)
   btn * pButton = (btn *) pObject;
 
   switch (pButton->m_State) {
-    case Released_State:
+    case Released_State: {
       if (pinIsOn(pButton->m_pPin)) {
         pButton->m_State = Pressed_State;
         oosmos_SubscriberListNotify(pButton->m_PressedEvent);
       }
 
       break;
-    case Pressed_State:
+    }
+    case Pressed_State: {
       if (pinIsOff(pButton->m_pPin)) {
         pButton->m_State = Released_State;
         oosmos_SubscriberListNotify(pButton->m_ReleasedEvent);
       }
 
       break;
+    }
   }
 }

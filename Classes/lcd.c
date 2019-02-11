@@ -102,22 +102,26 @@ typedef enum
 static void SetMode(lcd * pLCD, const eMode Mode)
 {
   switch (Mode) {
-    case modeWriteCommand:
+    case modeWriteCommand: {
       pinOff(pLCD->m_pRS);
       if (pLCD->m_pRW != NULL) pinOff(pLCD->m_pRW);
       break;
-    case modeWriteData:
+    }
+    case modeWriteData: {
       pinOn(pLCD->m_pRS);
       if (pLCD->m_pRW != NULL) pinOff(pLCD->m_pRW);
       break;
-    case modeReadStatus:
+    }
+    case modeReadStatus: {
       pinOff(pLCD->m_pRS);
       if (pLCD->m_pRW != NULL) pinOn(pLCD->m_pRW);
       break;
-    case modeReadData:
+    }
+    case modeReadData: {
       pinOn(pLCD->m_pRS);
       if (pLCD->m_pRW != NULL) pinOn(pLCD->m_pRW);
       break;
+    }
   }
 }
 

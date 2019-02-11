@@ -59,14 +59,17 @@ static bool Running_State_Code(void * pObject, oosmos_sState * pState, const oos
   threadyieldtest * pThreadYieldTest = (threadyieldtest *) pObject;
 
   switch (oosmos_EventCode(pEvent)) {
-    case oosmos_POLL:
+    case oosmos_POLL: {
       Thread(pThreadYieldTest, pState);
       return true;
-    case oosmos_COMPLETE:
+    }
+    case oosmos_COMPLETE: {
       return oosmos_Transition(pThreadYieldTest, pState, Final_State);
-    case oosmos_EXIT:
+    }
+    case oosmos_EXIT:{
       prtFormatted("Test threadyieldtest, '%s' DONE.\n", pThreadYieldTest->m_pID);
       return true;
+    }
   }
 
   return false;

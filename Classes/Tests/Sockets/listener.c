@@ -55,13 +55,14 @@ static bool Running_State_Code(void * pObject, oosmos_sState * pState, const oos
   listener * pListener = (listener *) pObject;
 
   switch (oosmos_EventCode(pEvent)) {
-    case oosmos_ENTER:
+    case oosmos_ENTER: {
       sockListen(pListener->m_pSock, 60009, 50);
       return true;
-
-    case oosmos_POLL:
+    }
+    case oosmos_POLL: {
       ListeningThread(pListener, pState);
       return true;
+    }
   }
 
   return false;

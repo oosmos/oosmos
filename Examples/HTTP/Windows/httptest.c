@@ -148,14 +148,14 @@ static bool Running_State_Code(void * pObject, oosmos_sState * pState, const oos
       Thread(pHttpTest, pState);
       return true;
     }
-
-    case ClosedEvent:
+    case ClosedEvent: {
       printf("Server closed.  Terminating...\n");
       return true;
-
-    case ConnectionTimeoutEvent:
+    }
+    case ConnectionTimeoutEvent: {
       printf("%d: Unable to connect to server: Timed out. Terminating.\n", pHttpTest->m_ID);
       return true;
+    }
   }
 
   return false;

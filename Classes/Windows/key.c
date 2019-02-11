@@ -100,7 +100,7 @@ static void StateMachine(void * pObject)
   eStates   KeyState;
 
   switch (pKey->m_State) {
-    case Up_State:
+    case Up_State: {
       if (!IsMyChar(pKey, &KeyState)) {
         return;
       }
@@ -112,8 +112,8 @@ static void StateMachine(void * pObject)
       }
 
       break;
-
-    case Down_State:
+    }
+    case Down_State: {
       if (!IsMyChar(pKey, &KeyState)) {
         return;
       }
@@ -125,6 +125,7 @@ static void StateMachine(void * pObject)
       }
 
       break;
+    }
   }
 }
 

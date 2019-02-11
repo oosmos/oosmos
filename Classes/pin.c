@@ -208,12 +208,14 @@ extern pin * pinNew(const int PinNumber, const pin_eDirection Direction, const p
 
   switch (Direction) {
     case pinIn:
-    case pinInOut:
+    case pinInOut: {
       pinMode(PinNumber, INPUT);
       break;
-    case pinOut:
+    }
+    case pinOut: {
       pinMode(PinNumber, OUTPUT);
       break;
+    }
   }
 
   return pPin;
@@ -262,14 +264,16 @@ extern pin * pinNew(const IoPortId Port, const int Bit, const pin_eDirection Dir
   pPin->m_DebounceTimeMS = 0;
 
   switch (pPin->m_Direction) {
-    case pinOut:
+    case pinOut: {
       pinOff(pPin);
       PORTSetPinsDigitalOut(Port, Bit);
       break;
-    case pinIn:
+    }
+    case pinIn: {
       pinOff(pPin);
       PORTSetPinsDigitalIn(Port, Bit);
       break;
+    }
   }
 
   return pPin;

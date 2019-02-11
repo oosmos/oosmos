@@ -142,18 +142,20 @@ static void RunSenderStateMachine(void * pObject)
 
       break;
     }
-    case sendAwaitingReady_State:
+    case sendAwaitingReady_State: {
       if (UARTTransmitterIsReady(pUART->m_PlibUartID)) {
         UARTSendDataByte(pUART->m_PlibUartID, pUART->m_CharToSend);
         pUART->m_SendState = sendAwaitingComplete_State;
       }
 
       break;
-    case sendAwaitingComplete_State:
+    }
+    case sendAwaitingComplete_State: {
       if (UARTTransmissionHasCompleted(pUART->m_PlibUartID))
         pUART->m_SendState = sendAwaitingCharToSend_State;
 
       break;
+    }
   }
 }
 

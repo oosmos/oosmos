@@ -49,14 +49,17 @@ extern pwm * pwmNew(const int PwmNumber, pin * pPwmPin, timer * pTimer)
   pPWM->m_pPwmPin   = pPwmPin;
 
   switch (timerGetTimerNumber(pTimer)) {
-    case 2:
+    case 2: {
       pPWM->m_OcTimerSource = OC_TIMER2_SRC;
       break;
-    case 3:
+    }
+    case 3: {
       pPWM->m_OcTimerSource = OC_TIMER3_SRC;
       break;
-    default:
+    }
+    default: {
       oosmos_FOREVER();
+    }
   }
 
   return pPWM;

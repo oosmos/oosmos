@@ -45,12 +45,14 @@ static bool Running_State_Code(void * pObject, oosmos_sState * pState, const oos
   test * pTest = (test *) pObject;
 
   switch (oosmos_EventCode(pEvent)) {
-    case oosmos_ENTER:
+    case oosmos_ENTER: {
       uartSendString(pTest->m_pUART, "\r\nStarting...\r\n");
       return oosmos_StateTimeoutSeconds(pState, 1);
-    case oosmos_TIMEOUT:
+    }
+    case oosmos_TIMEOUT: {
       uartSendString(pTest->m_pUART, "Hello world.\r\n");
       return oosmos_StateTimeoutSeconds(pState, 1);
+    }
     case uartIncomingByte: {
       uart_sReceivedByteEvent * pUartEvent = (uart_sReceivedByteEvent *) pEvent;
       DBPRINTF("Incoming Byte: %c (%02x)\n", pUartEvent->Byte, pUartEvent->Byte);
