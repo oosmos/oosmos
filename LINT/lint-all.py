@@ -10,12 +10,13 @@ def Lint(FileName, LintFiles = ''):
 DIR     = 'Tests'
 OPTIONS = '-Doosmos_ORTHO -Doosmos_DEBUG'
 
-Lint('Action.c', 'oosmos-user.lnt')
-Lint('Poll.c', 'oosmos-user.lnt')
+Lint('TimeConversions.c', 'oosmos-user.lnt')
+Lint('Action.c',          'oosmos-user.lnt')
+Lint('Poll.c',            'oosmos-user.lnt')
 
 DIR = 'Examples/AnalogMap/Windows'
 
-Lint('AnalogMap.c',          'oosmos-user.lnt')
+Lint('AnalogMap.c',       'oosmos-user.lnt')
 
 DIR = 'Examples/Basic/Windows'
 

@@ -1,6 +1,8 @@
-#include "OrthoThreads.h"
 #include "oosmos.h"
+#include "OrthoThreads.h"
 #include <stdio.h>
+#include <stdbool.h>
+#include <stdint.h>
 
 //>>>EVENTS
 //<<<EVENTS

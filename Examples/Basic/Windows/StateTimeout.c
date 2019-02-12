@@ -23,6 +23,7 @@
 #include "oosmos.h"
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdint.h>
 
 typedef struct testTag test;
 

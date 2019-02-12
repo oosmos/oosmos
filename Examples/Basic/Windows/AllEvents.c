@@ -2,6 +2,8 @@
 #include "pin.h"
 #include "btn.h"
 #include <stdio.h>
+#include <stdbool.h>
+#include <stdint.h>
 
 typedef struct allTag all;
 
