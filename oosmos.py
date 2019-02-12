@@ -51,6 +51,7 @@ class cWindows:
     WildRemove('*.exe')
     WildRemove('*.pdb')
     WildRemove('*.obj')
+    WildRemove('*.pch')
     WildRemove('*.ilk')
     WildRemove('*.suo')
     WildRemove('*.tds')
