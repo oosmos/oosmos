@@ -28,8 +28,8 @@ extern int main(void)
 {
   printf("\nThis test does not end.  Control-C to exit.\n\n");
 
-  (void)threadyieldtestNew("TestA", 3);
-  (void)threadyieldtestNew("TestB", 10);
+  (void) threadyieldtestNew("TestA", 3);
+  (void) threadyieldtestNew("TestB", 10);
 
   for (;;) {
     oosmos_RunStateMachines();

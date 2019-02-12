@@ -103,7 +103,7 @@ static test * testNew(void)
 
 extern int main(void)
 {
-  (void)testNew();
+  (void) testNew();
 
   for (;;) {
     oosmos_RunStateMachines();
