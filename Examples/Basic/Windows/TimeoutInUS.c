@@ -43,8 +43,9 @@ extern int main(void)
     //
     // Check if the time has expired.
     //
-    if (oosmos_TimeoutHasExpired(&Timeout))
+    if (oosmos_TimeoutHasExpired(&Timeout)) {
       break;
+    }
 
     printf("Running...\n");
 
