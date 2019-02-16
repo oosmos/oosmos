@@ -55,7 +55,7 @@ static void OOSMOS_Action1(void * pObject, oosmos_sState * pState, const oosmos_
   printf("Count: %d\n", Count);
   ActionCount = Count;
   printf("%s\n", oosmos_IsInState(pTest, &pTest->ROOT) ? "SUCCESS" : "FAILURE");
-
+  
   oosmos_UNUSED(pState);
   oosmos_UNUSED(pEvent);
 }
