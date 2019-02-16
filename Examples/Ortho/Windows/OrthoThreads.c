@@ -147,7 +147,7 @@ extern ortho * orthoNew(void)
   return pOrtho;
 }
 
-extern int main()
+extern int main(void)
 {
   (void) orthoNew();
 

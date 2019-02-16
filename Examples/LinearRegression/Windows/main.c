@@ -22,7 +22,7 @@
 
 #include "regtest.h"
 
-extern int main()
+extern int main(void)
 {
   regtestNew();
   return 0;

@@ -24,7 +24,7 @@
 #include "pin.h"
 #include "toggle.h"
 
-extern int main()
+extern int main(void)
 {
   pin * pLED1 = pinNew(LED1, pinOut, pinActiveHigh);
   pin * pLED2 = pinNew(LED2, pinOut, pinActiveHigh);

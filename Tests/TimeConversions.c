@@ -9,7 +9,7 @@
     printf("%s: %s Argument:%lu Result:%lu Value:%lu\n", Result == TestValue ? "SUCCESS" : "FAILURE", # Func, (Arg), (Result), (TestValue)); \
   }
 
-extern int main()
+extern int main(void)
 {
   TEST(oosmos_Minutes2US,              1ul,   60000000ul);
   TEST(oosmos_Minutes2MS,              1ul,   60000ul);

@@ -91,7 +91,7 @@ extern uart * uartNew(const int UartId)
   return pUART;
 }
 
-extern int main()
+extern int main(void)
 {
   (void) uartNew(1);
   (void) uartNew(3);
