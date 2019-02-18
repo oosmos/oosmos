@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <https://oosmos.com/licensing/>.
+// See <https://www.oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -61,7 +61,7 @@ extern encodertest * encodertestNew(pin * pPinA, pin * pPinB, int Max)
 {
   oosmos_Allocate(pEncoderTest, encodertest, MAX_ENCODERTESTS, NULL);
 
-  //                                    StateName     Parent        
+  //                                    StateName     Parent
   //                     ======================================================
   oosmos_StateMachineInit(pEncoderTest, StateMachine, NULL,         Idle_State);
     oosmos_LeafInit      (pEncoderTest, Idle_State,   StateMachine, NULL      );

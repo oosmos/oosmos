@@ -9,7 +9,7 @@
 //
 // This software may be used without the GPLv2 restrictions by entering
 // into a commercial license agreement with OOSMOS, LLC.
-// See <https://oosmos.com/licensing/>.
+// See <https://www.oosmos.com/licensing/>.
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -55,7 +55,7 @@ static void OOSMOS_Action1(void * pObject, oosmos_sState * pState, const oosmos_
   printf("Count: %d\n", Count);
   ActionCount = Count;
   printf("%s\n", oosmos_IsInState(pTest, &pTest->ROOT) ? "SUCCESS" : "FAILURE");
-  
+
   oosmos_UNUSED(pState);
   oosmos_UNUSED(pEvent);
 }

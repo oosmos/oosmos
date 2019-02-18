@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<diagram program="umlet" version="12.2">
+<diagram program="umlet" version="14.3">
   <zoom_level>8</zoom_level>
   <element>
     <type>com.umlet.element.custom.State</type>
@@ -12,9 +12,9 @@
     <panel_attributes>State
 --
 ENTER:
- 
+
 EXIT:
- 
+
 
 -.</panel_attributes>
     <additional_attributes/>
