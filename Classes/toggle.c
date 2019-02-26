@@ -21,7 +21,7 @@
 //
 
 #ifndef toggleMAX
-#define toggleMAX 1
+#define toggleMAX 5
 #endif
 
 //===================================
