@@ -120,7 +120,6 @@ static oosmos_sRegion * GetRegion(oosmos_sState * pState)
   return &pStateMachine->m_Region;
 }
 
-#ifdef oosmos_DEBUG
   static oosmos_sStateMachine * GetStateMachine(const oosmos_sState * pState)
   {
     const oosmos_sState * pCandidateState = NULL;
@@ -134,6 +133,7 @@ static oosmos_sRegion * GetRegion(oosmos_sState * pState)
     return (oosmos_sStateMachine *) pCandidateState;
   }
 
+#ifdef oosmos_DEBUG
   static const char * GetFileName(const void * pObject)
   {
     const oosmos_sStateMachine * pStateMachine = GetStateMachine(pObject);
@@ -424,10 +424,11 @@ static void StateInit(const char * pName, oosmos_sState * pState, oosmos_sState 
 
   #ifdef oosmos_DEBUG
     pState->m_pName = pName;
-    pState->m_pStateMachine = GetStateMachine(pState);
   #else
     oosmos_UNUSED(pName);
   #endif
+
+  pState->m_pStateMachine = GetStateMachine(pState);
 }
 
 static void RegionInit(const char * pName, oosmos_sRegion * pRegion,
