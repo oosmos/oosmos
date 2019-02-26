@@ -32,8 +32,8 @@ static void SetupToggle(int Pin, int OnTimeMS, int OffTimeMS)
 
 extern void setup()
 {
-  SetupToggle(13, 2000, 2000);
-  SetupToggle(12, 100, 100);
+  SetupToggle(13, 50, 500);
+  SetupToggle(12, 2000, 2000);
   SetupToggle(11, 50, 1500);
 }
 
