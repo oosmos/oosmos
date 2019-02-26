@@ -23,7 +23,7 @@ group=2</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>20</x>
-      <y>170</y>
+      <y>190</y>
       <w>190</w>
       <h>30</h>
     </coordinates>
@@ -56,18 +56,19 @@ group=2</panel_attributes>
     <id>UMLSpecialState</id>
     <coordinates>
       <x>30</x>
-      <y>130</y>
+      <y>120</y>
       <w>20</w>
       <h>20</h>
     </coordinates>
-    <panel_attributes>type=initial</panel_attributes>
+    <panel_attributes>type=initial
+group=3</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
       <x>20</x>
-      <y>210</y>
+      <y>230</y>
       <w>190</w>
       <h>30</h>
     </coordinates>
@@ -144,5 +145,17 @@ valign=top
 
 group=2</panel_attributes>
     <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>30</x>
+      <y>130</y>
+      <w>30</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+group=3</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
   </element>
 </diagram>
