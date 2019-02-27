@@ -33,13 +33,11 @@ extern int main(void)
   oosmos_ClockSpeedInMHz(80);
 
   for (int I = 1; I <= THREAD_TESTS; I++) {
-    threadtestNew();
+    (void) threadtestNew();
   }
 
   for (;;) {
     oosmos_RunStateMachines();
     oosmos_DelayMS(1);
   }
-
-  return 0;
 }
