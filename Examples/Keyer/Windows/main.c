@@ -28,21 +28,16 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-typedef struct testTag test;
-
-typedef union {
-  oosmos_sEvent Event;
-} uEvents;
-
 extern int main(void)
 {
-  printf(", (comma)  - dit\n");
-  printf(". (period) - dah\n");
+  printf(". (period) - dit\n");
+  printf("/ (slash)  - dah\n");
   printf("\n");
 
-  pin * pDitPin     = pinNew(',', pinActiveHigh);
-  pin * pDahPin     = pinNew('.', pinActiveHigh);
+  pin * pDitPin     = pinNew('.', pinActiveHigh);
+  pin * pDahPin     = pinNew('/', pinActiveHigh);
   pin * pSpeakerPin = pinNew(' ', pinActiveHigh);
+
   keyerNew(pDahPin, pDitPin, pSpeakerPin, 20);
 
   for (;;) {
