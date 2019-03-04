@@ -4,7 +4,7 @@
 
 1. Draw a hierarchical state machine.
 
-2. Run the OOSMOS generator to generate C code in to an OOSMOS object.
+2. Run the OOSMOS code generator to generate C code into an OOSMOS object.
 
 3. Compile
 
@@ -12,9 +12,9 @@
 
 ## Initial Set Up
 
-Once you've cloned OOSMOS, some of the example directories will
-be incomplete.  In order to fully populate the Examples directories, you
-must first run the Python script populate.py while in the top-level directory.
+Once you've cloned OOSMOS, some of the example directories may
+be incomplete.  In order to fully populate the `Examples` directories, you
+must first run the Python script `populate.py` while in the top-level directory.
 
 ## Key Features
 
@@ -22,9 +22,11 @@ must first run the Python script populate.py while in the top-level directory.
 
 - Generates object-oriented C code from UMLet drawings.  Generated code is concise and easy to read.
 
-- Open Source (GPLv2 dual license)
-
 - Powerful `state thread` feature gives you an instant thread of execution within each state.
+
+- Dual Licenses
+  - Open Source -- GPLv2
+  - Commercial open source license without the GPLv2 restrictions. *Note: Code generator source code available to commercial licensees only.*
 
 - Superior event management:
   - Event codes are managed locally within each object's class.
@@ -36,12 +38,18 @@ must first run the Python script populate.py while in the top-level directory.
 
 - OOSMOS's simple object structure promotes superior object-oriented encapsulation and information hiding.
 
-- Very small footprint. Core code is `oosmos.h` and `oosmos.c` which, together, are under `1700` cloc.
+- Very small footprint. Core code is comprised of only `oosmos.h` and `oosmos.c` which, together, are under `1700` `cloc`.
 
-- Portable `c99` code runs on Windows, Linux, Arduino, ESP32, PIC32, and many, many more.
+- Portable `c99` code runs on Windows, Linux, ST Micro, Arduino, ESP32, PIC32, and more.
 
 - A core set of OOSMOS classes, such as `pin` (GPIO), `sw` (switch), `btn` (button) and `toggle` provided.
+
+- Many time management capabilities and APIs.
 
 - Extremely fast, constant-time memory allocation scheme, ideal for DO-178B/C.
 
 - Code fully LINT'd using [PC-LINT](https://www.gimpel.com/).   An `oosmos-user.lnt` file is provided to allow you to cleanly lint your code that uses OOSMOS.
+
+## Support
+
+- Report bugs and feature requests here on GitHub.
