@@ -121,9 +121,9 @@ struct OOSMOS_sQueueTag {
 
   extern void oosmos_DebugInit(void);
 #else
-  extern void oosmos_DebugDummy(const char*, ...);
+  extern void OOSMOS_DebugDummy(const char*, ...);
   /*lint -e773 suppress "Expression-like macro not parenthesized" */
-  #define oosmos_DebugPrint 1 ? (void)0 : oosmos_DebugDummy
+  #define oosmos_DebugPrint 1 ? (void)0 : OOSMOS_DebugDummy
   #define oosmos_DebugCode(x)
   #define oosmos_DebugInit()
 #endif
