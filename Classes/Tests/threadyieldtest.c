@@ -32,9 +32,11 @@
 
 struct threadyieldtestTag
 {
-  oosmos_sStateMachineNoQueue(StateMachine);
-    oosmos_sLeaf              Running_State;
-    oosmos_sLeaf              Final_State;
+//>>>DECL
+  oosmos_sStateMachineNoQueue(ROOT);
+    oosmos_sLeaf Running_State;
+    oosmos_sLeaf Done_State;
+//<<<DECL
 
   const char * m_pID;
   int          m_Count;
@@ -51,9 +53,7 @@ static void Thread(threadyieldtest * pThreadYieldTest, oosmos_sState * pState)
   oosmos_ThreadEnd();
 }
 
-//
-// Test oosmos_threadyieldtest.
-//
+//>>>CODE
 static bool Running_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   threadyieldtest * pThreadYieldTest = (threadyieldtest *) pObject;
@@ -64,29 +64,43 @@ static bool Running_State_Code(void * pObject, oosmos_sState * pState, const oos
       return true;
     }
     case oosmos_COMPLETE: {
-      return oosmos_Transition(pThreadYieldTest, pState, Final_State);
-    }
-    case oosmos_EXIT:{
-      prtFormatted("Test threadyieldtest, '%s' DONE.\n", pThreadYieldTest->m_pID);
-      return true;
+      return oosmos_Transition(pThreadYieldTest, pState, Done_State);
     }
   }
 
   return false;
 }
 
+static bool Done_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
+{
+  threadyieldtest * pThreadYieldTest = (threadyieldtest *) pObject;
+
+  switch (oosmos_EventCode(pEvent)) {
+    case oosmos_ENTER: {
+      prtFormatted("Test threadyieldtest, '%s' DONE.\n", pThreadYieldTest->m_pID);
+      return true;
+    }
+  }
+
+  oosmos_UNUSED(pState);
+  return false;
+}
+//<<<CODE
+
 extern threadyieldtest * threadyieldtestNew(const char * pID, int Iterations)
 {
-  oosmos_Allocate(pThreadYieldtest, threadyieldtest, MAX_THREAD, NULL);
+  oosmos_Allocate(pThreadYieldTest, threadyieldtest, MAX_THREAD, NULL);
 
-  //                               StateName         Parent         Default
-  //                              ===================================================================
-  oosmos_StateMachineInitNoQueue  (pThreadYieldtest, StateMachine,  NULL,         Running_State     );
-    oosmos_LeafInit               (pThreadYieldtest, Running_State, StateMachine, Running_State_Code);
-    oosmos_LeafInit               (pThreadYieldtest, Final_State,   StateMachine, NULL              );
+//>>>INIT
+  oosmos_StateMachineInitNoQueue(pThreadYieldTest, ROOT, NULL, Running_State);
+    oosmos_LeafInit(pThreadYieldTest, Running_State, ROOT, Running_State_Code);
+    oosmos_LeafInit(pThreadYieldTest, Done_State, ROOT, Done_State_Code);
 
-  pThreadYieldtest->m_pID        = pID;
-  pThreadYieldtest->m_Iterations = Iterations;
+  oosmos_Debug(pThreadYieldTest, NULL);
+//<<<INIT
 
-  return pThreadYieldtest;
+  pThreadYieldTest->m_pID        = pID;
+  pThreadYieldTest->m_Iterations = Iterations;
+
+  return pThreadYieldTest;
 }

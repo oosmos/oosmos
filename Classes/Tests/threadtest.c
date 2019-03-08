@@ -443,7 +443,7 @@ static void OOSMOS_Action1(void * pObject, oosmos_sState * pState, const oosmos_
 
   printf("Printing...\n");
   oosmos_PushEventCode(pThreadTest, evDone);
-
+  
   oosmos_UNUSED(pState);
   oosmos_UNUSED(pEvent);
 }
