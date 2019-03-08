@@ -1,48 +1,48 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<diagram program="umlet" version="13.1">
+<diagram program="umlet" version="14.3.0">
   <zoom_level>10</zoom_level>
   <element>
-    <type>com.baselet.element.old.element.State</type>
+    <id>UMLState</id>
     <coordinates>
-      <x>30</x>
-      <y>80</y>
-      <w>410</w>
-      <h>150</h>
+      <x>20</x>
+      <y>60</y>
+      <w>420</w>
+      <h>130</h>
     </coordinates>
     <panel_attributes>State
 --
- 
 PressedEvent:	
-  return prtFormatted("Pressed %s\n", pString);	
+  prtFormatted("Pressed %s\n", pString);	
 ReleasedEvent:	
-  return prtFormatted("Released %s\n", pString);	
+  prtFormatted("Released %s\n", pString);	
 SpecialPressedEvent:	
-  return prtFormatted("Pressed special %s\n", pString);	
+  prtFormatted("Pressed special %s\n", pString);	
 SpecialReleasedEvent:	
-  return prtFormatted("Released special %s\n", pString);</panel_attributes>
+  prtFormatted("Released special %s\n", pString);
+valign=top
+</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
-    <type>com.baselet.element.old.element.InitialState</type>
+    <id>UMLSpecialState</id>
     <coordinates>
       <x>40</x>
-      <y>30</y>
+      <y>10</y>
       <w>20</w>
       <h>20</h>
     </coordinates>
-    <panel_attributes/>
+    <panel_attributes>type=initial</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
-    <type>com.baselet.element.old.element.Relation</type>
+    <id>Relation</id>
     <coordinates>
-      <x>20</x>
-      <y>10</y>
-      <w>50</w>
-      <h>90</h>
+      <x>40</x>
+      <y>20</y>
+      <w>30</w>
+      <h>60</h>
     </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
-</panel_attributes>
-    <additional_attributes>30;70;30;30</additional_attributes>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
   </element>
 </diagram>

@@ -20,6 +20,16 @@
   },
   {
     "enabled":       true,
+    "uxf_filename":  "matrixtest.uxf",
+    "filename":      "matrixtest.c",
+    "type":          "matrixtest",
+    "object_ptr":    "pMatrixTest",
+    "thread_events": [ "PressedEvent", "ReleasedEvent", "SpecialPressedEvent", "SpecialReleasedEvent" ],
+    "queue_size":    3,
+    "debug":         true
+  },
+  {
+    "enabled":       true,
     "uxf_filename":  "SwitchTest.uxf",
     "filename":      "switchtest.c",
     "type":          "switchtest",

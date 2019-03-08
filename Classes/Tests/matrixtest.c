@@ -29,20 +29,38 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-enum
-{
+//>>>EVENTS
+enum {
   PressedEvent = 1,
-  ReleasedEvent,
-  SpecialPressedEvent,
-  SpecialReleasedEvent,
+  ReleasedEvent = 2,
+  SpecialPressedEvent = 3,
+  SpecialReleasedEvent = 4
 };
+
+static const char * EventNames(int EventCode)
+{
+  switch (EventCode) {
+    case PressedEvent: return "PressedEvent";
+    case ReleasedEvent: return "ReleasedEvent";
+    case SpecialPressedEvent: return "SpecialPressedEvent";
+    case SpecialReleasedEvent: return "SpecialReleasedEvent";
+    default: return "--No Event Name--";
+  }
+}
+//<<<EVENTS
+
+typedef union {
+  oosmos_sEvent Base;
+} uEvents;
 
 struct matrixtestTag
 {
-  oosmos_sStateMachine(StateMachine, oosmos_sEvent, 5);
-    oosmos_sLeaf       Idle_State;
+//>>>DECL
+  oosmos_sStateMachine(ROOT, uEvents, 3);
+    oosmos_sLeaf State_State;
+//<<<DECL
 
-    matrix * m_pMatrix;
+  matrix * m_pMatrix;
 };
 
 static void NewSwitch(matrixtest * pMatrixTest, int Row, int Column, int PressedEventCode, int ReleasedEventCode, const char * pString)
@@ -57,10 +75,9 @@ static void NewSwitch(matrixtest * pMatrixTest, int Row, int Column, int Pressed
   swSubscribeOpenEvent(pSwitch, oosmos_EventQueue(pMatrixTest), ReleasedEventCode, (void *) pString);
 }
 
-static bool Idle_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
+//>>>CODE
+static bool State_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
-  const char * pString = (const char *) pEvent->m_pContext;
-
   switch (oosmos_EventCode(pEvent)) {
     case PressedEvent: {
       prtFormatted("Pressed %s\n", pString);
@@ -80,17 +97,21 @@ static bool Idle_State_Code(void * pObject, oosmos_sState * pState, const oosmos
     }
   }
 
+  oosmos_UNUSED(pState);
   return false;
 }
+//<<<CODE
 
 extern matrixtest * matrixtestNew(pin * pRow1, pin * pRow2, pin * pRow3, pin * pCol1, pin * pCol2, pin * pCol3)
 {
   oosmos_Allocate(pMatrixTest, matrixtest, 1, NULL);
 
-  //                                   StateName     Parent
-  //                     =====================================================
-  oosmos_StateMachineInit(pMatrixTest, StateMachine, NULL,         Idle_State);
-    oosmos_LeafInit      (pMatrixTest, Idle_State,   StateMachine, NULL      );
+//>>>INIT
+  oosmos_StateMachineInit(pMatrixTest, ROOT, NULL, State_State);
+    oosmos_LeafInit(pMatrixTest, State_State, ROOT, State_State_Code);
+
+  oosmos_Debug(pMatrixTest, EventNames);
+//<<<INIT
 
   pMatrixTest -> m_pMatrix = matrixNew(3, 3, pRow1, pRow2, pRow3, pCol1, pCol2, pCol3);
 
