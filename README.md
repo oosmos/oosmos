@@ -1,6 +1,6 @@
 # OOSMOS
 
-## Object-Oriented State Machine Operating System
+## The Object-Oriented State Machine Operating System
 
 1. Draw a hierarchical state machine.
 
@@ -9,12 +9,6 @@
 3. Compile
 
 4. Run
-
-## Initial Set Up
-
-Once you've cloned OOSMOS, some of the example directories may
-be incomplete.  In order to fully populate the `Examples` directories, you
-must first run the Python script `populate.py` while in the top-level directory.
 
 ## Key Features
 
@@ -49,6 +43,11 @@ must first run the Python script `populate.py` while in the top-level directory.
 - Extremely fast, constant-time memory allocation scheme, ideal for DO-178B/C.
 
 - Code fully LINT'd using [PC-LINT](https://www.gimpel.com/).   An `oosmos-user.lnt` file is provided to allow you to cleanly lint your code that uses OOSMOS.
+
+## Initial Set Up
+
+Once you've cloned OOSMOS, some of the example directories for embedded devices may be incomplete.  In order to fully populate the `Examples` directories, you
+must first run the Python script `populate.py` while in the top-level directory.
 
 ## Support
 
