@@ -437,9 +437,7 @@ extern pin * pinNew_Debounce(GPIO_TypeDef* Port, const uint16_t Bit, const pin_e
     pPin->m_DebounceTimeMS = 0;
 
     if (pinFirst) {
-      for (int I = 0; I < 0xFF; I++) {
-        KeyIsDown[I] = false;
-      }
+      memset(KeyIsDown, false, sizeof(KeyIsDown));
 
       hStdin = GetStdHandle(STD_INPUT_HANDLE);
       pinFirst = false;
