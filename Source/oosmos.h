@@ -162,29 +162,72 @@ typedef struct {
 
 #define oosmos_Divide_Integral_Rounded(Dividend, Divisor) (((Dividend) + ((Divisor) / 2)) / (Divisor))
 
-#define oosmos_Minutes2US(Minutes)                  ((Minutes) * (60ul * 1000ul * 1000ul))
-#define oosmos_Minutes2MS(Minutes)                  ((Minutes) * (60ul * 1000ul))
-#define oosmos_Minutes2Seconds(Minutes)             ((Minutes) * 60ul)
-#define oosmos_Minutes2Hours_Truncated(Minutes)     ((Minutes) / 60ul)
-#define oosmos_Minutes2Hours_Rounded(Minutes)       oosmos_Divide_Integral_Rounded(Minutes, 60ul)
+//
+// For reference:
+// ==============
+//              1 Day is
+//             24 Hours is
+//          1,440 Minutes is
+//         86,400 Seconds is
+//     86,400,000 Milliseconds is
+// 86,400,000,000 Microseconds
 
-#define oosmos_Seconds2US(Seconds)                  ((Seconds) * (1000ul * 1000ul))
-#define oosmos_Seconds2MS(Seconds)                  ((Seconds) * 1000ul)
-#define oosmos_Seconds2Hours_Truncated(Seconds)     ((Seconds) / 3600ul)
-#define oosmos_Seconds2Hours_Rounded(Seconds)       oosmos_Divide_Integral_Rounded(Seconds, 3600ul)
+// uint32_t max value:              4,294,967,295
+// uint64_t max value: 18,446,744,073,709,551,615
+//
 
-#define oosmos_US2MS_Truncated(MicroSeconds)        ((MicroSeconds) / 1000ul))
-#define oosmos_US2MS_Rounded(MicroSeconds)          oosmos_Divide_Integral_Rounded(MicroSeconds, 1000ul)
-#define oosmos_US2Seconds_Truncated(MicroSeconds)   ((MicroSeconds) / (1000ul * 1000ul))
-#define oosmos_US2Seconds_Rounded(MicroSeconds)     oosmos_Divide_Integral_Rounded(MicroSeconds, 1000ul * 1000ul)
-#define oosmos_US2Minutes_Truncated(MicroSeconds)   ((MicroSeconds) / (60ul * 1000ul * 1000ul))
-#define oosmos_US2Minutes_Rounded(MicroSeconds)     oosmos_Divide_Integral_Rounded(MicroSeconds, 60ul * 1000ul * 1000ul)
+#define oosmos_Days2Hours(Days)                     ((Days) * 24ull)
+#define oosmos_Days2Minutes(Days)                   ((Days) * 1440ull)
+#define oosmos_Days2Seconds(Days)                   ((Days) * 86400ull)
+#define oosmos_Days2MS(Days)                        ((Days) * 86400000ull)
+#define oosmos_Days2US(Days)                        ((Days) * 86400000000ull)
 
-#define oosmos_MS2US(MicroSeconds)                  ((MicroSeconds) * 1000ul)
-#define oosmos_MS2Seconds_Truncated(MicroSeconds)   ((MicroSeconds) / 1000ul)
-#define oosmos_MS2Seconds_Rounded(MicroSeconds)     oosmos_Divide_Integral_Rounded(MicroSeconds, 1000ul)
-#define oosmos_MS2Minutes_Truncated(MicroSeconds)   ((MicroSeconds) / (60ul * 1000ul))
-#define oosmos_MS2Minutes_Rounded(MicroSeconds)     oosmos_Divide_Integral_Rounded(MicroSeconds, 60ul * 1000ul)
+#define oosmos_Hours2Days_Truncated(Hours)          ((Hours) / 24ull)
+#define oosmos_Hours2Days_Rounded(Hours)            oosmos_Divide_Integral_Rounded(Hours, (24ull))
+#define oosmos_Hours2Minutes(Hours)                 ((Hours) * (60ull))
+#define oosmos_Hours2Seconds(Hours)                 ((Hours) * (60ull * 60ull))
+#define oosmos_Hours2MS(Hours)                      ((Hours) * (60ull * 60ull * 1000ull))
+#define oosmos_Hours2US(Hours)                      ((Hours) * (60ull * 60ull * 1000ull * 1000ull))
+
+#define oosmos_Minutes2Days_Truncated(Minutes)      ((Minutes) / (60ull * 24ull))
+#define oosmos_Minutes2Days_Rounded(Minutes)        oosmos_Divide_Integral_Rounded(Minutes, (60ull * 24ull))
+#define oosmos_Minutes2Hours_Truncated(Minutes)     ((Minutes) / (60ull))
+#define oosmos_Minutes2Hours_Rounded(Minutes)       oosmos_Divide_Integral_Rounded(Minutes, (60ull))
+#define oosmos_Minutes2Seconds(Minutes)             ((Minutes) * 60ull)
+#define oosmos_Minutes2MS(Minutes)                  ((Minutes) * (60ull * 1000ull))
+#define oosmos_Minutes2US(Minutes)                  ((Minutes) * (60ull * 1000ull * 1000ull))
+
+#define oosmos_Seconds2Days_Truncated(Seconds)      ((Seconds) / (60ull * 60ull * 24ull))
+#define oosmos_Seconds2Days_Rounded(Seconds)        oosmos_Divide_Integral_Rounded(Seconds, (60ull * 60ull * 24ull))
+#define oosmos_Seconds2Hours_Truncated(Seconds)     ((Seconds) / (60ull * 60ull))
+#define oosmos_Seconds2Hours_Rounded(Seconds)       oosmos_Divide_Integral_Rounded(Seconds, (60ull * 60ull))
+#define oosmos_Seconds2Minutes_Truncated(Seconds)   ((Seconds) / (60ull))
+#define oosmos_Seconds2Minutes_Rounded(Seconds)     oosmos_Divide_Integral_Rounded(Seconds, (60ull))
+#define oosmos_Seconds2MS(Seconds)                  ((Seconds) * (1000ull))
+#define oosmos_Seconds2US(Seconds)                  ((Seconds) * (1000ull * 1000ull))
+
+#define oosmos_MS2Days_Truncated(Milliseconds)      ((Milliseconds) / (1000ull * 60ull * 60ull * 24ull))
+#define oosmos_MS2Days_Rounded(Milliseconds)        oosmos_Divide_Integral_Rounded((Milliseconds), (1000ull * 60ull * 60ull * 24ull))
+
+#define oosmos_MS2Hours_Truncated(Milliseconds)     ((Milliseconds) / (1000ull * 60ull*  60ull))
+#define oosmos_MS2Hours_Rounded(Milliseconds)        oosmos_Divide_Integral_Rounded((Milliseconds), (1000ull * 60ull * 60ull))
+
+#define oosmos_MS2Minutes_Truncated(Milliseconds)   ((Milliseconds) / (60ull * 1000ull))
+#define oosmos_MS2Minutes_Rounded(Milliseconds)     oosmos_Divide_Integral_Rounded(Milliseconds, (60ull * 1000ull))
+#define oosmos_MS2Seconds_Truncated(Milliseconds)   ((Milliseconds) / (1000ull))
+#define oosmos_MS2Seconds_Rounded(Milliseconds)     oosmos_Divide_Integral_Rounded(Milliseconds, (1000ull))
+#define oosmos_MS2US(Milliseconds)                  ((Milliseconds) * (1000ull))
+
+#define oosmos_US2Days_Truncated(MicroSeconds)      ((MicroSeconds) / (1000ull * 1000ull * 60ull * 60ull * 24ull))
+#define oosmos_US2Days_Rounded(MicroSeconds)        oosmos_Divide_Integral_Rounded(MicroSeconds, 1000ull * 1000ull * 60ull * 60ull * 24ull)
+#define oosmos_US2Hours_Truncated(MicroSeconds)     ((MicroSeconds) / (1000ull * 1000ull * 60ull * 60ull))
+#define oosmos_US2Hours_Rounded(MicroSeconds)       oosmos_Divide_Integral_Rounded(MicroSeconds, (1000ull * 1000ull * 60ull * 60ull))
+#define oosmos_US2Minutes_Truncated(MicroSeconds)   ((MicroSeconds) / (60ull * 1000ull * 1000ull))
+#define oosmos_US2Minutes_Rounded(MicroSeconds)     oosmos_Divide_Integral_Rounded(MicroSeconds, (60ull * 1000ull * 1000ull))
+#define oosmos_US2Seconds_Truncated(MicroSeconds)   ((MicroSeconds) / (1000ull * 1000ull))
+#define oosmos_US2Seconds_Rounded(MicroSeconds)     oosmos_Divide_Integral_Rounded(MicroSeconds, (1000ull * 1000ull))
+#define oosmos_US2MS_Truncated(MicroSeconds)        ((MicroSeconds) / (1000ull))
+#define oosmos_US2MS_Rounded(MicroSeconds)          oosmos_Divide_Integral_Rounded(MicroSeconds, (1000ull))
 
 #define oosmos_EMPTY_EVENT { 0, NULL }
 
