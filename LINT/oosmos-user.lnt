@@ -28,6 +28,9 @@
 -emacro(774, oosmos_Allocate)
 -emacro(778, oosmos_Allocate)
 
+// Suppress complaints about OOSMOS_CompileTimeAssert.
+-esym(*, OOSMOS_CompileTimeAssertArray)
+
 // Suppress "unusual pointer cast".
 -emacro(740, oosmos_*Init)
 -emacro(740, oosmos_*InitNoCode)

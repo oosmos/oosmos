@@ -10,9 +10,12 @@ def Lint(FileName, LintFiles = ''):
 DIR     = 'Tests'
 OPTIONS = '-Doosmos_ORTHO -Doosmos_DEBUG'
 
-Lint('TimeConversions.c', 'oosmos-user.lnt')
-Lint('Action.c',          'oosmos-user.lnt')
-Lint('Poll.c',            'oosmos-user.lnt')
+Lint('TimeConversions.c',         'oosmos-user.lnt')
+Lint('Action.c',                  'oosmos-user.lnt')
+Lint('Poll.c',                    'oosmos-user.lnt')
+Lint('FreeRunningMicroseconds.c', 'oosmos-user.lnt')
+Lint('ThreadEvents.c',            'oosmos-user.lnt')
+Lint('ThreadComplete.c',          'oosmos-user.lnt')
 
 DIR = 'Examples/AnalogMap/Windows'
 
@@ -74,7 +77,6 @@ Lint('tok.c',          'oosmos-user.lnt')
 Lint('keyer.c',        'oosmos-user.lnt')
 Lint('keypad.c',       'oosmos-user.lnt')
 Lint('encoder.c',      'oosmos-user.lnt')
-Lint('accum.c',        'oosmos-user.lnt')
 Lint('btn.c',          'oosmos-user.lnt')
 Lint('sw.c',           'oosmos-user.lnt')
 Lint('toggle_state.c', 'oosmos-user.lnt')
@@ -83,6 +85,10 @@ Lint('toggle.c',       'oosmos-user.lnt')
 Lint('toggle_state.c', 'oosmos-user.lnt')
 Lint('util.c',         'oosmos-user.lnt')
 Lint('prt.c',          'oosmos-user.lnt')
+
+Lint('accum.c',        'oosmos-user.lnt')
+OPTIONS = '-Daccum_DEBUG'
+Lint('accum.c',        'oosmos-user.lnt')
 
 DIR = 'Source'
 
