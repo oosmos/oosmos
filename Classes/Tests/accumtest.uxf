@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.3.0">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>20</x>
+      <y>60</y>
+      <w>300</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>Waiting
+--
+ENTER:
+  printf("ENTER Waiting for 3 days...\n");
+  accumStart(pAccumTest-&gt;m_pAccum);
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>40</x>
+      <y>130</y>
+      <w>300</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>[accumHasReachedDays(pAccumTest-&gt;m_pAccum, 3)]
+lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>40</x>
+      <y>10</y>
+      <w>20</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>type=initial</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>40</x>
+      <y>20</y>
+      <w>30</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>20</x>
+      <y>190</y>
+      <w>310</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>Done
+--
+ENTER:
+  printf("EXIT Done waiting 3 days.\n");
+  oosmos_EndProgram(1);
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

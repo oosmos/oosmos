@@ -15,7 +15,7 @@ enum {
   ev_q_Pressed = 4
 };
 
-static const char * EventNames(int EventCode)
+static const char * OOSMOS_EventNames(int EventCode)
 {
   switch (EventCode) {
     case ev_a_Pressed: return "ev_a_Pressed";
@@ -72,7 +72,7 @@ static bool Running_State_Code(void * pObject, oosmos_sState * pState, const oos
 static void OOSMOS_Action1(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   action('a');
-  
+
   oosmos_UNUSED(pObject);
   oosmos_UNUSED(pState);
   oosmos_UNUSED(pEvent);
@@ -81,7 +81,7 @@ static void OOSMOS_Action1(void * pObject, oosmos_sState * pState, const oosmos_
 static void OOSMOS_Action2(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   action('g');
-  
+
   oosmos_UNUSED(pObject);
   oosmos_UNUSED(pState);
   oosmos_UNUSED(pEvent);
@@ -164,7 +164,7 @@ extern all * allNew(void)
       oosmos_LeafInit(pAll, Running_B_State, Running_State, Running_B_State_Code);
     oosmos_LeafInit(pAll, Terminating_State, ROOT, Terminating_State_Code);
 
-  oosmos_Debug(pAll, EventNames);
+  oosmos_Debug(pAll, OOSMOS_EventNames);
 //<<<INIT
 
   pin * p_e_Pin    = pinNew('e', pinActiveHigh);

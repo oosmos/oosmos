@@ -35,6 +35,17 @@
 #include <stdio.h>
 #endif
 
+//
+// For reference:
+// ==============
+//              1 Day is
+//             24 Hours is
+//          1,440 Minutes is
+//         86,400 Seconds is
+//     86,400,000 Milliseconds is
+// 86,400,000,000 Microseconds
+//
+
 struct accumTag {
   uint64_t             m_TallyUS;
   oosmos_sActiveObject m_ActiveObject;
@@ -42,7 +53,7 @@ struct accumTag {
   bool                 m_Started;
 };
 
-static void Running(void * pObject)
+static void Update(void * pObject)
 {
   oosmos_POINTER_GUARD(pObject);
 
@@ -52,6 +63,9 @@ static void Running(void * pObject)
     const uint32_t Previous = pAccum->m_Previous;
     uint64_t       Now      = oosmos_GetFreeRunningMicroseconds();
 
+    //
+    // Handle the wrap around.
+    //
     if (Now < Previous) {
       Now += 0x100000000;
     }
@@ -66,7 +80,7 @@ extern accum * accumNew(void)
   oosmos_Allocate(pAccum, accum, accumMAX, NULL);
   pAccum->m_TallyUS = 0;
   pAccum->m_Started = false;
-  oosmos_RegisterActiveObject(pAccum, Running, &pAccum->m_ActiveObject);
+  oosmos_RegisterActiveObject(pAccum, Update, &pAccum->m_ActiveObject);
 
   return pAccum;
 }
@@ -76,7 +90,7 @@ extern void accumReset(accum * pAccum)
   oosmos_POINTER_GUARD(pAccum);
 
   pAccum->m_TallyUS = 0;
-  pAccum->m_Previous = oosmos_GetFreeRunningMicroseconds();
+  pAccum->m_Previous = (uint32_t) oosmos_GetFreeRunningMicroseconds();
 
   #ifdef accum_DEBUG
     (void) printf("Accum reset, Tally: %u\n", (uint32_t) pAccum->m_TallyUS);
@@ -90,9 +104,11 @@ extern void accumSetUS(accum * pAccum, uint64_t TallyUS)
   pAccum->m_TallyUS = TallyUS;
 }
 
-extern uint64_t accumGetUS(const accum * pAccum)
+extern uint64_t accumGetUS(accum * pAccum)
 {
   oosmos_POINTER_GUARD(pAccum);
+
+  Update(pAccum);
 
   return pAccum->m_TallyUS;
 }
@@ -108,11 +124,11 @@ extern void accumStart(accum * pAccum)
     return;
   }
 
-  pAccum->m_Previous = oosmos_GetFreeRunningMicroseconds();
+  pAccum->m_Previous = (uint32_t) oosmos_GetFreeRunningMicroseconds();
 
   #ifdef accum_DEBUG
     if (!pAccum->m_Started) {
-      (void) printf("Accum Start -- Tally: %u, Seconds: %u\n", (uint32_t) pAccum->m_TallyUS, (uint32_t) ((pAccum->m_TallyUS / 1000) / 1000));
+      (void) printf("Accum Start -- Tally: %I64u, Seconds: %I64u\n", pAccum->m_TallyUS, oosmos_US2Seconds_Truncated(pAccum->m_TallyUS));
     }
   #endif
 
@@ -123,11 +139,11 @@ extern void accumStop(accum * pAccum)
 {
   oosmos_POINTER_GUARD(pAccum);
 
-  Running(pAccum);
+  Update(pAccum);
 
   #ifdef accum_DEBUG
     if (pAccum->m_Started) {
-      (void) printf("Accum Stop  -- Tally: %u, Seconds: %u\n", (uint32_t) pAccum->m_TallyUS, (uint32_t) ((pAccum->m_TallyUS / 1000) / 1000));
+      (void) printf("Accum Stop  -- Tally: %I64u, Seconds: %I64u\n",  pAccum->m_TallyUS, oosmos_US2Seconds_Truncated(pAccum->m_TallyUS));
     }
   #endif
 
@@ -139,7 +155,11 @@ extern bool accumHasReachedUS(accum * pAccum, uint64_t US)
   oosmos_POINTER_GUARD(pAccum);
 
   if (pAccum->m_Started) {
-    Running(pAccum);
+    Update(pAccum);
+
+    #ifdef accum_DEBUG
+      printf("US: %12I64u\n", pAccum->m_TallyUS);
+    #endif
 
     return pAccum->m_TallyUS >= US;
   }
@@ -147,12 +167,27 @@ extern bool accumHasReachedUS(accum * pAccum, uint64_t US)
   return false;
 }
 
-extern bool accumHasReachedMS(accum * pAccum, uint32_t MS)
+extern bool accumHasReachedMS(accum * pAccum, uint64_t MS)
 {
-  return accumHasReachedUS(pAccum, ((uint64_t) MS) * 1000);
+  return accumHasReachedUS(pAccum, oosmos_MS2US(MS));
 }
 
-extern bool accumHasReachedSeconds(accum * pAccum, uint32_t Seconds)
+extern bool accumHasReachedSeconds(accum * pAccum, uint64_t Seconds)
 {
-  return accumHasReachedUS(pAccum, (((uint64_t) Seconds) * 1000) * 1000);
+  return accumHasReachedUS(pAccum, oosmos_Seconds2US(Seconds));
+}
+
+extern bool accumHasReachedMinutes(accum * pAccum, uint64_t Minutes)
+{
+  return accumHasReachedUS(pAccum, oosmos_Minutes2US(Minutes));
+}
+
+extern bool accumHasReachedHours(accum * pAccum, uint64_t Hours)
+{
+  return accumHasReachedUS(pAccum, oosmos_Hours2US(Hours));
+}
+
+extern bool accumHasReachedDays(accum * pAccum, uint64_t Days)
+{
+  return accumHasReachedUS(pAccum, oosmos_Days2US(Days));
 }

@@ -43,7 +43,7 @@ enum {
   evStopReleased = 7
 };
 
-static const char * EventNames(int EventCode)
+static const char * OOSMOS_EventNames(int EventCode)
 {
   switch (EventCode) {
     case evMovePressed: return "evMovePressed";
@@ -286,7 +286,7 @@ extern control * controlNew(void)
     oosmos_LeafInit(pControl, StopPressed_State, ROOT, StopPressed_State_Code);
     oosmos_LeafInit(pControl, Terminated_State, ROOT, Terminated_State_Code);
 
-  oosmos_Debug(pControl, EventNames);
+  oosmos_Debug(pControl, OOSMOS_EventNames);
 //<<<INIT
 
   return pControl;

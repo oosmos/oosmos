@@ -29,7 +29,7 @@ enum {
   evTestEvent = 1
 };
 
-static const char * EventNames(int EventCode)
+static const char * OOSMOS_EventNames(int EventCode)
 {
   switch (EventCode) {
     case evTestEvent: return "evTestEvent";
@@ -64,7 +64,7 @@ struct testTag
 
 };
 
-static void A1Thread(test * pTest, oosmos_sState * pState, const oosmos_sEvent * pEvent)
+static void A1Thread(oosmos_sState * pState)
 {
   const sTestEvent * pTestEvent;
 
@@ -79,18 +79,18 @@ static void A1Thread(test * pTest, oosmos_sState * pState, const oosmos_sEvent *
   oosmos_ThreadEnd();
 }
 
-static void EventDriverThread(test * pTest, oosmos_sState * pState)
+static void EventDriverThread(const test * pTest, oosmos_sState * pState)
 {
   oosmos_ThreadBegin();
     printf("EventDriverThread: Enter\n");
     oosmos_ThreadDelayMS(1000);
 
     printf("EventDriverThread: Push 998\n");
-    const sTestEvent TestEvent998 = { { evTestEvent }, 998 };
+    const sTestEvent TestEvent998 = { { evTestEvent, NULL }, 998 };
     oosmos_PushEvent(pTest, TestEvent998);
 
     printf("EventDriverThread: Push 999\n");
-    const sTestEvent TestEvent999 = { { evTestEvent }, 999 };
+    const sTestEvent TestEvent999 = { { evTestEvent, NULL }, 999 };
     oosmos_PushEvent(pTest, TestEvent999);
   oosmos_ThreadEnd();
 }
@@ -102,7 +102,7 @@ static bool A1_Region1_B1_State_Code(void * pObject, oosmos_sState * pState, con
 
   switch (oosmos_EventCode(pEvent)) {
     case oosmos_POLL: {
-      A1Thread(pTest, pState, pEvent);
+      A1Thread(pState);
       return true;
     }
     case oosmos_COMPLETE: {
@@ -154,7 +154,7 @@ static test * testNew(void)
         oosmos_LeafInit(pTest, A1_Region2_EventDriver_State, A1_Region2_State, A1_Region2_EventDriver_State_Code);
     oosmos_LeafInit(pTest, Done_State, ROOT, Done_State_Code);
 
-  oosmos_Debug(pTest, NULL);
+  oosmos_Debug(pTest, OOSMOS_EventNames);
 //<<<INIT
 
   return pTest;

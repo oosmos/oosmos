@@ -1,6 +1,15 @@
 [
   {
     "enabled":       true,
+    "uxf_filename":  "accumtest.uxf",
+    "filename":      "accumtest.c",
+    "type":          "accumtest",
+    "object_ptr":    "pAccumTest",
+    "queue_size":    0,
+    "debug":         true
+  },
+  {
+    "enabled":       true,
     "uxf_filename":  "threadtest.uxf",
     "filename":      "threadtest.c",
     "type":          "threadtest",

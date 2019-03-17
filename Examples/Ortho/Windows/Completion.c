@@ -31,7 +31,7 @@ enum {
   evStop = 3
 };
 
-static const char * EventNames(int EventCode)
+static const char * OOSMOS_EventNames(int EventCode)
 {
   switch (EventCode) {
     case evA: return "evA";
@@ -162,7 +162,7 @@ static test * testNew(void)
         oosmos_FinalInit(pTest, Ortho_Region2_Final2_State, Ortho_Region2_State, NULL);
     oosmos_LeafInit(pTest, Complete_State, ROOT, Complete_State_Code);
 
-  oosmos_Debug(pTest, EventNames);
+  oosmos_Debug(pTest, OOSMOS_EventNames);
 //<<<INIT
 
   return pTest;

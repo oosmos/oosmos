@@ -38,7 +38,7 @@ enum {
   evOpen = 2
 };
 
-static const char * EventNames(int EventCode)
+static const char * OOSMOS_EventNames(int EventCode)
 {
   switch (EventCode) {
     case evClosed: return "evClosed";
@@ -87,7 +87,7 @@ extern switchtest * switchtestNew(pin * pPin)
   oosmos_StateMachineInit(pSwitchTest, ROOT, NULL, Idle_State);
     oosmos_LeafInit(pSwitchTest, Idle_State, ROOT, Idle_State_Code);
 
-  oosmos_Debug(pSwitchTest, EventNames);
+  oosmos_Debug(pSwitchTest, OOSMOS_EventNames);
 //<<<INIT
 
   sw * pSwitch = swNew(pPin);

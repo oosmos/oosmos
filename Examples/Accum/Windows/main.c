@@ -1,5 +1,5 @@
 //
-// OOSMOS accum Class
+// OOSMOS - Windows accum example main program.
 //
 // Copyright (C) 2014-2019  OOSMOS, LLC
 //
@@ -20,25 +20,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef ACCUM_H
-#define ACCUM_H
+#include "oosmos.h"
+#include "accumtest.h"
 
-#include <stdbool.h>
-#include <stdint.h>
+extern int main(void)
+{
+  (void) accumtestNew();
 
-typedef struct accumTag accum;
-
-extern accum *  accumNew(void);
-extern void     accumStart(accum * pAccum);
-extern void     accumStop(accum * pAccum);
-extern void     accumReset(accum * pAccum);
-extern void     accumSetUS(accum * pAccum, uint64_t TallyUS);
-extern uint64_t accumGetUS(accum * pAccum);
-extern bool     accumHasReachedUS(accum * pAccum, uint64_t US);
-extern bool     accumHasReachedMS(accum * pAccum, uint64_t MS);
-extern bool     accumHasReachedSeconds(accum * pAccum, uint64_t Seconds);
-extern bool     accumHasReachedMinutes(accum * pAccum, uint64_t Minutes);
-extern bool     accumHasReachedHours(accum * pAccum, uint64_t Hours);
-extern bool     accumHasReachedDays(accum * pAccum, uint64_t Minutes);
-
-#endif
+  for (;;) {
+    oosmos_RunStateMachines();
+    oosmos_DelayMS(1);
+  }
+}

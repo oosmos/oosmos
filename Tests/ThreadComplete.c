@@ -29,9 +29,6 @@
 
 typedef struct testTag test;
 
-static int Count;
-static int ActionCount;
-
 struct testTag
 {
 //>>>DECL

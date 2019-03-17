@@ -38,7 +38,7 @@ enum {
   ev_r_Released = 5
 };
 
-static const char * EventNames(int EventCode)
+static const char * OOSMOS_EventNames(int EventCode)
 {
   switch (EventCode) {
     case ev_b_Pressed: return "ev_b_Pressed";
@@ -210,7 +210,7 @@ static test * testNew(void)
       oosmos_LeafInit(pTest, Active_Idle_State, Active_State, Active_Idle_State_Code);
     oosmos_LeafInit(pTest, Done_State, ROOT, Done_State_Code);
 
-  oosmos_Debug(pTest, EventNames);
+  oosmos_Debug(pTest, OOSMOS_EventNames);
 //<<<INIT
 
   return pTest;

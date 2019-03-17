@@ -31,7 +31,7 @@ enum {
   evStop = 2
 };
 
-static const char * EventNames(int EventCode)
+static const char * OOSMOS_EventNames(int EventCode)
 {
   switch (EventCode) {
     case evStart: return "evStart";
@@ -109,7 +109,7 @@ extern motor * motorNew(void)
     oosmos_LeafInit(pMotor, Idle_State, ROOT, Idle_State_Code);
     oosmos_LeafInit(pMotor, Moving_State, ROOT, Moving_State_Code);
 
-  oosmos_Debug(pMotor, EventNames);
+  oosmos_Debug(pMotor, OOSMOS_EventNames);
 //<<<INIT
 
   return pMotor;

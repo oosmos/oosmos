@@ -8,7 +8,7 @@
       <x>30</x>
       <y>70</y>
       <w>200</w>
-      <h>140</h>
+      <h>180</h>
     </coordinates>
     <panel_attributes>A
 --
@@ -22,7 +22,7 @@ valign=top
     <id>UMLState</id>
     <coordinates>
       <x>50</x>
-      <y>120</y>
+      <y>160</y>
       <w>100</w>
       <h>70</h>
     </coordinates>
@@ -62,9 +62,9 @@ lt=-&gt;</panel_attributes>
     <id>UMLState</id>
     <coordinates>
       <x>30</x>
-      <y>280</y>
-      <w>210</w>
-      <h>140</h>
+      <y>300</y>
+      <w>200</w>
+      <h>180</h>
     </coordinates>
     <panel_attributes>B
 --
@@ -78,7 +78,7 @@ valign=top
     <id>UMLState</id>
     <coordinates>
       <x>50</x>
-      <y>330</y>
+      <y>390</y>
       <w>100</w>
       <h>70</h>
     </coordinates>
@@ -94,21 +94,21 @@ valign=top
     <id>Relation</id>
     <coordinates>
       <x>90</x>
-      <y>200</y>
+      <y>240</y>
       <w>500</w>
-      <h>100</h>
+      <h>80</h>
     </coordinates>
     <panel_attributes>/printf("Count: %d\n", Count);
 ActionCount = Count;
 printf("%s\n", oosmos_IsInState(pTest, &amp;pTest-&gt;ROOT) ? "SUCCESS" : "FAILURE");
 lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;80.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
   </element>
   <element>
     <id>UMLState</id>
     <coordinates>
       <x>30</x>
-      <y>450</y>
+      <y>520</y>
       <w>390</w>
       <h>70</h>
     </coordinates>
@@ -125,18 +125,18 @@ valign=top
     <id>Relation</id>
     <coordinates>
       <x>90</x>
-      <y>410</y>
+      <y>470</y>
       <w>30</w>
-      <h>60</h>
+      <h>70</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
   </element>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
       <x>190</x>
-      <y>150</y>
+      <y>190</y>
       <w>20</w>
       <h>20</h>
     </coordinates>
@@ -147,7 +147,7 @@ valign=top
     <id>Relation</id>
     <coordinates>
       <x>140</x>
-      <y>150</y>
+      <y>190</y>
       <w>70</w>
       <h>30</h>
     </coordinates>
@@ -158,7 +158,7 @@ valign=top
     <id>UMLSpecialState</id>
     <coordinates>
       <x>190</x>
-      <y>360</y>
+      <y>420</y>
       <w>20</w>
       <h>20</h>
     </coordinates>
@@ -169,11 +169,55 @@ valign=top
     <id>Relation</id>
     <coordinates>
       <x>140</x>
-      <y>360</y>
+      <y>420</y>
       <w>70</w>
       <h>30</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;50.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>90</x>
+      <y>350</y>
+      <w>20</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>type=initial</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>90</x>
+      <y>360</y>
+      <w>30</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>90</x>
+      <y>120</y>
+      <w>20</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>type=initial</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>90</x>
+      <y>130</y>
+      <w>30</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
   </element>
 </diagram>

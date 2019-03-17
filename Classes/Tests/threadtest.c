@@ -42,7 +42,7 @@ enum {
   evTimedOut2 = 4
 };
 
-static const char * EventNames(int EventCode)
+static const char * OOSMOS_EventNames(int EventCode)
 {
   switch (EventCode) {
     case evDone: return "evDone";
@@ -482,7 +482,7 @@ extern threadtest * threadtestNew(void)
       oosmos_OrthoRegionInit(pThreadTest, Running_Region2_State, Running_State, Running_Region2_Printing_State, NULL);
         oosmos_LeafInit(pThreadTest, Running_Region2_Printing_State, Running_Region2_State, Running_Region2_Printing_State_Code);
 
-  oosmos_Debug(pThreadTest, EventNames);
+  oosmos_Debug(pThreadTest, OOSMOS_EventNames);
 //<<<INIT
 
   return pThreadTest;

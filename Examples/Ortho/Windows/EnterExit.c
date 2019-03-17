@@ -29,7 +29,7 @@ enum {
   evTweak = 1
 };
 
-static const char * EventNames(int EventCode)
+static const char * OOSMOS_EventNames(int EventCode)
 {
   switch (EventCode) {
     case evTweak: return "evTweak";
@@ -104,7 +104,7 @@ static test * testNew(void)
         oosmos_LeafInit(pTest, Active_Region3_Leaf_State, Active_Region3_State, Active_Region3_Leaf_State_Code);
         oosmos_LeafInit(pTest, Active_Region3_Running_State, Active_Region3_State, NULL);
 
-  oosmos_Debug(pTest, EventNames);
+  oosmos_Debug(pTest, OOSMOS_EventNames);
 //<<<INIT
 
   return pTest;

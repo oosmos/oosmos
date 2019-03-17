@@ -35,7 +35,7 @@ enum {
   evUpperLimitSwitchOpen = 7
 };
 
-static const char * EventNames(int EventCode)
+static const char * OOSMOS_EventNames(int EventCode)
 {
   switch (EventCode) {
     case evDownCommand: return "evDownCommand";
@@ -208,7 +208,7 @@ static motion * motionNew(void)
           oosmos_LeafInit(pMotion, Active_Region2_Moving_Down_State, Active_Region2_Moving_State, Active_Region2_Moving_Down_State_Code);
         oosmos_LeafInit(pMotion, Active_Region2_Stopped_State, Active_Region2_State, Active_Region2_Stopped_State_Code);
 
-  oosmos_Debug(pMotion, EventNames);
+  oosmos_Debug(pMotion, OOSMOS_EventNames);
 //<<<INIT
 
   return pMotion;

@@ -37,7 +37,7 @@ enum {
   SpecialReleasedEvent = 4
 };
 
-static const char * EventNames(int EventCode)
+static const char * OOSMOS_EventNames(int EventCode)
 {
   switch (EventCode) {
     case PressedEvent: return "PressedEvent";
@@ -110,7 +110,7 @@ extern matrixtest * matrixtestNew(pin * pRow1, pin * pRow2, pin * pRow3, pin * p
   oosmos_StateMachineInit(pMatrixTest, ROOT, NULL, State_State);
     oosmos_LeafInit(pMatrixTest, State_State, ROOT, State_State_Code);
 
-  oosmos_Debug(pMatrixTest, EventNames);
+  oosmos_Debug(pMatrixTest, OOSMOS_EventNames);
 //<<<INIT
 
   pMatrixTest -> m_pMatrix = matrixNew(3, 3, pRow1, pRow2, pRow3, pCol1, pCol2, pCol3);

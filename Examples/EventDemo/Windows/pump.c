@@ -35,7 +35,7 @@ enum {
   evUpPressed = 4
 };
 
-static const char * EventNames(int EventCode)
+static const char * OOSMOS_EventNames(int EventCode)
 {
   switch (EventCode) {
     case evDownPressed: return "evDownPressed";
@@ -130,7 +130,7 @@ extern pump * pumpNew(sw * pUpSwitch, sw * pDownSwitch)
     oosmos_LeafInit(pPump, Idle_State, ROOT, Idle_State_Code);
     oosmos_LeafInit(pPump, Pumping_State, ROOT, Pumping_State_Code);
 
-  oosmos_Debug(pPump, EventNames);
+  oosmos_Debug(pPump, OOSMOS_EventNames);
 //<<<INIT
 
   return pPump;
