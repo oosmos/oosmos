@@ -5,7 +5,7 @@
     <id>UMLState</id>
     <coordinates>
       <x>30</x>
-      <y>180</y>
+      <y>260</y>
       <w>240</w>
       <h>60</h>
     </coordinates>
@@ -21,7 +21,7 @@ valign=top</panel_attributes>
     <id>UMLState</id>
     <coordinates>
       <x>30</x>
-      <y>100</y>
+      <y>140</y>
       <w>240</w>
       <h>60</h>
     </coordinates>
@@ -39,7 +39,7 @@ valign=top</panel_attributes>
       <x>20</x>
       <y>70</y>
       <w>450</w>
-      <h>180</h>
+      <h>270</h>
     </coordinates>
     <panel_attributes>Warning
 --
@@ -50,7 +50,7 @@ valign=top</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>10</x>
-      <y>160</y>
+      <y>200</y>
       <w>480</w>
       <h>30</h>
     </coordinates>
@@ -61,7 +61,7 @@ valign=top</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>40</x>
-      <y>240</y>
+      <y>330</y>
       <w>30</w>
       <h>60</h>
     </coordinates>
@@ -72,7 +72,7 @@ valign=top</panel_attributes>
     <id>UMLSpecialState</id>
     <coordinates>
       <x>430</x>
-      <y>120</y>
+      <y>160</y>
       <w>20</w>
       <h>20</h>
     </coordinates>
@@ -83,7 +83,7 @@ valign=top</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>260</x>
-      <y>110</y>
+      <y>150</y>
       <w>190</w>
       <h>40</h>
     </coordinates>
@@ -95,7 +95,7 @@ lt=-&gt;</panel_attributes>
     <id>UMLSpecialState</id>
     <coordinates>
       <x>430</x>
-      <y>200</y>
+      <y>280</y>
       <w>20</w>
       <h>20</h>
     </coordinates>
@@ -106,7 +106,7 @@ lt=-&gt;</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>260</x>
-      <y>190</y>
+      <y>270</y>
       <w>190</w>
       <h>40</h>
     </coordinates>
@@ -118,7 +118,7 @@ lt=-&gt;</panel_attributes>
     <id>UMLState</id>
     <coordinates>
       <x>20</x>
-      <y>280</y>
+      <y>370</y>
       <w>240</w>
       <h>60</h>
     </coordinates>
@@ -151,5 +151,49 @@ valign=top</panel_attributes>
     </coordinates>
     <panel_attributes>type=initial</panel_attributes>
     <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>40</x>
+      <y>220</y>
+      <w>20</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>type=initial</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>40</x>
+      <y>230</y>
+      <w>30</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>40</x>
+      <y>100</y>
+      <w>20</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>type=initial</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>40</x>
+      <y>110</y>
+      <w>30</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
   </element>
 </diagram>
