@@ -93,7 +93,7 @@ valign=top</panel_attributes>
     <coordinates>
       <x>30</x>
       <y>330</y>
-      <w>190</w>
+      <w>250</w>
       <h>70</h>
     </coordinates>
     <panel_attributes>Done
@@ -107,7 +107,7 @@ valign=top</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>100</x>
+      <x>220</x>
       <y>280</y>
       <w>100</w>
       <h>70</h>
@@ -213,5 +213,17 @@ lt=-&gt;</panel_attributes>
     </coordinates>
     <panel_attributes>type=initial</panel_attributes>
     <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>60</x>
+      <y>260</y>
+      <w>140</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>TIMEOUT(7 seconds)
+lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
   </element>
 </diagram>

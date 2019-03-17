@@ -137,6 +137,12 @@ static bool Active_Idle_State_Code(void * pObject, oosmos_sState * pState, const
     case ev_r_Pressed: {
       return oosmos_Transition(pTest, pState, Active_Running_State);
     }
+    case oosmos_ENTER: {
+      return oosmos_StateTimeoutSeconds(pState, (uint32_t) 7);
+    }
+    case oosmos_TIMEOUT: {
+      return oosmos_Transition(pTest, pState, Done_State);
+    }
   }
 
   return false;
