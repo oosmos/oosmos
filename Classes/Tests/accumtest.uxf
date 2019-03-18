@@ -13,7 +13,8 @@
 --
 ENTER:
   printf("ENTER Waiting for 3 days...\n");
-  accumStart(pAccumTest-&gt;m_pAccum);
+EXIT:
+  printf("EXIT Done waiting 3 days.\n");
 valign=top
 </panel_attributes>
     <additional_attributes/>
@@ -24,11 +25,11 @@ valign=top
       <x>40</x>
       <y>130</y>
       <w>300</w>
-      <h>80</h>
+      <h>70</h>
     </coordinates>
     <panel_attributes>[accumHasReachedDays(pAccumTest-&gt;m_pAccum, 3)]
 lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
   </element>
   <element>
     <id>UMLSpecialState</id>
@@ -46,26 +47,25 @@ lt=-&gt;</panel_attributes>
     <coordinates>
       <x>40</x>
       <y>20</y>
-      <w>30</w>
+      <w>230</w>
       <h>60</h>
     </coordinates>
-    <panel_attributes>lt=-&gt;</panel_attributes>
+    <panel_attributes>/accumStart(pAccumTest-&gt;m_pAccum);
+lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
   </element>
   <element>
     <id>UMLState</id>
     <coordinates>
       <x>20</x>
-      <y>190</y>
+      <y>180</y>
       <w>310</w>
-      <h>80</h>
+      <h>60</h>
     </coordinates>
     <panel_attributes>Done
 --
 ENTER:
-  printf("EXIT Done waiting 3 days.\n");
   oosmos_EndProgram(1);
-
 valign=top
 </panel_attributes>
     <additional_attributes/>

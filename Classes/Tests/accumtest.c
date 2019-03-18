@@ -33,6 +33,13 @@ static bool Waiting_State_Code(void * pObject, oosmos_sState * pState, const oos
   switch (oosmos_EventCode(pEvent)) {
     case oosmos_ENTER: {
       printf("ENTER Waiting for 3 days...\n");
+      return true;
+    }
+    case oosmos_EXIT: {
+      printf("EXIT Done waiting 3 days.\n");
+      return true;
+    }
+    case oosmos_DEFAULT: {
       accumStart(pAccumTest->m_pAccum);
       return true;
     }
@@ -51,7 +58,6 @@ static bool Done_State_Code(void * pObject, oosmos_sState * pState, const oosmos
 {
   switch (oosmos_EventCode(pEvent)) {
     case oosmos_ENTER: {
-      printf("EXIT Done waiting 3 days.\n");
       oosmos_EndProgram(1);
       return true;
     }
