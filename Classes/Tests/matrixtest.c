@@ -37,16 +37,18 @@ enum {
   SpecialReleasedEvent = 4
 };
 
-static const char * OOSMOS_EventNames(int EventCode)
-{
-  switch (EventCode) {
-    case PressedEvent: return "PressedEvent";
-    case ReleasedEvent: return "ReleasedEvent";
-    case SpecialPressedEvent: return "SpecialPressedEvent";
-    case SpecialReleasedEvent: return "SpecialReleasedEvent";
-    default: return "--No Event Name--";
+#ifdef oosmos_DEBUG
+  static const char * OOSMOS_EventNames(int EventCode)
+  {
+    switch (EventCode) {
+      case PressedEvent: return "PressedEvent";
+      case ReleasedEvent: return "ReleasedEvent";
+      case SpecialPressedEvent: return "SpecialPressedEvent";
+      case SpecialReleasedEvent: return "SpecialReleasedEvent";
+      default: return "";
+    }
   }
-}
+#endif
 //<<<EVENTS
 
 typedef union {
@@ -97,6 +99,7 @@ static bool State_State_Code(void * pObject, oosmos_sState * pState, const oosmo
     }
   }
 
+  oosmos_UNUSED(pObject);
   oosmos_UNUSED(pState);
   return false;
 }

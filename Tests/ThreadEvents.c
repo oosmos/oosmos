@@ -29,13 +29,15 @@ enum {
   evTestEvent = 1
 };
 
-static const char * OOSMOS_EventNames(int EventCode)
-{
-  switch (EventCode) {
-    case evTestEvent: return "evTestEvent";
-    default: return "--No Event Name--";
+#ifdef oosmos_DEBUG
+  static const char * OOSMOS_EventNames(int EventCode)
+  {
+    switch (EventCode) {
+      case evTestEvent: return "evTestEvent";
+      default: return "";
+    }
   }
-}
+#endif
 //<<<EVENTS
 
 typedef struct {
@@ -122,6 +124,7 @@ static bool Done_State_Code(void * pObject, oosmos_sState * pState, const oosmos
     }
   }
 
+  oosmos_UNUSED(pObject);
   oosmos_UNUSED(pState);
   return false;
 }

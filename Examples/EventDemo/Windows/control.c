@@ -43,19 +43,21 @@ enum {
   evStopReleased = 7
 };
 
-static const char * OOSMOS_EventNames(int EventCode)
-{
-  switch (EventCode) {
-    case evMovePressed: return "evMovePressed";
-    case evOption1Pressed: return "evOption1Pressed";
-    case evOption2Pressed: return "evOption2Pressed";
-    case evPumpPressed: return "evPumpPressed";
-    case evQuitPressed: return "evQuitPressed";
-    case evStopPressed: return "evStopPressed";
-    case evStopReleased: return "evStopReleased";
-    default: return "--No Event Name--";
+#ifdef oosmos_DEBUG
+  static const char * OOSMOS_EventNames(int EventCode)
+  {
+    switch (EventCode) {
+      case evMovePressed: return "evMovePressed";
+      case evOption1Pressed: return "evOption1Pressed";
+      case evOption2Pressed: return "evOption2Pressed";
+      case evPumpPressed: return "evPumpPressed";
+      case evQuitPressed: return "evQuitPressed";
+      case evStopPressed: return "evStopPressed";
+      case evStopReleased: return "evStopReleased";
+      default: return "";
+    }
   }
-}
+#endif
 //<<<EVENTS
 
 typedef union {
@@ -192,6 +194,7 @@ static bool Terminated_State_Code(void * pObject, oosmos_sState * pState, const 
     }
   }
 
+  oosmos_UNUSED(pObject);
   oosmos_UNUSED(pState);
   return false;
 }

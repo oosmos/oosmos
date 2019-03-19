@@ -35,16 +35,18 @@ enum {
   evUpPressed = 4
 };
 
-static const char * OOSMOS_EventNames(int EventCode)
-{
-  switch (EventCode) {
-    case evDownPressed: return "evDownPressed";
-    case evStart: return "evStart";
-    case evStop: return "evStop";
-    case evUpPressed: return "evUpPressed";
-    default: return "--No Event Name--";
+#ifdef oosmos_DEBUG
+  static const char * OOSMOS_EventNames(int EventCode)
+  {
+    switch (EventCode) {
+      case evDownPressed: return "evDownPressed";
+      case evStart: return "evStart";
+      case evStop: return "evStop";
+      case evUpPressed: return "evUpPressed";
+      default: return "";
+    }
   }
-}
+#endif
 //<<<EVENTS
 
 typedef union {

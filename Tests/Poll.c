@@ -275,6 +275,7 @@ static bool Done_State_Code(void * pObject, oosmos_sState * pState, const oosmos
     }
   }
 
+  oosmos_UNUSED(pObject);
   oosmos_UNUSED(pState);
   return false;
 }

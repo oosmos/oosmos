@@ -42,16 +42,18 @@ enum {
   evTimedOut2 = 4
 };
 
-static const char * OOSMOS_EventNames(int EventCode)
-{
-  switch (EventCode) {
-    case evDone: return "evDone";
-    case evPrint: return "evPrint";
-    case evTimedOut1: return "evTimedOut1";
-    case evTimedOut2: return "evTimedOut2";
-    default: return "--No Event Name--";
+#ifdef oosmos_DEBUG
+  static const char * OOSMOS_EventNames(int EventCode)
+  {
+    switch (EventCode) {
+      case evDone: return "evDone";
+      case evPrint: return "evPrint";
+      case evTimedOut1: return "evTimedOut1";
+      case evTimedOut2: return "evTimedOut2";
+      default: return "";
+    }
   }
-}
+#endif
 //<<<EVENTS
 
 typedef union {

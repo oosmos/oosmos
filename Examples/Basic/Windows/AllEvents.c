@@ -15,16 +15,18 @@ enum {
   ev_q_Pressed = 4
 };
 
-static const char * OOSMOS_EventNames(int EventCode)
-{
-  switch (EventCode) {
-    case ev_a_Pressed: return "ev_a_Pressed";
-    case ev_e_Pressed: return "ev_e_Pressed";
-    case ev_g_Pressed: return "ev_g_Pressed";
-    case ev_q_Pressed: return "ev_q_Pressed";
-    default: return "--No Event Name--";
+#ifdef oosmos_DEBUG
+  static const char * OOSMOS_EventNames(int EventCode)
+  {
+    switch (EventCode) {
+      case ev_a_Pressed: return "ev_a_Pressed";
+      case ev_e_Pressed: return "ev_e_Pressed";
+      case ev_g_Pressed: return "ev_g_Pressed";
+      case ev_q_Pressed: return "ev_q_Pressed";
+      default: return "";
+    }
   }
-}
+#endif
 //<<<EVENTS
 
 typedef union {
@@ -148,6 +150,7 @@ static bool Terminating_State_Code(void * pObject, oosmos_sState * pState, const
     }
   }
 
+  oosmos_UNUSED(pObject);
   oosmos_UNUSED(pState);
   return false;
 }

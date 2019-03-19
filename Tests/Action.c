@@ -143,6 +143,7 @@ static bool Exiting_State_Code(void * pObject, oosmos_sState * pState, const oos
     }
   }
 
+  oosmos_UNUSED(pObject);
   oosmos_UNUSED(pState);
   return false;
 }
