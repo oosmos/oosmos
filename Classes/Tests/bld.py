@@ -7,6 +7,7 @@ import os
 
 os.system(r'node c:\dev\oosmos_dev\gen_dev\js\gen.js tests.json')
 
+oosmos.cWindows.Compile(oosmos_dir, ['pidtest.c'],  '-c -Doosmos_ORTHO')
 oosmos.cWindows.Compile(oosmos_dir, ['accumtest.c'],  '-c -Doosmos_ORTHO')
 oosmos.cWindows.Compile(oosmos_dir, ['threadtest.c'], '-c -Doosmos_ORTHO -DthreadtestDEBUG')
 oosmos.cWindows.Compile(oosmos_dir, ['threadyieldtest.c'], '-c -Doosmos_ORTHO -DthreadtestDEBUG')

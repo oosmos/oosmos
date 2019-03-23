@@ -10,6 +10,16 @@
   },
   {
     "enabled":       true,
+    "uxf_filename":  "pidtest.uxf",
+    "filename":      "pidtest.c",
+    "type":          "pidtest",
+    "object_ptr":    "pPidTest",
+    "thread_events":  [ "evDone" ],
+    "queue_size":    0,
+    "debug":         false
+  },
+  {
+    "enabled":       true,
     "uxf_filename":  "threadtest.uxf",
     "filename":      "threadtest.c",
     "type":          "threadtest",
