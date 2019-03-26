@@ -1,3 +1,25 @@
+//
+// OOSMOS lcdtest Class
+//
+// Copyright (C) 2014-2019  OOSMOS, LLC
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, version 2 of the License ("GPLv2").
+//
+// This software may be used without the GPLv2 restrictions by entering
+// into a commercial license agreement with OOSMOS, LLC.
+// See <https://www.oosmos.com/licensing/>.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
 #include "pid.h"
 #include "pidtest.h"
 #include "oosmos.h"
@@ -20,7 +42,6 @@ struct pidtestTag
         oosmos_sLeaf Running_Region1_Adjusting_State;
       oosmos_sOrthoRegion Running_Region2_State;
         oosmos_sLeaf Running_Region2_Testing_State;
-    oosmos_sFinal Final1_State;
     oosmos_sLeaf State_State;
 //<<<DECL
 
@@ -42,6 +63,8 @@ static void PidThread(pidtest * pPidTest, oosmos_sState * pState)
   //
   // Attempt to simulate that the input is affected by each output.
   //
+  // Also, vary the amount of time between each sample to test the dt element of the PID.
+  // 
   oosmos_ThreadBegin();
     for (;;) {
       const float Sample = oosmos_Divide_Integral_Rounded(pPidTest->m_Output, 2);
@@ -168,7 +191,6 @@ extern pidtest * pidtestNew(void)
         oosmos_LeafInit(pPidTest, Running_Region1_Adjusting_State, Running_Region1_State, Running_Region1_Adjusting_State_Code);
       oosmos_OrthoRegionInit(pPidTest, Running_Region2_State, Running_State, Running_Region2_Testing_State, NULL);
         oosmos_LeafInit(pPidTest, Running_Region2_Testing_State, Running_Region2_State, Running_Region2_Testing_State_Code);
-    oosmos_FinalInit(pPidTest, Final1_State, ROOT, NULL);
     oosmos_LeafInit(pPidTest, State_State, ROOT, State_State_Code);
 //<<<INIT
 
