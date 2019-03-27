@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<diagram program="umlet" version="14.2">
+<diagram program="umlet" version="14.3.0">
   <zoom_level>10</zoom_level>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>420</x>
-      <y>80</y>
+      <x>410</x>
+      <y>60</y>
       <w>50</w>
       <h>90</h>
     </coordinates>
@@ -18,8 +18,8 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>200</x>
-      <y>90</y>
+      <x>190</x>
+      <y>70</y>
       <w>240</w>
       <h>40</h>
     </coordinates>
@@ -30,8 +30,8 @@ lt=-&gt;</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>200</x>
-      <y>130</y>
+      <x>190</x>
+      <y>110</y>
       <w>240</w>
       <h>40</h>
     </coordinates>
@@ -42,8 +42,8 @@ lt=-&gt;</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>30</x>
-      <y>80</y>
+      <x>20</x>
+      <y>60</y>
       <w>180</w>
       <h>90</h>
     </coordinates>
@@ -60,8 +60,8 @@ valign=top
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>40</x>
-      <y>30</y>
+      <x>100</x>
+      <y>20</y>
       <w>20</w>
       <h>20</h>
     </coordinates>
@@ -71,12 +71,12 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>40</x>
-      <y>40</y>
+      <x>100</x>
+      <y>30</y>
       <w>30</w>
-      <h>60</h>
+      <h>50</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
   </element>
 </diagram>
