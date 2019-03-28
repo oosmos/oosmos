@@ -99,6 +99,8 @@ extern float pidAdjustOutput(pid * pPID, float Input)
                                            (double) P, (double) I, (double) D,
                                            (double) pPID->m_SumOfErrors, (double) Output,
                                            (double) pPID->m_SetPoint, dtMS);
+  #else
+    oosmos_UNUSED(dtMS);
   #endif
 
   pPID->m_PreviousError  = Error;
