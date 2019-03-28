@@ -66,6 +66,9 @@ extern float pidAdjustOutput(pid * pPID, float Input)
 
   uint64_t NowUS = oosmos_GetFreeRunningMicroseconds();
 
+  //
+  // Handle uint32_t wrap around.
+  //
   if (NowUS < pPID->m_PreviousTimeUS) {
     NowUS += 0x100000000;
   }
@@ -82,14 +85,19 @@ extern float pidAdjustOutput(pid * pPID, float Input)
     D = 0.0f;
     dtMS = 0;
     pPID->m_bFirst = false;
+
+    #ifdef pidDEBUG
+      printf("Input,Error,P,I,D,Integral,Output,SetPoint,dtMS\n");
+    #endif
   } else {
     const uint32_t tdUS = (uint32_t) (NowUS - pPID->m_PreviousTimeUS);
-
     dtMS = oosmos_US2MS_Rounded(tdUS);
+
     pPID->m_SumOfErrors += Error * dtMS;
-    const float Derivative = oosmos_Divide_Integral_Rounded(Error - pPID->m_PreviousError, (float) dtMS);
     I = pPID->m_SumOfErrors * pPID->m_Ki;
-    D = Derivative          * pPID->m_Kd;
+
+    const float Derivative = oosmos_Divide_Integral_Rounded(Error - pPID->m_PreviousError, (float) dtMS);
+    D = Derivative * pPID->m_Kd;
   }
 
   const float Output = P + D + I;
@@ -122,8 +130,6 @@ extern pid * pidNew(float Kp, float Ki, float Kd, float SetPoint)
   pPID->m_SumOfErrors    = 0.0f;
   pPID->m_PreviousTimeUS = 0;
   pPID->m_bFirst         = true;
-
-  printf("Input,Error,P,I,D,Integral,Output,SetPoint,dtMS\n");
 
   return pPID;
 }
