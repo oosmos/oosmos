@@ -108,15 +108,12 @@ struct OOSMOS_sQueueTag {
   #if defined(__PIC32MX) && defined(PIC32_STARTER_KIT)
     #include <plib.h>
     #define oosmos_DebugPrint DBPRINTF
-    #define oosmos_DebugCode(x) x
   #elif defined(ARDUINO) || defined(ENERGIA)
     #define oosmos_DebugPrint OOSMOS_ArduinoPrintf
-    #define oosmos_DebugCode(x) x
     extern void OOSMOS_ArduinoPrintf(const char * pFormat, ...);
   #else
     #include <stdio.h>
     #define oosmos_DebugPrint printf
-    #define oosmos_DebugCode(x) x
   #endif
 
   extern void oosmos_DebugInit(void);
@@ -124,7 +121,6 @@ struct OOSMOS_sQueueTag {
   extern void OOSMOS_DebugDummy(const char*, ...);
   /*lint -e773 suppress "Expression-like macro not parenthesized" */
   #define oosmos_DebugPrint 1 ? (void)0 : OOSMOS_DebugDummy
-  #define oosmos_DebugCode(x)
   #define oosmos_DebugInit()
 #endif
 
@@ -253,6 +249,7 @@ typedef struct OOSMOS_sCompositeTag    oosmos_sComposite;
 typedef struct OOSMOS_sStateTag        oosmos_sLeaf;
 typedef struct OOSMOS_sOrthoRegionTag  oosmos_sOrthoRegion;
 typedef struct OOSMOS_sStateTag        oosmos_sFinal;
+typedef struct OOSMOS_sStateTag        oosmos_sHistory;
 
 typedef bool (*OOSMOS_tCode)(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent);
 typedef void (*oosmos_tAction)(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent);
@@ -261,6 +258,8 @@ typedef enum {
   OOSMOS_CompositeType = 1,
   OOSMOS_LeafType,
   OOSMOS_FinalType,
+  OOSMOS_HistoryShallowType,
+  OOSMOS_HistoryDeepType,
 
   #ifdef oosmos_ORTHO
     OOSMOS_OrthoType,
@@ -276,9 +275,9 @@ struct OOSMOS_sStateTag {
   oosmos_sTimeout        m_Timeout;
   oosmos_sStateMachine * m_pStateMachine;
 
-  oosmos_DebugCode(
+  #ifdef oosmos_DEBUG
     const char *         m_pName;
-  )
+  #endif
 
   oosmos_sTimeout m_ThreadTimeout;
 
@@ -307,6 +306,7 @@ struct OOSMOS_sStateTag {
 struct OOSMOS_sCompositeTag {
   oosmos_sState     m_State;
   oosmos_sState   * m_pDefault;
+  oosmos_sState   * m_pHistoryState;
 };
 
 struct OOSMOS_sRegionTag {
@@ -334,11 +334,11 @@ struct OOSMOS_sStateMachineTag {
   oosmos_sStateMachine * m_pNext;
   void                 * m_pObject;
 
-  oosmos_DebugCode(
+  #ifdef oosmos_DEBUG
     const char * (*m_pEventNameConverter)(int);
     const char * m_pFileName;
     bool         m_Debug;
-  )
+  #endif
 
   uint16_t m_CurrentEventSize;
   bool     m_IsStarted;
@@ -384,6 +384,11 @@ extern void OOSMOS_LeafInit(const char * pName, oosmos_sState *pState, oosmos_sS
 
 #define oosmos_LeafInit(pObject, LeafState, Parent, Code)\
         OOSMOS_LeafInit(OOSMOS_xstr(LeafState), &(pObject)->LeafState, (oosmos_sState *) &(pObject)->Parent, Code)
+//--------
+extern void OOSMOS_HistoryInit(const char * pName, oosmos_sState *pState, oosmos_sState *pParent, OOSMOS_eTypes Type);
+
+#define oosmos_HistoryInit(pObject, LeafState, Parent, Type)\
+        OOSMOS_HistoryInit(OOSMOS_xstr(LeafState), &(pObject)->LeafState, (oosmos_sState *) &(pObject)->Parent, Type)
 
 #ifdef oosmos_ORTHO
 

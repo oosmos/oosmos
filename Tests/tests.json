@@ -1,6 +1,15 @@
 [
   {
     "enabled":      true,
+    "uxf_filename": "History.uxf",
+    "filename":     "History.c",
+    "type":         "test",
+    "object_ptr":   "pTest",
+    "queue_size":   3,
+    "debug":        true
+  },
+  {
+    "enabled":      true,
     "uxf_filename": "ThreadComplete.uxf",
     "filename":     "ThreadComplete.c",
     "type":         "test",

@@ -35,19 +35,21 @@ enum {
   evUpperLimitSwitchOpen = 7
 };
 
-static const char * OOSMOS_EventNames(int EventCode)
-{
-  switch (EventCode) {
-    case evDownCommand: return "evDownCommand";
-    case evLowerLimitSwitchClosed: return "evLowerLimitSwitchClosed";
-    case evLowerLimitSwitchOpen: return "evLowerLimitSwitchOpen";
-    case evStopCommand: return "evStopCommand";
-    case evUpCommand: return "evUpCommand";
-    case evUpperLimitSwitchClosed: return "evUpperLimitSwitchClosed";
-    case evUpperLimitSwitchOpen: return "evUpperLimitSwitchOpen";
-    default: return "--No Event Name--";
+#ifdef oosmos_DEBUG
+  static const char * OOSMOS_EventNames(int EventCode)
+  {
+    switch (EventCode) {
+      case evDownCommand: return "evDownCommand";
+      case evLowerLimitSwitchClosed: return "evLowerLimitSwitchClosed";
+      case evLowerLimitSwitchOpen: return "evLowerLimitSwitchOpen";
+      case evStopCommand: return "evStopCommand";
+      case evUpCommand: return "evUpCommand";
+      case evUpperLimitSwitchClosed: return "evUpperLimitSwitchClosed";
+      case evUpperLimitSwitchOpen: return "evUpperLimitSwitchOpen";
+      default: return "";
+    }
   }
-}
+#endif
 //<<<EVENTS
 
 typedef struct motionTag motion;

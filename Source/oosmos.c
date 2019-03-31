@@ -541,6 +541,30 @@ static void Enter(oosmos_sRegion * pRegion, const oosmos_sState * pLCA, oosmos_s
   oosmos_sState * pStates[MAX_STATE_NESTING];
   oosmos_sState ** ppStates = pStates;
 
+  switch (pTarget->m_Type) {
+    case OOSMOS_HistoryShallowType: {
+      oosmos_sComposite * pParent  = (oosmos_sComposite *) pTarget->m_pParent;
+      oosmos_sState     * pHistory = pParent->m_pHistoryState;
+
+      pTarget = pHistory;
+      break;
+    }
+
+    case OOSMOS_HistoryDeepType: {
+      oosmos_sComposite * pParent  = (oosmos_sComposite *) pTarget->m_pParent;
+      oosmos_sState     * pHistory = pParent->m_pHistoryState;
+
+      pTarget = pHistory;
+
+      while (pTarget->m_Type == OOSMOS_CompositeType) {
+        pParent = (oosmos_sComposite *) pTarget;
+        pTarget = pParent->m_pHistoryState;
+      }
+
+      break;
+    }
+  }
+
   //
   // We are passed the target state (pTarget) which could be nested within other states.  We need
   // to invoke the oosmos_ENTER code for all states between the pTarget state and the pLCA, but in
@@ -687,6 +711,8 @@ static void Exit(const oosmos_sRegion * pRegion, const oosmos_sState * pLCA)
       }
     #endif
 
+    oosmos_sComposite * pParent = (oosmos_sComposite *) pState->m_pParent;
+    pParent->m_pHistoryState = pState;
     (void) DeliverEvent(pState, &EventEXIT);
   }
 }
@@ -756,13 +782,20 @@ extern bool OOSMOS_Transition(oosmos_sState * pState, oosmos_sState * pToState)
   return OOSMOS_TransitionAction(pState, pToState, NULL, NULL);
 }
 
-
 extern void OOSMOS_LeafInit(const char * pName, oosmos_sState * pState, oosmos_sState * pParent, OOSMOS_tCode pCode)
 {
   oosmos_POINTER_GUARD(pState);
 
   StateInit(pName, pState, pParent, pCode);
   pState->m_Type = OOSMOS_LeafType;
+}
+
+extern void OOSMOS_HistoryInit(const char * pName, oosmos_sState * pState, oosmos_sState * pParent, OOSMOS_eTypes Type)
+{
+  oosmos_POINTER_GUARD(pState);
+
+  StateInit(pName, pState, pParent, NULL);
+  pState->m_Type = Type;
 }
 
 extern void OOSMOS_CompositeInit(const char * pName, oosmos_sComposite * pComposite,
@@ -773,6 +806,7 @@ extern void OOSMOS_CompositeInit(const char * pName, oosmos_sComposite * pCompos
   StateInit(pName, &pComposite->m_State, pParent, pCode);
   pComposite->m_State.m_Type = OOSMOS_CompositeType;
   pComposite->m_pDefault = pDefault;
+  pComposite->m_pHistoryState = NULL;
 }
 
 #ifdef oosmos_ORTHO

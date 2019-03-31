@@ -31,15 +31,17 @@ enum {
   evStop = 3
 };
 
-static const char * OOSMOS_EventNames(int EventCode)
-{
-  switch (EventCode) {
-    case evA: return "evA";
-    case evB: return "evB";
-    case evStop: return "evStop";
-    default: return "--No Event Name--";
+#ifdef oosmos_DEBUG
+  static const char * OOSMOS_EventNames(int EventCode)
+  {
+    switch (EventCode) {
+      case evA: return "evA";
+      case evB: return "evB";
+      case evStop: return "evStop";
+      default: return "";
+    }
   }
-}
+#endif
 //<<<EVENTS
 
 typedef struct testTag test;
@@ -140,6 +142,7 @@ static bool Complete_State_Code(void * pObject, oosmos_sState * pState, const oo
     }
   }
 
+  oosmos_UNUSED(pObject);
   oosmos_UNUSED(pState);
   return false;
 }

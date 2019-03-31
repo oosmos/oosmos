@@ -29,13 +29,15 @@ enum {
   evTweak = 1
 };
 
-static const char * OOSMOS_EventNames(int EventCode)
-{
-  switch (EventCode) {
-    case evTweak: return "evTweak";
-    default: return "--No Event Name--";
+#ifdef oosmos_DEBUG
+  static const char * OOSMOS_EventNames(int EventCode)
+  {
+    switch (EventCode) {
+      case evTweak: return "evTweak";
+      default: return "";
+    }
   }
-}
+#endif
 //<<<EVENTS
 
 typedef struct testTag test;

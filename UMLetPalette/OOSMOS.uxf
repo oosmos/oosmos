@@ -33,7 +33,7 @@ group=2</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>150</x>
+      <x>100</x>
       <y>120</y>
       <w>40</w>
       <h>40</h>
@@ -44,7 +44,7 @@ group=2</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>90</x>
+      <x>60</x>
       <y>130</y>
       <w>20</w>
       <h>20</h>
@@ -55,7 +55,7 @@ group=2</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>30</x>
+      <x>20</x>
       <y>120</y>
       <w>20</w>
       <h>20</h>
@@ -69,11 +69,11 @@ group=3</panel_attributes>
     <coordinates>
       <x>20</x>
       <y>170</y>
-      <w>190</w>
+      <w>210</w>
       <h>30</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>10.0;10.0;170.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;190.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLState</id>
@@ -149,7 +149,7 @@ group=2</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>30</x>
+      <x>20</x>
       <y>130</y>
       <w>30</w>
       <h>50</h>
@@ -172,7 +172,7 @@ group=3</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>170</x>
+      <x>180</x>
       <y>200</y>
       <w>30</w>
       <h>70</h>
@@ -183,12 +183,34 @@ group=3</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>130</x>
+      <x>140</x>
       <y>200</y>
       <w>30</w>
       <h>70</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>150</x>
+      <y>130</y>
+      <w>20</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>type=history_shallow</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>190</x>
+      <y>130</y>
+      <w>20</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>type=history_deep</panel_attributes>
+    <additional_attributes/>
   </element>
 </diagram>
