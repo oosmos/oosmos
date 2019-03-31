@@ -124,7 +124,7 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>50</x>
+      <x>60</x>
       <y>340</y>
       <w>80</w>
       <h>40</h>
@@ -166,7 +166,7 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>260</x>
+      <x>270</x>
       <y>340</y>
       <w>70</w>
       <h>40</h>
@@ -180,7 +180,7 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>260</x>
+      <x>270</x>
       <y>490</y>
       <w>70</w>
       <h>40</h>
@@ -228,7 +228,7 @@ lt=-&gt;</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>80</x>
+      <x>90</x>
       <y>300</y>
       <w>20</w>
       <h>20</h>
@@ -239,7 +239,7 @@ lt=-&gt;</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>80</x>
+      <x>90</x>
       <y>310</y>
       <w>30</w>
       <h>50</h>
@@ -250,7 +250,7 @@ lt=-&gt;</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>120</x>
+      <x>130</x>
       <y>340</y>
       <w>160</w>
       <h>40</h>
@@ -298,12 +298,12 @@ lt=-&gt;</panel_attributes>
     <coordinates>
       <x>130</x>
       <y>490</y>
-      <w>150</w>
+      <w>160</w>
       <h>40</h>
     </coordinates>
     <panel_attributes>TIMEOUT(2 sec)
 lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;20.0;130.0;20.0</additional_attributes>
+    <additional_attributes>10.0;20.0;140.0;20.0</additional_attributes>
   </element>
   <element>
     <id>UMLSpecialState</id>
