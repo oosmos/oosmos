@@ -563,6 +563,10 @@ static void Enter(oosmos_sRegion * pRegion, const oosmos_sState * pLCA, oosmos_s
 
       break;
     }
+
+    default: {
+      break;
+    }
   }
 
   //
@@ -871,7 +875,7 @@ extern void OOSMOS_StateMachineInit(const char * pFileName, const char * pName, 
 
   pStateMachine->m_IsStarted        = false;
   pStateMachine->m_pEventQueue      = pEventQueue;
-  pStateMachine->m_pCurrentEvent    = pCurrentEvent;
+  pStateMachine->m_pCurrentEvent    = (oosmos_sEvent *) pCurrentEvent;
   pStateMachine->m_CurrentEventSize = (uint16_t) CurrentEventSize;
   pStateMachine->m_pObject          = pObject;
 
