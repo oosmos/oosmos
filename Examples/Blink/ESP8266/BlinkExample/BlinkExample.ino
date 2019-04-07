@@ -33,13 +33,13 @@ extern "C" void system_deep_sleep(int);
 
 static void SetupToggle(int Pin, int OnTimeMS, int OffTimeMS)
 {
-  pin * pPin = pinNew(Pin, pinOut, pinActiveHigh);
+  pin * pPin = pinNew(Pin, pinOut, pinActiveLow);
   toggleNew(pPin, OnTimeMS, OffTimeMS);
 }
 
 extern void setup()
 {
-  SetupToggle(LED_BUILTIN, 100, 100);
+  SetupToggle(LED_BUILTIN, 100, 2000);
 }
 
 extern void loop()
