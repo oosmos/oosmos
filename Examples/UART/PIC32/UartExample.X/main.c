@@ -29,7 +29,7 @@ typedef struct testTag test;
 
 enum
 {
-  uartIncomingByte,
+  uartIncomingByte
 };
 
 struct testTag
@@ -55,7 +55,7 @@ static bool Running_State_Code(void * pObject, oosmos_sState * pState, const oos
     }
     case uartIncomingByte: {
       uart_sReceivedByteEvent * pUartEvent = (uart_sReceivedByteEvent *) pEvent;
-      DBPRINTF("Incoming Byte: %c (%02x)\n", pUartEvent->Byte, pUartEvent->Byte);
+      printf("Incoming Byte: %c (%02x)\n", pUartEvent->Byte, pUartEvent->Byte);
       oosmos_UNUSED(pUartEvent);
       return true;
     }
