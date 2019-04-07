@@ -12,6 +12,7 @@ oosmos.cWindows.Compile(oosmos_dir, ['accumtest.c'],  '-c -Doosmos_ORTHO')
 oosmos.cWindows.Compile(oosmos_dir, ['threadtest.c'], '-c -Doosmos_ORTHO -DthreadtestDEBUG')
 oosmos.cWindows.Compile(oosmos_dir, ['threadyieldtest.c'], '-c -Doosmos_ORTHO -DthreadtestDEBUG')
 oosmos.cWindows.Compile(oosmos_dir, ['switchtest.c'], '-c')
+oosmos.cWindows.Compile(oosmos_dir, ['matrixtest.c'], '-c')
 
 oosmos.cWindows.Compile(oosmos_dir, ['Sockets/client.c'], '-c')
 oosmos.cWindows.Compile(oosmos_dir, ['Sockets/server.c'], '-c')

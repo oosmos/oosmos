@@ -77,24 +77,30 @@ static void NewSwitch(matrixtest * pMatrixTest, int Row, int Column, int Pressed
   swSubscribeOpenEvent(pSwitch, oosmos_EventQueue(pMatrixTest), ReleasedEventCode, (void *) pString);
 }
 
+static void Print(const char * pMessage, const oosmos_sEvent * pEvent)
+{
+  const char * pString = (const char *) pEvent->m_pContext;
+  prtFormatted("%s %s\n", pMessage, pString);
+}
+
 //>>>CODE
 static bool State_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   switch (oosmos_EventCode(pEvent)) {
     case PressedEvent: {
-      prtFormatted("Pressed %s\n", pString);
+      Print("Pressed", pEvent);
       return true;
     }
     case ReleasedEvent: {
-      prtFormatted("Released %s\n", pString);
+      Print("Released", pEvent);
       return true;
     }
     case SpecialPressedEvent: {
-      prtFormatted("Pressed special %s\n", pString);
+      Print("Pressed special", pEvent);
       return true;
     }
     case SpecialReleasedEvent: {
-      prtFormatted("Released special %s\n", pString);
+      Print("Released special", pEvent);
       return true;
     }
   }
