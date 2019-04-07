@@ -105,9 +105,9 @@ struct OOSMOS_sQueueTag {
 };
 
 #if defined(oosmos_DEBUG)
-  #if defined(__PIC32MX) && defined(PIC32_STARTER_KIT)
+  #if defined(__PIC32MX)
     #include <plib.h>
-    #define oosmos_DebugPrint DBPRINTF
+    #define oosmos_DebugPrint printf
   #elif defined(ARDUINO) || defined(ENERGIA)
     #define oosmos_DebugPrint OOSMOS_ArduinoPrintf
     extern void OOSMOS_ArduinoPrintf(const char * pFormat, ...);
@@ -115,13 +115,10 @@ struct OOSMOS_sQueueTag {
     #include <stdio.h>
     #define oosmos_DebugPrint printf
   #endif
-
-  extern void oosmos_DebugInit(void);
 #else
   extern void OOSMOS_DebugDummy(const char*, ...);
   /*lint -e773 suppress "Expression-like macro not parenthesized" */
   #define oosmos_DebugPrint 1 ? (void)0 : OOSMOS_DebugDummy
-  #define oosmos_DebugInit()
 #endif
 
 #define oosmos_UNUSED(x) (void)(x)

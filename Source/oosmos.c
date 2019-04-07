@@ -1371,17 +1371,6 @@ extern void oosmos_RegisterActiveObject(void * pObject, void (*pCallback)(void *
   pActiveObjectList = pActiveObject;
 }
 
-#if defined(oosmos_DEBUG)
-  extern void oosmos_DebugInit(void)
-  {
-    #if defined(PIC32)
-      #ifdef oosmos_DEBUG
-        DBINIT();
-      #endif
-    #endif
-  }
-#endif
-
 extern void oosmos_QueueSetBehaviorFunc(oosmos_sQueue * pQueue, oosmos_eQueueFullBehavior (*pCallback)(void *), void * pContext)
 {
   oosmos_POINTER_GUARD(pQueue);
