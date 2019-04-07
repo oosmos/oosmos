@@ -25,6 +25,7 @@
 #include "threadtest.h"
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 //
 // Adjust this in order to preallocate all 'threadtest' objects.

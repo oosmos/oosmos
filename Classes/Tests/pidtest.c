@@ -24,6 +24,7 @@
 #include "pidtest.h"
 #include "oosmos.h"
 #include <stdlib.h>
+#include <stdbool.h>
 
 #define BASELINE 25
 

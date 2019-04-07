@@ -1,6 +1,8 @@
 #include "accumtest.h"
 #include "accum.h"
 #include "oosmos.h"
+#include <stdio.h>
+#include <stdbool.h>
 
 //>>>EVENTS
 //<<<EVENTS

@@ -23,10 +23,10 @@
 #include "oosmos.h"
 #include "pin.h"
 #include "sw.h"
-#include "prt.h"
 #include "switchtest.h"
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdio.h>
 
 #ifndef MAX_SWITCHTESTS
 #define MAX_SWITCHTESTS 2
