@@ -38,11 +38,7 @@ static void Init()
   First = false;
 
   #if defined(ARDUINO)
-  {
     Serial.begin(prtArduinoBaudRate);
-  }
-  #elif defined(__PIC32MX)
-    DBINIT();
   #endif
 }
 
@@ -59,8 +55,6 @@ extern void prtFormatted(const char * pFormat, ...)
 
   #if defined(ARDUINO)
     Serial.print(Buffer);
-  #elif defined(__PIC32MX)
-    DBPRINTF("%s", Buffer);
   #else
     printf("%s", Buffer);
   #endif
