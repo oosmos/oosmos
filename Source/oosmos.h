@@ -135,12 +135,8 @@ struct OOSMOS_sQueueTag {
           }                      \
         } while (false)
 
-/*lint -e506 suppress "consant value boolean" */
-/*lint -e717 suppress "do { } while(0)" */
 #define oosmos_FOREVER() \
-        do {              \
-          continue;       \
-        } while (true)
+        for (;;) continue
 
 /*lint -e506 suppress "consant value boolean" */
 /*lint -e717 suppress "do { } while(0)" */
