@@ -23,8 +23,6 @@
 #ifndef PID_H
 #define PID_H
 
-#include <stdint.h>
-
 typedef struct pidTag pid;
 
 extern pid * pidNew(float Kp, float Ki, float Kd, float SetPoint);

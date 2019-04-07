@@ -23,7 +23,6 @@
 #define MaxBuffer 100
 
 #include "prt.h"
-#include "oosmos.h"
 #include <stdbool.h>
 #include <stdarg.h>
 #include <stdio.h>

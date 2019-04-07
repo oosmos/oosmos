@@ -30,6 +30,7 @@
 #include "oosmos.h"
 #include <stdbool.h>
 #include <stdint.h>
+#include <stddef.h>
 
 #ifdef accum_DEBUG
 #include <stdio.h>

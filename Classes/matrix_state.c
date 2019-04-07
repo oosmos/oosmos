@@ -40,6 +40,8 @@ static const int RowOffSettleTimeUS = 200;
 #include "sw.h"
 #include "pin.h"
 #include <stdarg.h>
+#include <stdbool.h>
+#include <stddef.h>
 
 struct matrixTag
 {
