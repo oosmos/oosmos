@@ -23,8 +23,10 @@
 #ifndef prt_h
 #define prt_h
 
+#include <stdint.h>
+
 #if defined(ARDUINO)
-  extern unsigned long prtArduinoBaudRate;
+  extern uint32_t prtArduinoBaudRate;
 #endif
 
 extern void prtFormatted(const char * pFormat, ...);

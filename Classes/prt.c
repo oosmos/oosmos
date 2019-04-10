@@ -23,9 +23,15 @@
 #define MaxBuffer 100
 
 #include "prt.h"
+#include "oosmos.h"
 #include <stdbool.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdint.h>
+
+#if defined(ARDUINO)
+  extern uint32_t prtArduinoBaudRate = 115200;
+#endif
 
 static void Init()
 {
