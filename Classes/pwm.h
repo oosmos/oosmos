@@ -27,16 +27,18 @@
 
 typedef struct pwmTag pwm;
 
-extern void pwmDutyCyclePercent(pwm * pPWM, uint8_t DutyCyclePercent); // 0%-100%
-extern void pwmOn(pwm * pPWM);
-extern void pwmOff(pwm * pPWM);
+extern pwm * pwmNew(int PinNumber, uint8_t DutyCyclePercent);
+extern void  pwmSetDutyCyclePercent(pwm * pPWM, uint8_t DutyCyclePercent); // 0%-100%
 
-#if defined(ARDUINO)
-  extern pwm * pwmNew(int PinNumber);
-#elif defined(_MSC_VER)
-  extern pwm * pwmNew(int PinNumber);
-#else
-  #error pwm.h: Unsupported platform.
+extern void  pwmOn(pwm * pPWM);
+extern void  pwmOff(pwm * pPWM);
+
+#if defined(ESP32)
+  extern double   pwmGetSignalFrequency(pwm * pPWM);
+  extern void     pwmSetSignalFrequency(pwm * pPWM, double SignalFrequency);
+
+  extern uint32_t pwmGetDutyCycleResolution(pwm * pPWM);
+  extern void     pwmSetDutyCycleResolution(pwm * pPWM, uint32_t Resolution);
 #endif
 
 #endif

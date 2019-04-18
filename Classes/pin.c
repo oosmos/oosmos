@@ -445,17 +445,23 @@ extern bool pinIsOff(const pin * pPin)
 
   extern void pinOn(const pin * pPin)
   {
-    #ifdef pinDEBUG
+    #if defined(pin_DEBUG)
       printf("%p Pin ON\n", pPin);
+    #else
+      oosmos_UNUSED(pPin);
     #endif
   }
 
   extern void pinOff(const pin * pPin)
   {
-    #ifdef pinDEBUG
+    #if defined(pin_DEBUG)
       printf("%p Pin OFF\n", pPin);
+    #else
+      oosmos_UNUSED(pPin);
     #endif
   }
+
+  void (*pin_pDummy)(void *) = RunStateMachine; // To satisfy compiler
 #else
   #error pin.c: Unsupported platform.
 #endif

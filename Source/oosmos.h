@@ -65,7 +65,7 @@
   #include "mbed.h"
   #define oosmos_EndProgram(Code) OOSMOS_EndProgram(Code)
 #elif defined(__IAR_SYSTEMS_ICC__)
-  #ifdef oosmos_INCLUDE
+  #if defined(oosmos_INCLUDE)
     #include oosmos_INCLUDE
   #else
     #error Must define oosmos_INCLUDE.  Example: "stm32l1xx_hal.h"
@@ -74,7 +74,7 @@
   #define oosmos_EndProgram(Code) OOSMOS_EndProgram(Code)
 #endif
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
   extern "C" {
 #endif
 
@@ -254,7 +254,7 @@ typedef enum {
   OOSMOS_HistoryShallowType,
   OOSMOS_HistoryDeepType,
 
-  #ifdef oosmos_ORTHO
+  #if defined(oosmos_ORTHO)
     OOSMOS_OrthoType,
     OOSMOS_OrthoRegionType,
   #endif
@@ -268,7 +268,7 @@ struct OOSMOS_sStateTag {
   oosmos_sTimeout        m_Timeout;
   oosmos_sStateMachine * m_pStateMachine;
 
-  #ifdef oosmos_DEBUG
+  #if defined(oosmos_DEBUG)
     const char *         m_pName;
   #endif
 
@@ -307,7 +307,7 @@ struct OOSMOS_sRegionTag {
   oosmos_sState   * m_pCurrent;
 };
 
-#ifdef oosmos_ORTHO
+#if defined(oosmos_ORTHO)
   struct OOSMOS_sOrthoRegionTag {
     oosmos_sRegion        m_Region;
     oosmos_sOrthoRegion * m_pNextOrthoRegion;
@@ -327,7 +327,7 @@ struct OOSMOS_sStateMachineTag {
   oosmos_sStateMachine * m_pNext;
   void                 * m_pObject;
 
-  #ifdef oosmos_DEBUG
+  #if defined(oosmos_DEBUG)
     const char * (*m_pEventNameConverter)(int);
     const char * m_pFileName;
     bool         m_Debug;
@@ -340,7 +340,7 @@ struct OOSMOS_sStateMachineTag {
 #define OOSMOS_xstr(s) OOSMOS_str(s)
 
 // To reduce footprint, only materialize these strings when compiling for debug.
-#ifdef oosmos_DEBUG
+#if defined(oosmos_DEBUG)
   #define OOSMOS_str(s) #s
   #define OOSMOS_FILE __FILE__
 #else
@@ -383,7 +383,7 @@ extern void OOSMOS_HistoryInit(const char * pName, oosmos_sState *pState, oosmos
 #define oosmos_HistoryInit(pObject, LeafState, Parent, Type)\
         OOSMOS_HistoryInit(OOSMOS_xstr(LeafState), &(pObject)->LeafState, (oosmos_sState *) &(pObject)->Parent, Type)
 
-#ifdef oosmos_ORTHO
+#if defined(oosmos_ORTHO)
 
 extern void OOSMOS_OrthoInit(const char * pName, oosmos_sOrtho *pOrtho, oosmos_sState *pParent, OOSMOS_tCode pCode);
 
@@ -449,7 +449,7 @@ extern void OOSMOS_PushEventToStateMachine(const oosmos_sStateMachine * pStateMa
   OOSMOS_CompileTimeAssert(sizeof(Event) != sizeof(void *)); \
   OOSMOS_PushEventToStateMachine(&((pObject)->ROOT), &(Event), sizeof(Event))
 //--------
-#ifdef oosmos_DEBUG
+#if defined(oosmos_DEBUG)
   #define oosmos_Debug(pObject, pEventName) \
     OOSMOS_Debug(&(pObject)->ROOT, pEventName)
 
@@ -722,7 +722,7 @@ extern int32_t oosmos_AnalogMapFast(int32_t Value, int32_t InMin, int32_t InMax,
 #define oosmos_Min(a,b) (((a)<(b))?(a):(b))
 #define oosmos_Max(a,b) (((a)>(b))?(a):(b))
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
   }
 #endif
 

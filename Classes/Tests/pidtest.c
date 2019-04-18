@@ -48,6 +48,7 @@ struct pidtestTag
 
   pid  * m_pPID;
   float  m_Output;
+  float  m_Sample;
 };
 
 static int RandBetween(int Lower, int Upper)
@@ -68,8 +69,8 @@ static void PidThread(pidtest * pPidTest, oosmos_sState * pState)
   // 
   oosmos_ThreadBegin();
     for (;;) {
-      const float Sample = oosmos_Divide_Integral_Rounded(pPidTest->m_Output, 2);
-      pPidTest->m_Output += pidAdjustOutput(pPidTest->m_pPID, Sample);
+      pPidTest->m_Sample = oosmos_Divide_Integral_Rounded(pPidTest->m_Output, 2);
+      pPidTest->m_Output += pidAdjustOutput(pPidTest->m_pPID, pPidTest->m_Sample);
       oosmos_ThreadDelayMS(RandBetween(10, 15));
     }
   oosmos_ThreadEnd();

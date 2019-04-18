@@ -28,94 +28,146 @@
 
 #include "pwm.h"
 #include "oosmos.h"
+#include "prt.h"
 #include <stdint.h>
 
-#include "prt.h"
+//
+// This pwm class provides a more intuitve and portable interface to control
+// PWM signals.  By specifying PWM duty cycle units as a percentage (0%-100%), the
+// user intent is clear.  The alternative is non-portable value in your application
+// whose magnitude varies from platform to platform.  The code below is a bit messy,
+// but it is preferable to hide the multi-platform ugliness in the PWM implementation
+// rather than pollute the principle application logic.
+//
+// Some processors have more capabilities than others. For example,
+// the Arduino ESP32 allows for complete control over the PWM SignalFrequency where
+// others do not without a lot of low-level timer reconfiguration.
+// For those platforms, more APIs are exposed and and there is a more complete pwmNew()
+// constructor provided.
+//
+// This class can be compiled cleanly on Windows, although it only outputs debug
+// information.
+//
+// To better read through all the preprocessor conditionals, it is recommended that
+// you view the code using Visual Studio Code and collapse the sections that are
+// not important to you.
+//
+// It has been tested on the following boards: ESP32, ESP8266, ChipKIT family,
+// Arduino AVR family, ST Nucleo family.  Add your board with the appropriate
+// #ifdef's if it is currently not supported.
+//
 
 struct pwmTag
 {
-  #if defined(ARDUINO)
-    int m_PinNumber;
-  #elif defined(_MSC_VER)
-    int m_PinNumber;
-  #else
-    #error pwm.c: Unsupported platform.
-  #endif
-
+  int      m_PinNumber;
   uint32_t m_DutyCycleValue;
+
+  #if defined(ESP32)
+    int    m_ChannelNumber;
+    int    m_DutyCycleResolution;
+    double m_SignalFrequency;
+  #endif
 };
 
-#if defined(ARDUINO)
-  extern void pwmDutyCyclePercent(pwm * pPWM, uint8_t DutyCyclePercent)
-  {
-    #ifdef ARDUINO_ESP8266_NODEMCU
-      const uint32_t DutyCycleValue = oosmos_AnalogMapAccurate(DutyCyclePercent, 0, 100, 0, 1023);
-    #else
-      const uint32_t DutyCycleValue = oosmos_AnalogMapAccurate(DutyCyclePercent, 0, 100, 0, 255);
-    #endif
+extern void pwmSetDutyCyclePercent(pwm * pPWM, uint8_t DutyCyclePercent)
+{
+  #if defined(ARDUINO_ESP8266_NODEMCU)
+    const uint32_t DutyCycleValue = (uint32_t) oosmos_AnalogMapAccurate(DutyCyclePercent, 0, 100, 0, 1023);
+  #elif defined(ESP32)
+    const uint32_t DutyCycleValue = (uint32_t) oosmos_AnalogMapAccurate(DutyCyclePercent, 0, 100, 0, (1 << pPWM->m_DutyCycleResolution) - 1);
+  #else
+    const uint32_t DutyCycleValue = (uint32_t) oosmos_AnalogMapAccurate(DutyCyclePercent, 0, 100, 0, 255);
+  #endif
 
+  #if defined(ESP32)
+    ledcWrite(pPWM->m_ChannelNumber, DutyCycleValue);
+  #elif defined(ARDUINO)
     analogWrite(pPWM->m_PinNumber, DutyCycleValue);
-    pPWM->m_DutyCycleValue = DutyCycleValue;
+  #elif defined(_MSC_VER)
+    // Do nothing
+  #else
+    #error pwm.cpp: Unsupported platform.
+  #endif
 
-    #ifdef pwmDEBUG
-      prtFormatted("pwmDutyCycle: pPWM: %p, pinNumber: %d, DutyCyclePercent: %u, DutyCycleValue: %u\n",
+  pPWM->m_DutyCycleValue = DutyCycleValue;
+
+  #if defined(pwm_DEBUG)
+    prtFormatted("pwmDutyCycle: pPWM: %p, pinNumber: %d, DutyCyclePercent: %u, DutyCycleValue: %u\n",
                   pPWM, pPWM->m_PinNumber, (unsigned int) DutyCyclePercent, (unsigned int) pPWM->m_DutyCycleValue);
-    #endif
-  }
+  #endif
+}
 
-  extern void pwmOn(pwm * pPWM)
-  {
+extern void pwmOn(pwm * pPWM)
+{
+  #if defined(ESP32)
+    ledcWrite(pPWM->m_ChannelNumber, pPWM->m_DutyCycleValue);
+  #elif defined(ARDUINO)
     analogWrite(pPWM->m_PinNumber, pPWM->m_DutyCycleValue);
-  }
+  #elif defined(_MSC_VER)
+    // Do nothing
+  #else
+    #error pwm.cpp: Unsupported platform.
+  #endif
+}
 
-  extern void pwmOff(pwm * pPWM)
-  {
+extern void pwmOff(pwm * pPWM)
+{
+  #if defined(ESP32)
+    ledcWrite(pPWM->m_ChannelNumber, 0);
+  #elif defined(ARDUINO)
     analogWrite(pPWM->m_PinNumber, 0);
-  }
+  #elif defined(_MSC_VER)
+    // Do nothing
+  #else
+    #error: pwm.cpp: Unsupported platform.
+  #endif
+}
 
-  extern pwm * pwmNew(int PinNumber)
+extern pwm * pwmNew(int PinNumber, uint8_t DutyCyclePercent)
+{
+  oosmos_Allocate(pPWM, pwm, pwmMAX, NULL);
+  pPWM->m_PinNumber = PinNumber;
+
+  pwmSetDutyCyclePercent(pPWM, DutyCyclePercent);
+
+  #if defined(ARDUINO)
+    pinMode(pPWM->m_PinNumber, OUTPUT);
+  #endif
+
+  #if defined(ESP32)
+    static int Channels = 0;
+
+    pPWM->m_ChannelNumber       = Channels++;
+    pPWM->m_DutyCycleResolution = 15;
+    pPWM->m_SignalFrequency     = 1000.0;
+
+    ledcSetup(pPWM->m_ChannelNumber, pPWM->m_SignalFrequency, pPWM->m_DutyCycleResolution);
+    ledcAttachPin(pPWM->m_PinNumber, pPWM->m_ChannelNumber);
+  #endif
+
+  return pPWM;
+}
+
+#if defined(ESP32)
+  extern double pwmGetSignalFrequency(pwm * pPWM)
   {
-    oosmos_Allocate(pPWM, pwm, pwmMAX, NULL);
-    pPWM->m_PinNumber = PinNumber;
-
-    pinMode(PinNumber, OUTPUT);
-
-    #ifdef pwmDEBUG
-      prtFormatted("pwmNew: pPWM: %p, PinNumber: %d\n", pPWM, pPWM->m_PinNumber);
-    #endif
-
-    return pPWM;
+    return pPWM->m_SignalFrequency;
   }
-#elif defined(_MSC_VER)
-  extern void pwmDutyCyclePercent(pwm * pPWM, uint8_t DutyCyclePercent)
+
+  extern void pwmSetSignalFrequency(pwm * pPWM, double SignalFrequency)
   {
-    pPWM->m_DutyCycleValue = (uint32_t) oosmos_AnalogMapAccurate(DutyCyclePercent, 0, 100, 0, 1023);
-
-    #ifdef pwmDEBUG
-      prtFormatted("pwmDutyCycle: pPWM: %p, pinNumber: %d, DutyCyclePercent: %u, DutyCycleValue: %u\n",
-                  pPWM, pPWM->m_PinNumber, (unsigned int) DutyCyclePercent, (unsigned int) pPWM->m_DutyCycleValue);
-    #endif
+    pPWM->m_SignalFrequency = SignalFrequency;
+    ledcSetup(pPWM->m_ChannelNumber, pPWM->m_SignalFrequency, pPWM->m_DutyCycleResolution);
   }
 
-  extern void pwmOn(pwm * pPWM)
+  extern uint32_t pwmGetDutyCycleResolution(pwm * pPWM)
   {
+    return pPWM->m_DutyCycleResolution;
   }
 
-  extern void pwmOff(pwm * pPWM)
+  extern void pwmSetDutyCycleResolution(pwm * pPWM, uint32_t DutyCycleResolution)
   {
+    pPWM->m_DutyCycleResolution = DutyCycleResolution;
+    ledcSetup(pPWM->m_ChannelNumber, pPWM->m_SignalFrequency, pPWM->m_DutyCycleResolution);
   }
-
-  extern pwm * pwmNew(int PinNumber)
-  {
-    oosmos_Allocate(pPWM, pwm, pwmMAX, NULL);
-    pPWM->m_PinNumber = PinNumber;
-
-    #ifdef pwmDEBUG
-      prtFormatted("pwmNew: pPWM: %p, PinNumber: %d\n", pPWM, pPWM->m_PinNumber);
-    #endif
-
-    return pPWM;
-  }
-#else
-  #error pwm.c: Unsupported platform.
 #endif

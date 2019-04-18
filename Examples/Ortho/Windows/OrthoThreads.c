@@ -20,14 +20,7 @@ struct orthoTag
         oosmos_sFinal Warning_Region2_Final2_State;
     oosmos_sLeaf Terminating_State;
 //<<<DECL
-
-  int m_ExampleMember;
 };
-
-// Local Static functions
-static void LocalStaticFunction(ortho * pOrtho)
-{
-}
 
 static void BlinkingThread(ortho * pOrtho, oosmos_sState * pState)
 {
@@ -142,8 +135,6 @@ extern ortho * orthoNew(void)
 
   oosmos_Debug(pOrtho, NULL);
 //<<<INIT
-
-  pOrtho->m_ExampleMember = 0;
 
   return pOrtho;
 }

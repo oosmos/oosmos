@@ -25,11 +25,8 @@
 #include "keyer.h"
 #include "prt.h"
 
-unsigned long prtArduinoBaudRate = 115200;
-
 extern void setup()
 {
-  Serial.begin(prtArduinoBaudRate);
   pin * pDitPin     = pinNew(6,  pinIn,  pinActiveLow);
   pin * pDahPin     = pinNew(7,  pinIn,  pinActiveLow);
   pin * pSpeakerPin = pinNew(13, pinOut, pinActiveHigh);

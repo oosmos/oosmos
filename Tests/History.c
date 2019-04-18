@@ -78,36 +78,6 @@ struct testTag
 //<<<DECL
 };
 
-static void RunningThread(oosmos_sState * pState)
-{
-  oosmos_ThreadBegin();
-    for (;;) {
-      printf("RUNNING...\n");
-      oosmos_ThreadDelayMS(750);
-    }
-  oosmos_ThreadEnd();
-}
-
-static void FlashingThread(oosmos_sState * pState)
-{
-  oosmos_ThreadBegin();
-    for (;;) {
-      printf("Flashing...\n");
-      oosmos_ThreadDelayMS(50);
-    }
-  oosmos_ThreadEnd();
-}
-
-static void BeepingThread(oosmos_sState * pState)
-{
-  oosmos_ThreadBegin();
-    for (;;) {
-      printf("Beeping...\n");
-      oosmos_ThreadDelayMS(100);
-    }
-  oosmos_ThreadEnd();
-}
-
 //>>>CODE
 static bool Running_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {

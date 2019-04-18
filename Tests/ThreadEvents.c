@@ -83,16 +83,17 @@ static void A1Thread(oosmos_sState * pState)
 
 static void EventDriverThread(const test * pTest, oosmos_sState * pState)
 {
+  static const sTestEvent TestEvent998 = { { evTestEvent, NULL }, 998 };
+  static const sTestEvent TestEvent999 = { { evTestEvent, NULL }, 999 };
+
   oosmos_ThreadBegin();
     printf("EventDriverThread: Enter\n");
     oosmos_ThreadDelayMS(1000);
 
     printf("EventDriverThread: Push 998\n");
-    const sTestEvent TestEvent998 = { { evTestEvent, NULL }, 998 };
     oosmos_PushEvent(pTest, TestEvent998);
 
     printf("EventDriverThread: Push 999\n");
-    const sTestEvent TestEvent999 = { { evTestEvent, NULL }, 999 };
     oosmos_PushEvent(pTest, TestEvent999);
   oosmos_ThreadEnd();
 }

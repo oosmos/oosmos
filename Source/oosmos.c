@@ -99,7 +99,7 @@ static oosmos_sRegion * GetRegion(oosmos_sState * pState)
   while (pState != NULL) {
     pCandidateState = pState;
 
-    #ifdef oosmos_ORTHO
+    #if defined(oosmos_ORTHO)
       if (pCandidateState->m_Type == OOSMOS_OrthoRegionType) {
         /*lint -e826 suppress "Suspicious pointer-to-pointer conversion (area too small)" */
         /*lint -e740 suppress "Unusual pointer cast (incompatible indirect types)" */
@@ -133,10 +133,10 @@ static oosmos_sRegion * GetRegion(oosmos_sState * pState)
     return (oosmos_sStateMachine *) pCandidateState;
   }
 
-#ifdef oosmos_DEBUG
+#if defined(oosmos_DEBUG)
   static const char * GetFileName(const void * pObject)
   {
-    const oosmos_sStateMachine * pStateMachine = GetStateMachine(pObject);
+    const oosmos_sStateMachine * pStateMachine = GetStateMachine((const oosmos_sState *) pObject);
 
     oosmos_POINTER_GUARD(pStateMachine);
 
@@ -209,7 +209,7 @@ static bool PropagateEvent(const oosmos_sRegion * pRegion, const oosmos_sEvent *
 
   oosmos_sState * pCurrent = pRegion->m_pCurrent;
 
-  #ifdef oosmos_ORTHO
+  #if defined(oosmos_ORTHO)
     switch (pCurrent->m_Type) {
       case OOSMOS_OrthoType: {
         const oosmos_sOrtho * pOrtho = (oosmos_sOrtho *) pCurrent;
@@ -261,7 +261,7 @@ static bool ProcessTimeouts(const oosmos_sRegion * pRegion)
   oosmos_sState * pCurrent = pRegion->m_pCurrent;
 
   switch (pCurrent->m_Type) {
-    #ifdef oosmos_ORTHO
+    #if defined(oosmos_ORTHO)
       case OOSMOS_OrthoType: {
         const oosmos_sOrtho * pOrtho = (oosmos_sOrtho *) pCurrent;
         oosmos_sOrthoRegion * pOrthoRegion = pOrtho->m_pFirstOrthoRegion;
@@ -285,7 +285,7 @@ static bool ProcessTimeouts(const oosmos_sRegion * pRegion)
         if (IS_TIMEOUT_ACTIVE(pState) && oosmos_TimeoutHasExpired(&pState->m_Timeout)) {
           RESET_TIMEOUT(pState);
 
-          #ifdef oosmos_DEBUG
+          #if defined(oosmos_DEBUG)
             oosmos_DebugPrint("%s: EVENT TIMEOUT\n", GetFileName(pState));
           #endif
 
@@ -311,7 +311,7 @@ static bool IsInState(const oosmos_sRegion * pRegion, const oosmos_sState * pQue
   }
 
   switch (pCurrent->m_Type) {
-    #ifdef oosmos_ORTHO
+    #if defined(oosmos_ORTHO)
       case OOSMOS_OrthoType: {
         const oosmos_sOrtho * pOrtho = (oosmos_sOrtho *) pCurrent;
 
@@ -354,7 +354,7 @@ static void DefaultTransitions(oosmos_sRegion * pRegion, oosmos_sState * pState)
   (void) DeliverEvent(pState, &EventDEFAULT);
   pRegion->m_pCurrent = pState;
 
-  #ifdef oosmos_DEBUG
+  #if defined(oosmos_DEBUG)
     if (pState->m_pStateMachine->m_Debug) {
       oosmos_DebugPrint("%s: ==> %s\n", GetFileName(pState), pState->m_pName);
     }
@@ -376,7 +376,7 @@ static void DefaultTransitions(oosmos_sRegion * pRegion, oosmos_sState * pState)
       break;
     }
 
-    #ifdef oosmos_ORTHO
+    #if defined(oosmos_ORTHO)
       case OOSMOS_OrthoType: {
         const oosmos_sOrtho * pOrtho = (oosmos_sOrtho *) pState;
         oosmos_sOrthoRegion * pOrthoRegion = pOrtho->m_pFirstOrthoRegion;
@@ -405,7 +405,7 @@ static void DefaultTransitions(oosmos_sRegion * pRegion, oosmos_sState * pState)
     }
 
     default: {
-      #ifdef oosmos_DEBUG
+      #if defined(oosmos_DEBUG)
         oosmos_DebugPrint("%s: Unhandled type %d in DefaultTransitions.\n", GetFileName(pState), pState->m_Type);
       #endif
       break;
@@ -422,7 +422,7 @@ static void StateInit(const char * pName, oosmos_sState * pState, oosmos_sState 
 
   RESET_TIMEOUT(pState);
 
-  #ifdef oosmos_DEBUG
+  #if defined(oosmos_DEBUG)
     pState->m_pName = pName;
   #else
     oosmos_UNUSED(pName);
@@ -444,7 +444,7 @@ static void Complete(oosmos_sState * pState)
 {
   oosmos_POINTER_GUARD(pState);
 
-  #ifdef oosmos_ORTHO
+  #if defined(oosmos_ORTHO)
     if (pState->m_Type == OOSMOS_OrthoRegionType) {
       pState = pState->m_pParent;
     }
@@ -453,7 +453,7 @@ static void Complete(oosmos_sState * pState)
   switch (pState->m_Type) {
     case OOSMOS_LeafType:
     case OOSMOS_CompositeType: {
-      #ifdef oosmos_DEBUG
+      #if defined(oosmos_DEBUG)
         if (pState->m_pStateMachine->m_Debug) {
           oosmos_DebugPrint("%s: ((( %s Complete )))\n", GetFileName(pState), pState->m_pName);
         }
@@ -463,7 +463,7 @@ static void Complete(oosmos_sState * pState)
       break;
     }
 
-    #ifdef oosmos_ORTHO
+    #if defined(oosmos_ORTHO)
       case OOSMOS_OrthoType: {
         const oosmos_sOrtho * pOrtho = (oosmos_sOrtho *) pState;
         const oosmos_sOrthoRegion * pOrthoRegion = pOrtho->m_pFirstOrthoRegion;
@@ -479,7 +479,7 @@ static void Complete(oosmos_sState * pState)
         }
 
         if (Completed == Visited) {
-          #ifdef oosmos_DEBUG
+          #if defined(oosmos_DEBUG)
             if (pState->m_pStateMachine->m_Debug) {
               oosmos_DebugPrint("%s: ((( %s Complete )))\n", GetFileName(pState), pState->m_pName);
             }
@@ -501,7 +501,7 @@ static void Complete(oosmos_sState * pState)
     }
 
     default: {
-      #ifdef oosmos_DEBUG
+      #if defined(oosmos_DEBUG)
         oosmos_DebugPrint("%s: Unhandled type %d in Complete.\n", GetFileName(pState), pState->m_Type);
       #endif
       break;
@@ -592,14 +592,14 @@ static void Enter(oosmos_sRegion * pRegion, const oosmos_sState * pLCA, oosmos_s
     switch (pState->m_Type) {
       case OOSMOS_CompositeType:
       case OOSMOS_FinalType:
-        #ifdef oosmos_ORTHO
+        #if defined(oosmos_ORTHO)
           case OOSMOS_OrthoType:
           case OOSMOS_OrthoRegionType:
         #endif
       case OOSMOS_LeafType: {
         pRegion->m_pCurrent = pState;
 
-        #ifdef oosmos_DEBUG
+        #if defined(oosmos_DEBUG)
           if (pRegion->m_Composite.m_State.m_pStateMachine->m_Debug) {
             oosmos_DebugPrint("%s: --> %s\n", GetFileName(pState), pState->m_pName);
           }
@@ -628,7 +628,7 @@ static void Enter(oosmos_sRegion * pRegion, const oosmos_sState * pLCA, oosmos_s
       }
 
       default: {
-        #ifdef oosmos_DEBUG
+        #if defined(oosmos_DEBUG)
           oosmos_DebugPrint("%s: Unhandled type %d in Enter().\n", GetFileName(pState), pTarget->m_Type);
         #endif
         break;
@@ -643,7 +643,7 @@ static void Enter(oosmos_sRegion * pRegion, const oosmos_sState * pLCA, oosmos_s
       break;
     }
 
-    #ifdef oosmos_ORTHO
+    #if defined(oosmos_ORTHO)
       case OOSMOS_OrthoRegionType: {
         const oosmos_sOrthoRegion * pOrthoRegion = (oosmos_sOrthoRegion *) pTarget;
         DefaultTransitions(pRegion, pOrthoRegion->m_Region.m_Composite.m_pDefault);
@@ -674,7 +674,7 @@ static void Enter(oosmos_sRegion * pRegion, const oosmos_sState * pLCA, oosmos_s
     }
 
     default: {
-      #ifdef oosmos_DEBUG
+      #if defined(oosmos_DEBUG)
         oosmos_DebugPrint("%s: Unhandled type %d in Enter_ (2)\n", GetFileName(pState), pTarget->m_Type);
       #endif
       break;
@@ -688,7 +688,7 @@ static void Exit(const oosmos_sRegion * pRegion, const oosmos_sState * pLCA)
 
   oosmos_sState * pCurrent = pRegion->m_pCurrent;
 
-  #ifdef oosmos_ORTHO
+  #if defined(oosmos_ORTHO)
     switch (pCurrent->m_Type) {
       case OOSMOS_OrthoType: {
         const oosmos_sOrtho * pOrtho = (oosmos_sOrtho *) pCurrent;
@@ -709,7 +709,7 @@ static void Exit(const oosmos_sRegion * pRegion, const oosmos_sState * pLCA)
   for (oosmos_sState * pState = pCurrent; pState != pLCA; pState = pState->m_pParent) {
     RESET_TIMEOUT(pState);
 
-    #ifdef oosmos_DEBUG
+    #if defined(oosmos_DEBUG)
       if (pState->m_pStateMachine->m_Debug) {
         oosmos_DebugPrint("%s:     %s -->\n", GetFileName(pState), pState->m_pName);
       }
@@ -756,13 +756,14 @@ extern bool OOSMOS_TransitionAction(oosmos_sState * pState, oosmos_sState * pToS
       pRegion = (oosmos_sRegion *) pS;
       break;
     }
-#ifdef oosmos_ORTHO
-    if (pS->m_Type == OOSMOS_OrthoRegionType) {
-      /*lint -e826 suppress "Suspicious pointer-to-pointer conversion (area too small)" */
-      pRegion = (oosmos_sRegion *) pS;
-      break;
-    }
-#endif
+
+    #if defined(oosmos_ORTHO)
+      if (pS->m_Type == OOSMOS_OrthoRegionType) {
+        /*lint -e826 suppress "Suspicious pointer-to-pointer conversion (area too small)" */
+        pRegion = (oosmos_sRegion *) pS;
+        break;
+      }
+    #endif
   }
 
   Exit(pRegion, pLCA);
@@ -813,7 +814,7 @@ extern void OOSMOS_CompositeInit(const char * pName, oosmos_sComposite * pCompos
   pComposite->m_pHistoryState = NULL;
 }
 
-#ifdef oosmos_ORTHO
+#if defined(oosmos_ORTHO)
 extern void OOSMOS_OrthoInit(const char * pName, oosmos_sOrtho * pOrtho, oosmos_sState * pParent, OOSMOS_tCode pCode)
 {
   oosmos_POINTER_GUARD(pOrtho);
@@ -866,7 +867,7 @@ extern void OOSMOS_StateMachineInit(const char * pFileName, const char * pName, 
   RegionInit(pName, pRegion, NULL, pDefault, NULL);
   pRegion->m_Composite.m_State.m_Type = OOSMOS_StateMachineType;
 
-  #ifdef oosmos_DEBUG
+  #if defined(oosmos_DEBUG)
     pStateMachine->m_Debug     = false;
     pStateMachine->m_pFileName = pFileName;
   #else
@@ -1008,7 +1009,7 @@ extern void OOSMOS_SubscriberListAdd(oosmos_sSubscriberList * pSubscriber, size_
   oosmos_FOREVER();
 }
 
-#ifdef oosmos_DEBUG
+#if defined(oosmos_DEBUG)
   extern void OOSMOS_Debug(oosmos_sStateMachine * pStateMachine, const char * (*pEventNameConverter)(int))
   {
     oosmos_POINTER_GUARD(pStateMachine);
@@ -1035,7 +1036,7 @@ extern void OOSMOS_RunStateMachine(oosmos_sStateMachine * pStateMachine)
       oosmos_sEvent * pEvent = (oosmos_sEvent *) pStateMachine->m_pCurrentEvent;
       EventsHandled += 1;
 
-      #ifdef oosmos_DEBUG
+      #if defined(oosmos_DEBUG)
         if (pStateMachine->m_Debug) {
           const int EventCode = pEvent->m_Code;
 
@@ -1113,11 +1114,26 @@ extern void oosmos_RunStateMachines(void)
     return micros();
   }
 
-  #ifdef oosmos_DEBUG
+  #if defined(oosmos_DEBUG)
     #include <stdarg.h>
     extern void OOSMOS_ArduinoPrintf(const char * pFormat, ...)
     {
       char Buffer[100];
+
+      #if defined(ARDUINO)
+        #ifndef arduino_BaudRate
+          #define arduino_BAUD_RATE 115200
+        #endif
+
+        static bool First = true;
+
+        if (First) {
+          First = false;
+
+          Serial.end();
+          Serial.begin(arduino_BAUD_RATE);
+        }
+      #endif
 
       va_list Args;
       va_start(Args, pFormat);
@@ -1125,6 +1141,7 @@ extern void oosmos_RunStateMachines(void)
       va_end(Args);
 
       Serial.print(Buffer);
+      Serial.flush();
     }
   #endif
 #elif defined(__PIC32MX)
@@ -1664,4 +1681,3 @@ extern void OOSMOS_EndProgram(int Code)
     exit(Code);
   #endif
 }
-

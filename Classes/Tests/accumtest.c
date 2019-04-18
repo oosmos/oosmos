@@ -22,11 +22,6 @@ struct accumtestTag
   accum * m_pAccum;
 };
 
-// Local Static functions
-static void LocalStaticFunction(accumtest * pAccumtest)
-{
-}
-
 //>>>CODE
 static bool Waiting_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {

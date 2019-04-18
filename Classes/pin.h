@@ -64,7 +64,8 @@ extern bool pinIsOff(const pin * pPin);
   extern pin * pinNew_Debounce(GPIO_TypeDef* Port, const uint16_t Bit, const pin_eDirection Direction, const pin_eLogic Logic, const uint8_t DebounceTimeMS);
 #elif defined(_MSC_VER)
   extern pin * pinNew(char Key, pin_eLogic Logic);
+#else
+  #error pin.h: Unsupported platform.
 #endif
 
 #endif
-

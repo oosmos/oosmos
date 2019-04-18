@@ -24,29 +24,14 @@
 
 #include "prt.h"
 #include "oosmos.h"
-#include <stdbool.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdint.h>
 
 #if defined(ARDUINO)
+  #include <stdbool.h>
   extern uint32_t prtArduinoBaudRate = 115200;
 #endif
-
-static void Init()
-{
-  static bool First = true;
-
-  if (!First) {
-    return;
-  }
-
-  First = false;
-
-  #if defined(ARDUINO)
-    Serial.begin(prtArduinoBaudRate);
-  #endif
-}
 
 extern void prtFormatted(const char * pFormat, ...)
 {
@@ -57,10 +42,18 @@ extern void prtFormatted(const char * pFormat, ...)
     (void) vsnprintf(Buffer, MaxBuffer, pFormat, ArgList);
   va_end(ArgList);
 
-  Init();
-
   #if defined(ARDUINO)
+    static bool First = true;
+  
+    if (First) {
+      First = false;
+
+      Serial.end();
+      Serial.begin(prtArduinoBaudRate);
+    }
+
     Serial.print(Buffer);
+    Serial.flush();
   #else
     printf("%s", Buffer);
   #endif
