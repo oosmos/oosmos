@@ -27,8 +27,8 @@
 
 typedef struct pwmTag pwm;
 
-extern pwm * pwmNew(int PinNumber, uint8_t DutyCyclePercent);
-extern void  pwmSetDutyCyclePercent(pwm * pPWM, uint8_t DutyCyclePercent); // 0%-100%
+extern pwm * pwmNew(int PinNumber, double DutyCyclePercent);
+extern void  pwmSetDutyCyclePercent(pwm * pPWM, double DutyCyclePercent); // 0.0%-100.0%
 
 extern void  pwmOn(pwm * pPWM);
 extern void  pwmOff(pwm * pPWM);

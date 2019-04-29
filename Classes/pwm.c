@@ -33,7 +33,7 @@
 
 //
 // This pwm class provides a more intuitve and portable interface to control
-// PWM signals.  By specifying PWM duty cycle units as a percentage (0%-100%), the
+// PWM signals.  By specifying PWM duty cycle units as a percentage (0.0%-100.0%), the
 // user intent is clear.  The alternative is non-portable value in your application
 // whose magnitude varies from platform to platform.  The code below is a bit messy,
 // but it is preferable to hide the multi-platform ugliness in the PWM implementation
@@ -69,14 +69,14 @@ struct pwmTag
   #endif
 };
 
-extern void pwmSetDutyCyclePercent(pwm * pPWM, uint8_t DutyCyclePercent)
+extern void pwmSetDutyCyclePercent(pwm * pPWM, double DutyCyclePercent)
 {
   #if defined(ARDUINO_ESP8266_NODEMCU)
-    const uint32_t DutyCycleValue = (uint32_t) oosmos_AnalogMapAccurate(DutyCyclePercent, 0, 100, 0, 1023);
+    const uint32_t DutyCycleValue = (uint32_t) oosmos_AnalogMapAccurate(DutyCyclePercent, 0.0, 100.0, 0.0, 1023.0);
   #elif defined(ESP32)
-    const uint32_t DutyCycleValue = (uint32_t) oosmos_AnalogMapAccurate(DutyCyclePercent, 0, 100, 0, (1 << pPWM->m_DutyCycleResolution) - 1);
+    const uint32_t DutyCycleValue = (uint32_t) oosmos_AnalogMapAccurate(DutyCyclePercent, 0.0, 100.0, 0.0, (1 << pPWM->m_DutyCycleResolution) - 1);
   #else
-    const uint32_t DutyCycleValue = (uint32_t) oosmos_AnalogMapAccurate(DutyCyclePercent, 0, 100, 0, 255);
+    const uint32_t DutyCycleValue = (uint32_t) oosmos_AnalogMapAccurate(DutyCyclePercent, 0.0, 100.0, 0.0, 255.0);
   #endif
 
   #if defined(ESP32)
@@ -92,8 +92,8 @@ extern void pwmSetDutyCyclePercent(pwm * pPWM, uint8_t DutyCyclePercent)
   pPWM->m_DutyCycleValue = DutyCycleValue;
 
   #if defined(pwm_DEBUG)
-    prtFormatted("pwmDutyCycle: pPWM: %p, pinNumber: %d, DutyCyclePercent: %u, DutyCycleValue: %u\n",
-                  pPWM, pPWM->m_PinNumber, (unsigned int) DutyCyclePercent, (unsigned int) pPWM->m_DutyCycleValue);
+    prtFormatted("pwmDutyCycle: pPWM: %p, pinNumber: %d, DutyCyclePercent: %f, DutyCycleValue: %u\n",
+                  pPWM, pPWM->m_PinNumber, DutyCyclePercent, (unsigned int) pPWM->m_DutyCycleValue);
   #endif
 }
 
@@ -123,7 +123,7 @@ extern void pwmOff(pwm * pPWM)
   #endif
 }
 
-extern pwm * pwmNew(int PinNumber, uint8_t DutyCyclePercent)
+extern pwm * pwmNew(int PinNumber, double DutyCyclePercent)
 {
   oosmos_Allocate(pPWM, pwm, pwmMAX, NULL);
   pPWM->m_PinNumber = PinNumber;
