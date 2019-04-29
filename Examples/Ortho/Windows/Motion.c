@@ -35,7 +35,7 @@ enum {
   evUpperLimitSwitchOpen = 7
 };
 
-#ifdef oosmos_DEBUG
+#if defined(oosmos_DEBUG)
   static const char * OOSMOS_EventNames(int EventCode)
   {
     switch (EventCode) {

@@ -34,7 +34,7 @@
 // that follows it portable.  Tested on Windows and Linux.
 //
 
-#ifdef _WIN32
+#if defined(_WIN32)
   #include <winsock2.h>
   #include <minwindef.h>  // for MAKEWORD, WORD
   #include <winerror.h>   // for WSAEWOULDBLOCK, WSAECONNREFUSED, WSAECONNABORTED
@@ -105,7 +105,7 @@ struct sockTag
 
 static void Init(void)
 {
-#ifdef _WIN32
+#if defined(_WIN32)
   static bool Started = false;
 
   if (!Started) {
@@ -197,7 +197,7 @@ static sock * New(sock_tSocket Socket)
 
 extern int sockGetLastError(void)
 {
-#ifdef _WIN32
+#if defined(_WIN32)
   return WSAGetLastError();
 #else
   return errno;

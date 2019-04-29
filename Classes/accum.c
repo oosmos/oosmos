@@ -32,8 +32,8 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#ifdef accum_DEBUG
-#include <stdio.h>
+#if defined(accum_DEBUG)
+  #include <stdio.h>
 #endif
 
 //
@@ -93,7 +93,7 @@ extern void accumReset(accum * pAccum)
   pAccum->m_TallyUS = 0;
   pAccum->m_Previous = (uint32_t) oosmos_GetFreeRunningMicroseconds();
 
-  #ifdef accum_DEBUG
+  #if defined(accum_DEBUG)
     (void) printf("Accum reset, Tally: %u\n", (uint32_t) pAccum->m_TallyUS);
   #endif
 }
@@ -127,7 +127,7 @@ extern void accumStart(accum * pAccum)
 
   pAccum->m_Previous = (uint32_t) oosmos_GetFreeRunningMicroseconds();
 
-  #ifdef accum_DEBUG
+  #if defined(accum_DEBUG)
     if (!pAccum->m_Started) {
       (void) printf("Accum Start -- Tally: %I64u, Seconds: %I64u\n", pAccum->m_TallyUS, oosmos_US2Seconds_Truncated(pAccum->m_TallyUS));
     }
@@ -142,7 +142,7 @@ extern void accumStop(accum * pAccum)
 
   Update(pAccum);
 
-  #ifdef accum_DEBUG
+  #if defined(accum_DEBUG)
     if (pAccum->m_Started) {
       (void) printf("Accum Stop  -- Tally: %I64u, Seconds: %I64u\n",  pAccum->m_TallyUS, oosmos_US2Seconds_Truncated(pAccum->m_TallyUS));
     }
@@ -158,7 +158,7 @@ extern bool accumHasReachedUS(accum * pAccum, uint64_t US)
   if (pAccum->m_Started) {
     Update(pAccum);
 
-    #ifdef accum_DEBUG
+    #if defined(accum_DEBUG)
       printf("US: %12I64u\n", pAccum->m_TallyUS);
     #endif
 

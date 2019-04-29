@@ -29,7 +29,7 @@ enum {
   evTweak = 1
 };
 
-#ifdef oosmos_DEBUG
+#if defined(oosmos_DEBUG)
   static const char * OOSMOS_EventNames(int EventCode)
   {
     switch (EventCode) {
