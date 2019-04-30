@@ -31,7 +31,7 @@ enum {
   evStop = 3
 };
 
-#if defined(oosmos_DEBUG)
+#ifdef oosmos_DEBUG
   static const char * OOSMOS_EventNames(int EventCode)
   {
     switch (EventCode) {
