@@ -1093,246 +1093,6 @@ extern void oosmos_RunStateMachines(void)
   }
 }
 
-#if defined(ARDUINO)
-  extern void oosmos_DelayUS(uint32_t US)
-  {
-    delayMicroseconds(US);
-  }
-
-  extern void oosmos_DelayMS(uint32_t MS)
-  {
-    delay(MS);
-  }
-
-  extern void oosmos_DelaySeconds(uint32_t Seconds)
-  {
-    delay(Seconds * 1000);
-  }
-
-  extern uint32_t oosmos_GetFreeRunningMicroseconds(void)
-  {
-    return micros();
-  }
-
-  #if defined(oosmos_DEBUG)
-    #include <stdarg.h>
-    extern void OOSMOS_ArduinoPrintf(const char * pFormat, ...)
-    {
-      char Buffer[100];
-
-      #if defined(ARDUINO)
-        #ifndef arduino_BaudRate
-          #define arduino_BAUD_RATE 115200
-        #endif
-
-        static bool First = true;
-
-        if (First) {
-          First = false;
-
-          Serial.end();
-          Serial.begin(arduino_BAUD_RATE);
-        }
-      #endif
-
-      va_list Args;
-      va_start(Args, pFormat);
-        vsprintf(Buffer, pFormat, Args);
-      va_end(Args);
-
-      Serial.print(Buffer);
-      Serial.flush();
-    }
-  #endif
-#elif defined(__PIC32MX)
-  #include <plib.h>
-  static int PIC32_ClockSpeedInMHz;
-
-  extern void oosmos_DelayUS(uint32_t Microseconds)
-  {
-    const uint32_t CoreTimerTicks = (PIC32_ClockSpeedInMHz/2) * Microseconds;
-    const uint32_t Start = ReadCoreTimer();
-    const uint64_t End = Start + CoreTimerTicks;
-
-    for (;;) {
-      uint64_t Now = ReadCoreTimer();
-
-      if (Now < Start) {
-        Now += 0x100000000;
-      }
-
-      if (Now >= End) {
-        break;
-      }
-    }
-  }
-
-  extern void oosmos_DelayMS(uint32_t Milliseconds)
-  {
-    oosmos_DelayUS(Milliseconds * 1000);
-  }
-
-  extern void oosmos_DelaySeconds(uint32_t Seconds)
-  {
-    oosmos_DelayMS(Seconds * 1000);
-  }
-
-  extern void oosmos_ClockSpeedInMHz(uint32_t ClockSpeedInMHz)
-  {
-    PIC32_ClockSpeedInMHz = ClockSpeedInMHz;
-    INTConfigureSystem(INT_SYSTEM_CONFIG_MULT_VECTOR);
-    INTEnableInterrupts();
-  }
-
-  extern uint32_t oosmos_GetClockSpeedInMHz(void)
-  {
-    return PIC32_ClockSpeedInMHz;
-  }
-
-  extern uint32_t oosmos_GetFreeRunningMicroseconds(void)
-  {
-    return ReadCoreTimer() / (PIC32_ClockSpeedInMHz / 2);
-  }
-#elif defined(_WIN32)
-  #include <windows.h>
-
-  extern void oosmos_DelayUS(uint32_t US)
-  {
-    (void) printf("oosmos_DelayUS is not implemented on Windows.\n");
-
-    oosmos_UNUSED(US);
-  }
-
-  extern void oosmos_DelayMS(uint32_t MS)
-  {
-    Sleep(MS);
-  }
-
-  extern void oosmos_DelaySeconds(uint32_t Seconds)
-  {
-    Sleep(Seconds * 1000);
-  }
-
-  extern uint32_t oosmos_GetFreeRunningMicroseconds(void)
-  {
-    SYSTEMTIME st;
-    GetSystemTime(&st);
-
-    uint64_t MS = 0;
-    MS += st.wMilliseconds;
-    MS += st.wSecond * 1000ULL;
-    MS += st.wMinute * 60000ULL;
-    MS += st.wHour   * 3600000ULL;
-
-    const uint64_t US = MS * 1000;
-
-    return (uint32_t) US;
-  }
-
-#elif defined(__linux__) || defined(__APPLE__)
-  #include <sys/time.h>
-  #include <stddef.h>
-  #include <time.h>
-
-  #if _POSIX_C_SOURCE >= 199309L
-    #include <time.h>   // for nanosleep
-  #else
-    #include <unistd.h> // for usleep
-#endif
-
-  extern void oosmos_DelayUS(uint32_t US)
-  {
-    #if _POSIX_C_SOURCE >= 199309L
-      struct timespec ts;
-      const uint32_t MS = US / 1000UL;
-      ts.tv_sec  = MS / 1000UL;
-      ts.tv_nsec = (MS % 1000UL) * 1000000UL;
-
-      nanosleep(&ts, NULL);
-    #else
-      usleep(US);
-    #endif
-  }
-
-  extern void oosmos_DelayMS(uint32_t MS)
-  {
-    oosmos_DelayUS(MS * 1000);
-  }
-
-  extern void oosmos_DelaySeconds(uint32_t Seconds)
-  {
-    sleep(Seconds);
-  }
-
-  extern uint32_t oosmos_GetFreeRunningMicroseconds(void)
-  {
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-
-    const uint64_t US = tv.tv_sec * 1000000ULL + tv.tv_usec;
-    return (uint32_t) US;
-  }
-
-#elif defined(__MBED__)
-  #include "mbed.h"
-
-  extern void oosmos_DelayUS(uint32_t US)
-  {
-    wait(US/1000000.0f);
-  }
-
-  extern void oosmos_DelayMS(uint32_t MS)
-  {
-    wait(MS/1000.0f);
-  }
-
-  extern void oosmos_DelaySeconds(uint32_t Seconds)
-  {
-    wait(Seconds);
-  }
-
-  extern uint32_t oosmos_GetFreeRunningMicroseconds(void)
-  {
-    static Timer TimerObj;
-    static bool  Initialized = false;
-
-    if (!Initialized) {
-      TimerObj.start();
-      Initialized = true;
-    }
-
-    return (uint32_t) TimerObj.read_us();
-  }
-#elif defined(__IAR_SYSTEMS_ICC__)
-  #if 0
-    extern void oosmos_DelayUS(uint32_t US)
-    {
-      // Not implemented
-      oosmos_FOREVER();
-      oosmos_UNUSED(US);
-    }
-  #endif
-
-  extern void oosmos_DelayMS(uint32_t MS)
-  {
-    const uint32_t StartingTickMS = HAL_GetTick();
-
-    while ((HAL_GetTick() - StartingTickMS) < MS) {
-      continue;
-    }
-  }
-
-  extern void oosmos_DelaySeconds(uint32_t Seconds)
-  {
-    oosmos_DelayMS(Seconds * 1000);
-  }
-
-  extern uint32_t oosmos_GetFreeRunningMicroseconds(void)
-  {
-    return HAL_GetTick() * 1000;
-  }
-#endif
-
 extern void oosmos_TimeoutInSeconds(oosmos_sTimeout * pTimeout, uint32_t Seconds)
 {
   oosmos_POINTER_GUARD(pTimeout);
@@ -1681,3 +1441,243 @@ extern void OOSMOS_EndProgram(int Code)
     exit(Code);
   #endif
 }
+
+#if defined(ARDUINO)
+  extern void oosmos_DelayUS(uint32_t US)
+  {
+    delayMicroseconds(US);
+  }
+
+  extern void oosmos_DelayMS(uint32_t MS)
+  {
+    delay(MS);
+  }
+
+  extern void oosmos_DelaySeconds(uint32_t Seconds)
+  {
+    delay(Seconds * 1000);
+  }
+
+  extern uint32_t oosmos_GetFreeRunningMicroseconds(void)
+  {
+    return micros();
+  }
+
+  #if defined(oosmos_DEBUG)
+    #include <stdarg.h>
+    extern void OOSMOS_ArduinoPrintf(const char * pFormat, ...)
+    {
+      char Buffer[100];
+
+      #if defined(ARDUINO)
+        #ifndef arduino_BaudRate
+          #define arduino_BAUD_RATE 115200
+        #endif
+
+        static bool First = true;
+
+        if (First) {
+          First = false;
+
+          Serial.end();
+          Serial.begin(arduino_BAUD_RATE);
+        }
+      #endif
+
+      va_list Args;
+      va_start(Args, pFormat);
+        vsprintf(Buffer, pFormat, Args);
+      va_end(Args);
+
+      Serial.print(Buffer);
+      Serial.flush();
+    }
+  #endif
+#elif defined(__PIC32MX)
+  #include <plib.h>
+  static int PIC32_ClockSpeedInMHz;
+
+  extern void oosmos_DelayUS(uint32_t Microseconds)
+  {
+    const uint32_t CoreTimerTicks = (PIC32_ClockSpeedInMHz/2) * Microseconds;
+    const uint32_t Start = ReadCoreTimer();
+    const uint64_t End = Start + CoreTimerTicks;
+
+    for (;;) {
+      uint64_t Now = ReadCoreTimer();
+
+      if (Now < Start) {
+        Now += 0x100000000;
+      }
+
+      if (Now >= End) {
+        break;
+      }
+    }
+  }
+
+  extern void oosmos_DelayMS(uint32_t Milliseconds)
+  {
+    oosmos_DelayUS(Milliseconds * 1000);
+  }
+
+  extern void oosmos_DelaySeconds(uint32_t Seconds)
+  {
+    oosmos_DelayMS(Seconds * 1000);
+  }
+
+  extern void oosmos_ClockSpeedInMHz(uint32_t ClockSpeedInMHz)
+  {
+    PIC32_ClockSpeedInMHz = ClockSpeedInMHz;
+    INTConfigureSystem(INT_SYSTEM_CONFIG_MULT_VECTOR);
+    INTEnableInterrupts();
+  }
+
+  extern uint32_t oosmos_GetClockSpeedInMHz(void)
+  {
+    return PIC32_ClockSpeedInMHz;
+  }
+
+  extern uint32_t oosmos_GetFreeRunningMicroseconds(void)
+  {
+    return ReadCoreTimer() / (PIC32_ClockSpeedInMHz / 2);
+  }
+#elif defined(_WIN32)
+  #include <windows.h>
+
+  extern void oosmos_DelayUS(uint32_t US)
+  {
+    (void) printf("oosmos_DelayUS is not implemented on Windows.\n");
+
+    oosmos_UNUSED(US);
+  }
+
+  extern void oosmos_DelayMS(uint32_t MS)
+  {
+    Sleep(MS);
+  }
+
+  extern void oosmos_DelaySeconds(uint32_t Seconds)
+  {
+    Sleep(Seconds * 1000);
+  }
+
+  extern uint32_t oosmos_GetFreeRunningMicroseconds(void)
+  {
+    SYSTEMTIME st;
+    GetSystemTime(&st);
+
+    uint64_t MS = 0;
+    MS += st.wMilliseconds;
+    MS += st.wSecond * 1000ULL;
+    MS += st.wMinute * 60000ULL;
+    MS += st.wHour   * 3600000ULL;
+
+    const uint64_t US = MS * 1000;
+
+    return (uint32_t) US;
+  }
+
+#elif defined(__linux__) || defined(__APPLE__)
+  #include <sys/time.h>
+  #include <stddef.h>
+  #include <time.h>
+
+  #if _POSIX_C_SOURCE >= 199309L
+    #include <time.h>   // for nanosleep
+  #else
+    #include <unistd.h> // for usleep
+#endif
+
+  extern void oosmos_DelayUS(uint32_t US)
+  {
+    #if _POSIX_C_SOURCE >= 199309L
+      struct timespec ts;
+      const uint32_t MS = US / 1000UL;
+      ts.tv_sec  = MS / 1000UL;
+      ts.tv_nsec = (MS % 1000UL) * 1000000UL;
+
+      nanosleep(&ts, NULL);
+    #else
+      usleep(US);
+    #endif
+  }
+
+  extern void oosmos_DelayMS(uint32_t MS)
+  {
+    oosmos_DelayUS(MS * 1000);
+  }
+
+  extern void oosmos_DelaySeconds(uint32_t Seconds)
+  {
+    sleep(Seconds);
+  }
+
+  extern uint32_t oosmos_GetFreeRunningMicroseconds(void)
+  {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+
+    const uint64_t US = tv.tv_sec * 1000000ULL + tv.tv_usec;
+    return (uint32_t) US;
+  }
+
+#elif defined(__MBED__)
+  #include "mbed.h"
+
+  extern void oosmos_DelayUS(uint32_t US)
+  {
+    wait(US/1000000.0f);
+  }
+
+  extern void oosmos_DelayMS(uint32_t MS)
+  {
+    wait(MS/1000.0f);
+  }
+
+  extern void oosmos_DelaySeconds(uint32_t Seconds)
+  {
+    wait(Seconds);
+  }
+
+  extern uint32_t oosmos_GetFreeRunningMicroseconds(void)
+  {
+    static Timer TimerObj;
+    static bool  Initialized = false;
+
+    if (!Initialized) {
+      TimerObj.start();
+      Initialized = true;
+    }
+
+    return (uint32_t) TimerObj.read_us();
+  }
+#elif defined(__IAR_SYSTEMS_ICC__)
+  #if 0
+    extern void oosmos_DelayUS(uint32_t US)
+    {
+      // Not implemented
+      oosmos_FOREVER();
+      oosmos_UNUSED(US);
+    }
+  #endif
+
+  extern void oosmos_DelayMS(uint32_t MS)
+  {
+    const uint32_t StartingTickMS = HAL_GetTick();
+
+    while ((HAL_GetTick() - StartingTickMS) < MS) {
+      continue;
+    }
+  }
+
+  extern void oosmos_DelaySeconds(uint32_t Seconds)
+  {
+    oosmos_DelayMS(Seconds * 1000);
+  }
+
+  extern uint32_t oosmos_GetFreeRunningMicroseconds(void)
+  {
+    return HAL_GetTick() * 1000;
+  }
+#endif
