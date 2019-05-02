@@ -29,6 +29,7 @@
 #include "adc.h"
 #include "oosmos.h"
 #include <stdint.h>
+#include <stddef.h>
 
 struct adcTag
 {
