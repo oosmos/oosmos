@@ -248,6 +248,7 @@ typedef struct OOSMOS_sObjectThreadTag oosmos_sObjectThread;
 
 typedef bool (*OOSMOS_tCode)(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent);
 typedef void (*oosmos_tAction)(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent);
+typedef void (*OOSMOS_tObjectThreadFunc)(void * pObject, oosmos_sState * pState);
 
 typedef enum {
   OOSMOS_CompositeType = 1,
@@ -336,10 +337,11 @@ struct OOSMOS_sStateMachineTag {
 };
 
 struct OOSMOS_sObjectThreadTag {
-  void                 * m_pObject;
-  void                 (*m_pFunc)(void * pObject, oosmos_sState * pState);
-  oosmos_sLeaf           m_LeafState;
-  oosmos_sObjectThread * m_pNext;
+  void                     * m_pObject;
+  OOSMOS_tObjectThreadFunc   m_pFunc;
+  oosmos_sLeaf               m_LeafState;
+  oosmos_sObjectThread     * m_pNext;
+  bool                       m_bRunning;
 };
 
 #define OOSMOS_xstr(s) OOSMOS_str(s)
@@ -354,9 +356,9 @@ struct OOSMOS_sObjectThreadTag {
 #endif
 
 //--------
-extern void OOSMOS_ObjectThreadInit(void * pObject, oosmos_sObjectThread * pObjectThread, void (*)(void * pObject, oosmos_sState * pState));
-#define oosmos_ObjectThreadInit(pObject, pObjectThread, pFunc)\
-              OOSMOS_ObjectThreadInit(pObject, &(pObject)->pObjectThread, pFunc)
+extern void OOSMOS_ObjectThreadInit(void * pObject, oosmos_sObjectThread * pObjectThread, OOSMOS_tObjectThreadFunc, bool bRunning);
+#define oosmos_ObjectThreadInit(pObject, pObjectThread, pFunc, Running)\
+              OOSMOS_ObjectThreadInit(pObject, &(pObject)->pObjectThread,  (OOSMOS_tObjectThreadFunc) pFunc, Running)
 
 //--------
 extern void OOSMOS_EndProgram(int);
@@ -718,6 +720,10 @@ struct OOSMOS_sActiveObjectTag {
   void (*m_pFunction)(void * pObject);
   oosmos_sActiveObject * m_pNext;
 };
+
+extern void oosmos_ObjectThreadStart(oosmos_sObjectThread * pObjectThread);
+extern void oosmos_ObjectThreadStop(oosmos_sObjectThread * pObjectThread);
+extern void oosmos_ObjectThreadRestart(oosmos_sObjectThread * pObjectThread);
 
 extern void oosmos_RegisterActiveObject(void * pObject, void (*pFunction)(void *), oosmos_sActiveObject * pActiveObject);
 extern uint32_t oosmos_GetFreeRunningMicroseconds(void);

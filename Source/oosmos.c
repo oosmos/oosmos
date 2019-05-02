@@ -1086,8 +1086,10 @@ extern void oosmos_RunStateMachines(void)
     pActiveObject->m_pFunction(pActiveObject->m_pObject);
   }
 
-  for (oosmos_sObjectThread * pThreadObject = pObjectThreadList; pThreadObject != NULL; pThreadObject = pThreadObject->m_pNext) {
-    pThreadObject->m_pFunc(pThreadObject->m_pObject, &pThreadObject->m_LeafState);
+  for (oosmos_sObjectThread * pObjectThread = pObjectThreadList; pObjectThread != NULL; pObjectThread = pObjectThread->m_pNext) {
+    if (pObjectThread->m_bRunning) {
+      pObjectThread->m_pFunc(pObjectThread->m_pObject, &pObjectThread->m_LeafState);
+    }
   }
 }
 
@@ -1146,17 +1148,33 @@ extern void oosmos_RegisterActiveObject(void * pObject, void (*pCallback)(void *
   pActiveObjectList = pActiveObject;
 }
 
-extern void OOSMOS_ObjectThreadInit(void * pObject, oosmos_sObjectThread * pObjectThread, void (*pFunc)(void * pObject, oosmos_sState * pState))
+extern void OOSMOS_ObjectThreadInit(void * pObject, oosmos_sObjectThread * pObjectThread, OOSMOS_tObjectThreadFunc pFunc, bool bRunning)
 {
-  pObjectThread->m_pFunc   = pFunc;
-  pObjectThread->m_pObject = pObject;
+  pObjectThread->m_pFunc    = pFunc;
+  pObjectThread->m_pObject  = pObject;
+  pObjectThread->m_bRunning = bRunning;
 
-  OOSMOS_LeafInit(pObject, &pObjectThread->m_LeafState, NULL, NULL);
+  OOSMOS_LeafInit("", &pObjectThread->m_LeafState, NULL, NULL);
 
   ThreadInit(&pObjectThread->m_LeafState);
 
   pObjectThread->m_pNext = pObjectThreadList;
   pObjectThreadList = pObjectThread;
+}
+
+extern void oosmos_ObjectThreadStart(oosmos_sObjectThread * pObjectThread)
+{
+  pObjectThread->m_bRunning = true;
+}
+
+extern void oosmos_ObjectThreadStop(oosmos_sObjectThread * pObjectThread)
+{
+  pObjectThread->m_bRunning = false;
+}
+
+extern void oosmos_ObjectThreadRestart(oosmos_sObjectThread * pObjectThread)
+{
+  ThreadInit(&pObjectThread->m_LeafState);
 }
 
 extern void oosmos_QueueSetBehaviorFunc(oosmos_sQueue * pQueue, oosmos_eQueueFullBehavior (*pCallback)(void *), void * pContext)

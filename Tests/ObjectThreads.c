@@ -22,34 +22,31 @@
 
 #include "oosmos.h"
 
-typedef struct testTag test;
-
-struct testTag
+typedef struct
 {
-  oosmos_sObjectThread m_ObjectThreadA;
-  oosmos_sObjectThread m_ObjectThreadB;
-};
+  oosmos_sObjectThread m_ObjectThreadAAA;
+  oosmos_sObjectThread m_ObjectThreadBBB;
+} test;
 
-static void ThreadA(void * pObject, oosmos_sState * pState)
+static void ThreadAAA(test * pTest, oosmos_sState * pState)
 {
-  test * pTest = pObject;
-
   oosmos_ThreadBegin();
+    printf("Starting ThreadAAA\n");
+
     for (;;) {
-      printf("In Object Thread A, pTest = %p\n", pTest);
+      printf("In Object Thread AAA, pTest = %p\n", pTest);
       oosmos_ThreadDelayMS(500);
     }
   oosmos_ThreadEnd();
 }
 
-static void ThreadB(void * pObject, oosmos_sState * pState)
+static void ThreadBBB(test * pTest, oosmos_sState * pState)
 {
-  test * pTest = pObject;
-
   oosmos_ThreadBegin();
     for (;;) {
-      printf("In Object Thread B, pTest = %p\n", pTest);
-      oosmos_ThreadDelayMS(1500);
+      printf("In Object Thread BBB, pTest = %p\n", pTest);
+      oosmos_ThreadDelayMS(3000);
+      oosmos_ObjectThreadRestart(&pTest->m_ObjectThreadAAA);
     }
   oosmos_ThreadEnd();
 }
@@ -58,8 +55,8 @@ extern int main(void)
 {
   oosmos_Allocate(pTest, test, 1, NULL);
 
-  oosmos_ObjectThreadInit(pTest, m_ObjectThreadA, ThreadA);
-  oosmos_ObjectThreadInit(pTest, m_ObjectThreadB, ThreadB);
+  oosmos_ObjectThreadInit(pTest, m_ObjectThreadAAA, ThreadAAA, true);
+  oosmos_ObjectThreadInit(pTest, m_ObjectThreadBBB, ThreadBBB, true);
 
   for (;;) {
     oosmos_RunStateMachines();
