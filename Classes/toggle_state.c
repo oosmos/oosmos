@@ -25,6 +25,7 @@
 #include "pin.h"
 #include <stdbool.h>
 #include <stdint.h>
+#include <stddef.h>
 
 #ifndef toggleMAX
 #define toggleMAX 4
