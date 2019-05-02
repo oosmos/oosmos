@@ -12,6 +12,7 @@ btn_c     = oosmos_dir+r'\Classes\btn.c'
 
 os.system(oosmos_dir + r'\Gen\gen.exe tests.json')
 
+oosmos.cWindows.Compile(oosmos_dir, ['ObjectThreads.c',           oosmos_c])
 oosmos.cWindows.Compile(oosmos_dir, ['History.c',                 oosmos_c, pin_c, btn_c], '-DbtnMaxButtons=4')
 oosmos.cWindows.Compile(oosmos_dir, ['TimeConversions.c',         oosmos_c], '-Doosmos_ORTHO')
 oosmos.cWindows.Compile(oosmos_dir, ['FreeRunningMicroseconds.c', oosmos_c])

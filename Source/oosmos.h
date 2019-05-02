@@ -244,6 +244,8 @@ typedef struct OOSMOS_sOrthoRegionTag  oosmos_sOrthoRegion;
 typedef struct OOSMOS_sStateTag        oosmos_sFinal;
 typedef struct OOSMOS_sStateTag        oosmos_sHistory;
 
+typedef struct OOSMOS_sObjectThreadTag oosmos_sObjectThread;
+
 typedef bool (*OOSMOS_tCode)(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent);
 typedef void (*oosmos_tAction)(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent);
 
@@ -263,16 +265,17 @@ typedef enum {
 } OOSMOS_eTypes;
 
 struct OOSMOS_sStateTag {
+  OOSMOS_eTypes          m_Type;
   oosmos_sState        * m_pParent;
   OOSMOS_tCode           m_pCode;
-  oosmos_sTimeout        m_Timeout;
   oosmos_sStateMachine * m_pStateMachine;
 
   #if defined(oosmos_DEBUG)
     const char *         m_pName;
   #endif
 
-  oosmos_sTimeout m_ThreadTimeout;
+  oosmos_sTimeout   m_Timeout;
+  oosmos_sTimeout   m_ThreadTimeout;
 
   //
   // The stored __LINE__ number of the current Thread-type call.
@@ -289,11 +292,6 @@ struct OOSMOS_sStateTag {
   // Support for oosmos_ThreadYield.
   //
   unsigned int m_ThreadHasYielded:1;
-
-  //
-  // Really an eTypes enumeration, but ANSI won't allow an enum on a bit field.
-  //
-  unsigned int m_Type:4;
 };
 
 struct OOSMOS_sCompositeTag {
@@ -337,6 +335,13 @@ struct OOSMOS_sStateMachineTag {
   bool     m_IsStarted;
 };
 
+struct OOSMOS_sObjectThreadTag {
+  void                 * m_pObject;
+  void                 (*m_pFunc)(void * pObject, oosmos_sState * pState);
+  oosmos_sLeaf           m_LeafState;
+  oosmos_sObjectThread * m_pNext;
+};
+
 #define OOSMOS_xstr(s) OOSMOS_str(s)
 
 // To reduce footprint, only materialize these strings when compiling for debug.
@@ -347,6 +352,11 @@ struct OOSMOS_sStateMachineTag {
   #define OOSMOS_str(s) ""
   #define OOSMOS_FILE ""
 #endif
+
+//--------
+extern void OOSMOS_ObjectThreadInit(void * pObject, oosmos_sObjectThread * pObjectThread, void (*)(void * pObject, oosmos_sState * pState));
+#define oosmos_ObjectThreadInit(pObject, pObjectThread, pFunc)\
+              OOSMOS_ObjectThreadInit(pObject, &(pObject)->pObjectThread, pFunc)
 
 //--------
 extern void OOSMOS_EndProgram(int);
@@ -397,11 +407,7 @@ extern void OOSMOS_OrthoRegionInit(const char * pName, oosmos_sOrthoRegion * pOr
         OOSMOS_OrthoRegionInit(OOSMOS_xstr(OrthoRegion), &(pObject)->OrthoRegion, &(pObject)->Parent, (oosmos_sState*) &(pObject)->Default, Code)
 
 #endif
-//--------
-extern void OOSMOS_ChoiceInit(const char * pName, oosmos_sState *pState, oosmos_sState *pParent, OOSMOS_tCode pCode);
 
-#define oosmos_ChoiceInit(pObject, State, Parent)\
-        OOSMOS_ChoiceInit(OOSMOS_xstr(State), &(pObject)->State, (oosmos_sState*) &(pObject)->Parent, State ## _Code)
 //--------
 extern void OOSMOS_FinalInit(const char * pName, oosmos_sState *pState, oosmos_sState *pParent, OOSMOS_tCode pCode);
 

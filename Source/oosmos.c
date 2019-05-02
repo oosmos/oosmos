@@ -23,6 +23,7 @@
 /*lint -e508 suppress "extern used with definition" */
 /*lint -e537 suppress "repeated include" */
 /*lint -e641 suppress "Converting enum 'OOSMOS_eTypes' to 'int'" */
+/*lint -e788 suppress enum constant 'EEE' not used withing defaulted switch */
 
 #include "oosmos.h"
 #include <stdbool.h>
@@ -32,18 +33,19 @@
 #include <stdio.h>
 
 //
-// The master list of all state machines created inside
-// of OOSMOS objects.  The master control loop visits each of
-// these state machines, one by one, forever.
+// The master list of all state machines created in the system.
 //
 static oosmos_sStateMachine * pStateMachineList;
 
 //
 // The master list of all active objects created in the system.
-// The master control loop visits each of these objects, one by one,
-// forever.
 //
 static oosmos_sActiveObject * pActiveObjectList;
+
+//
+// The master list of all object threads in the system.
+//
+static oosmos_sObjectThread * pObjectThreadList;
 
 //
 // Predefined events, pre-initialized for fast delivery.
@@ -120,18 +122,18 @@ static oosmos_sRegion * GetRegion(oosmos_sState * pState)
   return &pStateMachine->m_Region;
 }
 
-  static oosmos_sStateMachine * GetStateMachine(const oosmos_sState * pState)
-  {
-    const oosmos_sState * pCandidateState = NULL;
+static oosmos_sStateMachine * GetStateMachine(const oosmos_sState * pState)
+{
+  const oosmos_sState * pCandidateState = NULL;
 
-    while (pState != NULL) {
-      pCandidateState = pState;
+  while (pState != NULL) {
+    pCandidateState = pState;
 
-      pState = pState->m_pParent;
-    }
-
-    return (oosmos_sStateMachine *) pCandidateState;
+    pState = pState->m_pParent;
   }
+
+  return (oosmos_sStateMachine *) pCandidateState;
+}
 
 #if defined(oosmos_DEBUG)
   static const char * GetFileName(const void * pObject)
@@ -841,14 +843,6 @@ extern void OOSMOS_OrthoRegionInit(const char * pName, oosmos_sOrthoRegion * pOr
 }
 #endif
 
-extern void OOSMOS_ChoiceInit(const char * pName, oosmos_sState * pState, oosmos_sState * pParent, OOSMOS_tCode pCode)
-{
-  oosmos_POINTER_GUARD(pState);
-
-  OOSMOS_LeafInit(pName, pState, pParent, pCode);
-  pState->m_Type = OOSMOS_LeafType;
-}
-
 extern void OOSMOS_FinalInit(const char * pName, oosmos_sState * pState, oosmos_sState * pParent, OOSMOS_tCode pCode)
 {
   oosmos_POINTER_GUARD(pState);
@@ -1091,6 +1085,10 @@ extern void oosmos_RunStateMachines(void)
   for (oosmos_sActiveObject * pActiveObject = pActiveObjectList; pActiveObject != NULL; pActiveObject = pActiveObject->m_pNext) {
     pActiveObject->m_pFunction(pActiveObject->m_pObject);
   }
+
+  for (oosmos_sObjectThread * pThreadObject = pObjectThreadList; pThreadObject != NULL; pThreadObject = pThreadObject->m_pNext) {
+    pThreadObject->m_pFunc(pThreadObject->m_pObject, &pThreadObject->m_LeafState);
+  }
 }
 
 extern void oosmos_TimeoutInSeconds(oosmos_sTimeout * pTimeout, uint32_t Seconds)
@@ -1146,6 +1144,19 @@ extern void oosmos_RegisterActiveObject(void * pObject, void (*pCallback)(void *
 
   pActiveObject->m_pNext = pActiveObjectList;
   pActiveObjectList = pActiveObject;
+}
+
+extern void OOSMOS_ObjectThreadInit(void * pObject, oosmos_sObjectThread * pObjectThread, void (*pFunc)(void * pObject, oosmos_sState * pState))
+{
+  pObjectThread->m_pFunc   = pFunc;
+  pObjectThread->m_pObject = pObject;
+
+  OOSMOS_LeafInit(pObject, &pObjectThread->m_LeafState, NULL, NULL);
+
+  ThreadInit(&pObjectThread->m_LeafState);
+
+  pObjectThread->m_pNext = pObjectThreadList;
+  pObjectThreadList = pObjectThread;
 }
 
 extern void oosmos_QueueSetBehaviorFunc(oosmos_sQueue * pQueue, oosmos_eQueueFullBehavior (*pCallback)(void *), void * pContext)
