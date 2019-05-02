@@ -1,5 +1,5 @@
 //
-// OOSMOS Poll Example
+// OOSMOS Action Test
 //
 // Copyright (C) 2014-2019  OOSMOS, LLC
 //
