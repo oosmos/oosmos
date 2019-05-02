@@ -37,6 +37,5 @@ extern void btnSubscribePressedEvent(btn * pSwitch, oosmos_sQueue * pQueue, int 
 
 extern bool btnIsReleased(const btn * pButton);
 extern bool btnIsPressed(const btn * pButton);
-extern void btnRunStateMachine(void * pSwitch);
 
 #endif

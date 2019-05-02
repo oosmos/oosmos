@@ -55,19 +55,30 @@ struct btnTag
   oosmos_sSubscriberList m_ReleasedEvent[btnMaxReleasedSubscribers];
 };
 
-extern btn * btnNew(pin * pPin)
+static void StateMachine(void * pObject)
 {
-  oosmos_Allocate(pButton, btn, btnMaxButtons, NULL);
+  oosmos_POINTER_GUARD(pObject);
 
-  pButton->m_pPin  = pPin;
-  pButton->m_State = Released_State;
+  btn * pButton = (btn *) pObject;
 
-  oosmos_RegisterActiveObject(pButton, btnRunStateMachine, &pButton->m_ActiveObject);
+  switch (pButton->m_State) {
+    case Released_State: {
+      if (pinIsOn(pButton->m_pPin)) {
+        pButton->m_State = Pressed_State;
+        oosmos_SubscriberListNotify(pButton->m_PressedEvent);
+      }
 
-  oosmos_SubscriberListInit(pButton->m_PressedEvent);
-  oosmos_SubscriberListInit(pButton->m_ReleasedEvent);
+      break;
+    }
+    case Pressed_State: {
+      if (pinIsOff(pButton->m_pPin)) {
+        pButton->m_State = Released_State;
+        oosmos_SubscriberListNotify(pButton->m_ReleasedEvent);
+      }
 
-  return pButton;
+      break;
+    }
+  }
 }
 
 extern void btnSubscribePressedEvent(btn * pButton, oosmos_sQueue * pQueue, int PressedEventCode, void * pContext)
@@ -101,28 +112,17 @@ extern bool btnIsPressed(const btn * pButton)
   return PhysicalButtonState(pButton) == Pressed_State;
 }
 
-extern void btnRunStateMachine(void * pObject)
+extern btn * btnNew(pin * pPin)
 {
-  oosmos_POINTER_GUARD(pObject);
+  oosmos_Allocate(pButton, btn, btnMaxButtons, NULL);
 
-  btn * pButton = (btn *) pObject;
+  pButton->m_pPin  = pPin;
+  pButton->m_State = Released_State;
 
-  switch (pButton->m_State) {
-    case Released_State: {
-      if (pinIsOn(pButton->m_pPin)) {
-        pButton->m_State = Pressed_State;
-        oosmos_SubscriberListNotify(pButton->m_PressedEvent);
-      }
+  oosmos_RegisterActiveObject(pButton, StateMachine, &pButton->m_ActiveObject);
 
-      break;
-    }
-    case Pressed_State: {
-      if (pinIsOff(pButton->m_pPin)) {
-        pButton->m_State = Released_State;
-        oosmos_SubscriberListNotify(pButton->m_ReleasedEvent);
-      }
+  oosmos_SubscriberListInit(pButton->m_PressedEvent);
+  oosmos_SubscriberListInit(pButton->m_ReleasedEvent);
 
-      break;
-    }
-  }
+  return pButton;
 }
