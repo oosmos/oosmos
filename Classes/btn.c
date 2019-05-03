@@ -119,7 +119,7 @@ extern btn * btnNew(pin * pPin)
   pButton->m_pPin  = pPin;
   pButton->m_State = Released_State;
 
-  oosmos_RegisterActiveObject(pButton, StateMachine, &pButton->m_ActiveObject);
+  oosmos_ActiveObjectInit(pButton, m_ActiveObject, StateMachine);
 
   oosmos_SubscriberListInit(pButton->m_PressedEvent);
   oosmos_SubscriberListInit(pButton->m_ReleasedEvent);

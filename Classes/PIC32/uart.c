@@ -249,7 +249,7 @@ extern uart * uartNew(const int UartModule, const int BaudRate)
   oosmos_QueueConstruct(&pUART->m_ReceiveDataQueue, pUART->m_ReceiveDataQueueData);
   oosmos_SubscriberListInit(pUART->m_ReceivedByteEventSubscribers);
 
-  oosmos_RegisterActiveObject(pUART, RunStateMachine, &pUART->m_ActiveObject);
+  oosmos_ActiveObjectInit(pUART, m_ActiveObject, RunStateMachine);
 
   return pUART;
 }

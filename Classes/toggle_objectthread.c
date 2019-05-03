@@ -63,7 +63,7 @@ extern toggle * toggleNew(pin * pPin, uint32_t TimeOnMS, uint32_t TimeOffMS)
 {
   oosmos_Allocate(pToggle, toggle, toggleMAX, NULL);
 
-  oosmos_ObjectThreadInit(pToggle, m_ObjectThread, ToggleThread);
+  oosmos_ObjectThreadInit(pToggle, m_ObjectThread, ToggleThread, true);
 
   pToggle->m_pPin      = pPin;
   pToggle->m_TimeOnMS  = TimeOnMS;

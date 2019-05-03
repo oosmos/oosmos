@@ -86,7 +86,7 @@ extern uart * uartNew(const int UartId)
   pUART->m_UartId = (uint8_t) UartId;
 
   oosmos_QueueConstruct(&pUART->m_ReceiveDataQueue, pUART->m_ReceiveDataQueueData);
-  oosmos_RegisterActiveObject(pUART, ReceiverStateMachine, &pUART->m_ActiveObject);
+  oosmos_ActiveObjectInit(pUART, ReceiverStateMachine, &pUART->m_ActiveObject);
 
   return pUART;
 }

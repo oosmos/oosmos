@@ -229,7 +229,7 @@ extern bool pinIsOff(const pin * pPin)
     pPin->m_DebounceTimeMS = DebounceTimeMS;
 
     if (DebounceTimeMS > 0) {
-      oosmos_RegisterActiveObject(pPin, RunStateMachine, &pPin->m_ActiveObject);
+      oosmos_ActiveObjectInit(pPin, m_ActiveObject, RunStateMachine);
     }
 
     return pPin;
@@ -285,7 +285,7 @@ extern bool pinIsOff(const pin * pPin)
     pPin->m_DebounceTimeMS = DebounceTimeMS;
 
     if (DebounceTimeMS > 0) {
-      oosmos_RegisterActiveObject(pPin, RunStateMachine, &pPin->m_ActiveObject);
+      oosmos_ActiveObjectInit(pPin, m_ActiveObject, RunStateMachine);
     }
 
     return pPin;
@@ -315,7 +315,7 @@ extern bool pinIsOff(const pin * pPin)
     pPin->m_DebounceTimeMS = DebounceTimeMS;
 
     if (DebounceTimeMS > 0) {
-      oosmos_RegisterActiveObject(pPin, RunStateMachine, &pPin->m_ActiveObject);
+      oosmos_ActiveObjectInit(pPin, m_ActiveObject, RunStateMachine);
     }
 
     return pPin;
@@ -389,7 +389,7 @@ extern bool pinIsOff(const pin * pPin)
     pPin->m_DebounceTimeMS = DebounceTimeMS;
 
     if (DebounceTimeMS > 0) {
-      oosmos_RegisterActiveObject(pPin, RunStateMachine, &pPin->m_ActiveObject);
+      oosmos_ActiveObjectInit(pPin, m_ActiveObject, RunStateMachine);
     }
 
     return pPin;

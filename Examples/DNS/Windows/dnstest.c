@@ -76,7 +76,7 @@ static dnstest * dnstestNew(const char * pDomain)
   pDnsTest->pDomain = pDomain;
   pDnsTest->Done    = false;
 
-  oosmos_RegisterActiveObject(pDnsTest, Run, &pDnsTest->ActiveObject);
+  oosmos_ActiveObjectInit(pDnsTest, Run, &pDnsTest->ActiveObject);
 
   ActiveInstances += 1;
 

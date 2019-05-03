@@ -1083,7 +1083,7 @@ extern void oosmos_RunStateMachines(void)
   }
 
   for (oosmos_sActiveObject * pActiveObject = pActiveObjectList; pActiveObject != NULL; pActiveObject = pActiveObject->m_pNext) {
-    pActiveObject->m_pFunction(pActiveObject->m_pObject);
+    pActiveObject->m_pFunc(pActiveObject->m_pObject);
   }
 
   for (oosmos_sObjectThread * pObjectThread = pObjectThreadList; pObjectThread != NULL; pObjectThread = pObjectThread->m_pNext) {
@@ -1136,13 +1136,13 @@ extern bool oosmos_TimeoutHasExpired(const oosmos_sTimeout * pTimeout)
   return Now >= End;
 }
 
-extern void oosmos_RegisterActiveObject(void * pObject, void (*pCallback)(void *), oosmos_sActiveObject * pActiveObject)
+extern void OOSMOS_ActiveObjectInit(void * pObject, oosmos_sActiveObject * pActiveObject, OOSMOS_tActiveObjectFunc pFunc)
 {
-  oosmos_POINTER_GUARD(pCallback);
+  oosmos_POINTER_GUARD(pFunc);
   oosmos_POINTER_GUARD(pActiveObject);
 
-  pActiveObject->m_pObject   = pObject;
-  pActiveObject->m_pFunction = pCallback;
+  pActiveObject->m_pObject = pObject;
+  pActiveObject->m_pFunc   = pFunc;
 
   pActiveObject->m_pNext = pActiveObjectList;
   pActiveObjectList = pActiveObject;

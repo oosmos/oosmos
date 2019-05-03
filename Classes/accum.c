@@ -81,7 +81,7 @@ extern accum * accumNew(void)
   oosmos_Allocate(pAccum, accum, accumMAX, NULL);
   pAccum->m_TallyUS = 0;
   pAccum->m_Started = false;
-  oosmos_RegisterActiveObject(pAccum, Update, &pAccum->m_ActiveObject);
+  oosmos_ActiveObjectInit(pAccum, m_ActiveObject, Update);
 
   return pAccum;
 }

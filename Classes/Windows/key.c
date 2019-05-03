@@ -140,7 +140,7 @@ extern key * keyNew(char Char)
     Initialized = true;
   }
 
-  oosmos_RegisterActiveObject(pKey, StateMachine, &pKey->m_ActiveObject);
+  oosmos_ActiveObjectInit(pKey, m_ActiveObject, StateMachine);
 
   pKey->m_Char  = Char;
   pKey->m_State = Up_State;

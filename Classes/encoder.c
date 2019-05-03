@@ -103,7 +103,7 @@ extern encoder * encoderNew(pin * pPinA, pin * pPinB, int Max)
   pEncoder->m_Max    = Max;
   pEncoder->m_State  = EncoderA_Unknown;
 
-  oosmos_RegisterActiveObject(pEncoder, ActiveEncoder_Callback, &pEncoder->m_ActiveObject);
+  oosmos_ActiveObjectInit(pEncoder, m_ActiveObject, ActiveEncoder_Callback);
 
   return pEncoder;
 }
