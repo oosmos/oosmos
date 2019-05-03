@@ -717,19 +717,19 @@ extern void OOSMOS_ActiveObjectInit(void * pObject, oosmos_sActiveObject * pActi
 
 typedef struct OOSMOS_sObjectThreadTag oosmos_sObjectThread;
 
-typedef void (*OOSMOS_tObjectThreadFunc)(void * pObject, oosmos_sState * pState);
+typedef void (*oosmos_tObjectThreadFunc)(void * pObject, oosmos_sState * pState);
 
 struct OOSMOS_sObjectThreadTag {
   void                     * m_pObject;
-  OOSMOS_tObjectThreadFunc   m_pFunc;
+  oosmos_tObjectThreadFunc   m_pFunc;
   oosmos_sLeaf               m_LeafState;
   oosmos_sObjectThread     * m_pNext;
   bool                       m_bRunning;
 };
 
-extern void OOSMOS_ObjectThreadInit(void * pObject, oosmos_sObjectThread * pObjectThread, OOSMOS_tObjectThreadFunc pFunc, bool bRunning);
+extern void OOSMOS_ObjectThreadInit(void * pObject, oosmos_sObjectThread * pObjectThread, oosmos_tObjectThreadFunc pFunc, bool bRunning);
 #define oosmos_ObjectThreadInit(pObject, pObjectThread, pFunc, Running) \
-              OOSMOS_ObjectThreadInit(pObject, &(pObject)->pObjectThread,  (OOSMOS_tObjectThreadFunc) pFunc, Running)
+              OOSMOS_ObjectThreadInit(pObject, &(pObject)->pObjectThread,  (oosmos_tObjectThreadFunc) pFunc, Running)
 
 extern void oosmos_ObjectThreadStart(oosmos_sObjectThread * pObjectThread);
 extern void oosmos_ObjectThreadStop(oosmos_sObjectThread * pObjectThread);

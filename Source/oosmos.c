@@ -1136,7 +1136,7 @@ extern bool oosmos_TimeoutHasExpired(const oosmos_sTimeout * pTimeout)
   return Now >= End;
 }
 
-extern void OOSMOS_ActiveObjectInit(void * pObject, oosmos_sActiveObject * pActiveObject, OOSMOS_tActiveObjectFunc pFunc)
+extern void OOSMOS_ActiveObjectInit(void * pObject, oosmos_sActiveObject * pActiveObject, oosmos_tActiveObjectFunc pFunc)
 {
   oosmos_POINTER_GUARD(pFunc);
   oosmos_POINTER_GUARD(pActiveObject);
@@ -1148,7 +1148,7 @@ extern void OOSMOS_ActiveObjectInit(void * pObject, oosmos_sActiveObject * pActi
   pActiveObjectList = pActiveObject;
 }
 
-extern void OOSMOS_ObjectThreadInit(void * pObject, oosmos_sObjectThread * pObjectThread, OOSMOS_tObjectThreadFunc pFunc, bool bRunning)
+extern void OOSMOS_ObjectThreadInit(void * pObject, oosmos_sObjectThread * pObjectThread, oosmos_tObjectThreadFunc pFunc, bool bRunning)
 {
   pObjectThread->m_pFunc    = pFunc;
   pObjectThread->m_pObject  = pObject;
