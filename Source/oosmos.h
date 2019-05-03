@@ -357,7 +357,7 @@ struct OOSMOS_sObjectThreadTag {
 
 //--------
 extern void OOSMOS_ObjectThreadInit(void * pObject, oosmos_sObjectThread * pObjectThread, OOSMOS_tObjectThreadFunc, bool bRunning);
-#define oosmos_ObjectThreadInit(pObject, pObjectThread, pFunc, Running)\
+#define oosmos_ObjectThreadInit(pObject, pObjectThread, pFunc, Running) \
               OOSMOS_ObjectThreadInit(pObject, &(pObject)->pObjectThread,  (OOSMOS_tObjectThreadFunc) pFunc, Running)
 
 //--------
@@ -372,12 +372,12 @@ extern void OOSMOS_StateMachineDetach(const oosmos_sStateMachine * pStateMachine
 extern void OOSMOS_StateMachineInit(const char * pFileName, const char * pName, oosmos_sStateMachine * pStateMachine, oosmos_sState * pDefault, oosmos_sQueue * pEventQueue,
                  void * pCurrentEvent, size_t CurrentEventSize, void * pObject);
 
-#define oosmos_StateMachineInit(pObject, StateMachine, Parent, Default)\
+#define oosmos_StateMachineInit(pObject, StateMachine, Parent, Default) \
         oosmos_QueueConstruct(&(pObject)->m_EventQueue, (pObject)->m_EventQueueData) \
         OOSMOS_StateMachineInit(OOSMOS_FILE, OOSMOS_xstr(StateMachine), &(pObject)->StateMachine, (oosmos_sState*) &(pObject)->Default, &(pObject)->m_EventQueue,\
                  &(pObject)->m_CurrentEvent, sizeof((pObject)->m_EventQueueData[0]), (pObject))
 
-#define oosmos_StateMachineInitNoQueue(pObject, StateMachine, Parent, Default)\
+#define oosmos_StateMachineInitNoQueue(pObject, StateMachine, Parent, Default) \
         OOSMOS_StateMachineInit(OOSMOS_FILE, OOSMOS_xstr(StateMachine), &(pObject)->StateMachine, (oosmos_sState*) &(pObject)->Default, NULL, NULL, 0, (pObject))
 //--------
 extern void OOSMOS_CompositeInit(const char * pName, oosmos_sComposite *pComposite,
@@ -387,19 +387,19 @@ extern void OOSMOS_CompositeInit(const char * pName, oosmos_sComposite *pComposi
 //--------
 extern void OOSMOS_LeafInit(const char * pName, oosmos_sState *pState, oosmos_sState *pParent, OOSMOS_tCode pCode);
 
-#define oosmos_LeafInit(pObject, LeafState, Parent, Code)\
+#define oosmos_LeafInit(pObject, LeafState, Parent, Code) \
         OOSMOS_LeafInit(OOSMOS_xstr(LeafState), &(pObject)->LeafState, (oosmos_sState *) &(pObject)->Parent, Code)
 //--------
 extern void OOSMOS_HistoryInit(const char * pName, oosmos_sState *pState, oosmos_sState *pParent, OOSMOS_eTypes Type);
 
-#define oosmos_HistoryInit(pObject, LeafState, Parent, Type)\
+#define oosmos_HistoryInit(pObject, LeafState, Parent, Type) \
         OOSMOS_HistoryInit(OOSMOS_xstr(LeafState), &(pObject)->LeafState, (oosmos_sState *) &(pObject)->Parent, Type)
 
 #if defined(oosmos_ORTHO)
 
 extern void OOSMOS_OrthoInit(const char * pName, oosmos_sOrtho *pOrtho, oosmos_sState *pParent, OOSMOS_tCode pCode);
 
-#define oosmos_OrthoInit(pObject, Ortho, Parent, Code)\
+#define oosmos_OrthoInit(pObject, Ortho, Parent, Code) \
         OOSMOS_OrthoInit(OOSMOS_xstr(Ortho), &(pObject)->Ortho, (oosmos_sState *) &(pObject)->Parent, Code)
 //--------
 extern void OOSMOS_OrthoRegionInit(const char * pName, oosmos_sOrthoRegion * pOrthoRegion,
@@ -413,7 +413,7 @@ extern void OOSMOS_OrthoRegionInit(const char * pName, oosmos_sOrthoRegion * pOr
 //--------
 extern void OOSMOS_FinalInit(const char * pName, oosmos_sState *pState, oosmos_sState *pParent, OOSMOS_tCode pCode);
 
-#define oosmos_FinalInit(pObject, State, Parent, Code)\
+#define oosmos_FinalInit(pObject, State, Parent, Code) \
         OOSMOS_FinalInit(OOSMOS_xstr(State), &(pObject)->State, (oosmos_sState*) &(pObject)->Parent, Code)
 //--------
 extern bool OOSMOS_TransitionAction(oosmos_sState * pFromState, oosmos_sState * pToState, const oosmos_sEvent * pEvent, oosmos_tAction pActionCode);
@@ -726,13 +726,15 @@ extern void oosmos_ObjectThreadStop(oosmos_sObjectThread * pObjectThread);
 extern void oosmos_ObjectThreadRestart(oosmos_sObjectThread * pObjectThread);
 
 extern void oosmos_RegisterActiveObject(void * pObject, void (*pFunction)(void *), oosmos_sActiveObject * pActiveObject);
+
+
 extern uint32_t oosmos_GetFreeRunningMicroseconds(void);
 
 extern float   oosmos_AnalogMapAccurate(float Value, float InMin, float InMax, float OutMin, float OutMax);
 extern int32_t oosmos_AnalogMapFast(int32_t Value, int32_t InMin, int32_t InMax, int32_t OutMin, int32_t OutMax);
 
-#define oosmos_Min(a,b) (((a)<(b))?(a):(b))
-#define oosmos_Max(a,b) (((a)>(b))?(a):(b))
+#define oosmos_Min(a, b) (((a) < (b)) ? (a) : (b))
+#define oosmos_Max(a, b) (((a) > (b)) ? (a) : (b))
 
 #if defined(__cplusplus)
   }
