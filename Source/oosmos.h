@@ -729,6 +729,7 @@ struct OOSMOS_sObjectThreadTag {
 
 extern void OOSMOS_ObjectThreadInit(void * pObject, oosmos_sObjectThread * pObjectThread, oosmos_tObjectThreadFunc pFunc, bool bRunning);
 #define oosmos_ObjectThreadInit(pObject, pObjectThread, pFunc, Running) \
+              /*lint -e747 suppress "Significant prototype coercion" */ \
               OOSMOS_ObjectThreadInit(pObject, &(pObject)->pObjectThread,  (oosmos_tObjectThreadFunc) pFunc, Running)
 
 extern void oosmos_ObjectThreadStart(oosmos_sObjectThread * pObjectThread);

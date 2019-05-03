@@ -41,12 +41,10 @@ struct toggleTag
   uint32_t   m_TimeOffMS;
 };
 
-static void ToggleThread(void * pObject, oosmos_sState * pState)
+static void ToggleThread(const toggle * pToggle, oosmos_sState * pState)
 {
-  oosmos_POINTER_GUARD(pObject);
+  oosmos_POINTER_GUARD(pToggle);
   oosmos_POINTER_GUARD(pState);
-
-  toggle * pToggle = (toggle *) pObject;
 
   oosmos_ThreadBegin();
     for (;;) {
