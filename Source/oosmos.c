@@ -1452,7 +1452,7 @@ extern bool OOSMOS_ThreadWaitEvent_TimeoutMS_Exit(oosmos_sState * pState, int Wa
   return false;
 }
 
-extern float oosmos_AnalogMapAccurate(float Value, float InMin, float InMax, float OutMin, float OutMax)
+extern double oosmos_AnalogMapAccurate(double Value, double InMin, double InMax, double OutMin, double OutMax)
 {
   return (Value - InMin) * (OutMax - OutMin) / (InMax - InMin) + OutMin;
 }

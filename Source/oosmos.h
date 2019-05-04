@@ -740,7 +740,7 @@ extern void oosmos_ObjectThreadRestart(oosmos_sObjectThread * pObjectThread);
 
 extern uint32_t oosmos_GetFreeRunningMicroseconds(void);
 
-extern float   oosmos_AnalogMapAccurate(float Value, float InMin, float InMax, float OutMin, float OutMax);
+extern double  oosmos_AnalogMapAccurate(double Value, double InMin, double InMax, double OutMin, double OutMax);
 extern int32_t oosmos_AnalogMapFast(int32_t Value, int32_t InMin, int32_t InMax, int32_t OutMin, int32_t OutMax);
 
 #define oosmos_Min(a, b) (((a) < (b)) ? (a) : (b))
