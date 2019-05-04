@@ -67,7 +67,7 @@ static bool CheckCounts(const test * pTest)
          pTest->m_A2_Count > TargetCount && pTest->m_B2_Count > TargetCount && pTest->m_C2_Count > TargetCount;
 }
 
-static void ThreadTestNull(test * pTest, oosmos_sState * pState)
+static void TestNullThread(test * pTest, oosmos_sState * pState)
 {
   oosmos_UNUSED(pTest);
 
@@ -80,13 +80,13 @@ static void ThreadTestNull(test * pTest, oosmos_sState * pState)
   oosmos_ThreadEnd();
 }
 
-static void PollOrtho(test * pTest)
+static void OrthoPoll(test * pTest)
 {
   printf("Poll Ortho\n");
   pTest->m_Ortho++;
 }
 
-static void ThreadA1(test * pTest, oosmos_sState * pState)
+static void A1Thread(test * pTest, oosmos_sState * pState)
 {
   oosmos_ThreadBegin();
     for (;;) {
@@ -97,31 +97,31 @@ static void ThreadA1(test * pTest, oosmos_sState * pState)
   oosmos_ThreadEnd();
 }
 
-static void PollB1(test * pTest)
+static void B1Poll(test * pTest)
 {
   printf("Poll B1: %d\n", pTest->m_B1_Count);
   pTest->m_B1_Count++;
 }
 
-static void PollC1(test * pTest)
+static void C1Poll(test * pTest)
 {
   printf("Poll C1: %d\n", pTest->m_C1_Count);
   pTest->m_C1_Count++;
 }
 
-static void PollA2(test * pTest)
+static void A2Poll(test * pTest)
 {
   printf("Poll A2: %d\n", pTest->m_A2_Count);
   pTest->m_A2_Count++;
 }
 
-static void PollB2(test * pTest)
+static void B2Poll(test * pTest)
 {
   printf("Poll B2: %d\n", pTest->m_B2_Count);
   pTest->m_B2_Count++;
 }
 
-static void PollC2(test * pTest)
+static void C2Poll(test * pTest)
 {
   printf("Poll C2: %d\n", pTest->m_C2_Count);
   pTest->m_C2_Count++;
@@ -148,7 +148,7 @@ static bool Ortho_State_Code(void * pObject, oosmos_sState * pState, const oosmo
 
   switch (oosmos_EventCode(pEvent)) {
     case oosmos_POLL: {
-      PollOrtho(pTest);
+      OrthoPoll(pTest);
       if (CheckCounts(pTest)) {
         return oosmos_Transition(pTest, pState, TestNullTransitionWithPoll_State);
       }
@@ -165,7 +165,7 @@ static bool Ortho_Region1_A1_State_Code(void * pObject, oosmos_sState * pState, 
 
   switch (oosmos_EventCode(pEvent)) {
     case oosmos_POLL: {
-      ThreadA1(pTest, pState);
+      A1Thread(pTest, pState);
       return true;
     }
   }
@@ -179,7 +179,7 @@ static bool Ortho_Region1_A1_B1_State_Code(void * pObject, oosmos_sState * pStat
 
   switch (oosmos_EventCode(pEvent)) {
     case oosmos_POLL: {
-      PollB1(pTest);
+      B1Poll(pTest);
       return true;
     }
   }
@@ -194,7 +194,7 @@ static bool Ortho_Region1_A1_B1_C1_State_Code(void * pObject, oosmos_sState * pS
 
   switch (oosmos_EventCode(pEvent)) {
     case oosmos_POLL: {
-      PollC1(pTest);
+      C1Poll(pTest);
       return true;
     }
   }
@@ -209,7 +209,7 @@ static bool Ortho_Region2_A2_State_Code(void * pObject, oosmos_sState * pState, 
 
   switch (oosmos_EventCode(pEvent)) {
     case oosmos_POLL: {
-      PollA2(pTest);
+      A2Poll(pTest);
       return true;
     }
   }
@@ -224,7 +224,7 @@ static bool Ortho_Region2_A2_B2_State_Code(void * pObject, oosmos_sState * pStat
 
   switch (oosmos_EventCode(pEvent)) {
     case oosmos_POLL: {
-      PollB2(pTest);
+      B2Poll(pTest);
       return true;
     }
   }
@@ -239,7 +239,7 @@ static bool Ortho_Region2_A2_B2_C2_State_Code(void * pObject, oosmos_sState * pS
 
   switch (oosmos_EventCode(pEvent)) {
     case oosmos_POLL: {
-      PollC2(pTest);
+      C2Poll(pTest);
       return true;
     }
   }
@@ -254,7 +254,7 @@ static bool TestNullTransitionWithPoll_State_Code(void * pObject, oosmos_sState 
 
   switch (oosmos_EventCode(pEvent)) {
     case oosmos_POLL: {
-      ThreadTestNull(pTest, pState);
+      TestNullThread(pTest, pState);
       return true;
     }
     case oosmos_COMPLETE: {

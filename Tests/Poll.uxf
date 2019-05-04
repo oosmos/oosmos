@@ -13,7 +13,7 @@
     <panel_attributes>Ortho
 --
 POLL:
-  PollOrtho(pTest);
+  OrthoPoll(pTest);
 valign=top
 </panel_attributes>
     <additional_attributes/>
@@ -29,7 +29,7 @@ valign=top
     <panel_attributes>B1
 --
 POLL:
-  PollB1(pTest);    
+  B1Poll(pTest);    
 valign=top
 </panel_attributes>
     <additional_attributes/>
@@ -45,7 +45,7 @@ valign=top
     <panel_attributes>C1
 --
 POLL:
-  PollC1(pTest); 
+  C1Poll(pTest); 
 valign=top
 </panel_attributes>
     <additional_attributes/>
@@ -94,7 +94,7 @@ valign=top
     <panel_attributes>A1
 --
 POLL:
-  ThreadA1(pTest, pState);   
+  A1Thread(pTest, pState);   
 valign=top
 </panel_attributes>
     <additional_attributes/>
@@ -110,7 +110,7 @@ valign=top
     <panel_attributes>B2
 --
 POLL:
-  PollB2(pTest);     
+  B2Poll(pTest);     
 valign=top
 </panel_attributes>
     <additional_attributes/>
@@ -126,7 +126,7 @@ valign=top
     <panel_attributes>C2
 --
 POLL:
-  PollC2(pTest); 
+  C2Poll(pTest); 
 valign=top
 </panel_attributes>
     <additional_attributes/>
@@ -142,7 +142,7 @@ valign=top
     <panel_attributes>A2
 --
 POLL:
-  PollA2(pTest); 
+  A2Poll(pTest); 
 valign=top
 </panel_attributes>
     <additional_attributes/>
@@ -212,7 +212,7 @@ valign=top
     <panel_attributes>TestNullTransitionWithPoll
 --
 POLL:
-  ThreadTestNull(pTest, pState);
+  TestNullThread(pTest, pState);
 valign=top
 </panel_attributes>
     <additional_attributes/>
