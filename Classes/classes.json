@@ -13,19 +13,5 @@
     "filename":     "toggle_state.c",
     "type":         "toggle",
     "object_ptr":   "pToggle"
-  },
-  {
-    "enabled":      true,
-    "uxf_filename": "toggle.uxf",
-    "filename":     "toggle.c",
-    "type":         "toggle",
-    "object_ptr":   "pToggle"
-  },
-  {
-    "enabled":      true,
-    "uxf_filename": "matrix.uxf",
-    "filename":     "matrix.c",
-    "type":         "matrix",
-    "object_ptr":   "pMatrix"
   }
 ]
