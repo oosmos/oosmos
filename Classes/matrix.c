@@ -45,10 +45,7 @@ static const int RowOffSettleTimeUS = 50;
 
 struct matrixTag
 {
-//>>>DECL
-  oosmos_sStateMachineNoQueue(ROOT);
-    oosmos_sLeaf Running_State;
-//<<<DECL
+  oosmos_sObjectThread m_ObjectThread;
 
   pin * m_pRowPins[matrixMAX_ROWS];
   pin * m_pColumnPins[matrixMAX_COLS];
@@ -119,22 +116,6 @@ static void AddColumn(matrix * pMatrix, const int Column, pin * pPin)
   }
 }
 
-//>>>CODE
-static bool Running_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
-{
-  matrix * pMatrix = (matrix *) pObject;
-
-  switch (oosmos_EventCode(pEvent)) {
-    case oosmos_POLL: {
-      Thread(pMatrix, pState);
-      return true;
-    }
-  }
-
-  return false;
-}
-//<<<CODE
-
 extern matrix * matrixNew(int Rows, int Columns, ...)
 {
   oosmos_Allocate(pMatrix, matrix, matrixMAX, NULL);
@@ -151,10 +132,7 @@ extern matrix * matrixNew(int Rows, int Columns, ...)
     }
   }
 
-//>>>INIT
-  oosmos_StateMachineInitNoQueue(pMatrix, ROOT, NULL, Running_State);
-    oosmos_LeafInit(pMatrix, Running_State, ROOT, Running_State_Code);
-//<<<INIT
+  oosmos_ObjectThreadInit(pMatrix, m_ObjectThread, Thread, true);
 
   va_list ArgList;
   va_start(ArgList, Columns);
@@ -181,9 +159,7 @@ extern void matrixAssignSwitch(matrix * pMatrix, sw * pSwitch, int Row, int Colu
   // Check if this Row/Column slot has already been assigned.
   //
   if (pMatrix->m_pSwitch[RowIndex][ColumnIndex] != NULL) {
-    for (;;) {
-      continue;
-    }
+    oosmos_FOREVER();
   }
 
   pMatrix->m_pSwitch[RowIndex][ColumnIndex] = pSwitch;
