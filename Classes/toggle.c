@@ -30,15 +30,11 @@
 #include "toggle.h"
 #include "pin.h"
 #include <stdint.h>
-#include <stdbool.h>
 #include <stddef.h>
 
 struct toggleTag
 {
-//>>>DECL
-  oosmos_sStateMachineNoQueue(ROOT);
-    oosmos_sLeaf Running_State;
-//<<<DECL
+  oosmos_sObjectThread m_ObjectThread;
 
   pin      * m_pPin;
   uint32_t   m_TimeOnMS;
@@ -61,30 +57,11 @@ static void ToggleThread(const toggle * pToggle, oosmos_sState * pState)
   oosmos_ThreadEnd();
 }
 
-//>>>CODE
-static bool Running_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
-{
-  toggle * pToggle = (toggle *) pObject;
-
-  switch (oosmos_EventCode(pEvent)) {
-    case oosmos_POLL: {
-      ToggleThread(pToggle, pState);
-      return true;
-    }
-  }
-
-  return false;
-}
-//<<<CODE
-
 extern toggle * toggleNew(pin * pPin, uint32_t TimeOnMS, uint32_t TimeOffMS)
 {
   oosmos_Allocate(pToggle, toggle, toggleMAX, NULL);
 
-//>>>INIT
-  oosmos_StateMachineInitNoQueue(pToggle, ROOT, NULL, Running_State);
-    oosmos_LeafInit(pToggle, Running_State, ROOT, Running_State_Code);
-//<<<INIT
+  oosmos_ObjectThreadInit(pToggle, m_ObjectThread, ToggleThread, true);
 
   pToggle->m_pPin      = pPin;
   pToggle->m_TimeOnMS  = TimeOnMS;
