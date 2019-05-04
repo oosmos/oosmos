@@ -31,9 +31,9 @@ static int FastDistribution[ITERATIONS+1];
 /*lint -e728 Suppress "Not explicitly initialized" */
 static int AccurateDistribution[ITERATIONS+1];
 
-static void TestAccurate(float Value, float InMin, float InMax, float OutMin, float OutMax)
+static void TestAccurate(double Value, double InMin, double InMax, double OutMin, double OutMax)
 {
-  const float Result = oosmos_AnalogMapAccurate(Value, InMin, InMax, OutMin, OutMax);
+  const double Result = oosmos_AnalogMapAccurate(Value, InMin, InMax, OutMin, OutMax);
 
   printf("Value:%f, InMin:%f, InMax:%f, OutMin:%f, OutMax:%f, Result:%f\n", Value, InMin, InMax, OutMin, OutMax, Result);
 
@@ -59,7 +59,7 @@ extern int main(void)
   // Test accurate implementation...
   //
   for (int I = Min; I <= Max; I++) {
-    TestAccurate((float) I, (float) Min, (float) Max, 1.0f, 25.0f);
+    TestAccurate((double) I, (double) Min, (double) Max, 1.0, 25.0);
   }
 
   for (int I = 1; I <= ITERATIONS; I++) {
