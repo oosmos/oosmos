@@ -78,7 +78,6 @@
   extern "C" {
 #endif
 
-
 typedef struct {
   uint32_t m_Start;
   uint32_t m_End;
@@ -493,6 +492,14 @@ typedef void (*oosmos_tOutOfMemory)(const char*, int, const char*);
 #define oosmos_TIMEOUT  (-4)
 #define oosmos_DEFAULT  (-5)
 #define oosmos_COMPLETE (-6)
+
+//
+// OOSMOS Threads
+// ==============
+//
+// The underlying structure of OOSMOS State Threads and Object Threads is based
+// on protothreads by Adam Dunkels.
+//
 
 //
 // oosmos_ThreadDelayMS
