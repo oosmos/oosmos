@@ -87,7 +87,7 @@ extern float pidAdjustOutput(pid * pPID, float Input)
     dtMS = 0;
     pPID->m_bFirst = false;
 
-    #if defined(pidDEBUG)
+    #if defined(pid_DEBUG)
       printf("Input,Error,P,I,D,Integral,Output,SetPoint,dtMS\n");
     #endif
   } else {
@@ -103,7 +103,7 @@ extern float pidAdjustOutput(pid * pPID, float Input)
 
   const float Output = P + D + I;
 
-  #if defined(pidDEBUG)
+  #if defined(pid_DEBUG)
     printf("%f,%f,%f,%f,%f,%f,%f,%f,%u\n", (double) Input, (double) Error,
                                            (double) P, (double) I, (double) D,
                                            (double) pPID->m_SumOfErrors, (double) Output,
