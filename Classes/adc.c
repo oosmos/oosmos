@@ -59,6 +59,7 @@ struct adcTag
 #elif defined(_MSC_VER)
   extern uint32_t adcRead(const adc * pADC)
   {
+    oosmos_UNUSED(pADC);
     return 0;
   }
 

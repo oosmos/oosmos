@@ -71,7 +71,12 @@ Lint('interrupt.c',         'oosmos-user.lnt')
 
 DIR = 'Classes'
 
+Lint('adc.c',          'oosmos-user.lnt')
+OPTIONS = '-Dpwm_DEBUG'
+Lint('pwm.c',          'oosmos-user.lnt')
+OPTIONS = '-Dpid_DEBUG'
 Lint('pid.c',          'oosmos-user.lnt')
+OPTIONS = '-Dpin_DEBUG'
 Lint('pin.c',          'oosmos-user.lnt pin.lnt')
 Lint('matrix.c',       'oosmos-user.lnt matrix.lnt')
 Lint('reg.c',          'oosmos-user.lnt')

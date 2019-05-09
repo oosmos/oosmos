@@ -105,8 +105,10 @@ extern void pwmOn(pwm * pPWM)
     analogWrite(pPWM->m_PinNumber, pPWM->m_DutyCycleValue);
   #elif defined(_MSC_VER)
     // Do nothing
+    oosmos_UNUSED(pPWM);
   #else
     #error pwm.cpp: Unsupported platform.
+    oosmos_UNUSED(pPWM);
   #endif
 }
 
@@ -118,8 +120,10 @@ extern void pwmOff(pwm * pPWM)
     analogWrite(pPWM->m_PinNumber, 0);
   #elif defined(_MSC_VER)
     // Do nothing
+    oosmos_UNUSED(pPWM);
   #else
     #error: pwm.cpp: Unsupported platform.
+    oosmos_UNUSED(pPWM);
   #endif
 }
 
