@@ -161,11 +161,9 @@ extern bool accumHasReachedUS(accum * pAccum, uint64_t US)
     #if defined(accum_DEBUG)
       printf("US: %12I64u\n", pAccum->m_TallyUS);
     #endif
-
-    return pAccum->m_TallyUS >= US;
   }
 
-  return false;
+  return pAccum->m_TallyUS >= US;
 }
 
 extern bool accumHasReachedMS(accum * pAccum, uint64_t MS)
