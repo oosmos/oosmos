@@ -209,10 +209,10 @@ static void WaitEvent_TimeoutMS_Thread(threadtest * pThreadTest, oosmos_sState *
     prtFormatted("ThreadWaitEvent_TimeoutMS...\n");
 
     oosmos_PushEventCode(pThreadTest, evPrint);
-    oosmos_ThreadWaitEvent_TimeoutMS(ConditionTrue(), 100, &TimedOut);
+    oosmos_ThreadWaitEvent_TimeoutMS(evPrint, 100, &TimedOut);
     pThreadTest->m_WE_Timeout_Successes += (TimedOut == false);
 
-    oosmos_ThreadWaitEvent_TimeoutMS(ConditionFalse(), 100, &TimedOut);
+    oosmos_ThreadWaitEvent_TimeoutMS(evPrint, 100, &TimedOut);
     pThreadTest->m_WE_Timeout_Successes += (TimedOut == true);
     prtFormatted("ThreadWaitEvent_TimeoutMS %s\n\n", pThreadTest->m_WE_Timeout_Successes == 2 ? "SUCCESS" : "FAILURE");
   oosmos_ThreadEnd();
