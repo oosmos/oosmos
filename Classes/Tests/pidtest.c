@@ -38,13 +38,12 @@ struct pidtestTag
 {
 //>>>DECL
   oosmos_sStateMachineNoQueue(ROOT);
-    oosmos_sOrtho Running_State;
-      oosmos_sOrthoRegion Running_Region1_State;
-        oosmos_sLeaf Running_Region1_Adjusting_State;
-      oosmos_sOrthoRegion Running_Region2_State;
-        oosmos_sLeaf Running_Region2_Testing_State;
-    oosmos_sLeaf State_State;
+    oosmos_sLeaf Running_State;
 //<<<DECL
+
+#if defined(pid_DEBUG)
+  oosmos_sObjectThread m_ObjectThread;
+#endif
 
   pid  * m_pPID;
   float  m_Output;
@@ -66,7 +65,7 @@ static void PidThread(pidtest * pPidTest, oosmos_sState * pState)
   // Attempt to simulate that the input is affected by each output.
   //
   // Also, vary the amount of time between each sample to test the dt element of the PID.
-  // 
+  //
   oosmos_ThreadBegin();
     for (;;) {
       pPidTest->m_Sample = oosmos_Divide_Integral_Rounded(pPidTest->m_Output, 2);
@@ -76,6 +75,7 @@ static void PidThread(pidtest * pPidTest, oosmos_sState * pState)
   oosmos_ThreadEnd();
 }
 
+#if defined(pid_DEBUG)
 static void TestThread(pidtest * pPidTest, oosmos_sState * pState)
 {
   //
@@ -132,11 +132,14 @@ static void TestThread(pidtest * pPidTest, oosmos_sState * pState)
     // Reset
     pidSet_SetPoint(pPidTest->m_pPID, BASELINE);
     oosmos_ThreadDelayMS(1000);
+
+    oosmos_EndProgram(1);
   oosmos_ThreadEnd();
 }
+#endif
 
 //>>>CODE
-static bool Running_Region1_Adjusting_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
+static bool Running_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   pidtest * pPidTest = (pidtest *) pObject;
 
@@ -149,37 +152,6 @@ static bool Running_Region1_Adjusting_State_Code(void * pObject, oosmos_sState *
 
   return false;
 }
-
-static bool Running_Region2_Testing_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
-{
-  pidtest * pPidTest = (pidtest *) pObject;
-
-  switch (oosmos_EventCode(pEvent)) {
-    case oosmos_POLL: {
-      TestThread(pPidTest, pState);
-      return true;
-    }
-    case oosmos_COMPLETE: {
-      return oosmos_Transition(pPidTest, pState, State_State);
-    }
-  }
-
-  return false;
-}
-
-static bool State_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
-{
-  switch (oosmos_EventCode(pEvent)) {
-    case oosmos_ENTER: {
-      oosmos_EndProgram(1);
-      return true;
-    }
-  }
-
-  oosmos_UNUSED(pObject);
-  oosmos_UNUSED(pState);
-  return false;
-}
 //<<<CODE
 
 extern pidtest * pidtestNew(void)
@@ -188,16 +160,15 @@ extern pidtest * pidtestNew(void)
 
 //>>>INIT
   oosmos_StateMachineInitNoQueue(pPidTest, ROOT, NULL, Running_State);
-    oosmos_OrthoInit(pPidTest, Running_State, ROOT, NULL);
-      oosmos_OrthoRegionInit(pPidTest, Running_Region1_State, Running_State, Running_Region1_Adjusting_State, NULL);
-        oosmos_LeafInit(pPidTest, Running_Region1_Adjusting_State, Running_Region1_State, Running_Region1_Adjusting_State_Code);
-      oosmos_OrthoRegionInit(pPidTest, Running_Region2_State, Running_State, Running_Region2_Testing_State, NULL);
-        oosmos_LeafInit(pPidTest, Running_Region2_Testing_State, Running_Region2_State, Running_Region2_Testing_State_Code);
-    oosmos_LeafInit(pPidTest, State_State, ROOT, State_State_Code);
+    oosmos_LeafInit(pPidTest, Running_State, ROOT, Running_State_Code);
 //<<<INIT
 
   pPidTest->m_pPID = pidNew(1.0f, 0.0f, 0.0f, BASELINE);
   pPidTest->m_Output = 0.0f;
+
+  #if defined(pid_DEBUG)
+    oosmos_ObjectThreadInit(pPidTest, m_ObjectThread, TestThread, true);
+  #endif
 
   return pPidTest;
 }
