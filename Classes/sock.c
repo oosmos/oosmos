@@ -270,7 +270,7 @@ extern bool sockReceive(sock * pSock, void * pBuffer, size_t BufferSize, size_t 
   if (pSock->m_BytesReceived < BufferSize) {
     recvsize_t NewBytesReceived = recv(pSock->m_Socket,
                                        pSock->m_pReceiveBuffer+pSock->m_BytesReceived,
-                                       RECEIVE_BUFFER_SIZE-pSock->m_BytesReceived,
+                                       (int) (RECEIVE_BUFFER_SIZE-pSock->m_BytesReceived),
                                        0);
 
     if (WouldBlock(pSock, NewBytesReceived)) {
@@ -313,7 +313,7 @@ extern bool sockReceiveUntilContent(sock * pSock, void * pBufferArg, size_t Buff
   char * pBuffer  = (char * ) pBufferArg;
   char * pContent = (char * ) pContentArg;
 
-  const recvsize_t BufferBytesAvailable = RECEIVE_BUFFER_SIZE - pSock->m_BytesReceived;
+  const recvsize_t BufferBytesAvailable = (recvsize_t) (RECEIVE_BUFFER_SIZE - pSock->m_BytesReceived);
 
   if (pSock->m_Closed) {
     return false;
@@ -374,7 +374,7 @@ extern bool sockSend(sock * pSock, const void * pData, size_t Bytes)
 
   if (pSock->m_pSendData == NULL) {
     pSock->m_pSendData = (const char *) pData;
-    pSock->m_BytesToSend = Bytes;
+    pSock->m_BytesToSend = (int) Bytes;
   }
 
   {
@@ -424,7 +424,7 @@ extern bool sockConnect(sock * pSock, uint32_t IP_HostByteOrder, int Port)
   tv.tv_sec  = 0;
   tv.tv_usec = 0;
 
-  select(largest_sock+1, NULL, &fd_out, NULL, &tv);
+  select((int) (largest_sock + 1), NULL, &fd_out, NULL, &tv);
   const int Writable = FD_ISSET(pSock->m_Socket, &fd_out);
 
   char Code;

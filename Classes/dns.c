@@ -255,7 +255,7 @@ extern bool dnsQuery(dns * pDns, const char * pHost, uint32_t * pIP, int MaxIPs)
 
     QuerySize = sizeof(tHeader) + NameSize + sizeof(tQuestionTail);
 
-    if (sendto(pDns->Socket, Buffer, QuerySize, 0, (struct sockaddr *) &SockAddr, SockAddrSize) == -1) {
+    if (sendto(pDns->Socket, Buffer, (int) QuerySize, 0, (struct sockaddr *) &SockAddr, (int) SockAddrSize) == -1) {
       exit(1);
     }
 
