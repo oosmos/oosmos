@@ -32,7 +32,7 @@
 #include <stdint.h>
 
 //
-// This pwm class provides a more intuitve and portable interface to control
+// This pwm class provides a more intuitive and portable interface to control
 // PWM signals.  By specifying PWM duty cycle units as a percentage (0.0%-100.0%), the
 // user intent is clear.  The alternative is non-portable value in your application
 // whose magnitude varies from platform to platform.  The code below is a bit messy,
