@@ -26,10 +26,11 @@
 #include "oosmos.h"
 #include "pin.h"
 #include <stdbool.h>
+#include <stdint.h>
 
 typedef struct btnphTag btnph;
 
-extern btnph * btnphNew(pin * pPin, int HoldTimeMS);
+extern btnph * btnphNew(pin * pPin, uint32_t HoldTimeMS);
 
 extern void btnphSubscribeReleasedEvent(btnph * pSwitch, oosmos_sQueue * pQueue, int ReleasedEventCode, void * pContext);
 extern void btnphSubscribeHeldEvent    (btnph * pSwitch, oosmos_sQueue * pQueue, int HeldEventCode,     void * pContext);

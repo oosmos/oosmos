@@ -52,7 +52,7 @@ typedef enum {
 struct btnphTag
 {
   pin      * m_pPin;
-  int        m_HoldTimeMS;
+  uint32_t   m_HoldTimeMS;
 
   oosmos_sObjectThread   m_ObjectThread;
   oosmos_sSubscriberList m_PressedEvent[btnphMaxPressedSubscribers];
@@ -122,7 +122,7 @@ extern bool btnphIsPressed(const btnph * pButton)
   return PhysicalButtonState(pButton) == Pressed_State;
 }
 
-extern btnph * btnphNew(pin * pPin, int HoldTimeMS)
+extern btnph * btnphNew(pin * pPin, uint32_t HoldTimeMS)
 {
   oosmos_Allocate(pButton, btnph, btnphMaxButtons, NULL);
 
