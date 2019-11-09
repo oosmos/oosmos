@@ -30,7 +30,7 @@
 
 #if defined(ARDUINO)
   #include <stdbool.h>
-  extern uint32_t prtArduinoBaudRate = 115200;
+  extern uint32_t prtArduinoBaudRate;
 #endif
 
 extern void prtFormatted(const char * pFormat, ...)
