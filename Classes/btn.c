@@ -40,45 +40,29 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-typedef enum {
-  Pressed_State = 1,
-  Released_State
-} eStates;
-
 struct btnTag
 {
-  pin      * m_pPin;
-  eStates    m_State;
+  pin * m_pPin;
 
-  oosmos_sActiveObject   m_ActiveObject;
+  oosmos_sObjectThread   m_ObjectThread;
   oosmos_sSubscriberList m_PressedEvent[btnMaxPressedSubscribers];
   oosmos_sSubscriberList m_ReleasedEvent[btnMaxReleasedSubscribers];
 };
 
-static void StateMachine(void * pObject)
+static void Thread(const btn * pButton, oosmos_sState * pState)
 {
-  oosmos_POINTER_GUARD(pObject);
+  oosmos_POINTER_GUARD(pButton);
+  oosmos_POINTER_GUARD(pState);
+ 	
+  oosmos_ThreadBegin();
+    for (;;) {
+      oosmos_ThreadWaitCond(pinIsOn(pButton->m_pPin));
+      oosmos_SubscriberListNotify(pButton->m_PressedEvent);
 
-  btn * pButton = (btn *) pObject;
-
-  switch (pButton->m_State) {
-    case Released_State: {
-      if (pinIsOn(pButton->m_pPin)) {
-        pButton->m_State = Pressed_State;
-        oosmos_SubscriberListNotify(pButton->m_PressedEvent);
-      }
-
-      break;
+      oosmos_ThreadWaitCond(pinIsOff(pButton->m_pPin));
+      oosmos_SubscriberListNotify(pButton->m_ReleasedEvent);
     }
-    case Pressed_State: {
-      if (pinIsOff(pButton->m_pPin)) {
-        pButton->m_State = Released_State;
-        oosmos_SubscriberListNotify(pButton->m_ReleasedEvent);
-      }
-
-      break;
-    }
-  }
+  oosmos_ThreadEnd();
 }
 
 extern void btnSubscribePressedEvent(btn * pButton, oosmos_sQueue * pQueue, int PressedEventCode, void * pContext)
@@ -95,31 +79,13 @@ extern void btnSubscribeReleasedEvent(btn * pButton, oosmos_sQueue * pQueue, int
   oosmos_SubscriberListAdd(pButton->m_ReleasedEvent, pQueue, ReleasedEventCode, pContext);
 }
 
-static eStates PhysicalButtonState(const btn * pButton)
-{
-  oosmos_POINTER_GUARD(pButton);
-
-  return pinIsOn(pButton->m_pPin) ? Pressed_State : Released_State;
-}
-
-extern bool btnIsReleased(const btn * pButton)
-{
-  return !btnIsPressed(pButton);
-}
-
-extern bool btnIsPressed(const btn * pButton)
-{
-  return PhysicalButtonState(pButton) == Pressed_State;
-}
-
 extern btn * btnNew(pin * pPin)
 {
   oosmos_Allocate(pButton, btn, btnMaxButtons, NULL);
 
-  pButton->m_pPin  = pPin;
-  pButton->m_State = Released_State;
+  pButton->m_pPin = pPin;
 
-  oosmos_ActiveObjectInit(pButton, m_ActiveObject, StateMachine);
+  oosmos_ObjectThreadInit(pButton, m_ObjectThread, Thread, true);
 
   oosmos_SubscriberListInit(pButton->m_PressedEvent);
   oosmos_SubscriberListInit(pButton->m_ReleasedEvent);

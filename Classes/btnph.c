@@ -44,11 +44,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-typedef enum {
-  Pressed_State = 1,
-  Released_State
-} eStates;
-
 struct btnphTag
 {
   pin      * m_pPin;
@@ -84,13 +79,6 @@ static void Thread(const btnph * pButton, oosmos_sState * pState)
   oosmos_ThreadEnd();
 }
 
-static eStates PhysicalButtonState(const btnph * pButton)
-{
-  oosmos_POINTER_GUARD(pButton);
-
-  return pinIsOn(pButton->m_pPin) ? Pressed_State : Released_State;
-}
-
 extern void btnphSubscribePressedEvent(btnph * pButton, oosmos_sQueue * pQueue, int PressedEventCode, void * pContext)
 {
   oosmos_POINTER_GUARD(pButton);
@@ -110,16 +98,6 @@ extern void btnphSubscribeReleasedEvent(btnph * pButton, oosmos_sQueue * pQueue,
   oosmos_POINTER_GUARD(pButton);
 
   oosmos_SubscriberListAdd(pButton->m_ReleasedEvent, pQueue, ReleasedEventCode, pContext);
-}
-
-extern bool btnphIsReleased(const btnph * pButton)
-{
-  return !btnphIsPressed(pButton);
-}
-
-extern bool btnphIsPressed(const btnph * pButton)
-{
-  return PhysicalButtonState(pButton) == Pressed_State;
 }
 
 extern btnph * btnphNew(pin * pPin, uint32_t HoldTimeMS)
