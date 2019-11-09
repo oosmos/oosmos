@@ -25,13 +25,13 @@
 
 #include "oosmos.h"
 #include "pin.h"
+#include <stdint.h>
 
 typedef struct encoderTag encoder;
 
-extern encoder * encoderNew(pin * pEncoderA, pin * pEncoderB, int Max);
-extern void encoderReset(encoder * pEncoder);
-extern int encoderGetCount(const encoder * pEncoder);
-
-extern void encoderSubscribeChangeEvent(encoder * pEncoder, oosmos_sQueue * pQueue, const int EventCode, void * pContext);
+extern encoder * encoderNew(pin * pEncoderA, pin * pEncoderB);
+extern void      encoderReset(encoder * pEncoder);
+extern int32_t   encoderGetCount(const encoder * pEncoder);
+extern void      encoderSubscribeChangeEvent(encoder * pEncoder, oosmos_sQueue * pQueue, const int EventCode, void * pContext);
 
 #endif

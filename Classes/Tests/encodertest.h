@@ -27,6 +27,6 @@
 
 typedef struct encodertestTag encodertest;
 
-extern encodertest * encodertestNew(pin * pPinA, pin * pPinB, int Max);
+extern encodertest * encodertestNew(pin * pPinA, pin * pPinB);
 
 #endif

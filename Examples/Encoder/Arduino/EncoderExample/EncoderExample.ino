@@ -24,20 +24,19 @@
 #include "encodertest.h"
 
 // Required by prt...
-unsigned long prtArduinoBaudRate = 115200;
+uint32_t prtArduinoBaudRate = 115200;
 
-static void SetupEncoderTest(int PinA, int PinB, int Max)
+static void SetupEncoderTest(int PinA, int PinB)
 {
   pin * pPinA = pinNew_Debounce(PinA, pinIn, pinActiveLow, 2);
   pin * pPinB = pinNew(PinB, pinIn, pinActiveLow);
 
-  encodertestNew(pPinA, pPinB, Max);
+  encodertestNew(pPinA, pPinB);
 }
 
 extern void setup()
 {
-  SetupEncoderTest(9, 10, 20);
-  SetupEncoderTest(11, 12, 40);
+  SetupEncoderTest(7, 8);
 }
 
 extern void loop()

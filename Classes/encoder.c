@@ -26,56 +26,40 @@
 #include <stddef.h>
 
 #ifndef encoderMAX
-#define encoderMAX 3
+#define encoderMAX 2
 #endif
 
-typedef enum
-{
-  EncoderA_Unknown = 1,
-  EncoderA_High,
-  EncoderA_Low
-} eState;
+#ifndef encoderMAX_CHANGE_SUBSCRIBERS
+#define endoderMAX_CHANGE_SUBSCRIBERS 2
+#endif
 
 struct encoderTag
 {
-  pin  * m_pPinA;
-  pin  * m_pPinB;
-  int    m_Count;
-  int    m_Max;
-  eState m_State;
+  pin   * m_pPinA;
+  pin   * m_pPinB;
+  int32_t m_Count;
 
-  oosmos_sSubscriberList m_ChangeEventSubscribers[1];
-  oosmos_sActiveObject   m_ActiveObject;
+  oosmos_sSubscriberList m_ChangeEventSubscribers[endoderMAX_CHANGE_SUBSCRIBERS];
+  oosmos_sObjectThread   m_ObjectThread;
 };
 
-static void ActiveEncoder_Callback(void * pObject)
+static void EncoderThread(encoder * pEncoder, oosmos_sState * pState)
 {
-  encoder * pEncoder = (encoder *) pObject;
+  oosmos_ThreadBegin();
+    for (;;) {
+      oosmos_ThreadWaitCond(pinIsOn(pEncoder->m_pPinA));
 
-  switch (pEncoder->m_State) {
-    case EncoderA_Unknown: {
-      pEncoder->m_State = pinIsOn(pEncoder->m_pPinA) ? EncoderA_High : EncoderA_Low;
-      break;
-    }
-    case EncoderA_High: {
-      if (pinIsOff(pEncoder->m_pPinA)) {
-        pEncoder->m_State = EncoderA_Low;
-
-        if (pinIsOn(pEncoder->m_pPinB))
-          pEncoder->m_Count = oosmos_Min(pEncoder->m_Max, pEncoder->m_Count + 1);
-        else
-          pEncoder->m_Count = oosmos_Max(0, pEncoder->m_Count - 1);
-
+      if (pinIsOn(pEncoder->m_pPinB)) {
+        pEncoder->m_Count -= 1;
+        oosmos_SubscriberListNotify(pEncoder->m_ChangeEventSubscribers);
+      } else {
+        pEncoder->m_Count += 1;
         oosmos_SubscriberListNotify(pEncoder->m_ChangeEventSubscribers);
       }
-      break;
+
+      oosmos_ThreadWaitCond(pinIsOff(pEncoder->m_pPinA) && pinIsOff(pEncoder->m_pPinB));
     }
-    case EncoderA_Low: {
-      if (pinIsOn(pEncoder->m_pPinA))
-        pEncoder->m_State = EncoderA_High;
-      break;
-    }
-  }
+  oosmos_ThreadEnd();
 }
 
 extern void encoderReset(encoder * pEncoder)
@@ -88,22 +72,20 @@ extern void encoderSubscribeChangeEvent(encoder * pEncoder, oosmos_sQueue * pQue
   oosmos_SubscriberListAdd(pEncoder->m_ChangeEventSubscribers, pQueue, EventCode, pContext);
 }
 
-extern int encoderGetCount(const encoder * pEncoder)
+extern int32_t encoderGetCount(const encoder * pEncoder)
 {
   return pEncoder->m_Count;
 }
 
-extern encoder * encoderNew(pin * pPinA, pin * pPinB, int Max)
+extern encoder * encoderNew(pin * pPinA, pin * pPinB)
 {
   oosmos_Allocate(pEncoder, encoder, encoderMAX, NULL);
 
   pEncoder->m_pPinA  = pPinA;
   pEncoder->m_pPinB  = pPinB;
   pEncoder->m_Count  = 0;
-  pEncoder->m_Max    = Max;
-  pEncoder->m_State  = EncoderA_Unknown;
 
-  oosmos_ActiveObjectInit(pEncoder, m_ActiveObject, ActiveEncoder_Callback);
+  oosmos_ObjectThreadInit(pEncoder, m_ObjectThread, EncoderThread, true);
 
   return pEncoder;
 }

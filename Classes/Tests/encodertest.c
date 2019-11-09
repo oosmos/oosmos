@@ -57,7 +57,7 @@ static bool Idle_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosm
   return false;
 }
 
-extern encodertest * encodertestNew(pin * pPinA, pin * pPinB, int Max)
+extern encodertest * encodertestNew(pin * pPinA, pin * pPinB)
 {
   oosmos_Allocate(pEncoderTest, encodertest, MAX_ENCODERTESTS, NULL);
 
@@ -66,7 +66,7 @@ extern encodertest * encodertestNew(pin * pPinA, pin * pPinB, int Max)
   oosmos_StateMachineInit(pEncoderTest, StateMachine, NULL,         Idle_State);
     oosmos_LeafInit      (pEncoderTest, Idle_State,   StateMachine, NULL      );
 
-  encoder * pEncoder = encoderNew(pPinA, pPinB, Max);
+  encoder * pEncoder = encoderNew(pPinA, pPinB);
   encoderSubscribeChangeEvent(pEncoder, oosmos_EventQueue(pEncoderTest), ChangeEvent, NULL);
 
   pEncoderTest->m_pEncoder = pEncoder;
