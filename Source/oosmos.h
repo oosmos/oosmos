@@ -95,12 +95,13 @@ struct OOSMOS_sQueueTag {
   void   * m_pTail;
   void   * m_pEnd;
   void   * m_pQueueData;
-  uint16_t m_QueueDataSize;
-  uint16_t m_QueueElementSize;
-  uint16_t m_ByteCount;
 
   oosmos_eQueueFullBehavior (*m_pFullBehaviorFunc)(void * pContext);
   void   * m_pContext;
+
+  uint16_t m_QueueDataSize;
+  uint16_t m_QueueElementSize;
+  uint16_t m_ByteCount;
 };
 
 #if defined(oosmos_DEBUG)
@@ -289,6 +290,12 @@ struct OOSMOS_sStateTag {
   // Support for oosmos_ThreadYield.
   //
   unsigned int m_ThreadHasYielded:1;
+
+  //
+  // 0 - indicates first entry to a thread function.
+  // 1 - indicates subsequent execution of a thread function.
+  //
+  unsigned int m_ThreadFunctionIsActive:1;
 };
 
 struct OOSMOS_sCompositeTag {
@@ -506,13 +513,9 @@ typedef void (*oosmos_tOutOfMemory)(const char*, int, const char*);
 //
 // oosmos_ThreadWaitCond
 // oosmos_ThreadWaitCond_TimeoutMS
-// oosmos_ThreadWaitCond_TimeoutMS_Event
-// oosmos_ThreadWaitCond_TimeoutMS_Exit
 //
 // oosmos_ThreadWaitEvent
 // oosmos_ThreadWaitEvent_TimeoutMS
-// oosmos_ThreadWaitEvent_TimeoutMS_Event
-// oosmos_ThreadWaitEvent_TimeoutMS_Exit
 //
 // oosmos_ThreadYield
 //
@@ -526,23 +529,11 @@ extern bool OOSMOS_ThreadWaitCond(oosmos_sState * pState,
 extern bool OOSMOS_ThreadWaitCond_TimeoutMS(oosmos_sState * pState,
                         bool Condition, uint32_t TimeoutMS, bool * pTimeoutStatus);
 
-extern bool OOSMOS_ThreadWaitCond_TimeoutMS_Event(oosmos_sState * pState,
-                        bool Condition, uint32_t TimeoutMS, int NotificationEventCode);
-
-extern bool OOSMOS_ThreadWaitCond_TimeoutMS_Exit(oosmos_sState * pState,
-                        bool Condition, uint32_t TimeoutMS);
-
 extern bool OOSMOS_ThreadWaitEvent(const oosmos_sState * pState,
                         int WaitEventCode);
 
 extern bool OOSMOS_ThreadWaitEvent_TimeoutMS(oosmos_sState * pState,
                         int WaitEventCode, uint32_t TimeoutMS, bool * pTimedOut);
-
-extern bool OOSMOS_ThreadWaitEvent_TimeoutMS_Event(oosmos_sState * pState,
-                        int WaitEventCode, uint32_t TimeoutMS, int NotificationEventCode);
-
-extern bool OOSMOS_ThreadWaitEvent_TimeoutMS_Exit(oosmos_sState * pState,
-                        int WaitEventCode, uint32_t TimeoutMS);
 
 extern bool OOSMOS_ThreadYield(oosmos_sState * pState);
 
@@ -589,20 +580,6 @@ extern bool OOSMOS_ThreadYield(oosmos_sState * pState);
                                         if (!OOSMOS_ThreadWaitCond_TimeoutMS(pState, Cond, TimeoutMS, pTimeoutStatus)) \
                                           return
 
-#define oosmos_ThreadWaitCond_TimeoutMS_Event(Cond, TimeoutMS, NotificationEventCode) \
-                                      /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
-                                      /*lint -fallthrough*/ \
-                                      case __LINE__: pState->m_ThreadContext = __LINE__; \
-                                        if (!OOSMOS_ThreadWaitCond_TimeoutMS_Event(pState, Cond, TimeoutMS, NotificationEventCode)) \
-                                          return
-
-#define oosmos_ThreadWaitCond_TimeoutMS_Exit(Cond, TimeoutMS) \
-                                      /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
-                                      /*lint -fallthrough*/ \
-                                      case __LINE__: pState->m_ThreadContext = __LINE__; \
-                                        if (!OOSMOS_ThreadWaitCond_TimeoutMS_Exit(pState, Cond, TimeoutMS)) \
-                                          return
-
 #define oosmos_ThreadWaitEvent(WaitEventCode) \
                                       /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
                                       /*lint -fallthrough*/ \
@@ -615,20 +592,6 @@ extern bool OOSMOS_ThreadYield(oosmos_sState * pState);
                                       /*lint -fallthrough*/ \
                                       case __LINE__: pState->m_ThreadContext = __LINE__; \
                                         if (!OOSMOS_ThreadWaitEvent_TimeoutMS(pState, WaitEventCode, TimeoutMS, pTimeoutResult)) \
-                                          return
-
-#define oosmos_ThreadWaitEvent_TimeoutMS_Event(WaitEventCode, TimeoutMS, NotificationEventCode) \
-                                      /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
-                                      /*lint -fallthrough*/ \
-                                      case __LINE__: pState->m_ThreadContext = __LINE__; \
-                                        if (!OOSMOS_ThreadWaitEvent_TimeoutMS_Event(pState, WaitEventCode, TimeoutMS, NotificationEventCode)) \
-                                          return
-
-#define oosmos_ThreadWaitEvent_TimeoutMS_Exit(WaitEventCode, TimeoutMS) \
-                                      /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
-                                      /*lint -fallthrough*/ \
-                                      case __LINE__: pState->m_ThreadContext = __LINE__; \
-                                        if (!OOSMOS_ThreadWaitEvent_TimeoutMS_Exit(pState, WaitEventCode, TimeoutMS)) \
                                           return
 
 #define oosmos_ThreadExit() \

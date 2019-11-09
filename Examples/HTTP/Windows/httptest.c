@@ -57,6 +57,7 @@ struct httptestTag
 static void Thread(httptest * pHttpTest, oosmos_sState * pState)
 {
   size_t BytesReceived;
+  bool   TimedOut;
 
   oosmos_ThreadBegin();
     printf("%d: Getting IP from DNS lookup.\n", pHttpTest->m_ID);
@@ -65,15 +66,17 @@ static void Thread(httptest * pHttpTest, oosmos_sState * pState)
       pHttpTest->Running.m_IP_HostByteOrder[0] = sockDotToIP_HostByteOrder(pHttpTest->m_pHost);
     }
     else {
-      oosmos_ThreadWaitCond_TimeoutMS_Event(8000, ConnectionTimeoutEvent,
-        dnsQuery(pHttpTest->m_pDNS, pHttpTest->m_pHost, pHttpTest->Running.m_IP_HostByteOrder, 3)
-      );
+
+      oosmos_ThreadWaitCond_TimeoutMS(dnsQuery(pHttpTest->m_pDNS, pHttpTest->m_pHost, pHttpTest->Running.m_IP_HostByteOrder, 3), 8000, &TimedOut);
+
+      if (TimedOut) {
+        oosmos_PushEventCode(pHttpTest, ConnectionTimeoutEvent);
+      }
     }
 
     printf("%d: Connecting...\n", pHttpTest->m_ID);
-    oosmos_ThreadWaitCond_TimeoutMS_Event(2000, ConnectionTimeoutEvent,
-      sockConnect(pHttpTest->m_pSock, pHttpTest->Running.m_IP_HostByteOrder[0], pHttpTest->m_Port)
-    );
+
+    oosmos_ThreadWaitCond_TimeoutMS(sockConnect(pHttpTest->m_pSock, pHttpTest->Running.m_IP_HostByteOrder[0], pHttpTest->m_Port), 2000, &TimedOut);
 
     printf("%d: CONNECTED\n", pHttpTest->m_ID);
 

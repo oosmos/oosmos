@@ -1,0 +1,10 @@
+[
+  {
+    "enabled":      true,
+    "uxf_filename": "StateThreads.uxf",
+    "filename":     "StateThreads.c",
+    "type":         "test",
+    "object_ptr":   "pTest",
+    "debug":        true
+  }
+]

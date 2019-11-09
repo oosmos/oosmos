@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.3.0">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>30</x>
+      <y>50</y>
+      <w>180</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>LED
+--
+POLL:
+  LedThread(pState);
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>10</x>
+      <y>100</y>
+      <w>230</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;210.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>30</x>
+      <y>120</y>
+      <w>180</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>Speaker
+--
+POLL:
+  SpeakerThread(pState);
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>20</x>
+      <y>20</y>
+      <w>200</w>
+      <h>160</h>
+    </coordinates>
+    <panel_attributes>OrthoState
+--
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

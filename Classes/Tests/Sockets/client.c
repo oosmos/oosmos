@@ -46,8 +46,15 @@ struct clientTag
 
 static void ClientThread(client * pClient, oosmos_sState * pState, uint32_t IP_HostByteOrder)
 {
+  bool TimedOut;
+
   oosmos_ThreadBegin();
-    oosmos_ThreadWaitCond_TimeoutMS_Event(2000, ConnectionTimeoutEvent, sockConnect(pClient->m_pSock, IP_HostByteOrder, pClient->m_Port));
+    oosmos_ThreadWaitCond_TimeoutMS(sockConnect(pClient->m_pSock, IP_HostByteOrder, pClient->m_Port), 2000, &TimedOut);
+
+    if (TimedOut) {
+      printf("%p: Unable to connect to server: Timed out. Terminating.\n", (void *) pClient->m_pSock);
+      exit(1);
+    }
 
     printf("%p: CONNECTED\n", (void *) pClient->m_pSock);
 
@@ -78,10 +85,6 @@ static bool Running_State_Code(void * pObject, oosmos_sState * pState, const oos
 
     case ClosedEvent: {
       printf("Server closed.  Terminating...\n");
-      exit(1);
-    }
-    case ConnectionTimeoutEvent: {
-      printf("%p: Unable to connect to server: Timed out. Terminating.\n", (void *) pClient->m_pSock);
       exit(1);
     }
   }

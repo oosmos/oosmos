@@ -1,5 +1,5 @@
 //
-// OOSMOS - PIC32 sync example main program.
+// OOSMOS - PIC32 thread example main program.
 //
 // Copyright (C) 2014-2019  OOSMOS, LLC
 //
@@ -38,6 +38,5 @@ extern int main(void)
 
   for (;;) {
     oosmos_RunStateMachines();
-    oosmos_DelayMS(1);
   }
 }

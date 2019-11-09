@@ -59,7 +59,7 @@ static const oosmos_sEvent EventCOMPLETE = { oosmos_COMPLETE, NULL };
 
 //
 // Special reserved event code used to mark an event as "spent" when handled so that
-// the event isn't incorrectly recognized in subsequent oosmos_ThreadWaitEvent_...
+// the event isn't incorrectly recognized in subsequent oosmos_ThreadWaitEvent_*
 // calls.
 //
 #define OOSMOS_EVENT_SPENT (-1)
@@ -163,8 +163,9 @@ static void ThreadInit(oosmos_sState * pState)
 {
   oosmos_POINTER_GUARD(pState);
 
-  pState->m_ThreadContext    = OOSMOS_THREAD_CONTEXT_BEGIN;
-  pState->m_ThreadHasYielded = false;
+  pState->m_ThreadContext          = OOSMOS_THREAD_CONTEXT_BEGIN;
+  pState->m_ThreadHasYielded       = false;
+  pState->m_ThreadFunctionIsActive = false;
   RESET_THREAD_TIMEOUT(pState);
 }
 
@@ -1312,57 +1313,21 @@ extern bool OOSMOS_ThreadWaitCond_TimeoutMS(oosmos_sState * pState, bool Conditi
   oosmos_POINTER_GUARD(pState);
   oosmos_POINTER_GUARD(pTimeoutStatus);
 
+  if (!pState->m_ThreadFunctionIsActive) {
+    RESET_THREAD_TIMEOUT(pState);
+    pState->m_ThreadFunctionIsActive = true;
+  }
+
   if (Condition) {
     *pTimeoutStatus = false;
+    pState->m_ThreadFunctionIsActive = false;
     return true;
   }
 
   if (ThreadTimeoutMS(pState, TimeoutMS)) {
     *pTimeoutStatus = true;
+    pState->m_ThreadFunctionIsActive = false;
     return true;
-  }
-
-  return false;
-}
-
-extern bool OOSMOS_ThreadWaitCond_TimeoutMS_Event(oosmos_sState * pState,  bool Condition, uint32_t TimeoutMS, int NotificationEventCode)
-{
-  oosmos_POINTER_GUARD(pState);
-
-  if (Condition) {
-    RESET_THREAD_TIMEOUT(pState);
-    return true;
-  }
-
-  if (ThreadTimeoutMS(pState, TimeoutMS)) {
-    const oosmos_sEvent TimeoutEvent = { NotificationEventCode, NULL};
-
-    pState->m_TransitionOccurred = false;
-
-    (void) DeliverEvent(pState, &TimeoutEvent);
-
-    if (!pState->m_TransitionOccurred) {
-      pState->m_ThreadContext = OOSMOS_THREAD_CONTEXT_FINALLY;
-    }
-
-    return false;
-  }
-
-  return false;
-}
-
-extern bool OOSMOS_ThreadWaitCond_TimeoutMS_Exit(oosmos_sState * pState, bool Condition, uint32_t TimeoutMS)
-{
-  oosmos_POINTER_GUARD(pState);
-
-  if (Condition) {
-    RESET_THREAD_TIMEOUT(pState);
-    return true;
-  }
-
-  if (ThreadTimeoutMS(pState, TimeoutMS)) {
-    pState->m_ThreadContext = OOSMOS_THREAD_CONTEXT_FINALLY;
-    return false;
   }
 
   return false;
@@ -1382,71 +1347,22 @@ extern bool OOSMOS_ThreadWaitEvent(const oosmos_sState * pState, int WaitEventCo
   return false;
 }
 
-extern bool OOSMOS_ThreadWaitEvent_TimeoutMS(oosmos_sState * pState, int WaitEventCode, uint32_t TimeoutMS, bool * pTimedOut)
+extern bool OOSMOS_ThreadWaitEvent_TimeoutMS(oosmos_sState * pState, int WaitEventCode, uint32_t TimeoutMS, bool * pTimedOutStatus)
 {
   oosmos_POINTER_GUARD(pState);
-  oosmos_POINTER_GUARD(pTimedOut);
+  oosmos_POINTER_GUARD(pTimedOutStatus);
 
   oosmos_sEvent * pCurrentEvent = OOSMOS_GetCurrentEvent(pState);
 
   if (pCurrentEvent->m_Code != OOSMOS_EVENT_SPENT && pCurrentEvent->m_Code == WaitEventCode) {
-    *pTimedOut = false;
+    *pTimedOutStatus = false;
     pCurrentEvent->m_Code = OOSMOS_EVENT_SPENT;
     return true;
   }
 
   if (OOSMOS_ThreadDelayMS(pState, TimeoutMS)) {
-    *pTimedOut = true;
+    *pTimedOutStatus = true;
     return true;
-  }
-
-  return false;
-}
-
-extern bool OOSMOS_ThreadWaitEvent_TimeoutMS_Event(oosmos_sState * pState, int WaitEventCode, uint32_t TimeoutMS, int NotificationEventCode)
-{
-  oosmos_POINTER_GUARD(pState);
-
-  oosmos_sEvent * pCurrentEvent = OOSMOS_GetCurrentEvent(pState);
-
-  if (pCurrentEvent->m_Code != OOSMOS_EVENT_SPENT && pCurrentEvent->m_Code == WaitEventCode) {
-    RESET_THREAD_TIMEOUT(pState);
-    pCurrentEvent->m_Code = OOSMOS_EVENT_SPENT;
-    return true;
-  }
-
-  if (OOSMOS_ThreadDelayMS(pState, TimeoutMS)) {
-    const oosmos_sEvent TimeoutEvent = { NotificationEventCode, NULL };
-
-    pState->m_TransitionOccurred = false;
-
-    (void) DeliverEvent(pState, &TimeoutEvent);
-
-    if (!pState->m_TransitionOccurred) {
-      pState->m_ThreadContext = OOSMOS_THREAD_CONTEXT_FINALLY;
-    }
-
-    return false;
-  }
-
-  return false;
-}
-
-extern bool OOSMOS_ThreadWaitEvent_TimeoutMS_Exit(oosmos_sState * pState, int WaitEventCode, uint32_t TimeoutMS)
-{
-  oosmos_POINTER_GUARD(pState);
-
-  oosmos_sEvent * pCurrentEvent = OOSMOS_GetCurrentEvent(pState);
-
-  if (pCurrentEvent->m_Code != OOSMOS_EVENT_SPENT && pCurrentEvent->m_Code == WaitEventCode) {
-    RESET_THREAD_TIMEOUT(pState);
-    pCurrentEvent->m_Code = OOSMOS_EVENT_SPENT;
-    return true;
-  }
-
-  if (OOSMOS_ThreadDelayMS(pState, TimeoutMS)) {
-    pState->m_ThreadContext = OOSMOS_THREAD_CONTEXT_FINALLY;
-    return false;
   }
 
   return false;

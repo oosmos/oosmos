@@ -38,9 +38,7 @@
 //>>>EVENTS
 enum {
   evDone = 1,
-  evPrint = 2,
-  evTimedOut1 = 3,
-  evTimedOut2 = 4
+  evPrint = 2
 };
 
 #ifdef oosmos_DEBUG
@@ -49,8 +47,6 @@ enum {
     switch (EventCode) {
       case evDone: return "evDone";
       case evPrint: return "evPrint";
-      case evTimedOut1: return "evTimedOut1";
-      case evTimedOut2: return "evTimedOut2";
       default: return "";
     }
   }
@@ -70,33 +66,18 @@ struct threadtestTag
         oosmos_sLeaf Running_Region1_DelayMS_State;
         oosmos_sLeaf Running_Region1_WaitCond_State;
         oosmos_sLeaf Running_Region1_WaitCond_TimeoutMS_State;
-        oosmos_sLeaf Running_Region1_WaitCond_TimeoutMS_Event_State;
-        oosmos_sLeaf Running_Region1_WaitCond_TimeoutMS_Exit_State;
         oosmos_sLeaf Running_Region1_WaitEvent_State;
         oosmos_sLeaf Running_Region1_WaitEvent_TimeoutMS_State;
-        oosmos_sLeaf Running_Region1_WaitEvent_TimeoutMS_Event_State;
-        oosmos_sLeaf Running_Region1_WaitEvent_TimeoutMS_Exit_State;
+        oosmos_sLeaf Running_Region1_ThreadExit_State;
+        oosmos_sLeaf Running_Region1_ThreadExitFinally_State;
+        oosmos_sLeaf Running_Region1_Exiting_State;
       oosmos_sOrthoRegion Running_Region2_State;
         oosmos_sLeaf Running_Region2_Printing_State;
 //<<<DECL
   int m_WC_Timeout_Successes;
-
-  int m_WCT_Event_RightPath;
-  int m_WCT_Event_WrongPath;
-
-  int m_D_RightPath;
-  int m_D_WrongPath;
-
-  int m_E_RightPath;
-  int m_E_WrongPath;
-
   int m_WE_Timeout_Successes;
 
-  int m_WET_Event_RightPath;
-  int m_WET_Event_WrongPath;
-
-  int m_WET_Exit_RightPath;
-  int m_WET_Exit_WrongPath;
+  int m_ThreadExitCount;
 };
 
 static bool ConditionRandom(int Range)
@@ -151,44 +132,6 @@ static void WaitCond_TimeoutMS_Thread(threadtest * pThreadTest, oosmos_sState * 
   oosmos_ThreadEnd();
 }
 
-static void WaitCond_TimeoutMS_Event_Thread(threadtest * pThreadTest, oosmos_sState * pState)
-{
-  oosmos_ThreadBegin();
-    pThreadTest->m_WCT_Event_RightPath = 0;
-    pThreadTest->m_WCT_Event_WrongPath = 0;
-
-    prtFormatted("ThreadWaitCond_TimeoutMS_Event...\n");
-
-    oosmos_ThreadWaitCond_TimeoutMS_Event(ConditionTrue(), 100, evTimedOut1);
-    pThreadTest->m_WCT_Event_RightPath += 1;
-
-    oosmos_ThreadWaitCond_TimeoutMS_Event(ConditionFalse(), 100, evTimedOut2);
-    pThreadTest->m_WCT_Event_WrongPath += 1;
-  oosmos_ThreadFinally();
-    prtFormatted("ThreadWaitCond_TimeoutMS_Event %s\n\n", pThreadTest->m_WCT_Event_RightPath == 2 && pThreadTest->m_WCT_Event_WrongPath == 0 ? "SUCCESS" : "FAILURE");
-  oosmos_ThreadEnd();
-}
-
-static void WaitCond_TimeoutMS_Exit_Thread(threadtest * pThreadTest, oosmos_sState * pState)
-{
-  oosmos_ThreadBegin();
-    pThreadTest->m_D_RightPath = 0;
-    pThreadTest->m_D_WrongPath = 0;
-
-    prtFormatted("ThreadWaitCond_TimeoutMS_Exit...\n");
-
-    oosmos_ThreadWaitCond_TimeoutMS_Exit(ConditionTrue(), 100);
-    pThreadTest->m_D_RightPath += 1;
-
-    oosmos_ThreadWaitCond_TimeoutMS_Exit(ConditionFalse(), 100);
-    pThreadTest->m_D_WrongPath += 1;
-
-  oosmos_ThreadFinally();
-    pThreadTest->m_D_RightPath += 1;
-    prtFormatted("ThreadWaitCond_TimeoutMS_Exit %s\n\n", pThreadTest->m_D_RightPath == 2 && pThreadTest->m_D_WrongPath == 0 ? "SUCCESS" : "FAILURE");
-  oosmos_ThreadEnd();
-}
-
 static void WaitEvent_Thread(threadtest * pThreadTest, oosmos_sState * pState)
 {
   oosmos_ThreadBegin();
@@ -218,58 +161,32 @@ static void WaitEvent_TimeoutMS_Thread(threadtest * pThreadTest, oosmos_sState *
   oosmos_ThreadEnd();
 }
 
-static void WaitEvent_TimeoutMS_Event_Thread(threadtest * pThreadTest, oosmos_sState * pState)
+static void ThreadExit_Thread(threadtest * pThreadTest, oosmos_sState * pState)
 {
   oosmos_ThreadBegin();
-    pThreadTest->m_WET_Event_RightPath = 0;
-    pThreadTest->m_WET_Event_WrongPath = 0;
-
-    prtFormatted("ThreadWaitEvent_TimeoutMS_Event...\n");
-
-    //
-    // Enqueue 'evPrint' to the orthogonal state. We expect to get an 'evDone' well
-    // before the timeout.
-    //
-    oosmos_PushEventCode(pThreadTest, evPrint);
-    oosmos_ThreadWaitEvent_TimeoutMS_Event(evDone, 100, evTimedOut1);
-    pThreadTest->m_WET_Event_RightPath += 1;
-
-    //
-    // We don't enqueue 'evPrint' so we don't expect an 'evDone' therefore it should time out.
-    //
-    oosmos_ThreadWaitEvent_TimeoutMS_Event(evDone, 100, evTimedOut2);
-    pThreadTest->m_WET_Event_WrongPath += 1;
-  oosmos_ThreadFinally();
-    prtFormatted("ThreadWaitEvent_TimeoutMS_Event %s\n\n", pThreadTest->m_WET_Event_RightPath == 2 && pThreadTest->m_WET_Event_WrongPath == 0 ? "SUCCESS" : "FAILURE");
+    pThreadTest->m_ThreadExitCount = 0;
+    oosmos_ThreadYield();
+    pThreadTest->m_ThreadExitCount++;
+    prtFormatted("ThreadExit SUCCESS\n");
+    oosmos_ThreadExit();
   oosmos_ThreadEnd();
 }
 
-static void WaitEvent_TimeoutMS_Exit_Thread(threadtest * pThreadTest, oosmos_sState * pState)
+static void ThreadExitFinally_Thread(threadtest * pThreadTest, oosmos_sState * pState)
 {
   oosmos_ThreadBegin();
-    pThreadTest->m_WET_Exit_RightPath = 0;
-    pThreadTest->m_WET_Exit_WrongPath = 0;
-
-    prtFormatted("ThreadWaitEvent_TimeoutMS_Exit...\n");
-
-    //
-    // Enqueue 'evPrint' to the orthogonal state. We expect to get and 'evDone' well
-    // before the timeout.
-    //
-    oosmos_PushEventCode(pThreadTest, evPrint);
-    oosmos_ThreadWaitEvent_TimeoutMS_Exit(evDone, 100);
-    pThreadTest->m_WET_Exit_RightPath += 1;
-
-    //
-    // We don't enqueue 'evPrint' so we don't expect an 'evDone' therefore it should time out and exit.
-    //
-    oosmos_ThreadWaitEvent_TimeoutMS_Exit(evDone, 100);
-    pThreadTest->m_WET_Exit_WrongPath += 1;
-
+    pThreadTest->m_ThreadExitCount = 0;
+    oosmos_ThreadYield();
+    pThreadTest->m_ThreadExitCount++;
+    oosmos_ThreadExit();
   oosmos_ThreadFinally();
-    pThreadTest->m_WET_Exit_RightPath += 1;
-    prtFormatted("ThreadWaitEvent_TimeoutMS_Exit %s\n\n", pThreadTest->m_WET_Exit_RightPath == 2 && pThreadTest->m_WET_Exit_WrongPath == 0 ? "SUCCESS" : "FAILURE");
-    exit(1);
+    pThreadTest->m_ThreadExitCount++;
+
+    if (pThreadTest->m_ThreadExitCount == 2) {
+      prtFormatted("ThreadExitFinally SUCCESS\n");
+    } else {
+      prtFormatted("ThreadExitFinally FAILURE\n");
+    }
   oosmos_ThreadEnd();
 }
 
@@ -318,48 +235,6 @@ static bool Running_Region1_WaitCond_TimeoutMS_State_Code(void * pObject, oosmos
       return true;
     }
     case oosmos_COMPLETE: {
-      return oosmos_Transition(pThreadTest, pState, Running_Region1_WaitCond_TimeoutMS_Event_State);
-    }
-  }
-
-  return false;
-}
-
-static bool Running_Region1_WaitCond_TimeoutMS_Event_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
-{
-  threadtest * pThreadTest = (threadtest *) pObject;
-
-  switch (oosmos_EventCode(pEvent)) {
-    case oosmos_POLL: {
-      WaitCond_TimeoutMS_Event_Thread(pThreadTest, pState);
-      return true;
-    }
-    case evTimedOut1: {
-      pThreadTest->m_WCT_Event_WrongPath += 1;
-      return true;
-    }
-    case evTimedOut2: {
-      pThreadTest->m_WCT_Event_RightPath += 1;
-      return true;
-    }
-    case oosmos_COMPLETE: {
-      return oosmos_Transition(pThreadTest, pState, Running_Region1_WaitCond_TimeoutMS_Exit_State);
-    }
-  }
-
-  return false;
-}
-
-static bool Running_Region1_WaitCond_TimeoutMS_Exit_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
-{
-  threadtest * pThreadTest = (threadtest *) pObject;
-
-  switch (oosmos_EventCode(pEvent)) {
-    case oosmos_POLL: {
-      WaitCond_TimeoutMS_Exit_Thread(pThreadTest, pState);
-      return true;
-    }
-    case oosmos_COMPLETE: {
       return oosmos_Transition(pThreadTest, pState, Running_Region1_WaitEvent_State);
     }
   }
@@ -394,49 +269,58 @@ static bool Running_Region1_WaitEvent_TimeoutMS_State_Code(void * pObject, oosmo
       return true;
     }
     case oosmos_COMPLETE: {
-      return oosmos_Transition(pThreadTest, pState, Running_Region1_WaitEvent_TimeoutMS_Event_State);
+      return oosmos_Transition(pThreadTest, pState, Running_Region1_ThreadExit_State);
     }
   }
 
   return false;
 }
 
-static bool Running_Region1_WaitEvent_TimeoutMS_Event_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
+static bool Running_Region1_ThreadExit_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   threadtest * pThreadTest = (threadtest *) pObject;
 
   switch (oosmos_EventCode(pEvent)) {
     case oosmos_POLL: {
-      WaitEvent_TimeoutMS_Event_Thread(pThreadTest, pState);
-      return true;
-    }
-    case evTimedOut1: {
-      pThreadTest->m_WET_Event_WrongPath += 1;
-      return true;
-    }
-    case evTimedOut2: {
-      pThreadTest->m_WET_Event_RightPath += 1;
+      ThreadExit_Thread(pThreadTest, pState);
       return true;
     }
     case oosmos_COMPLETE: {
-      return oosmos_Transition(pThreadTest, pState, Running_Region1_WaitEvent_TimeoutMS_Exit_State);
+      return oosmos_Transition(pThreadTest, pState, Running_Region1_ThreadExitFinally_State);
     }
   }
 
   return false;
 }
 
-static bool Running_Region1_WaitEvent_TimeoutMS_Exit_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
+static bool Running_Region1_ThreadExitFinally_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   threadtest * pThreadTest = (threadtest *) pObject;
 
   switch (oosmos_EventCode(pEvent)) {
     case oosmos_POLL: {
-      WaitEvent_TimeoutMS_Exit_Thread(pThreadTest, pState);
+      ThreadExitFinally_Thread(pThreadTest, pState);
+      return true;
+    }
+    case oosmos_COMPLETE: {
+      return oosmos_Transition(pThreadTest, pState, Running_Region1_Exiting_State);
+    }
+  }
+
+  return false;
+}
+
+static bool Running_Region1_Exiting_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
+{
+  switch (oosmos_EventCode(pEvent)) {
+    case oosmos_ENTER: {
+      oosmos_EndProgram(1);
       return true;
     }
   }
 
+  oosmos_UNUSED(pObject);
+  oosmos_UNUSED(pState);
   return false;
 }
 
@@ -476,12 +360,11 @@ extern threadtest * threadtestNew(void)
         oosmos_LeafInit(pThreadTest, Running_Region1_DelayMS_State, Running_Region1_State, Running_Region1_DelayMS_State_Code);
         oosmos_LeafInit(pThreadTest, Running_Region1_WaitCond_State, Running_Region1_State, Running_Region1_WaitCond_State_Code);
         oosmos_LeafInit(pThreadTest, Running_Region1_WaitCond_TimeoutMS_State, Running_Region1_State, Running_Region1_WaitCond_TimeoutMS_State_Code);
-        oosmos_LeafInit(pThreadTest, Running_Region1_WaitCond_TimeoutMS_Event_State, Running_Region1_State, Running_Region1_WaitCond_TimeoutMS_Event_State_Code);
-        oosmos_LeafInit(pThreadTest, Running_Region1_WaitCond_TimeoutMS_Exit_State, Running_Region1_State, Running_Region1_WaitCond_TimeoutMS_Exit_State_Code);
         oosmos_LeafInit(pThreadTest, Running_Region1_WaitEvent_State, Running_Region1_State, Running_Region1_WaitEvent_State_Code);
         oosmos_LeafInit(pThreadTest, Running_Region1_WaitEvent_TimeoutMS_State, Running_Region1_State, Running_Region1_WaitEvent_TimeoutMS_State_Code);
-        oosmos_LeafInit(pThreadTest, Running_Region1_WaitEvent_TimeoutMS_Event_State, Running_Region1_State, Running_Region1_WaitEvent_TimeoutMS_Event_State_Code);
-        oosmos_LeafInit(pThreadTest, Running_Region1_WaitEvent_TimeoutMS_Exit_State, Running_Region1_State, Running_Region1_WaitEvent_TimeoutMS_Exit_State_Code);
+        oosmos_LeafInit(pThreadTest, Running_Region1_ThreadExit_State, Running_Region1_State, Running_Region1_ThreadExit_State_Code);
+        oosmos_LeafInit(pThreadTest, Running_Region1_ThreadExitFinally_State, Running_Region1_State, Running_Region1_ThreadExitFinally_State_Code);
+        oosmos_LeafInit(pThreadTest, Running_Region1_Exiting_State, Running_Region1_State, Running_Region1_Exiting_State_Code);
       oosmos_OrthoRegionInit(pThreadTest, Running_Region2_State, Running_State, Running_Region2_Printing_State, NULL);
         oosmos_LeafInit(pThreadTest, Running_Region2_Printing_State, Running_Region2_State, Running_Region2_Printing_State_Code);
 
