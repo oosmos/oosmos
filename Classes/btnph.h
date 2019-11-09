@@ -1,5 +1,5 @@
 //
-// OOSMOS btn Class
+// OOSMOS btnph Class
 //
 // Copyright (C) 2014-2019  OOSMOS, LLC
 //
@@ -20,21 +20,22 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef btn_h
-#define btn_h
+#ifndef btnph_h
+#define btnph_h
 
 #include "oosmos.h"
 #include "pin.h"
 #include <stdbool.h>
 
-typedef struct btnTag btn;
+typedef struct btnphTag btnph;
 
-extern btn * btnNew(pin * pPin);
+extern btnph * btnphNew(pin * pPin, int HoldTimeMS);
 
-extern void btnSubscribeReleasedEvent(btn * pButton, oosmos_sQueue * pQueue, int ReleasedEventCode, void * pContext);
-extern void btnSubscribePressedEvent (btn * pButton, oosmos_sQueue * pQueue, int PressedEventCode,  void * pContext);
+extern void btnphSubscribeReleasedEvent(btnph * pSwitch, oosmos_sQueue * pQueue, int ReleasedEventCode, void * pContext);
+extern void btnphSubscribeHeldEvent    (btnph * pSwitch, oosmos_sQueue * pQueue, int HeldEventCode,     void * pContext);
+extern void btnphSubscribePressedEvent (btnph * pSwitch, oosmos_sQueue * pQueue, int PressedEventCode,  void * pContext);
 
-extern bool btnIsReleased(const btn * pButton);
-extern bool btnIsPressed(const btn * pButton);
+extern bool btnphIsReleased(const btnph * pButtonPressAndHold);
+extern bool btnphIsPressed (const btnph * pButtonPressAndHold);
 
 #endif
