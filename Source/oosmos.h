@@ -99,9 +99,9 @@ struct OOSMOS_sQueueTag {
   oosmos_eQueueFullBehavior (*m_pFullBehaviorFunc)(void * pContext);
   void   * m_pContext;
 
-  uint16_t m_QueueDataSize;
-  uint16_t m_QueueElementSize;
-  uint16_t m_ByteCount;
+  size_t m_QueueDataSize;
+  size_t m_QueueElementSize;
+  size_t m_ByteCount;
 };
 
 #if defined(oosmos_DEBUG)
@@ -335,8 +335,8 @@ struct OOSMOS_sStateMachineTag {
     bool         m_Debug;
   #endif
 
-  uint16_t m_CurrentEventSize;
-  bool     m_IsStarted;
+  size_t m_CurrentEventSize;
+  bool   m_IsStarted;
 };
 
 #define OOSMOS_xstr(s) OOSMOS_str(s)

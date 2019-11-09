@@ -872,7 +872,7 @@ extern void OOSMOS_StateMachineInit(const char * pFileName, const char * pName, 
   pStateMachine->m_IsStarted        = false;
   pStateMachine->m_pEventQueue      = pEventQueue;
   pStateMachine->m_pCurrentEvent    = (oosmos_sEvent *) pCurrentEvent;
-  pStateMachine->m_CurrentEventSize = (uint16_t) CurrentEventSize;
+  pStateMachine->m_CurrentEventSize = CurrentEventSize;
   pStateMachine->m_pObject          = pObject;
 
   pStateMachine->m_pNext            = pStateMachineList;
@@ -1196,8 +1196,8 @@ extern void OOSMOS_QueueConstruct(oosmos_sQueue * pQueue, void * pQueueData, siz
   pQueue->m_pTail            = pQueueData;
   pQueue->m_pQueueData       = pQueueData;
   pQueue->m_pEnd             = ((char*)pQueue->m_pHead) + QueueDataSize;
-  pQueue->m_QueueDataSize    = (uint16_t) QueueDataSize;
-  pQueue->m_QueueElementSize = (uint16_t) QueueElementSize;
+  pQueue->m_QueueDataSize    = QueueDataSize;
+  pQueue->m_QueueElementSize = QueueElementSize;
   pQueue->m_ByteCount        = 0;
 
   pQueue->m_pFullBehaviorFunc = NULL;
@@ -1226,7 +1226,7 @@ extern void oosmos_QueuePush(oosmos_sQueue * pQueue, const void * pElement, size
     /*lint -e420 suppress "Apparent access beyond array for function" */
     (void) memcpy(pQueue->m_pTail, pElement, UserElementSize);
     pQueue->m_pTail = ((char *) pQueue->m_pTail) + QueueElementSize;
-    pQueue->m_ByteCount += (uint16_t) QueueElementSize;
+    pQueue->m_ByteCount += QueueElementSize;
   }
   else {
     oosmos_eQueueFullBehavior Behavior = oosmos_QueueFull_TossNew;
@@ -1243,7 +1243,7 @@ extern void oosmos_QueuePush(oosmos_sQueue * pQueue, const void * pElement, size
         }
 
         pQueue->m_pHead = ((char *) pQueue->m_pHead) + QueueElementSize;
-        pQueue->m_ByteCount -= (uint16_t) QueueElementSize;
+        pQueue->m_ByteCount -= QueueElementSize;
       }
 
       oosmos_QueuePush(pQueue, pElement, UserElementSize);
@@ -1270,7 +1270,7 @@ extern bool oosmos_QueuePop(oosmos_sQueue * pQueue, void * pElement, size_t User
 
     (void) memcpy(pElement, pQueue->m_pHead, UserElementSize);
     pQueue->m_pHead = ((char *) pQueue->m_pHead) + QueueElementSize;
-    pQueue->m_ByteCount -= (uint16_t) QueueElementSize;
+    pQueue->m_ByteCount -= QueueElementSize;
     return true;
   }
 
