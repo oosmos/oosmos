@@ -36,7 +36,4 @@ extern void btnphSubscribeReleasedEvent(btnph * pSwitch, oosmos_sQueue * pQueue,
 extern void btnphSubscribeHeldEvent    (btnph * pSwitch, oosmos_sQueue * pQueue, int HeldEventCode,     void * pContext);
 extern void btnphSubscribePressedEvent (btnph * pSwitch, oosmos_sQueue * pQueue, int PressedEventCode,  void * pContext);
 
-extern bool btnphIsReleased(const btnph * pButtonPressAndHold);
-extern bool btnphIsPressed (const btnph * pButtonPressAndHold);
-
 #endif
