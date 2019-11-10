@@ -34,7 +34,4 @@ extern btn * btnNew(pin * pPin);
 extern void btnSubscribeReleasedEvent(btn * pButton, oosmos_sQueue * pQueue, int ReleasedEventCode, void * pContext);
 extern void btnSubscribePressedEvent (btn * pButton, oosmos_sQueue * pQueue, int PressedEventCode,  void * pContext);
 
-extern bool btnIsReleased(const btn * pButton);
-extern bool btnIsPressed(const btn * pButton);
-
 #endif
