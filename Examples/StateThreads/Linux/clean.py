@@ -5,4 +5,4 @@ import os
 def Remove(Filename):
   os.system('rm -f %s' % Filename)
 
-Remove('main')
+Remove('StateThreads')
