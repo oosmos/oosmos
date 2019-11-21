@@ -22,8 +22,9 @@
 
 #include "oosmos.h"
 #include <stdio.h>
+#include <stdint.h>
 
-static const int WaitTimeMS = 1000;
+static const uint32_t WaitTimeMS = 1000;
 
 extern int main(void)
 {
@@ -37,7 +38,7 @@ extern int main(void)
   //
   oosmos_TimeoutInMS(&Timeout, WaitTimeMS);
 
-  printf("Waiting for %d milliseconds...\n", WaitTimeMS);
+  printf("Waiting for %lu milliseconds...\n", (unsigned long) WaitTimeMS);
 
   for (;;) {
     //
@@ -47,13 +48,11 @@ extern int main(void)
       break;
     }
 
-    printf("Running...\n");
-
     //
     // Be polite. Prevent 100% CPU usage on multi-tasked
     // machines (e.g. Windows or Linux).
     //
-    oosmos_DelayMS(75);
+    oosmos_DelayMS(1);
   }
 
   printf("SUCCESS\n");

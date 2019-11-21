@@ -22,8 +22,9 @@
 
 #include "oosmos.h"
 #include <stdio.h>
+#include <stdint.h>
 
-static const int WaitTimeUS = 1000 * 1000; // One second
+static const uint32_t WaitTimeUS = oosmos_Seconds2US(2);
 
 extern int main(void)
 {
@@ -37,7 +38,7 @@ extern int main(void)
   //
   oosmos_TimeoutInUS(&Timeout, WaitTimeUS);
 
-  printf("Waiting for %d microseconds...\n", WaitTimeUS);
+  printf("Waiting for %lu microseconds...\n", (unsigned long) WaitTimeUS);
 
   for (;;) {
     //
@@ -46,8 +47,6 @@ extern int main(void)
     if (oosmos_TimeoutHasExpired(&Timeout)) {
       break;
     }
-
-    printf("Running...\n");
 
     //
     // Be polite. Prevent 100% CPU usage on multi-tasked

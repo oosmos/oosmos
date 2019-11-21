@@ -68,30 +68,30 @@ static bool IS_TIMEOUT_ACTIVE(const oosmos_sState * pState)
 {
   oosmos_POINTER_GUARD(pState);
 
-  return (pState->m_Timeout.m_Start != 0) || (pState->m_Timeout.m_End != 0);
+  return (pState->m_Timeout.m_StartUS != 0) || (pState->m_Timeout.m_TimeoutUS != 0);
 }
 
 static void RESET_TIMEOUT(oosmos_sState * pState)
 {
   oosmos_POINTER_GUARD(pState);
 
-  pState->m_Timeout.m_Start = 0;
-  pState->m_Timeout.m_End   = 0;
+  pState->m_Timeout.m_StartUS   = 0;
+  pState->m_Timeout.m_TimeoutUS = 0;
 }
 
 static bool IS_THREAD_TIMEOUT_ACTIVE(const oosmos_sState * pState)
 {
   oosmos_POINTER_GUARD(pState);
 
-  return (pState->m_ThreadTimeout.m_Start != 0) || (pState->m_ThreadTimeout.m_End != 0);
+  return (pState->m_ThreadTimeout.m_StartUS != 0) || (pState->m_ThreadTimeout.m_TimeoutUS != 0);
 }
 
 static void RESET_THREAD_TIMEOUT(oosmos_sState * pState)
 {
   oosmos_POINTER_GUARD(pState);
 
-  pState->m_ThreadTimeout.m_Start = 0;
-  pState->m_ThreadTimeout.m_End   = 0;
+  pState->m_ThreadTimeout.m_StartUS   = 0;
+  pState->m_ThreadTimeout.m_TimeoutUS = 0;
 }
 
 static oosmos_sRegion * GetRegion(oosmos_sState * pState)
@@ -1094,47 +1094,39 @@ extern void oosmos_RunStateMachines(void)
   }
 }
 
-extern void oosmos_TimeoutInSeconds(oosmos_sTimeout * pTimeout, uint32_t Seconds)
+extern void oosmos_TimeoutInSeconds(oosmos_sTimeout * pTimeout, uint32_t TimeoutSeconds)
 {
   oosmos_POINTER_GUARD(pTimeout);
 
-  oosmos_TimeoutInMS(pTimeout, Seconds * 1000);
+  oosmos_TimeoutInMS(pTimeout, TimeoutSeconds * 1000);
 }
 
-extern void oosmos_TimeoutInMS(oosmos_sTimeout * pTimeout, uint32_t Milliseconds)
+extern void oosmos_TimeoutInMS(oosmos_sTimeout * pTimeout, uint32_t TimeoutMS)
 {
   oosmos_POINTER_GUARD(pTimeout);
 
-  oosmos_TimeoutInUS(pTimeout, Milliseconds * 1000);
+  oosmos_TimeoutInUS(pTimeout, TimeoutMS * 1000);
 }
 
-extern void oosmos_TimeoutInUS(oosmos_sTimeout * pTimeout, uint32_t Microseconds)
+extern void oosmos_TimeoutInUS(oosmos_sTimeout * pTimeout, uint32_t TimeoutUS)
 {
   oosmos_POINTER_GUARD(pTimeout);
 
-  const uint32_t Start = oosmos_GetFreeRunningMicroseconds();
+  const uint32_t StartUS = oosmos_GetFreeRunningMicroseconds();
 
-  pTimeout->m_Start = Start;
-  pTimeout->m_End   = Start + Microseconds;
+  pTimeout->m_StartUS   = StartUS;
+  pTimeout->m_TimeoutUS = TimeoutUS;
 }
 
 extern bool oosmos_TimeoutHasExpired(const oosmos_sTimeout * pTimeout)
 {
   oosmos_POINTER_GUARD(pTimeout);
 
-  const uint32_t Start = pTimeout->m_Start;
-  uint64_t       End   = pTimeout->m_End;
-  uint64_t       Now   = oosmos_GetFreeRunningMicroseconds();
+  const uint32_t StartUS   = pTimeout->m_StartUS;
+  const uint32_t TimeoutUS = pTimeout->m_TimeoutUS;
+  const uint32_t NowUS     = oosmos_GetFreeRunningMicroseconds();
 
-  if (End < Start) {
-    End += 0x100000000ULL;
-  }
-
-  if (Now < Start) {
-    Now += 0x100000000ULL;
-  }
-
-  return Now >= End;
+  return (NowUS - StartUS) >= TimeoutUS;
 }
 
 extern void OOSMOS_ActiveObjectInit(void * pObject, oosmos_sActiveObject * pActiveObject, oosmos_tActiveObjectFunc pFunc)
@@ -1442,9 +1434,9 @@ extern void OOSMOS_EndProgram(int Code)
   #include <plib.h>
   static int PIC32_ClockSpeedInMHz;
 
-  extern void oosmos_DelayUS(uint32_t Microseconds)
+  extern void oosmos_DelayUS(uint32_t DelayMS)
   {
-    const uint32_t CoreTimerTicks = (PIC32_ClockSpeedInMHz/2) * Microseconds;
+    const uint32_t CoreTimerTicks = (PIC32_ClockSpeedInMHz/2) * DelayMS;
     const uint32_t Start = ReadCoreTimer();
     const uint64_t End = Start + CoreTimerTicks;
 
@@ -1461,12 +1453,12 @@ extern void OOSMOS_EndProgram(int Code)
     }
   }
 
-  extern void oosmos_DelayMS(uint32_t Milliseconds)
+  extern void oosmos_DelayMS(uint32_t DelayMS)
   {
     oosmos_DelayUS(Milliseconds * 1000);
   }
 
-  extern void oosmos_DelaySeconds(uint32_t Seconds)
+  extern void oosmos_DelaySeconds(uint32_t DelaySeconds)
   {
     oosmos_DelayMS(Seconds * 1000);
   }

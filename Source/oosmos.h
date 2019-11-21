@@ -79,8 +79,8 @@
 #endif
 
 typedef struct {
-  uint32_t m_Start;
-  uint32_t m_End;
+  uint32_t m_StartUS;
+  uint32_t m_TimeoutUS;
 } oosmos_sTimeout;
 
 typedef enum {
@@ -130,7 +130,7 @@ struct OOSMOS_sQueueTag {
           if ((x) == NULL) {     \
             oosmos_FOREVER();    \
           }                      \
-        } while (false)
+        } while (0)
 
 #define oosmos_FOREVER() \
         for (;;) continue
@@ -142,7 +142,7 @@ struct OOSMOS_sQueueTag {
           if (!(Condition)) {     \
             oosmos_FOREVER();     \
           }                       \
-        } while (false)
+        } while (0)
 
 typedef struct {
   int    m_Code;
