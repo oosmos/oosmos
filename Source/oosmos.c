@@ -1436,7 +1436,7 @@ extern void OOSMOS_EndProgram(int Code)
 
   extern void oosmos_DelayUS(uint32_t DelayMS)
   {
-    const uint32_t CoreTimerTicks = (PIC32_ClockSpeedInMHz/2) * DelayMS;
+    const uint32_t CoreTimerTicks = (PIC32_ClockSpeedInMHz / 2) * DelayMS;
     const uint32_t Start = ReadCoreTimer();
     const uint64_t End = Start + CoreTimerTicks;
 

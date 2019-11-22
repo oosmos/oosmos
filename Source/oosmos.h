@@ -44,12 +44,12 @@
     #include "WProgram.h"
   #endif
 
-  #define oosmos_EndProgram(Code) do { } while(1)
+  #define oosmos_EndProgram(Code) oosmos_FOREVER()
 #elif defined(__PIC32MX)
   #include <plib.h>
   extern void oosmos_ClockSpeedInMHz(uint32_t ClockSpeedMHz);
   extern uint32_t oosmos_GetClockSpeedInMHz(void);
-  #define oosmos_EndProgram(Code) while(1)continue
+  #define oosmos_EndProgram(Code) oosmos_FOREVER()
 #elif defined(oosmos_RASPBERRY_PI)
   #include <wiringPi.h>
   #define __USE_BSD
@@ -462,7 +462,7 @@ typedef void (*oosmos_tOutOfMemory)(const char*, int, const char*);
 #define OOSMOS_Allocate(List, Count, Type, Pointer, Elements, OutOfMemory) \
   {                                                                        \
     /*lint -e774 Suppress "if always evaluates to false" */                \
-    if (Count > Elements-1) {                                              \
+    if (Count > (Elements - 1)) {                                          \
       oosmos_tOutOfMemory pOutOfMemory = OutOfMemory;                      \
                                                                            \
       if (pOutOfMemory != NULL) {                                          \
