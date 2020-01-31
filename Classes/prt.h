@@ -23,9 +23,8 @@
 #ifndef prt_h
 #define prt_h
 
-#include <stdint.h>
-
 #if defined(ARDUINO)
+  #include <stdint.h>
   extern uint32_t prtArduinoBaudRate;
 #endif
 

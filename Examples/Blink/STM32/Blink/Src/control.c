@@ -8,7 +8,7 @@ typedef struct controlTag control;
 static control * controlNew(void)
 {
   pin * pPin = pinNew(LD2_GPIO_Port, LD2_Pin, pinOut, pinActiveHigh);
-  toggleNew(pPin, 100, 900);
+  toggleNew(pPin, 50, 950);
   return NULL;
 }
 

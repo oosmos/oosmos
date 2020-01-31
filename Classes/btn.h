@@ -25,7 +25,6 @@
 
 #include "oosmos.h"
 #include "pin.h"
-#include <stdbool.h>
 
 typedef struct btnTag btn;
 

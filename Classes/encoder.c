@@ -24,6 +24,7 @@
 #include "encoder.h"
 #include "pin.h"
 #include <stddef.h>
+#include <stdbool.h>
 
 #ifndef encoderMAX
 #define encoderMAX 2
