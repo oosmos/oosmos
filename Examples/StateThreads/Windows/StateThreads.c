@@ -1,7 +1,7 @@
 //
 // OOSMOS StateThreads Example
 //
-// Copyright (C) 2014-2019  OOSMOS, LLC
+// Copyright (C) 2014-2020  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -38,25 +38,25 @@ struct testTag
 //<<<DECL
 };
 
-static void LedThread(oosmos_sState * pState)  
-{ 
-  oosmos_ThreadBegin(); 
-    for (;;) {  
-      printf("Blink...\n");  
-      oosmos_ThreadDelayMS(500); 
-    } 
-  oosmos_ThreadEnd(); 
-} 
+static void LedThread(oosmos_sState * pState)
+{
+  oosmos_ThreadBegin();
+    for (;;) {
+      printf("Blink...\n");
+      oosmos_ThreadDelayMS(500);
+    }
+  oosmos_ThreadEnd();
+}
 
-static void SpeakerThread(oosmos_sState * pState)  
-{ 
-  oosmos_ThreadBegin(); 
-    for (;;) {  
-      printf("Beep...\n");  
-      oosmos_ThreadDelayMS(1500); 
-    } 
-  oosmos_ThreadEnd(); 
-} 
+static void SpeakerThread(oosmos_sState * pState)
+{
+  oosmos_ThreadBegin();
+    for (;;) {
+      printf("Beep...\n");
+      oosmos_ThreadDelayMS(1500);
+    }
+  oosmos_ThreadEnd();
+}
 
 //>>>CODE
 static bool OrthoState_Region1_LED_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
