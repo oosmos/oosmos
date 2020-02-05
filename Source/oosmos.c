@@ -1112,7 +1112,7 @@ extern void oosmos_TimeoutInUS(oosmos_sTimeout * pTimeout, uint32_t TimeoutUS)
 {
   oosmos_POINTER_GUARD(pTimeout);
 
-  const uint32_t StartUS = oosmos_GetFreeRunningMicroseconds();
+  const uint32_t StartUS = oosmos_GetFreeRunningUS();
 
   pTimeout->m_StartUS   = StartUS;
   pTimeout->m_TimeoutUS = TimeoutUS;
@@ -1124,7 +1124,7 @@ extern bool oosmos_TimeoutHasExpired(const oosmos_sTimeout * pTimeout)
 
   const uint32_t StartUS   = pTimeout->m_StartUS;
   const uint32_t TimeoutUS = pTimeout->m_TimeoutUS;
-  const uint32_t NowUS     = oosmos_GetFreeRunningMicroseconds();
+  const uint32_t NowUS     = oosmos_GetFreeRunningUS();
 
   return (NowUS - StartUS) >= TimeoutUS;
 }
@@ -1299,6 +1299,23 @@ extern bool OOSMOS_ThreadDelayMS(oosmos_sState * pState, uint32_t MS)
   return false;
 }
 
+extern bool OOSMOS_ThreadDelayUS(oosmos_sState * pState, uint32_t US)
+{
+  oosmos_POINTER_GUARD(pState);
+
+  if (IS_THREAD_TIMEOUT_ACTIVE(pState)) {
+    if (oosmos_TimeoutHasExpired(&pState->m_ThreadTimeout)) {
+      RESET_THREAD_TIMEOUT(pState);
+      return true;
+    }
+  }
+  else {
+    oosmos_TimeoutInUS(&pState->m_ThreadTimeout, US);
+  }
+
+  return false;
+}
+
 
 extern bool OOSMOS_ThreadWaitCond_TimeoutMS(oosmos_sState * pState, bool Condition, uint32_t TimeoutMS, bool * pTimeoutStatus)
 {
@@ -1395,7 +1412,7 @@ extern void OOSMOS_EndProgram(int Code)
     delay(Seconds * 1000);
   }
 
-  extern uint32_t oosmos_GetFreeRunningMicroseconds(void)
+  extern uint32_t oosmos_GetFreeRunningUS(void)
   {
     return micros();
   }
@@ -1475,7 +1492,7 @@ extern void OOSMOS_EndProgram(int Code)
     return PIC32_ClockSpeedInMHz;
   }
 
-  extern uint32_t oosmos_GetFreeRunningMicroseconds(void)
+  extern uint32_t oosmos_GetFreeRunningUS(void)
   {
     return ReadCoreTimer() / (PIC32_ClockSpeedInMHz / 2);
   }
@@ -1499,7 +1516,7 @@ extern void OOSMOS_EndProgram(int Code)
     Sleep(Seconds * 1000);
   }
 
-  extern uint32_t oosmos_GetFreeRunningMicroseconds(void)
+  extern uint32_t oosmos_GetFreeRunningUS(void)
   {
     SYSTEMTIME st;
     GetSystemTime(&st);
@@ -1550,7 +1567,7 @@ extern void OOSMOS_EndProgram(int Code)
     sleep(Seconds);
   }
 
-  extern uint32_t oosmos_GetFreeRunningMicroseconds(void)
+  extern uint32_t oosmos_GetFreeRunningUS(void)
   {
     struct timeval tv;
     gettimeofday(&tv, NULL);
@@ -1577,7 +1594,7 @@ extern void OOSMOS_EndProgram(int Code)
     wait(Seconds);
   }
 
-  extern uint32_t oosmos_GetFreeRunningMicroseconds(void)
+  extern uint32_t oosmos_GetFreeRunningUS(void)
   {
     static Timer TimerObj;
     static bool  Initialized = false;
@@ -1613,7 +1630,7 @@ extern void OOSMOS_EndProgram(int Code)
     oosmos_DelayMS(Seconds * 1000);
   }
 
-  extern uint32_t oosmos_GetFreeRunningMicroseconds(void)
+  extern uint32_t oosmos_GetFreeRunningUS(void)
   {
     return HAL_GetTick() * 1000;
   }

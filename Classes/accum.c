@@ -62,7 +62,7 @@ static void Update(void * pObject)
 
   if (pAccum->m_Started) {
     const uint32_t Previous = pAccum->m_Previous;
-    uint64_t       Now      = oosmos_GetFreeRunningMicroseconds();
+    uint64_t       Now      = oosmos_GetFreeRunningUS();
 
     //
     // Handle the wrap around.
@@ -91,7 +91,7 @@ extern void accumReset(accum * pAccum)
   oosmos_POINTER_GUARD(pAccum);
 
   pAccum->m_TallyUS = 0;
-  pAccum->m_Previous = (uint32_t) oosmos_GetFreeRunningMicroseconds();
+  pAccum->m_Previous = (uint32_t) oosmos_GetFreeRunningUS();
 
   #if defined(accum_DEBUG)
     (void) printf("Accum reset, Tally: %u\n", (uint32_t) pAccum->m_TallyUS);
@@ -125,7 +125,7 @@ extern void accumStart(accum * pAccum)
     return;
   }
 
-  pAccum->m_Previous = (uint32_t) oosmos_GetFreeRunningMicroseconds();
+  pAccum->m_Previous = (uint32_t) oosmos_GetFreeRunningUS();
 
   #if defined(accum_DEBUG)
     if (!pAccum->m_Started) {

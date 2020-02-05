@@ -509,7 +509,9 @@ typedef void (*oosmos_tOutOfMemory)(const char*, int, const char*);
 //
 
 //
+// oosmos_ThreadDelayUS
 // oosmos_ThreadDelayMS
+// oosmos_ThreadDelaySeconds
 //
 // oosmos_ThreadWaitCond
 // oosmos_ThreadWaitCond_TimeoutMS
@@ -520,8 +522,14 @@ typedef void (*oosmos_tOutOfMemory)(const char*, int, const char*);
 // oosmos_ThreadYield
 //
 
+extern bool OOSMOS_ThreadDelayUS(oosmos_sState * pState,
+                        uint32_t US);
+
 extern bool OOSMOS_ThreadDelayMS(oosmos_sState * pState,
                         uint32_t MS);
+
+extern bool OOSMOS_ThreadDelaySeconds(oosmos_sState * pState,
+                        uint32_t Seconds);
 
 extern bool OOSMOS_ThreadWaitCond(oosmos_sState * pState,
                         bool Condition);
@@ -552,11 +560,25 @@ extern bool OOSMOS_ThreadYield(oosmos_sState * pState);
                                     switch (pState->m_ThreadContext) { \
                                       case OOSMOS_THREAD_CONTEXT_BEGIN:
 
+#define oosmos_ThreadDelayUS(US) \
+                                      /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
+                                      /*lint -fallthrough*/ \
+                                      case __LINE__: pState->m_ThreadContext = __LINE__; \
+                                        if (!OOSMOS_ThreadDelayUS(pState, US)) \
+                                          return
+
 #define oosmos_ThreadDelayMS(MS) \
                                       /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
                                       /*lint -fallthrough*/ \
                                       case __LINE__: pState->m_ThreadContext = __LINE__; \
-                                        if (!OOSMOS_ThreadDelayMS(pState, (MS))) \
+                                        if (!OOSMOS_ThreadDelayMS(pState, MS)) \
+                                          return
+
+#define oosmos_ThreadDelaySeconds(Seconds) \
+                                      /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
+                                      /*lint -fallthrough*/ \
+                                      case __LINE__: pState->m_ThreadContext = __LINE__; \
+                                        if (!OOSMOS_ThreadDelayMS(pState, (Seconds * 1000))) \
                                           return
 
 #define oosmos_ThreadYield() \
@@ -708,7 +730,7 @@ extern void oosmos_ObjectThreadRestart(oosmos_sObjectThread * pObjectThread);
 
 //--------
 
-extern uint32_t oosmos_GetFreeRunningMicroseconds(void);
+extern uint32_t oosmos_GetFreeRunningUS(void);
 
 extern double  oosmos_AnalogMapAccurate(double Value, double InMin, double InMax, double OutMin, double OutMax);
 extern int32_t oosmos_AnalogMapFast(int32_t Value, int32_t InMin, int32_t InMax, int32_t OutMin, int32_t OutMax);

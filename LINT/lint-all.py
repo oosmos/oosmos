@@ -13,9 +13,10 @@ OPTIONS = '-Doosmos_ORTHO -Doosmos_DEBUG'
 Lint('TimeConversions.c',         'oosmos-user.lnt')
 Lint('Action.c',                  'oosmos-user.lnt')
 Lint('Poll.c',                    'oosmos-user.lnt')
-Lint('FreeRunningMicroseconds.c', 'oosmos-user.lnt')
+Lint('FreeRunningUS.c',           'oosmos-user.lnt')
 Lint('ThreadEvents.c',            'oosmos-user.lnt')
 Lint('ThreadComplete.c',          'oosmos-user.lnt')
+Lint('ThreadDelayUS.c',           'oosmos-user.lnt')
 
 DIR = 'Examples/AnalogMap/Windows'
 

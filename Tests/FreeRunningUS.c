@@ -8,9 +8,9 @@ extern int main(void)
 {
   printf("Delaying %d milliseconds...\n", DELAY_MS);
 
-  const uint32_t Start = oosmos_GetFreeRunningMicroseconds();
+  const uint32_t Start = oosmos_GetFreeRunningUS();
   oosmos_DelayMS(DELAY_MS);
-  const uint32_t End   = oosmos_GetFreeRunningMicroseconds();
+  const uint32_t End   = oosmos_GetFreeRunningUS();
 
   //printf("Start: %I64d, End: %I32u, Diff: %I32u\n", Start, End, End - (Start + oosmos_MS2US(DELAY_MS)));
 

@@ -65,7 +65,7 @@ extern float pidAdjustOutput(pid * pPID, float Input)
 {
   const float Error = pPID->m_SetPoint - Input;
 
-  uint64_t NowUS = oosmos_GetFreeRunningMicroseconds();
+  uint64_t NowUS = oosmos_GetFreeRunningUS();
 
   //
   // Handle uint32_t wrap around.
