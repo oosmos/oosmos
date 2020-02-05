@@ -56,6 +56,8 @@ static void Thread(test * pTest, oosmos_sState * pState)
     else {
       printf("Failed\n");
     }
+
+    printf("Press CNTL-C to exit.\n");
   oosmos_ThreadEnd();
 }
 
