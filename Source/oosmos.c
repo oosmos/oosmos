@@ -164,7 +164,6 @@ static void ThreadInit(oosmos_sState * pState)
   oosmos_POINTER_GUARD(pState);
 
   pState->m_ThreadContext          = OOSMOS_THREAD_CONTEXT_BEGIN;
-  pState->m_ThreadHasYielded       = false;
   pState->m_ThreadFunctionIsActive = false;
   RESET_THREAD_TIMEOUT(pState);
 }
@@ -1273,12 +1272,12 @@ extern bool OOSMOS_ThreadYield(oosmos_sState * pState)
 {
   oosmos_POINTER_GUARD(pState);
 
-  if (!pState->m_ThreadHasYielded) {
-    pState->m_ThreadHasYielded = true;
+  if (!pState->m_ThreadFunctionIsActive) {
+    pState->m_ThreadFunctionIsActive = true;
     return false;
   }
 
-  pState->m_ThreadHasYielded = false;
+  pState->m_ThreadFunctionIsActive = false;
   return true;
 }
 

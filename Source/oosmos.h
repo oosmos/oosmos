@@ -287,11 +287,6 @@ struct OOSMOS_sStateTag {
   unsigned int m_TransitionOccurred:1;
 
   //
-  // Support for oosmos_ThreadYield.
-  //
-  unsigned int m_ThreadHasYielded:1;
-
-  //
   // 0 - indicates first entry to a thread function.
   // 1 - indicates subsequent execution of a thread function.
   //
