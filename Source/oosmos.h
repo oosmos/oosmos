@@ -544,80 +544,93 @@ extern bool OOSMOS_ThreadYield(oosmos_sState * pState);
 #define OOSMOS_THREAD_CONTEXT_FINALLY (-2)
 #define OOSMOS_THREAD_CONTEXT_END     (-3)
 
-#define oosmos_ThreadBegin() \
-                                    switch (pState->m_ThreadContext) { \
-                                      case OOSMOS_THREAD_CONTEXT_BEGIN:
+#define oosmos_ThreadBegin()    switch (pState->m_ThreadContext) { \
+                                  case OOSMOS_THREAD_CONTEXT_BEGIN:
 
-#define oosmos_ThreadDelayUS(US) \
+#define oosmos_ThreadDelayUS(US)    do { \
                                       /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
                                       /*lint -fallthrough*/ \
                                       case __LINE__: pState->m_ThreadContext = __LINE__; \
                                         if (!OOSMOS_ThreadDelayUS(pState, US)) \
-                                          return
+                                          return; \
+                                    } while (0)
 
-#define oosmos_ThreadDelayMS(MS) \
+#define oosmos_ThreadDelayMS(MS)    do { \
                                       /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
                                       /*lint -fallthrough*/ \
                                       case __LINE__: pState->m_ThreadContext = __LINE__; \
                                         if (!OOSMOS_ThreadDelayMS(pState, MS)) \
-                                          return
+                                          return; \
+                                    } while (0)
 
 #define oosmos_ThreadDelaySeconds(Seconds) \
+                                    do { \
                                       /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
                                       /*lint -fallthrough*/ \
                                       case __LINE__: pState->m_ThreadContext = __LINE__; \
                                         if (!OOSMOS_ThreadDelaySeconds(pState, Seconds)) \
-                                          return
+                                          return; \
+                                    } while (0)
 
-#define oosmos_ThreadYield() \
+#define oosmos_ThreadYield()        do { \
                                       /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
                                       /*lint -fallthrough*/ \
                                       case __LINE__: pState->m_ThreadContext = __LINE__; \
                                         if (!OOSMOS_ThreadYield(pState)) \
-                                          return
+                                          return; \
+                                    } while (0)
 
-#define oosmos_ThreadWaitCond(Cond) \
+#define oosmos_ThreadWaitCond(Cond) do { \
                                       /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
                                       /*lint -fallthrough*/ \
                                       case __LINE__: pState->m_ThreadContext = __LINE__; \
                                         if (!(Cond)) \
-                                          return
+                                          return; \
+                                    } while (0)
 
 #define oosmos_ThreadWaitCond_TimeoutMS(Cond, TimeoutMS, pTimeoutStatus) \
+                                    do { \
                                       /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
                                       /*lint -fallthrough*/ \
                                       case __LINE__: pState->m_ThreadContext = __LINE__; \
                                         if (!OOSMOS_ThreadWaitCond_TimeoutMS(pState, Cond, TimeoutMS, pTimeoutStatus)) \
-                                          return
+                                          return; \
+                                    } while (0)
 
 #define oosmos_ThreadWaitEvent(WaitEventCode) \
+                                    do { \
                                       /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
                                       /*lint -fallthrough*/ \
                                       case __LINE__: pState->m_ThreadContext = __LINE__; \
                                         if (!OOSMOS_ThreadWaitEvent(pState, WaitEventCode)) \
-                                          return
+                                          return; \
+                                    } while (0)
 
 #define oosmos_ThreadWaitEvent_TimeoutMS(WaitEventCode, TimeoutMS, pTimeoutResult) \
+                                    do { \
                                       /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
                                       /*lint -fallthrough*/ \
                                       case __LINE__: pState->m_ThreadContext = __LINE__; \
                                         if (!OOSMOS_ThreadWaitEvent_TimeoutMS(pState, WaitEventCode, TimeoutMS, pTimeoutResult)) \
-                                          return
+                                          return; \
+                                    } while (0)
 
-#define oosmos_ThreadExit() \
-                                        pState->m_ThreadContext = OOSMOS_THREAD_CONTEXT_FINALLY; \
-                                        return
+#define oosmos_ThreadExit()         do { \
+                                      pState->m_ThreadContext = OOSMOS_THREAD_CONTEXT_FINALLY; \
+                                      return; \
+                                    } while (0)
 
-#define oosmos_ThreadFinally() \
+
+#define oosmos_ThreadFinally()      do { \
                                       /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
-                                      case OOSMOS_THREAD_CONTEXT_FINALLY: pState->m_ThreadContext = OOSMOS_THREAD_CONTEXT_END
+                                      case OOSMOS_THREAD_CONTEXT_FINALLY: pState->m_ThreadContext = OOSMOS_THREAD_CONTEXT_END; \
+                                    } while (0)
 
-#define oosmos_ThreadEnd() \
-                                      /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
-                                      /*lint -fallthrough*/ \
-                                      default: pState->m_ThreadContext = OOSMOS_THREAD_CONTEXT_END; \
-                                        (void) oosmos_ThreadComplete(pState); \
-                                    } return
+#define oosmos_ThreadEnd()        /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
+                                  /*lint -fallthrough*/ \
+                                  default: pState->m_ThreadContext = OOSMOS_THREAD_CONTEXT_END; \
+                                    (void) oosmos_ThreadComplete(pState); \
+                                } return
 
 //
 // General notes:
