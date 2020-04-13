@@ -281,12 +281,6 @@ struct OOSMOS_sStateTag {
   int32_t m_ThreadContext;
 
   //
-  // Flag that helps a Thread sequence exit (if a transition occurred) or
-  // continue.
-  //
-  unsigned int m_TransitionOccurred:1;
-
-  //
   // 0 - indicates first entry to a thread function.
   // 1 - indicates subsequent execution of a thread function.
   //

@@ -777,10 +777,7 @@ extern bool OOSMOS_TransitionAction(oosmos_sState * pState, oosmos_sState * pToS
   }
 
   Enter(pRegion, pLCA, pToState);
-
-  pFromState->m_TransitionOccurred = true;
   ThreadInit(pFromState);
-
   return true;
 }
 
