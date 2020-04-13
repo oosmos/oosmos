@@ -281,10 +281,9 @@ struct OOSMOS_sStateTag {
   int32_t m_ThreadContext;
 
   //
-  // 0 - indicates first entry to a thread function.
-  // 1 - indicates subsequent execution of a thread function.
+  // Will be true upon first entry to a thread function.
   //
-  unsigned int m_ThreadFunctionIsActive:1;
+  unsigned int m_FirstEntry:1;
 };
 
 struct OOSMOS_sCompositeTag {
@@ -567,7 +566,7 @@ extern bool OOSMOS_ThreadYield(oosmos_sState * pState);
                                       /*lint -e646 suppress "case/default within for loop; may have been misplaced" */ \
                                       /*lint -fallthrough*/ \
                                       case __LINE__: pState->m_ThreadContext = __LINE__; \
-                                        if (!OOSMOS_ThreadDelayMS(pState, (Seconds * 1000))) \
+                                        if (!OOSMOS_ThreadDelaySeconds(pState, Seconds)) \
                                           return
 
 #define oosmos_ThreadYield() \

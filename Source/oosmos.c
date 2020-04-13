@@ -79,21 +79,6 @@ static void RESET_TIMEOUT(oosmos_sState * pState)
   pState->m_Timeout.m_TimeoutUS = 0;
 }
 
-static bool IS_THREAD_TIMEOUT_ACTIVE(const oosmos_sState * pState)
-{
-  oosmos_POINTER_GUARD(pState);
-
-  return (pState->m_ThreadTimeout.m_StartUS != 0) || (pState->m_ThreadTimeout.m_TimeoutUS != 0);
-}
-
-static void RESET_THREAD_TIMEOUT(oosmos_sState * pState)
-{
-  oosmos_POINTER_GUARD(pState);
-
-  pState->m_ThreadTimeout.m_StartUS   = 0;
-  pState->m_ThreadTimeout.m_TimeoutUS = 0;
-}
-
 static oosmos_sRegion * GetRegion(oosmos_sState * pState)
 {
   oosmos_sState * pCandidateState = NULL;
@@ -163,9 +148,10 @@ static void ThreadInit(oosmos_sState * pState)
 {
   oosmos_POINTER_GUARD(pState);
 
-  pState->m_ThreadContext          = OOSMOS_THREAD_CONTEXT_BEGIN;
-  pState->m_ThreadFunctionIsActive = false;
-  RESET_THREAD_TIMEOUT(pState);
+  pState->m_ThreadContext             = OOSMOS_THREAD_CONTEXT_BEGIN;
+  pState->m_FirstEntry                = true;
+  pState->m_ThreadTimeout.m_StartUS   = 0;
+  pState->m_ThreadTimeout.m_TimeoutUS = 0;
 }
 
 static bool DeliverEvent(oosmos_sState * pState, const oosmos_sEvent * pEvent)
@@ -179,25 +165,6 @@ static bool DeliverEvent(oosmos_sState * pState, const oosmos_sEvent * pEvent)
   }
 
   return pCode(pState->m_pStateMachine->m_pObject, pState, pEvent);
-}
-
-static bool ThreadTimeoutMS(oosmos_sState * pState, uint32_t MS)
-{
-  oosmos_POINTER_GUARD(pState);
-
-  if (IS_THREAD_TIMEOUT_ACTIVE(pState)) {
-    if (oosmos_TimeoutHasExpired(&pState->m_ThreadTimeout)) {
-      RESET_THREAD_TIMEOUT(pState);
-
-      (void) DeliverEvent(pState, &EventTIMEOUT);
-      return true;
-    }
-  }
-  else {
-    oosmos_TimeoutInMS(&pState->m_ThreadTimeout, MS);
-  }
-
-  return false;
 }
 
 //
@@ -1269,69 +1236,63 @@ extern bool OOSMOS_ThreadYield(oosmos_sState * pState)
 {
   oosmos_POINTER_GUARD(pState);
 
-  if (!pState->m_ThreadFunctionIsActive) {
-    pState->m_ThreadFunctionIsActive = true;
+  if (pState->m_FirstEntry) {
+    pState->m_FirstEntry = false;
     return false;
   }
 
-  pState->m_ThreadFunctionIsActive = false;
+  pState->m_FirstEntry = true;
   return true;
-}
-
-extern bool OOSMOS_ThreadDelayMS(oosmos_sState * pState, uint32_t MS)
-{
-  oosmos_POINTER_GUARD(pState);
-
-  if (IS_THREAD_TIMEOUT_ACTIVE(pState)) {
-    if (oosmos_TimeoutHasExpired(&pState->m_ThreadTimeout)) {
-      RESET_THREAD_TIMEOUT(pState);
-      return true;
-    }
-  }
-  else {
-    oosmos_TimeoutInMS(&pState->m_ThreadTimeout, MS);
-  }
-
-  return false;
 }
 
 extern bool OOSMOS_ThreadDelayUS(oosmos_sState * pState, uint32_t US)
 {
   oosmos_POINTER_GUARD(pState);
 
-  if (IS_THREAD_TIMEOUT_ACTIVE(pState)) {
-    if (oosmos_TimeoutHasExpired(&pState->m_ThreadTimeout)) {
-      RESET_THREAD_TIMEOUT(pState);
-      return true;
-    }
-  }
-  else {
+  if (pState->m_FirstEntry) {
     oosmos_TimeoutInUS(&pState->m_ThreadTimeout, US);
+    pState->m_FirstEntry = false;
+    return false;
+  }
+
+  if (oosmos_TimeoutHasExpired(&pState->m_ThreadTimeout)) {
+    pState->m_FirstEntry = true;
+    return true;
   }
 
   return false;
 }
 
+extern bool OOSMOS_ThreadDelayMS(oosmos_sState * pState, uint32_t MS)
+{
+  return OOSMOS_ThreadDelayUS(pState, MS * 1000);
+}
+
+extern bool OOSMOS_ThreadDelaySeconds(oosmos_sState * pState, uint32_t Seconds)
+{
+  return OOSMOS_ThreadDelayUS(pState, Seconds * 1000 * 1000);
+}
 
 extern bool OOSMOS_ThreadWaitCond_TimeoutMS(oosmos_sState * pState, bool Condition, uint32_t TimeoutMS, bool * pTimeoutStatus)
 {
   oosmos_POINTER_GUARD(pState);
   oosmos_POINTER_GUARD(pTimeoutStatus);
 
-  if (!pState->m_ThreadFunctionIsActive) {
-    RESET_THREAD_TIMEOUT(pState);
-    pState->m_ThreadFunctionIsActive = true;
+  if (pState->m_FirstEntry) {
+    oosmos_TimeoutInMS(&pState->m_ThreadTimeout, TimeoutMS);
+    pState->m_FirstEntry = false;
+    return false;
   }
 
   if (Condition) {
     *pTimeoutStatus = false;
-    pState->m_ThreadFunctionIsActive = false;
+    pState->m_FirstEntry = true;
     return true;
   }
 
-  if (ThreadTimeoutMS(pState, TimeoutMS)) {
+  if (oosmos_TimeoutHasExpired(&pState->m_ThreadTimeout)) {
     *pTimeoutStatus = true;
-    pState->m_ThreadFunctionIsActive = false;
+    pState->m_FirstEntry = true;
     return true;
   }
 
