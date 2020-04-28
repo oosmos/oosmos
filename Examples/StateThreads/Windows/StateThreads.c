@@ -23,8 +23,13 @@
 #include "oosmos.h"
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdint.h>
 
 typedef struct testTag test;
+
+typedef struct {
+  uint32_t m_BlinkCount;
+} sBlink_Data;
 
 struct testTag
 {
@@ -36,19 +41,22 @@ struct testTag
       oosmos_sOrthoRegion OrthoState_Region2_State;
         oosmos_sLeaf OrthoState_Region2_Speaker_State;
 //<<<DECL
+
+  sBlink_Data Blink_Data;
 };
 
-static void LedThread(oosmos_sState * pState)
+static void BlinkThread(oosmos_sState * pState, sBlink_Data * pData)
 {
   oosmos_ThreadBegin();
     for (;;) {
       printf("Blink...\n");
       oosmos_ThreadDelayMS(500);
+      pData->m_BlinkCount += 1;
     }
   oosmos_ThreadEnd();
 }
 
-static void SpeakerThread(oosmos_sState * pState)
+static void BeepThread(oosmos_sState * pState)
 {
   oosmos_ThreadBegin();
     for (;;) {
@@ -61,14 +69,15 @@ static void SpeakerThread(oosmos_sState * pState)
 //>>>CODE
 static bool OrthoState_Region1_LED_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
+  test * pTest = (test *) pObject;
+
   switch (oosmos_EventCode(pEvent)) {
     case oosmos_POLL: {
-      LedThread(pState);
+      BlinkThread(pState, &pTest->Blink_Data);
       return true;
     }
   }
 
-  oosmos_UNUSED(pObject);
   return false;
 }
 
@@ -76,7 +85,7 @@ static bool OrthoState_Region2_Speaker_State_Code(void * pObject, oosmos_sState 
 {
   switch (oosmos_EventCode(pEvent)) {
     case oosmos_POLL: {
-      SpeakerThread(pState);
+      BeepThread(pState);
       return true;
     }
   }
@@ -89,6 +98,7 @@ static bool OrthoState_Region2_Speaker_State_Code(void * pObject, oosmos_sState 
 static test * testNew(void)
 {
   oosmos_Allocate(pTest, test, 1, NULL);
+  pTest->Blink_Data.m_BlinkCount = 0;
 
 //>>>INIT
   oosmos_StateMachineInitNoQueue(pTest, ROOT, NULL, OrthoState_State);

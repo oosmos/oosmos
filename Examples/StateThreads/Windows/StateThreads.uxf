@@ -6,13 +6,13 @@
     <coordinates>
       <x>30</x>
       <y>50</y>
-      <w>180</w>
+      <w>270</w>
       <h>50</h>
     </coordinates>
     <panel_attributes>LED
 --
 POLL:
-  LedThread(pState);
+  BlinkThread(pState, &amp;pTest-&gt;Blink_Data);
 valign=top
 </panel_attributes>
     <additional_attributes/>
@@ -22,24 +22,24 @@ valign=top
     <coordinates>
       <x>10</x>
       <y>100</y>
-      <w>230</w>
+      <w>320</w>
       <h>30</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>10.0;10.0;210.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;300.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLState</id>
     <coordinates>
       <x>30</x>
       <y>120</y>
-      <w>180</w>
+      <w>270</w>
       <h>50</h>
     </coordinates>
     <panel_attributes>Speaker
 --
 POLL:
-  SpeakerThread(pState);
+  BeepThread(pState);
 valign=top
 </panel_attributes>
     <additional_attributes/>
@@ -49,7 +49,7 @@ valign=top
     <coordinates>
       <x>20</x>
       <y>20</y>
-      <w>200</w>
+      <w>290</w>
       <h>160</h>
     </coordinates>
     <panel_attributes>OrthoState
