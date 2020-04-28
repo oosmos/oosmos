@@ -96,5 +96,6 @@ extern void serverDelete(server * pServer)
 
   printf("Delete Server %p.\n", (void *) pServer);
   sockDelete(pServer->m_pSock);
-  free(pServer);
+
+  // Note: Once an oosmos object is created and registered on the object list, it can not be deleted.
 }
