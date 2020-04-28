@@ -63,6 +63,7 @@ class cWindows:
 
     Files = ' '.join(FileArray)
     Line = r'cl -I. -I%s\Source -I%s\Classes -I%s\Classes\Tests -nologo -Zi -W4 -wd4204 -wd4065 -wd4100 -wd4127 -D_CRT_SECURE_NO_WARNINGS '%(oosmos_dir,oosmos_dir,oosmos_dir)+Files+' -Doosmos_DEBUG '+Options
+    # To enable asan, add /fsanitize=address /MT clang_rt.asan-i386.lib immediately after cl. Requires VS 2017.
     print(Line)
 
     try :

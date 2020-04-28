@@ -10,6 +10,9 @@
 **/*.ilk
 **/*.suo
 **/*.sln
+**/*.exp
+**/*.lib
+**/*.opendb
 **/*.VC.db
 **/settings
 
