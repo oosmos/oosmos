@@ -48,6 +48,8 @@ def Clean(Dir, Extensions):
 class cWindows:
   @staticmethod
   def Clean():
+    WildRemove('*.exp')
+    WildRemove('*.lib')
     WildRemove('*.exe')
     WildRemove('*.pdb')
     WildRemove('*.obj')
