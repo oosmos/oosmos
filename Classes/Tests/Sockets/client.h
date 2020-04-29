@@ -25,7 +25,7 @@
 
 typedef struct clientTag client;
 
-extern client * clientNew(const char * pHost, int Port);
+extern client * clientNew(const char * pHost, unsigned Port);
 extern void clientDelete(client * pClient);
 
 #endif

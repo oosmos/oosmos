@@ -229,7 +229,7 @@ extern void sockSubscribeClosedEvent(sock * pSock, oosmos_sQueue * pEventQueue, 
   oosmos_SubscriberListAdd(pSock->m_ClosedEvent, pEventQueue, ClosedEventCode, pContext);
 }
 
-extern bool sockListen(sock * pSock, int Port, int Backlog)
+extern bool sockListen(sock * pSock, unsigned Port, int Backlog)
 {
   struct sockaddr_in Listener;
 
@@ -396,7 +396,7 @@ extern bool sockSend(sock * pSock, const void * pData, size_t Bytes)
   return false;
 }
 
-extern bool sockConnect(sock * pSock, uint32_t IP_HostByteOrder, int Port)
+extern bool sockConnect(sock * pSock, uint32_t IP_HostByteOrder, unsigned Port)
 {
   if (pSock->m_Closed) {
     return false;

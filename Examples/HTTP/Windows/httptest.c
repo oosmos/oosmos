@@ -42,15 +42,15 @@ struct httptestTag
     oosmos_sLeaf       Running_State;
 
   const char * m_pHost;
-  int          m_Port;
+  unsigned     m_Port;
   sock       * m_pSock;
   char         m_Buffer[2000];
   dns        * m_pDNS;
-  int          m_ID;
+  unsigned     m_ID;
 
   struct {
-    uint32_t   m_IP_HostByteOrder[3];
-    int        m_ContentLength;
+    uint32_t  m_IP_HostByteOrder[3];
+    size_t    m_ContentLength;
   } Running;
 };
 

@@ -32,7 +32,7 @@ extern int main(void)
 {
   oosmos_ClockSpeedInMHz(80);
 
-  for (int I = 1; I <= THREAD_TESTS; I++) {
+  for (iunsignednt I = 1; I <= THREAD_TESTS; I++) {
     (void) threadtestNew();
   }
 

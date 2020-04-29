@@ -43,8 +43,8 @@ struct uartTag
 
 #define MAX_UARTS 5
 
-static uart UartList[MAX_UARTS];
-static int  UartCount = 0;
+static uart     UartList[MAX_UARTS];
+static unsigned UartCount = 0;
 
 static void ReceiverStateMachine(void * pObject)
 {
@@ -64,10 +64,9 @@ static void ReceiverStateMachine(void * pObject)
 
 static void ISR(const int UartId)
 {
-  int    Count;
   uart * pUART = UartList;
 
-  for (Count = 0; Count < UartCount; pUART++, Count++) {
+  for (unsigned Count = 0; Count < UartCount; pUART++, Count++) {
     if (UartId != pUART->m_UartId) {
       continue;
     }
@@ -79,7 +78,7 @@ static void ISR(const int UartId)
   }
 }
 
-extern uart * uartNew(const int UartId)
+extern uart * uartNew(unsigned UartId)
 {
   oosmos_AllocateVisible(pUART, uart, UartList, UartCount, MAX_UARTS, NULL);
 

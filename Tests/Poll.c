@@ -29,7 +29,7 @@
 
 typedef struct testTag test;
 
-const int TargetCount = 3;
+const unsigned TargetCount = 3;
 
 struct testTag
 {
@@ -49,15 +49,15 @@ struct testTag
     oosmos_sLeaf Done_State;
 //<<<DECL
 
-  int m_Ortho;
+  unsigned m_Ortho;
 
-  int m_A1_Count;
-  int m_B1_Count;
-  int m_C1_Count;
+  unsigned m_A1_Count;
+  unsigned m_B1_Count;
+  unsigned m_C1_Count;
 
-  int m_A2_Count;
-  int m_B2_Count;
-  int m_C2_Count;
+  unsigned m_A2_Count;
+  unsigned m_B2_Count;
+  unsigned m_C2_Count;
 };
 
 static bool CheckCounts(const test * pTest)
@@ -90,7 +90,7 @@ static void A1Thread(test * pTest, oosmos_sState * pState)
 {
   oosmos_ThreadBegin();
     for (;;) {
-      printf("Poll A1: %d\n", pTest->m_A1_Count);
+      printf("Poll A1: %u\n", pTest->m_A1_Count);
       pTest->m_A1_Count++;
       oosmos_ThreadDelayMS(20);
     }
@@ -99,31 +99,31 @@ static void A1Thread(test * pTest, oosmos_sState * pState)
 
 static void B1Poll(test * pTest)
 {
-  printf("Poll B1: %d\n", pTest->m_B1_Count);
+  printf("Poll B1: %u\n", pTest->m_B1_Count);
   pTest->m_B1_Count++;
 }
 
 static void C1Poll(test * pTest)
 {
-  printf("Poll C1: %d\n", pTest->m_C1_Count);
+  printf("Poll C1: %u\n", pTest->m_C1_Count);
   pTest->m_C1_Count++;
 }
 
 static void A2Poll(test * pTest)
 {
-  printf("Poll A2: %d\n", pTest->m_A2_Count);
+  printf("Poll A2: %u\n", pTest->m_A2_Count);
   pTest->m_A2_Count++;
 }
 
 static void B2Poll(test * pTest)
 {
-  printf("Poll B2: %d\n", pTest->m_B2_Count);
+  printf("Poll B2: %u\n", pTest->m_B2_Count);
   pTest->m_B2_Count++;
 }
 
 static void C2Poll(test * pTest)
 {
-  printf("Poll C2: %d\n", pTest->m_C2_Count);
+  printf("Poll C2: %u\n", pTest->m_C2_Count);
   pTest->m_C2_Count++;
 }
 

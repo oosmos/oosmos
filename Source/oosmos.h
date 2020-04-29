@@ -283,7 +283,7 @@ struct OOSMOS_sStateTag {
   //
   // Will be true upon first entry to a thread function.
   //
-  unsigned int m_FirstEntry:1;
+  unsigned m_FirstEntry:1;
 };
 
 struct OOSMOS_sCompositeTag {
@@ -445,7 +445,7 @@ extern void OOSMOS_PushEventToStateMachine(const oosmos_sStateMachine * pStateMa
 #endif
 //--------
 
-typedef void (*oosmos_tOutOfMemory)(const char*, int, const char*);
+typedef void (*oosmos_tOutOfMemory)(const char*, unsigned, const char*);
 
 #define OOSMOS_Allocate(List, Count, Type, Pointer, Elements, OutOfMemory) \
   {                                                                        \
@@ -472,8 +472,8 @@ typedef void (*oosmos_tOutOfMemory)(const char*, int, const char*);
   Type * Pointer;                                                                      \
                                                                                        \
   {                                                                                    \
-    static Type OOSMOS_List[Elements];                                                 \
-    static int  OOSMOS_Count = 0;                                                      \
+    static Type     OOSMOS_List[Elements];                                             \
+    static unsigned OOSMOS_Count = 0;                                                  \
     OOSMOS_Allocate(OOSMOS_List, OOSMOS_Count, Type, Pointer, Elements, OutOfMemory);  \
   }
 

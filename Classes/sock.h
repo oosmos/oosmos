@@ -35,9 +35,9 @@ extern void sockDelete(sock * pSock);
 
 extern int sockGetLastError(void);
 
-extern bool sockConnect(sock * pSock, uint32_t IP_HostByteOrder, int Port);
+extern bool sockConnect(sock * pSock, uint32_t IP_HostByteOrder, unsigned Port);
 
-extern bool sockListen(sock * pSock, int Port, int Backlog);
+extern bool sockListen(sock * pSock, unsigned Port, int Backlog);
 extern bool sockAccepted(sock * pListenerSock, sock ** ppNewSock);
 
 extern bool sockSend(sock * pSock, const void * pData, size_t Bytes);

@@ -203,7 +203,7 @@ static bool DitSound_State_Code(void * pObject, oosmos_sState * pState, const oo
 }
 //<<<CODE
 
-extern keyer * keyerNew(pin * pDahPin, pin * pDitPin, pin * pSpeakerPin, uint32_t WPM)
+extern keyer * keyerNew(pin * pDahPin, pin * pDitPin, pin * pSpeakerPin, unsigned WPM)
 {
   oosmos_Allocate(pKeyer, keyer, 1, NULL);
 

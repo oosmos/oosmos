@@ -61,9 +61,9 @@ struct pinTag
   oosmos_sActiveObject m_ActiveObject;
   oosmos_sTimeout      m_Timeout;
   uint8_t              m_DebounceTimeMS;
-  unsigned int         m_State:4;     // eStates
-  unsigned int         m_Logic:4;     // pin_eLogic
-  unsigned int         m_Direction:4; // pin_eDirection
+  unsigned             m_State:4;     // eStates
+  unsigned             m_Logic:4;     // pin_eLogic
+  unsigned             m_Direction:4; // pin_eDirection
 };
 
 static bool IsPhysicallyOn(const pin * pPin);
@@ -82,7 +82,7 @@ static void RunStateMachine(void * pObject)
   switch (pPin->m_State) {
     case On_State: {
       if (IsPhysicallyOff(pPin)) {
-        pPin->m_State = (unsigned int) ConfirmingOff_State;
+        pPin->m_State = (unsigned) ConfirmingOff_State;
         oosmos_TimeoutInMS(&pPin->m_Timeout, pPin->m_DebounceTimeMS);
       }
 
@@ -91,7 +91,7 @@ static void RunStateMachine(void * pObject)
 
     case Off_State: {
       if (IsPhysicallyOn(pPin)) {
-        pPin->m_State = (unsigned int) ConfirmingOn_State;
+        pPin->m_State = (unsigned) ConfirmingOn_State;
         oosmos_TimeoutInMS(&pPin->m_Timeout, pPin->m_DebounceTimeMS);
       }
 
@@ -104,11 +104,11 @@ static void RunStateMachine(void * pObject)
       }
 
       if (!IsPhysicallyOn(pPin)) {
-        pPin->m_State = (unsigned int) Unknown_State;
+        pPin->m_State = (unsigned) Unknown_State;
         break;
       }
 
-      pPin->m_State = (unsigned int) On_State;
+      pPin->m_State = (unsigned) On_State;
       break;
     }
 
@@ -118,16 +118,16 @@ static void RunStateMachine(void * pObject)
       }
 
       if (!IsPhysicallyOff(pPin)) {
-        pPin->m_State = (unsigned int) Unknown_State;
+        pPin->m_State = (unsigned) Unknown_State;
         break;
       }
 
-      pPin->m_State = (unsigned int) Off_State;
+      pPin->m_State = (unsigned) Off_State;
       break;
     }
 
     case Unknown_State: {
-      pPin->m_State = (unsigned int) (IsPhysicallyOn(pPin) ? ConfirmingOn_State : ConfirmingOff_State);
+      pPin->m_State = (unsigned) (IsPhysicallyOn(pPin) ? ConfirmingOn_State : ConfirmingOff_State);
       oosmos_TimeoutInMS(&pPin->m_Timeout, pPin->m_DebounceTimeMS);
       break;
     }
@@ -146,7 +146,7 @@ extern bool pinIsOn(const pin * pPin)
     return IsPhysicallyOn(pPin);
   }
 
-  return pPin->m_State == (unsigned int) On_State;
+  return pPin->m_State == (unsigned) On_State;
 }
 
 extern bool pinIsOff(const pin * pPin)
@@ -157,13 +157,13 @@ extern bool pinIsOff(const pin * pPin)
 #if defined(ARDUINO) || defined(oosmos_RASPBERRY_PI)
   static bool IsPhysicallyOn(const pin * pPin)
   {
-    const int PinValue = digitalRead(pPin->m_PinNumber);
+    const unsigned PinValue = digitalRead(pPin->m_PinNumber);
     return PinValue == (pPin->m_Logic == pinActiveHigh ? HIGH : LOW);
   }
 
   extern void pinOn(const pin * pPin)
   {
-    const int PinNumber = pPin->m_PinNumber;
+    const unsigned PinNumber = pPin->m_PinNumber;
 
     if (pPin->m_Direction == pinInOut) {
       pinMode(PinNumber, pPin->m_Logic == pinActiveHigh ? INPUT : OUTPUT);
@@ -174,7 +174,7 @@ extern bool pinIsOff(const pin * pPin)
 
   extern void pinOff(const pin * pPin)
   {
-    const int PinNumber = pPin->m_PinNumber;
+    const unsigned PinNumber = pPin->m_PinNumber;
 
     if (pPin->m_Direction == pinInOut) {
       pinMode(PinNumber, pPin->m_Logic == pinActiveHigh ? OUTPUT : INPUT);
@@ -183,28 +183,28 @@ extern bool pinIsOff(const pin * pPin)
     digitalWrite(PinNumber, pPin->m_Logic == pinActiveHigh ? LOW : HIGH);
   }
 
-  extern int pinGetPinNumber(pin * pPin)
+  extern unsigned pinGetPinNumber(pin * pPin)
   {
     return pPin->m_PinNumber;
   }
 
-  extern pin * pinNew(const int PinNumber, const pin_eDirection Direction, const pin_eLogic Logic)
+  extern pin * pinNew(const unsigned PinNumber, const pin_eDirection Direction, const pin_eLogic Logic)
   {
     #if defined(oosmos_RASPBERRY_PI)
-      static int WiringPi_Initialized = 0;
+      static bool WiringPi_Initialized = false;
 
       if (!WiringPi_Initialized) {
         wiringPiSetup();
-        WiringPi_Initialized = 1;
+        WiringPi_Initialized = true;
       }
     #endif
 
     oosmos_Allocate(pPin, pin, pinMAX, NULL);
 
     pPin->m_PinNumber      = PinNumber;
-    pPin->m_Logic          = (unsigned int) Logic;
-    pPin->m_State          = (unsigned int) Unknown_State;
-    pPin->m_Direction      = (unsigned int) Direction;
+    pPin->m_Logic          = (unsigned) Logic;
+    pPin->m_State          = (unsigned) Unknown_State;
+    pPin->m_Direction      = (unsigned) Direction;
     pPin->m_DebounceTimeMS = 0;
 
     switch (Direction) {
@@ -222,7 +222,7 @@ extern bool pinIsOff(const pin * pPin)
     return pPin;
   }
 
-  extern pin * pinNew_Debounce(const int PinNumber, const pin_eDirection Direction, const pin_eLogic Logic, const uint8_t DebounceTimeMS)
+  extern pin * pinNew_Debounce(const unsigned PinNumber, const pin_eDirection Direction, const pin_eLogic Logic, const uint8_t DebounceTimeMS)
   {
     pin * pPin = pinNew(PinNumber, Direction, Logic);
 
@@ -251,15 +251,15 @@ extern bool pinIsOff(const pin * pPin)
     (pPin->m_Logic == pinActiveHigh ? PORTClearBits : PORTSetBits)(pPin->m_Port, pPin->m_Bit);
   }
 
-  extern pin * pinNew(const IoPortId Port, const int Bit, const pin_eDirection Direction, const pin_eLogic Logic)
+  extern pin * pinNew(const IoPortId Port, const unsigned Bit, const pin_eDirection Direction, const pin_eLogic Logic)
   {
     oosmos_Allocate(pPin, pin, pinMAX, NULL);
 
     pPin->m_Port           = Port;
     pPin->m_Bit            = Bit;
-    pPin->m_Logic          = (unsigned int) Logic;
-    pPin->m_State          = (unsigned int) Unknown_State;
-    pPin->m_Direction      = (unsigned int) Direction;
+    pPin->m_Logic          = (unsigned) Logic;
+    pPin->m_State          = (unsigned) Unknown_State;
+    pPin->m_Direction      = (unsigned) Direction;
     pPin->m_DebounceTimeMS = 0;
 
     switch (pPin->m_Direction) {
@@ -278,7 +278,7 @@ extern bool pinIsOff(const pin * pPin)
     return pPin;
   }
 
-  extern pin * pinNew_Debounce(const IoPortId Port, const int Bit, const pin_eDirection Direction, const pin_eLogic Logic, const uint8_t DebounceTimeMS)
+  extern pin * pinNew_Debounce(const IoPortId Port, const unsigned Bit, const pin_eDirection Direction, const pin_eLogic Logic, const uint8_t DebounceTimeMS)
   {
     pin * pPin = pinNew(Port, Bit, Direction, Logic);
 
@@ -300,9 +300,9 @@ extern bool pinIsOff(const pin * pPin)
     ::new(&pPin->m_Pin) DigitalOut(Pin);
 
     pPin->m_PinName        = Pin;
-    pPin->m_Logic          = (unsigned int) Logic;
-    pPin->m_State          = (unsigned int) Unknown_State;
-    pPin->m_Direction      = (unsigned int) Direction;
+    pPin->m_Logic          = (unsigned) Logic;
+    pPin->m_State          = (unsigned) Unknown_State;
+    pPin->m_Direction      = (unsigned) Direction;
     pPin->m_DebounceTimeMS = 0;
 
     return pPin;
@@ -324,7 +324,7 @@ extern bool pinIsOff(const pin * pPin)
   static bool IsPhysicallyOn(const pin * pPin)
   {
     DigitalOut * pDigitalOut = (DigitalOut *) pPin->m_Pin;
-    const int PinValue = pDigitalOut->read();
+    const unsigned PinValue = pDigitalOut->read();
     return PinValue == (pPin->m_Logic == pinActiveHigh ? 1 : 0);
   }
 
@@ -373,9 +373,9 @@ extern bool pinIsOff(const pin * pPin)
 
     pPin->m_Port           = Port;
     pPin->m_Pin            = Pin;
-    pPin->m_Logic          = (unsigned int) Logic;
-    pPin->m_State          = (unsigned int) Unknown_State;
-    pPin->m_Direction      = (unsigned int) Direction;
+    pPin->m_Logic          = (unsigned) Logic;
+    pPin->m_State          = (unsigned) Unknown_State;
+    pPin->m_Direction      = (unsigned) Direction;
     pPin->m_DebounceTimeMS = 0;
 
     pinOff(pPin);
@@ -421,7 +421,7 @@ extern bool pinIsOff(const pin * pPin)
     }
 
     const bool IsDown = KeyIsDown[pPin->m_Key];
-    return pPin->m_Logic == ((unsigned int) pinActiveHigh) ? IsDown : !IsDown;
+    return pPin->m_Logic == ((unsigned) pinActiveHigh) ? IsDown : !IsDown;
   }
 
   extern pin * pinNew(char Key, const pin_eLogic Logic)
@@ -429,8 +429,8 @@ extern bool pinIsOff(const pin * pPin)
     oosmos_Allocate(pPin, pin, pinMAX, NULL);
 
     pPin->m_Key            = Key;
-    pPin->m_Logic          = (unsigned int) Logic;
-    pPin->m_State          = (unsigned int) Unknown_State;
+    pPin->m_Logic          = (unsigned) Logic;
+    pPin->m_State          = (unsigned) Unknown_State;
     pPin->m_DebounceTimeMS = 0;
 
     if (pinFirst) {

@@ -53,7 +53,7 @@ static void SendByte(const spi_sSlave * pSlave, uint8_t Byte)
   pin * pCLK  = pSPI->m_pCLK;
   pin * pMOSI = pSPI->m_pMOSI;
 
-  for (int Count = 1; Count <= 8; Count++) {
+  for (unsigned Count = 1; Count <= 8; Count++) {
     ((Byte & 0x80) ? pinOff : pinOn)(pMOSI);
 
     pinOn(pCLK);

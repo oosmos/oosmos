@@ -39,8 +39,8 @@ struct threadyieldtestTag
 //<<<DECL
 
   const char * m_pID;
-  int          m_Count;
-  int          m_Iterations;
+  unsigned     m_Count;
+  unsigned     m_Iterations;
 };
 
 static void Thread(threadyieldtest * pThreadYieldTest, oosmos_sState * pState)
@@ -87,7 +87,7 @@ static bool Done_State_Code(void * pObject, oosmos_sState * pState, const oosmos
 }
 //<<<CODE
 
-extern threadyieldtest * threadyieldtestNew(const char * pID, int Iterations)
+extern threadyieldtest * threadyieldtestNew(const char * pID, unsigned Iterations)
 {
   oosmos_Allocate(pThreadYieldTest, threadyieldtest, MAX_THREAD, NULL);
 

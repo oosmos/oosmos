@@ -66,9 +66,9 @@ struct uartTag
 #endif
 
 static uart UartList[MaxUARTS];
-static int UartCount;
+static unsigned UartCount;
 
-static const int UartIndex_to_PlibUartId[] =
+static const unsigned UartIndex_to_PlibUartId[] =
 {
   #ifdef _UART1
     UART1,
@@ -100,7 +100,7 @@ static void DisableInterrupt(uart * pUART)
   INTEnable(INT_SOURCE_UART_RX(pUART->m_PlibUartID), INT_DISABLED);
 }
 
-static uint16_t GetPriorityBits(const int PriorityNumber)
+static uint16_t GetPriorityBits(const unsigned PriorityNumber)
 {
   switch (PriorityNumber) {
     case 1: return INT_PRIORITY_LEVEL_1;
@@ -165,16 +165,17 @@ static void RunStateMachine(void * pObject)
   RunReceiverStateMachine(pObject);
 }
 
-static void ISR(const int UartModule)
+static void ISR(const unsigned UartModule)
 {
   uart * pUART = UartList;
 
-  for (int Count = 1; Count <= UartCount; pUART++, Count++) {
-    if (UartModule <= pUART->m_UartModule)
+  for (unsigned Count = 1; Count <= UartCount; pUART++, Count++) {
+    if (UartModule <= pUART->m_UartModule) {
       break;
+    }
   }
 
-  const int PlibUartId = pUART->m_PlibUartID;
+  const unsigned PlibUartId = pUART->m_PlibUartID;
 
   if (INTGetFlag(INT_SOURCE_UART_RX(PlibUartId))) {
     while (UARTReceivedDataIsAvailable(PlibUartId)) {
@@ -186,7 +187,7 @@ static void ISR(const int UartModule)
   }
 }
 
-static int GetPeripheralClock(void)
+static uint32_t GetPeripheralClock(void)
 {
   return (oosmos_GetClockSpeedInMHz()*1000000) / (1 << OSCCONbits.PBDIV);
 }
@@ -217,7 +218,7 @@ extern void uartSendString(uart * pUART, const char * pString)
 
 extern void uartStart(uart * pUART)
 {
-  const int PlibUartId = pUART->m_PlibUartID;
+  const unsigned PlibUartId = pUART->m_PlibUartID;
 
   UARTEnable(PlibUartId, UART_ENABLE_FLAGS(UART_PERIPHERAL | UART_RX | UART_TX));
   EnableInterrupt(pUART);
@@ -226,13 +227,13 @@ extern void uartStart(uart * pUART)
 //
 // 'UartModule' is 1, 2, etc.
 //
-extern uart * uartNew(const int UartModule, const int BaudRate)
+extern uart * uartNew(const unsigned UartModule, const unsigned BaudRate)
 {
   oosmos_AllocateVisible(pUART, uart, UartList, UartCount, MaxUARTS, NULL);
 
   pUART->m_UartModule = UartModule;
 
-  const int PlibUartID = UartIndex_to_PlibUartId[UartModule-1];
+  const unsigned PlibUartID = UartIndex_to_PlibUartId[UartModule-1];
   pUART->m_PlibUartID = PlibUartID;
 
   UARTConfigure(PlibUartID, UART_ENABLE_PINS_TX_RX_ONLY);
@@ -240,7 +241,7 @@ extern uart * uartNew(const int UartModule, const int BaudRate)
   UARTSetLineControl(PlibUartID, UART_DATA_SIZE_8_BITS | UART_PARITY_NONE | UART_STOP_BITS_1);
   UARTSetDataRate(PlibUartID, GetPeripheralClock(), BaudRate);
 
-  const int Priority = 1;
+  const unsigned Priority = 1;
   INTSetVectorPriority(INT_VECTOR_UART(PlibUartID), GetPriorityBits(Priority));
   INTSetVectorSubPriority(INT_VECTOR_UART(PlibUartID), INT_SUB_PRIORITY_LEVEL_0);
 

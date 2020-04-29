@@ -39,7 +39,7 @@ struct testTag
     oosmos_sLeaf US_State;
     oosmos_sLeaf Done_State;
 //<<<DECL
-  int m_TimeMS;
+  unsigned m_TimeMS;
 };
 
 //>>>CODE

@@ -49,16 +49,16 @@ extern bool pinIsOn(const pin * pPin);
 extern bool pinIsOff(const pin * pPin);
 
 #if defined(ARDUINO) || defined(oosmos_RASPBERRY_PI)
-  extern pin * pinNew(int PinNumber, pin_eDirection, pin_eLogic Logic);
-  extern pin * pinNew_Debounce(int PinNumber, pin_eDirection, pin_eLogic Logic, uint8_t DebounceTimeMS);
-  extern int pinGetPinNumber(pin * pPin);
+  extern pin * pinNew(unsigned PinNumber, pin_eDirection, pin_eLogic Logic);
+  extern pin * pinNew_Debounce(unsigned PinNumber, pin_eDirection, pin_eLogic Logic, uint8_t DebounceTimeMS);
+  extern unsigned pinGetPinNumber(pin * pPin);
 #elif defined(__PIC32MX)
-  extern pin * pinNew(IoPortId Port, int Bit, pin_eDirection Direction, pin_eLogic Logic);
-  extern pin * pinNew_Debounce(IoPortId Port, int Bit, pin_eDirection, pin_eLogic Logic, uint8_t DebounceTimeMS);
+  extern pin * pinNew(IoPortId Port, unsigned Bit, pin_eDirection Direction, pin_eLogic Logic);
+  extern pin * pinNew_Debounce(IoPortId Port, unsigned Bit, pin_eDirection, pin_eLogic Logic, uint8_t DebounceTimeMS);
 #elif defined(__MBED__)
   extern pin * pinNew(PinName Pin, pin_eDirection, pin_eLogic Logic);
   extern pin * pinNew_Debounce(PinName Pin, pin_eDirection, pin_eLogic Logic, uint8_t DebounceTimeMS);
-  extern int pinGetPinName(pin * pPin);
+  extern unsigned pinGetPinName(pin * pPin);
 #elif defined(__IAR_SYSTEMS_ICC__)
   extern pin * pinNew(GPIO_TypeDef* Port, uint16_t Pin, const pin_eDirection Direction, const pin_eLogic Logic);
   extern pin * pinNew_Debounce(GPIO_TypeDef* Port, const uint16_t Bit, const pin_eDirection Direction, const pin_eLogic Logic, const uint8_t DebounceTimeMS);

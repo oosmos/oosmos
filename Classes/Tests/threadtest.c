@@ -74,10 +74,10 @@ struct threadtestTag
       oosmos_sOrthoRegion Running_Region2_State;
         oosmos_sLeaf Running_Region2_Printing_State;
 //<<<DECL
-  int m_WC_Timeout_Successes;
-  int m_WE_Timeout_Successes;
+  unsigned m_WC_Timeout_Successes;
+  unsigned m_WE_Timeout_Successes;
 
-  int m_ThreadExitCount;
+  unsigned m_ThreadExitCount;
 };
 
 static bool ConditionRandom(int Range)

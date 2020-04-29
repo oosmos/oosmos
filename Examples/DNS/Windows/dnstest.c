@@ -40,7 +40,7 @@ struct dnstestTag {
   oosmos_sActiveObject ActiveObject;
 };
 
-static int ActiveInstances = 0;
+static unsigned ActiveInstances = 0;
 
 static void Run(void * pObject)
 {
@@ -52,15 +52,13 @@ static void Run(void * pObject)
   printf("Checking %s...\n", pDnsTest->pDomain);
 
   if (dnsQuery(pDnsTest->pDNS, pDnsTest->pDomain, pDnsTest->IP, MAX_ANSWERS)) {
-    int Answer;
-
-    for (Answer = 0; Answer < MAX_ANSWERS; Answer++) {
+    for (unsigned Answer = 0; Answer < MAX_ANSWERS; Answer++) {
       const uint32_t IP = pDnsTest->IP[Answer];
 
       if (IP == 0)
         break;
 
-      printf("%s[%d]: %u.%u.%u.%u\n", pDnsTest->pDomain, Answer, IP>>24 & 0xff, IP>>16 & 0xff, IP>>8 & 0xff, IP & 0xff);
+      printf("%s[%u]: %u.%u.%u.%u\n", pDnsTest->pDomain, Answer, IP>>24 & 0xff, IP>>16 & 0xff, IP>>8 & 0xff, IP & 0xff);
     }
 
     ActiveInstances -= 1;

@@ -183,7 +183,7 @@ static bool PropagateEvent(const oosmos_sRegion * pRegion, const oosmos_sEvent *
       case OOSMOS_OrthoType: {
         const oosmos_sOrtho * pOrtho = (oosmos_sOrtho *) pCurrent;
         oosmos_sOrthoRegion * pOrthoRegion = pOrtho->m_pFirstOrthoRegion;
-        int Handled = 0;
+        unsigned Handled = 0;
 
         for (; pOrthoRegion != NULL; pOrthoRegion = pOrthoRegion->m_pNextOrthoRegion) {
           Handled += PropagateEvent(&pOrthoRegion->m_Region, pEvent);
@@ -234,7 +234,7 @@ static bool ProcessTimeouts(const oosmos_sRegion * pRegion)
       case OOSMOS_OrthoType: {
         const oosmos_sOrtho * pOrtho = (oosmos_sOrtho *) pCurrent;
         oosmos_sOrthoRegion * pOrthoRegion = pOrtho->m_pFirstOrthoRegion;
-        int Handled = 0;
+        unsigned Handled = 0;
 
         for (; pOrthoRegion != NULL; pOrthoRegion = pOrthoRegion->m_pNextOrthoRegion) {
           Handled += ProcessTimeouts(&pOrthoRegion->m_Region);
@@ -436,8 +436,8 @@ static void Complete(oosmos_sState * pState)
       case OOSMOS_OrthoType: {
         const oosmos_sOrtho * pOrtho = (oosmos_sOrtho *) pState;
         const oosmos_sOrthoRegion * pOrthoRegion = pOrtho->m_pFirstOrthoRegion;
-        int Visited   = 0;
-        int Completed = 0;
+        unsigned Visited   = 0;
+        unsigned Completed = 0;
 
         for (; pOrthoRegion != NULL; pOrthoRegion = pOrthoRegion->m_pNextOrthoRegion) {
           Visited += 1;
@@ -981,8 +981,8 @@ extern void OOSMOS_RunStateMachine(oosmos_sStateMachine * pStateMachine)
 {
   oosmos_POINTER_GUARD(pStateMachine);
 
-  int EventsHandled = 0;
-  oosmos_sRegion * pRegion = &pStateMachine->m_Region;
+  unsigned         EventsHandled = 0;
+  oosmos_sRegion * pRegion       = &pStateMachine->m_Region;
 
   if (!pStateMachine->m_IsStarted) {
     DefaultTransitions(&pStateMachine->m_Region, pStateMachine->m_Region.m_Composite.m_pDefault);
@@ -1406,7 +1406,7 @@ extern void OOSMOS_EndProgram(int Code)
   #endif
 #elif defined(__PIC32MX)
   #include <plib.h>
-  static int PIC32_ClockSpeedInMHz;
+  static unsigned PIC32_ClockSpeedInMHz;
 
   extern void oosmos_DelayUS(uint32_t DelayMS)
   {

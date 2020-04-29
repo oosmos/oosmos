@@ -34,7 +34,7 @@ typedef struct
 
 typedef struct uartTag uart;
 
-extern uart * uartNew(int UserUartID, int BaudRate);
+extern uart * uartNew(unsigned UserUartID, unsigned BaudRate);
 extern void uartSendChar(uart * pUART, char Char);
 extern void uartSendString(uart * pUART, const char * pString);
 extern void uartSubscribe(uart * pUART, oosmos_sQueue * pQueue, const int EventCode, void * pContext);

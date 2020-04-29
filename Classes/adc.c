@@ -34,9 +34,9 @@
 struct adcTag
 {
   #if defined(ARDUINO)
-    int m_PinNumber;
+    unsigned m_PinNumber;
   #elif defined(_MSC_VER)
-    int m_PinNumber;
+    unsigned m_PinNumber;
   #else
     #error adc.c: Unsupported platform.
   #endif
@@ -48,7 +48,7 @@ struct adcTag
     return analogRead(pADC->m_PinNumber);
   }
 
-  extern adc * adcNew(int PinNumber)
+  extern adc * adcNew(unsigned PinNumber)
   {
     oosmos_Allocate(pADC, adc, adcMAX, NULL);
     pinMode(PinNumber, OUTPUT);
@@ -63,7 +63,7 @@ struct adcTag
     return 0;
   }
 
-  extern adc * adcNew(int PinNumber)
+  extern adc * adcNew(unsigned PinNumber)
   {
     oosmos_Allocate(pADC, adc, adcMAX, NULL);
     pADC->m_PinNumber = PinNumber;

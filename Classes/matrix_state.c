@@ -32,8 +32,8 @@
 #define matrixMAX_COLS 8
 #endif
 
-static const int RowOnSettleTimeUS  = 200;
-static const int RowOffSettleTimeUS = 200;
+static const unsigned RowOnSettleTimeUS  = 200;
+static const unsigned RowOffSettleTimeUS = 200;
 
 #include "oosmos.h"
 #include "matrix.h"
@@ -53,17 +53,17 @@ struct matrixTag
   pin * m_pColumnPins[matrixMAX_COLS];
   sw  * m_pSwitch[matrixMAX_ROWS][matrixMAX_COLS];
 
-  int m_CurrentRowIndex;
-  int m_Rows;
-  int m_Columns;
+  unsigned m_CurrentRowIndex;
+  unsigned m_Rows;
+  unsigned m_Columns;
 };
 
 static void InterrogateColumns(const matrix * pMatrix)
 {
-  const int RowIndex = pMatrix->m_CurrentRowIndex;
-  const int Columns  = pMatrix->m_Columns;
+  const unsigned RowIndex = pMatrix->m_CurrentRowIndex;
+  const unsigned Columns  = pMatrix->m_Columns;
 
-  int ColumnIndex;
+  unsigned ColumnIndex;
 
   for (ColumnIndex = 0; ColumnIndex < Columns; ColumnIndex++) {
     sw * pSwitch = pMatrix->m_pSwitch[RowIndex][ColumnIndex];
@@ -78,7 +78,7 @@ static void InterrogateColumns(const matrix * pMatrix)
 
 static void Advance(matrix * pMatrix)
 {
-  const int RowIndex = pMatrix->m_CurrentRowIndex;
+  const unsigned RowIndex = pMatrix->m_CurrentRowIndex;
 
   if (RowIndex < (pMatrix->m_Rows)-1) {
     pMatrix->m_CurrentRowIndex = RowIndex+1;
@@ -88,9 +88,9 @@ static void Advance(matrix * pMatrix)
   }
 }
 
-static void AddRow(matrix * pMatrix, const int Row, pin * pPin)
+static void AddRow(matrix * pMatrix, const unsigned Row, pin * pPin)
 {
-  const int RowIndex = Row - 1;
+  const unsigned RowIndex = Row - 1;
 
   pMatrix->m_pRowPins[RowIndex] = pPin;
 
@@ -99,9 +99,9 @@ static void AddRow(matrix * pMatrix, const int Row, pin * pPin)
   }
 }
 
-static void AddColumn(matrix * pMatrix, const int Column, pin * pPin)
+static void AddColumn(matrix * pMatrix, const unsigned Column, pin * pPin)
 {
-  const int ColumnIndex = Column - 1;
+  const unsigned ColumnIndex = Column - 1;
   pMatrix->m_pColumnPins[ColumnIndex] = pPin;
 
   if (Column > pMatrix->m_Columns) {
@@ -129,7 +129,7 @@ static bool RowTurningOn_State_Code(void * pObject, oosmos_sState * pState, cons
       return true;
     }
     case oosmos_ENTER: {
-      const int RowIndex = pMatrix->m_CurrentRowIndex;
+      const unsigned RowIndex = pMatrix->m_CurrentRowIndex;
       pin * pOutputPin   = pMatrix->m_pRowPins[RowIndex];
 
       if (pOutputPin != NULL) {
@@ -162,7 +162,7 @@ static bool RowTurningOff_State_Code(void * pObject, oosmos_sState * pState, con
 
   switch (pEvent->m_Code) {
     case oosmos_ENTER: {
-      const int RowIndex = pMatrix->m_CurrentRowIndex;
+      const unsigned RowIndex = pMatrix->m_CurrentRowIndex;
       pin * pOutputPin   = pMatrix->m_pRowPins[RowIndex];
 
       if (pOutputPin != NULL) {
@@ -179,19 +179,19 @@ static bool RowTurningOff_State_Code(void * pObject, oosmos_sState * pState, con
   return false;
 }
 
-extern matrix * matrixNew(int Rows, int Columns, ...)
+extern matrix * matrixNew(unsigned Rows, unsigned Columns, ...)
 {
   oosmos_Allocate(pMatrix, matrix, matrixMAX, NULL);
 
   pMatrix->m_Rows    = 0;
   pMatrix->m_Columns = 0;
 
-  int RowIndex;
+  unsigned RowIndex;
 
   for (RowIndex = 0; RowIndex < matrixMAX_ROWS; RowIndex++) {
     pMatrix->m_pRowPins[RowIndex] = NULL;
 
-    int ColumnIndex;
+    unsigned ColumnIndex;
 
     for (ColumnIndex = 0; ColumnIndex < matrixMAX_COLS; ColumnIndex++) {
       pMatrix->m_pColumnPins[ColumnIndex]       = NULL;
@@ -206,13 +206,13 @@ extern matrix * matrixNew(int Rows, int Columns, ...)
   va_list ArgList;
   va_start(ArgList, Columns);
 
-  int Row;
+  unsigned Row;
 
   for (Row = 1; Row <= Rows; Row += 1) {
     AddRow(pMatrix, Row, va_arg(ArgList, pin *));
   }
 
-  int Column;
+  unsigned Column;
 
   for (Column = 1; Column <= Columns; Column += 1) {
     AddColumn(pMatrix, Column, va_arg(ArgList, pin *));
@@ -225,10 +225,10 @@ extern matrix * matrixNew(int Rows, int Columns, ...)
   return pMatrix;
 }
 
-extern void matrixAssignSwitch(matrix * pMatrix, sw * pSwitch, int Row, int Column)
+extern void matrixAssignSwitch(matrix * pMatrix, sw * pSwitch, unsigned Row, unsigned Column)
 {
-  const int RowIndex    = Row - 1;
-  const int ColumnIndex = Column - 1;
+  const unsigned RowIndex    = Row - 1;
+  const unsigned ColumnIndex = Column - 1;
 
   //
   // Check if this Row/Column slot has already been assigned.
@@ -240,8 +240,8 @@ extern void matrixAssignSwitch(matrix * pMatrix, sw * pSwitch, int Row, int Colu
   pMatrix->m_pSwitch[RowIndex][ColumnIndex] = pSwitch;
 }
 
-extern pin * matrixGetColumnPin(const matrix * pMatrix, int Column)
+extern pin * matrixGetColumnPin(const matrix * pMatrix, unsigned Column)
 {
-  const int ColumnIndex = Column - 1;
+  const unsigned ColumnIndex = Column - 1;
   return pMatrix->m_pColumnPins[ColumnIndex];
 }

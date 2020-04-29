@@ -28,8 +28,8 @@
 
 typedef struct matrixTag matrix;
 
-extern matrix * matrixNew(int Rows, int Columns, ...);
-extern pin * matrixGetColumnPin(const matrix * pMatrix, int Column);
-extern void matrixAssignSwitch(matrix * pMatrix, sw * pSwitch, int Row, int Column);
+extern matrix * matrixNew(unsigned Rows, unsigned Columns, ...);
+extern pin * matrixGetColumnPin(const matrix * pMatrix, unsigned Column);
+extern void matrixAssignSwitch(matrix * pMatrix, sw * pSwitch, unsigned Row, unsigned Column);
 
 #endif

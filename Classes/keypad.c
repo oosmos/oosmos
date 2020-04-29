@@ -43,7 +43,7 @@ struct keypadTag
     oosmos_sLeaf       Idle_State;
 };
 
-static sw * NewSwitch(matrix * pMatrix, int Row, int Column)
+static sw * NewSwitch(matrix * pMatrix, unsigned Row, unsigned Column)
 {
   pin * pColumnPin = matrixGetColumnPin(pMatrix, Column);
   sw  * pSwitch    = swNewDetached(pColumnPin);
@@ -52,7 +52,7 @@ static sw * NewSwitch(matrix * pMatrix, int Row, int Column)
   return pSwitch;
 }
 
-static void NewSwitchWithContext(keypad * pKeypad, matrix * pMatrix, int Row, int Column, const char * pString)
+static void NewSwitchWithContext(keypad * pKeypad, matrix * pMatrix, unsigned Row, unsigned Column, const char * pString)
 {
   sw * pSwitch = NewSwitch(pMatrix, Row, Column);
 
@@ -60,7 +60,7 @@ static void NewSwitchWithContext(keypad * pKeypad, matrix * pMatrix, int Row, in
   swSubscribeOpenEvent(pSwitch, oosmos_EventQueue(pKeypad), ReleasedEvent, (void *) pString);
 }
 
-static void NewSwitchWithCodes(keypad * pKeypad, matrix * pMatrix, int Row, int Column, int PressedEventCode, int ReleasedEventCode)
+static void NewSwitchWithCodes(keypad * pKeypad, matrix * pMatrix, unsigned Row, unsigned Column, int PressedEventCode, int ReleasedEventCode)
 {
   sw * pSwitch = NewSwitch(pMatrix, Row, Column);
 

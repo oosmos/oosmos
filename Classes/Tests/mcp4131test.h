@@ -28,7 +28,7 @@
 
 typedef struct mcp4131testTag mcp4131test;
 
-extern mcp4131test * mcp4131testNew(spi * pSPI, pin * pCS, int RampSpeed);
+extern mcp4131test * mcp4131testNew(spi * pSPI, pin * pCS, unsigned RampSpeed);
 
 #endif
 

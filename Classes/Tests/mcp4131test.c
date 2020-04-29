@@ -37,8 +37,8 @@ struct mcp4131testTag {
     oosmos_sLeaf              RampingUp_State;
     oosmos_sLeaf              RampingDown_State;
 
-  int       m_RampDelayTimeMS;
-  int       m_Resistance;
+  unsigned  m_RampDelayTimeMS;
+  unsigned  m_Resistance;
   mcp4131 * m_pMCP4131;
 };
 
@@ -86,7 +86,7 @@ static bool RampingDown_State_Code(void * pObject, oosmos_sState * pState, const
   return false;
 }
 
-extern mcp4131test * mcp4131testNew(spi * pSPI, pin * pCS, const int RampDelayTimeMS)
+extern mcp4131test * mcp4131testNew(spi * pSPI, pin * pCS, const unsigned RampDelayTimeMS)
 {
   oosmos_Allocate(pMCP4131test, mcp4131test, mcp4131testMAX, NULL);
 

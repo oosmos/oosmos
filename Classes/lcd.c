@@ -239,11 +239,11 @@ extern void lcdPrint(lcd * pLCD, const char * pFormat, ...)
     WriteData(pLCD, *pString);
 }
 
-extern void lcdSetCursor(lcd * pLCD, const int RowIndex, const int ColumnIndex)
+extern void lcdSetCursor(lcd * pLCD, const unsigned RowIndex, const unsigned ColumnIndex)
 {
   uint8_t Command = 0x80;
 
-  const static int RowOffset[] = { 0x00, 0x40, 0x14, 0x54 };
+  const static unsigned RowOffset[] = { 0x00, 0x40, 0x14, 0x54 };
 
   Command |= RowOffset[RowIndex] + ColumnIndex;
 

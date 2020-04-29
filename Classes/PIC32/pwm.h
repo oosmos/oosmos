@@ -28,7 +28,7 @@
 
 typedef struct pwmTag pwm;
 
-extern pwm * pwmNew(int PwmNumber, pin * pPwmPin, timer * pTimer);
+extern pwm * pwmNew(uint32_t PwmNumber, pin * pPwmPin, timer * pTimer);
 extern void pwmDutyCycle(pwm * pPWM, float FrequencyKHz, float DutyCyclePercent);
 extern void pwmStart(pwm * pPWM);
 extern void pwmStop(pwm * pPWM);

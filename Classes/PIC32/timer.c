@@ -43,7 +43,7 @@ static timer TimerList[TIMERS];
 
 typedef struct
 {
-  volatile unsigned int * pPeriod;
+  volatile uint16_t * pPeriod;
   uint16_t Vector;
   uint16_t Priority[PRIORITIES];
 } sTimerData;
@@ -78,7 +78,7 @@ static const sTimerData TimerData[] = {
 
 typedef struct
 {
-  int      PrescalerInt;
+  unsigned PrescalerInt;
   float    PrescalerFloat;
   uint16_t Bits[TIMERS];
 } sPrescalerData;
@@ -96,7 +96,7 @@ static const sPrescalerData PrescalerData[] = {
 
 #define PRESCALERS (sizeof(PrescalerData) / sizeof(PrescalerData[0]))
 
-static void ISR(timer * pTimer, const int TimerIndex)
+static void ISR(timer * pTimer, const unsigned TimerIndex)
 {
   if (pTimer->m_OverflowCount == 0) {
     pTimer->m_pCallback(pTimer->m_pContext);
@@ -113,7 +113,7 @@ static void ISR(timer * pTimer, const int TimerIndex)
 }
 
 static void CalculateTimerConfiguration(const float WallClockTimeSec,
-                   const sPrescalerData * pPrescalerData, const int TimerResolution,
+                   const sPrescalerData * pPrescalerData, const unsigned TimerResolution,
                    uint32_t * pOverflowCount, float * pRemainingTicks)
 {
   const float PrescalerFloat = pPrescalerData->PrescalerFloat;
@@ -138,7 +138,7 @@ static void CalcPeriodicSec(timer * pTimer, float WallClockTimeSec, timerCalc * 
   }
 
   const uint16_t Ticks = RemainingTicks + .5f;
-  const int TimerIndex = pTimer->m_TimerIndex;
+  const unsigned TimerIndex = pTimer->m_TimerIndex;
 
   pTimerCalc->OverflowCount = OverflowCount;
   pTimerCalc->Ticks         = Ticks;
@@ -235,9 +235,9 @@ extern void timerCalcPeriodSec(timer * pTimer, float WallClockTimeSec, timerCalc
   CalcPeriodicSec(pTimer, WallClockTimeSec, pTimerCalc);
 }
 
-extern int timerDisableInterrupt(timer * pTimer)
+extern unsigned timerDisableInterrupt(timer * pTimer)
 {
-  int PreviousSetting;
+  unsigned PreviousSetting;
 
   switch(pTimer->m_TimerNumber) {
     case 1: PreviousSetting = mT1GetIntEnable(); mT1IntEnable(0); break;
@@ -251,7 +251,7 @@ extern int timerDisableInterrupt(timer * pTimer)
   return PreviousSetting;
 }
 
-extern void timerEnableInterrupt(timer * pTimer, const int PreviousSetting)
+extern void timerEnableInterrupt(timer * pTimer, const unsigned PreviousSetting)
 {
   switch(pTimer->m_TimerNumber) {
     case 1: mT1IntEnable(PreviousSetting); break;
@@ -263,14 +263,14 @@ extern void timerEnableInterrupt(timer * pTimer, const int PreviousSetting)
   }
 }
 
-extern int timerGetTimerNumber(timer * pTimer)
+extern unsigned timerGetTimerNumber(timer * pTimer)
 {
   return pTimer->m_TimerNumber;
 }
 
-extern timer * timerNew(const int TimerNumber, const int Priority)
+extern timer * timerNew(const unsigned TimerNumber, const unsigned Priority)
 {
-  const int TimerIndex = TimerNumber-1;
+  const unsigned TimerIndex = TimerNumber-1;
   timer * pTimer = &TimerList[TimerIndex];
 
   pTimer->m_pCallback   = NULL;

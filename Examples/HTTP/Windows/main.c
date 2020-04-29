@@ -26,11 +26,9 @@
 
 extern int main(int argc, char *argv[])
 {
-  int Count;
-
   printf("\nTest does not end on its own. Press CNTL-C to terminate.\n\n");
 
-  for (Count = 1; Count <= 5; Count++) {
+  for (unsigned Count = 1; Count <= 5; Count++) {
     httptestNew("www.example.com", 80, Count);
   }
 

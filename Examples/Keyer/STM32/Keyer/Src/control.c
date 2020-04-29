@@ -14,7 +14,7 @@ static control * controlNew(void)
 
   pin * pLED        = pinNew(LD2_GPIO_Port,    LD2_Pin,    pinOut, pinActiveHigh);
 
-  const int WPM = 15;
+  const unsigned WPM = 15;
 
   keyerNew(pDahPin, pDitPin, pSpeakerPin, WPM);
   toggleNew(pLED, 100, 500);

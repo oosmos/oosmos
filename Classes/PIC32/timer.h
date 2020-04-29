@@ -37,7 +37,7 @@ typedef struct
 
 typedef void (*timer_tCallback)(void * pContext);
 
-extern timer * timerNew(int TimerNumber, int Priority);
+extern timer * timerNew(unsigned TimerNumber, unsigned Priority);
 extern void timerSetCallback(timer * pTimer, timer_tCallback, void * pContext);
 
 extern void timerStartPeriodicUS(timer * pTimer, float WallClockTimeUS);
@@ -48,12 +48,12 @@ extern void timerCalcPeriodUS(timer * pTimer, float WallClockTimeUS, timerCalc *
 extern void timerCalcPeriodMS(timer * pTimer, float WallClockTimeMS, timerCalc * pTimerCalc);
 extern void timerCalcPeriodSec(timer * pTimer, float WallClockTimeSec, timerCalc * pTimerCalc);
 
-extern int timerDisableInterrupt(timer * pTimer);
-extern void timerEnableInterrupt(timer * pTimer, int PreviousSetting);
+extern unsigned timerDisableInterrupt(timer * pTimer);
+extern void timerEnableInterrupt(timer * pTimer, unsigned PreviousSetting);
 
 extern void timerStart(timer * pTimer, const timerCalc * pTimerCalc);
 extern void timerStop(timer * pTimer);
 
-extern int timerGetTimerNumber(timer * pTimer);
+extern unsigned timerGetTimerNumber(timer * pTimer);
 
 #endif

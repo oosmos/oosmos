@@ -43,8 +43,8 @@ struct allTag
     oosmos_sLeaf Terminating_State;
 //<<<DECL
 
-  int m_A;
-  int m_B;
+  unsigned m_A;
+  unsigned m_B;
 };
 
 static void action(int Char)

@@ -65,7 +65,7 @@ struct matrixtestTag
   matrix * m_pMatrix;
 };
 
-static void NewSwitch(matrixtest * pMatrixTest, int Row, int Column, int PressedEventCode, int ReleasedEventCode, const char * pString)
+static void NewSwitch(matrixtest * pMatrixTest, unsigned Row, unsigned Column, unsigned PressedEventCode, unsigned ReleasedEventCode, const char * pString)
 {
   matrix * pMatrix = pMatrixTest->m_pMatrix;
 

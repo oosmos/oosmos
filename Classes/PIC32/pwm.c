@@ -40,7 +40,7 @@ struct pwmTag
 #define pwmMAX 5
 #endif
 
-extern pwm * pwmNew(const int PwmNumber, pin * pPwmPin, timer * pTimer)
+extern pwm * pwmNew(const unsigned PwmNumber, pin * pPwmPin, timer * pTimer)
 {
   oosmos_Allocate(pPWM, pwm, pwmMAX, NULL);
 

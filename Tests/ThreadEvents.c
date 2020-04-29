@@ -42,12 +42,12 @@ enum {
 
 typedef struct {
   oosmos_sEvent Event;
-  int Value;
+  unsigned      Value;
 } sTestEvent;
 
 typedef union {
   oosmos_sEvent Event;
-  sTestEvent TestEvent;
+  sTestEvent    TestEvent;
 } uEvents;
 
 typedef struct testTag test;
@@ -73,11 +73,11 @@ static void A1Thread(oosmos_sState * pState)
   oosmos_ThreadBegin();
     oosmos_ThreadWaitEvent(evTestEvent);
     pTestEvent = (sTestEvent *) oosmos_GetCurrentEvent(pState);
-    printf("ThreadA1: Received evTestEvent, Value %d %s\n", pTestEvent->Value, pTestEvent->Value == 998 ? "SUCCESS" : "FAILURE");
+    printf("ThreadA1: Received evTestEvent, Value %u %s\n", pTestEvent->Value, pTestEvent->Value == 998 ? "SUCCESS" : "FAILURE");
 
     oosmos_ThreadWaitEvent(evTestEvent);
     pTestEvent = (sTestEvent *) oosmos_GetCurrentEvent(pState);
-    printf("ThreadA1: Received evTestEvent, Value %d %s\n", pTestEvent->Value, pTestEvent->Value == 999 ? "SUCCESS" : "FAILURE");
+    printf("ThreadA1: Received evTestEvent, Value %u %s\n", pTestEvent->Value, pTestEvent->Value == 999 ? "SUCCESS" : "FAILURE");
   oosmos_ThreadEnd();
 }
 

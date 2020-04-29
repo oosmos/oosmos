@@ -28,6 +28,6 @@
 
 typedef struct keyerTag keyer;
 
-extern keyer * keyerNew(pin * pDahPin, pin * pDitPin, pin * pSpeakerPin, uint32_t WPM);
+extern keyer * keyerNew(pin * pDahPin, pin * pDitPin, pin * pSpeakerPin, unsigned WPM);
 
 #endif

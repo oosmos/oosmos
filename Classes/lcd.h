@@ -33,6 +33,6 @@ extern lcd * lcdNew(pin * pRS, pin * pRW, pin * pE,
 extern void lcdPrint(lcd * pLCD, const char * pFormat, ...);
 extern void lcdCursorHome(lcd * pLCD);
 extern void lcdClear(lcd * pLCD);
-extern void lcdSetCursor(lcd * pLCD, int Column, int Row);
+extern void lcdSetCursor(lcd * pLCD, unsigned Column, unsigned Row);
 
 #endif

@@ -36,7 +36,7 @@ extern int main(void)
   pin * pDitPin     = pinNew(IOPORT_C, BIT_2, pinIn,  pinActiveLow);
   pin * pSpeakerPin = pinNew(IOPORT_C, BIT_3, pinOut, pinActiveHigh);
 
-  const int WPM = 15;
+  const unsigned WPM = 15;
 
   keyerNew(pDahPin, pDitPin, pSpeakerPin, WPM);
 

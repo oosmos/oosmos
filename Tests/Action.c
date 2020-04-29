@@ -29,8 +29,8 @@
 
 typedef struct testTag test;
 
-static int Count;
-static int ActionCount;
+static unsigned Count;
+static unsigned ActionCount;
 
 struct testTag
 {
@@ -52,7 +52,7 @@ static void OOSMOS_Action1(void * pObject, oosmos_sState * pState, const oosmos_
 {
   test * pTest = (test *) pObject;
 
-  printf("Count: %d\n", Count);
+  printf("Count: %u\n", Count);
   ActionCount = Count;
   printf("%s\n", oosmos_IsInState(pTest, &pTest->ROOT) ? "SUCCESS" : "FAILURE");
 

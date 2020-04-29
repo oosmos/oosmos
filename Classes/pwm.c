@@ -59,13 +59,13 @@
 
 struct pwmTag
 {
-  int      m_PinNumber;
+  unsigned m_PinNumber;
   uint32_t m_DutyCycleValue;
 
   #if defined(ESP32)
-    int    m_ChannelNumber;
-    int    m_DutyCycleResolution;
-    double m_SignalFrequency;
+    unsigned m_ChannelNumber;
+    unsigned m_DutyCycleResolution;
+    double   m_SignalFrequency;
   #endif
 };
 
@@ -93,7 +93,7 @@ extern void pwmSetDutyCyclePercent(pwm * pPWM, double DutyCyclePercent)
 
   #if defined(pwm_DEBUG)
     prtFormatted("pwmDutyCycle: pPWM: %p, pinNumber: %d, DutyCyclePercent: %f, DutyCycleValue: %u\n",
-                  pPWM, pPWM->m_PinNumber, DutyCyclePercent, (unsigned int) pPWM->m_DutyCycleValue);
+                  pPWM, pPWM->m_PinNumber, DutyCyclePercent, (unsigned) pPWM->m_DutyCycleValue);
   #endif
 }
 
@@ -127,7 +127,7 @@ extern void pwmOff(pwm * pPWM)
   #endif
 }
 
-extern pwm * pwmNew(int PinNumber, double DutyCyclePercent)
+extern pwm * pwmNew(unsigned PinNumber, double DutyCyclePercent)
 {
   oosmos_Allocate(pPWM, pwm, pwmMAX, NULL);
   pPWM->m_PinNumber = PinNumber;
@@ -139,7 +139,7 @@ extern pwm * pwmNew(int PinNumber, double DutyCyclePercent)
   #endif
 
   #if defined(ESP32)
-    static int Channels = 0;
+    static unsigned Channels = 0;
 
     pPWM->m_ChannelNumber       = Channels++;
     pPWM->m_DutyCycleResolution = 15;

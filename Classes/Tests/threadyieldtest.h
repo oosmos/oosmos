@@ -25,6 +25,6 @@
 
 typedef struct threadyieldtestTag threadyieldtest;
 
-extern threadyieldtest * threadyieldtestNew(const char * pID, int Iterations);
+extern threadyieldtest * threadyieldtestNew(const char * pID, unsigned Iterations);
 
 #endif

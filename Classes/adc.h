@@ -30,9 +30,9 @@ typedef struct adcTag adc;
 extern uint32_t adcRead(const adc * pADC);
 
 #if defined(ARDUINO)
-  extern adc * adcNew(int PinNumber);
+  extern adc * adcNew(unsigned PinNumber);
 #elif defined(_MSC_VER)
-  extern adc * adcNew(int PinNumber);
+  extern adc * adcNew(unsigned PinNumber);
 #else
   #error adc.h: Unsupported platform.
 #endif

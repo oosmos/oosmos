@@ -185,7 +185,7 @@ static size_t DomainToDnsDomain(const char * pDomain, char * pDnsDomain)
   return Bytes+1;
 }
 
-extern bool dnsQuery(dns * pDns, const char * pHost, uint32_t * pIP, int MaxIPs)
+extern bool dnsQuery(dns * pDns, const char * pHost, uint32_t * pIP, unsigned MaxIPs)
 {
   char Buffer[200];
 
@@ -284,7 +284,7 @@ extern bool dnsQuery(dns * pDns, const char * pHost, uint32_t * pIP, int MaxIPs)
 
     const tAnswer * pAnswer = (tAnswer *) (pQuery + (QueryNameLen + 1) + sizeof(tQuestionTail));
 
-    int Count;
+    unsigned Count;
 
     memset(pIP, 0, sizeof(*pIP) * MaxIPs);
 

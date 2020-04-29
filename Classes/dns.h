@@ -31,6 +31,6 @@ typedef struct dnsTag dns;
 extern dns * dnsNew(void);
 extern void dnsDelete(dns * pDns);
 
-extern bool dnsQuery(dns * pDns, const char * pHost, uint32_t * pIP, int MaxIPs);
+extern bool dnsQuery(dns * pDns, const char * pHost, uint32_t * pIP, unsigned MaxIPs);
 
 #endif

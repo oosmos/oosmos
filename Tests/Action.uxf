@@ -98,7 +98,7 @@ valign=top
       <w>500</w>
       <h>80</h>
     </coordinates>
-    <panel_attributes>/printf("Count: %d\n", Count);
+    <panel_attributes>/printf("Count: %u\n", Count);
 ActionCount = Count;
 printf("%s\n", oosmos_IsInState(pTest, &amp;pTest-&gt;ROOT) ? "SUCCESS" : "FAILURE");
 lt=-&gt;</panel_attributes>

@@ -27,7 +27,7 @@
 
 extern int main(int argc, char *argv[])
 {
-  for (int Count = 1; Count <= 5; Count += 1) {
+  for (unsigned Count = 1; Count <= 5; Count += 1) {
     clientNew("127.0.0.1", 60009);
   }
 

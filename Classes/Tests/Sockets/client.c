@@ -39,7 +39,7 @@ struct clientTag
     oosmos_sLeaf       Running_State;
 
   const char * m_pHost;
-  int          m_Port;
+  unsigned     m_Port;
   sock       * m_pSock;
   char         m_Buffer[100];
 };
@@ -92,7 +92,7 @@ static bool Running_State_Code(void * pObject, oosmos_sState * pState, const oos
   return false;
 }
 
-extern client * clientNew(const char * pHost, int Port)
+extern client * clientNew(const char * pHost, unsigned Port)
 {
   client * pClient = (client *) malloc(sizeof(client));
 

@@ -27,7 +27,7 @@
 typedef struct
 {
   oosmos_sObjectThread m_ObjectThread;
-  int      I;
+  unsigned I;
   uint32_t Before;
   uint32_t After;
   uint32_t Diff;
@@ -48,7 +48,7 @@ static void Thread(test * pTest, oosmos_sState * pState)
 
     pTest->Diff = pTest->After - pTest->Before;
 
-    printf("Diff: %u %u %u\n", (unsigned int) pTest->Diff, (unsigned int) pTest->Before, (unsigned int) pTest->After);
+    printf("Diff: %u %u %u\n", (unsigned) pTest->Diff, (unsigned) pTest->Before, (unsigned) pTest->After);
 
     if (pTest->Diff >= 5000 && pTest->Diff <= 5100) {
       printf("Success\n");
