@@ -28,9 +28,9 @@
 #include "oosmos.h"
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 //
 // The master list of all state machines created in the system.
@@ -705,15 +705,15 @@ extern bool oosmos_ThreadComplete(oosmos_sState * pState)
   return true;
 }
 
-extern bool OOSMOS_TransitionAction(oosmos_sState * pState, oosmos_sState * pToState, const oosmos_sEvent * pEvent, oosmos_tAction pActionCode)
+extern bool OOSMOS_TransitionAction(oosmos_sState * pFromState, oosmos_sState * pToState, const oosmos_sEvent * pEvent, oosmos_tAction pActionCode)
 {
-  oosmos_POINTER_GUARD(pState);
+  oosmos_POINTER_GUARD(pFromState);
   oosmos_POINTER_GUARD(pToState);
 
-  oosmos_sRegion * pRegion = GetRegion(pState);
-  oosmos_sState * pFromState = pRegion->m_pCurrent;
+  oosmos_sRegion * pRegion = GetRegion(pFromState);
+  oosmos_sState * pCurrentState = pRegion->m_pCurrent;
 
-  oosmos_sState * pLCA = GetLCA(pFromState, pToState);
+  oosmos_sState * pLCA = GetLCA(pCurrentState, pToState);
 
   if (pToState == pLCA) {
     pLCA = pLCA->m_pParent;
@@ -740,7 +740,7 @@ extern bool OOSMOS_TransitionAction(oosmos_sState * pState, oosmos_sState * pToS
   pRegion->m_pCurrent = pLCA;
 
   if (pActionCode != NULL) {
-    pActionCode(pState->m_pStateMachine->m_pObject, pState, pEvent);
+    pActionCode(pFromState->m_pStateMachine->m_pObject, pFromState, pEvent);
   }
 
   Enter(pRegion, pLCA, pToState);
@@ -748,9 +748,9 @@ extern bool OOSMOS_TransitionAction(oosmos_sState * pState, oosmos_sState * pToS
   return true;
 }
 
-extern bool OOSMOS_Transition(oosmos_sState * pState, oosmos_sState * pToState)
+extern bool OOSMOS_Transition(oosmos_sState * pFromState, oosmos_sState * pToState)
 {
-  return OOSMOS_TransitionAction(pState, pToState, NULL, NULL);
+  return OOSMOS_TransitionAction(pFromState, pToState, NULL, NULL);
 }
 
 extern void OOSMOS_LeafInit(const char * pName, oosmos_sState * pState, oosmos_sState * pParent, OOSMOS_tCode pCode)
@@ -903,63 +903,63 @@ extern void OOSMOS_PushEventToStateMachine(const oosmos_sStateMachine * pStateMa
   oosmos_QueuePush(pStateMachine->m_pEventQueue, pEvent, EventSize);
 }
 
-extern void OOSMOS_SubscriberListInit(oosmos_sSubscriberList * pSubscriber, size_t ListElements)
+extern void OOSMOS_SubscriberListInit(oosmos_sSubscriberList * pSubscriberList, size_t ListElements)
 {
-  oosmos_POINTER_GUARD(pSubscriber);
+  oosmos_POINTER_GUARD(pSubscriberList);
 
   /*lint -e441 suppress "for clause irregularity: loop variable 'pSubscriber' not found in 2nd for expression" */
-  for (; ListElements-- > 0; pSubscriber++) {
-    pSubscriber->m_pNotifyQueue     = NULL;
-    pSubscriber->m_Event.m_Code     = 0;
-    pSubscriber->m_Event.m_pContext = NULL;
+  for (; ListElements-- > 0; pSubscriberList++) {
+    pSubscriberList->m_pNotifyQueue     = NULL;
+    pSubscriberList->m_Event.m_Code     = 0;
+    pSubscriberList->m_Event.m_pContext = NULL;
   }
 }
 
-extern void OOSMOS_SubscriberListNotify(const oosmos_sSubscriberList * pSubscriber, size_t ListElements)
+extern void OOSMOS_SubscriberListNotify(const oosmos_sSubscriberList * pSubscriberList, size_t ListElements)
 {
-  oosmos_POINTER_GUARD(pSubscriber);
+  oosmos_POINTER_GUARD(pSubscriberList);
 
   /*lint -e441 suppress "for clause irregularity: loop variable 'pSubscriber' not found in 2nd for expression" */
-  for (; ListElements-- > 0; pSubscriber++) {
-    if (pSubscriber->m_pNotifyQueue == NULL) {
+  for (; ListElements-- > 0; pSubscriberList++) {
+    if (pSubscriberList->m_pNotifyQueue == NULL) {
       continue;
     }
 
-    oosmos_QueuePush(pSubscriber->m_pNotifyQueue, &pSubscriber->m_Event, sizeof(pSubscriber->m_Event));
+    oosmos_QueuePush(pSubscriberList->m_pNotifyQueue, &pSubscriberList->m_Event, sizeof(pSubscriberList->m_Event));
   }
 }
 
-extern void OOSMOS_SubscriberListNotifyWithArgs(const oosmos_sSubscriberList * pSubscriber, void * pEventArg, size_t EventSize, size_t ListElements)
+extern void OOSMOS_SubscriberListNotifyWithArgs(const oosmos_sSubscriberList * pSubscriberList, void * pEventArg, size_t EventSize, size_t ListElements)
 {
-  oosmos_POINTER_GUARD(pSubscriber);
+  oosmos_POINTER_GUARD(pSubscriberList);
   oosmos_POINTER_GUARD(pEventArg);
 
   oosmos_sEvent * pEvent = (oosmos_sEvent *) pEventArg;
 
-  /*lint -e441 suppress "for clause irregularity: loop variable 'pSubscriber' not found in 2nd for expression" */
-  for (; ListElements-- > 0; pSubscriber++) {
-    if (pSubscriber->m_pNotifyQueue == NULL) {
+  /*lint -e441 suppress "for clause irregularity: loop variable 'pSubscriberList' not found in 2nd for expression" */
+  for (; ListElements-- > 0; pSubscriberList++) {
+    if (pSubscriberList->m_pNotifyQueue == NULL) {
       continue;
     }
 
-    pEvent->m_Code     = pSubscriber->m_Event.m_Code;
-    pEvent->m_pContext = pSubscriber->m_Event.m_pContext;
+    pEvent->m_Code     = pSubscriberList->m_Event.m_Code;
+    pEvent->m_pContext = pSubscriberList->m_Event.m_pContext;
 
-    oosmos_QueuePush(pSubscriber->m_pNotifyQueue, pEvent, EventSize);
+    oosmos_QueuePush(pSubscriberList->m_pNotifyQueue, pEvent, EventSize);
   }
 }
 
-extern void OOSMOS_SubscriberListAdd(oosmos_sSubscriberList * pSubscriber, size_t ListElements, oosmos_sQueue * pNotifyQueue, int EventCode, void * pContext)
+extern void OOSMOS_SubscriberListAdd(oosmos_sSubscriberList * pSubscriberList, size_t ListElements, oosmos_sQueue * pNotifyQueue, int EventCode, void * pContext)
 {
-  oosmos_POINTER_GUARD(pSubscriber);
+  oosmos_POINTER_GUARD(pSubscriberList);
   oosmos_POINTER_GUARD(pNotifyQueue);
 
   /*lint -e441 suppress "for clause irregularity: loop variable 'pSubscriber' not found in 2nd for expression" */
-  for (; ListElements-- > 0; pSubscriber++) {
-    if (pSubscriber->m_pNotifyQueue == NULL) {
-      pSubscriber->m_pNotifyQueue     = pNotifyQueue;
-      pSubscriber->m_Event.m_Code     = EventCode;
-      pSubscriber->m_Event.m_pContext = pContext;
+  for (; ListElements-- > 0; pSubscriberList++) {
+    if (pSubscriberList->m_pNotifyQueue == NULL) {
+      pSubscriberList->m_pNotifyQueue     = pNotifyQueue;
+      pSubscriberList->m_Event.m_Code     = EventCode;
+      pSubscriberList->m_Event.m_pContext = pContext;
       return;
     }
   }
@@ -991,7 +991,7 @@ extern void OOSMOS_RunStateMachine(oosmos_sStateMachine * pStateMachine)
 
   if (pStateMachine->m_pEventQueue != NULL) {
     while (oosmos_QueuePop(pStateMachine->m_pEventQueue, pStateMachine->m_pCurrentEvent, pStateMachine->m_CurrentEventSize)) {
-      oosmos_sEvent * pEvent = (oosmos_sEvent *) pStateMachine->m_pCurrentEvent;
+      oosmos_sEvent * pEvent = pStateMachine->m_pCurrentEvent;
       EventsHandled += 1;
 
       #if defined(oosmos_DEBUG)
@@ -1313,21 +1313,21 @@ extern bool OOSMOS_ThreadWaitEvent(const oosmos_sState * pState, int WaitEventCo
   return false;
 }
 
-extern bool OOSMOS_ThreadWaitEvent_TimeoutMS(oosmos_sState * pState, int WaitEventCode, uint32_t TimeoutMS, bool * pTimedOutStatus)
+extern bool OOSMOS_ThreadWaitEvent_TimeoutMS(oosmos_sState * pState, int WaitEventCode, uint32_t TimeoutMS, bool * pTimedOut)
 {
   oosmos_POINTER_GUARD(pState);
-  oosmos_POINTER_GUARD(pTimedOutStatus);
+  oosmos_POINTER_GUARD(pTimedOut);
 
   oosmos_sEvent * pCurrentEvent = OOSMOS_GetCurrentEvent(pState);
 
   if (pCurrentEvent->m_Code != OOSMOS_EVENT_SPENT && pCurrentEvent->m_Code == WaitEventCode) {
-    *pTimedOutStatus = false;
+    *pTimedOut = false;
     pCurrentEvent->m_Code = OOSMOS_EVENT_SPENT;
     return true;
   }
 
   if (OOSMOS_ThreadDelayMS(pState, TimeoutMS)) {
-    *pTimedOutStatus = true;
+    *pTimedOut = true;
     return true;
   }
 

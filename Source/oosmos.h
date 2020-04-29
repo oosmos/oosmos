@@ -20,17 +20,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef OOSMOS_h
-#define OOSMOS_h
+#ifndef OOSMOS_H
+#define OOSMOS_H
 
 //
 // All names that begin with OOSMOS (all caps) are private and are not part of the
 // official oosmos interface.
 //
 
-#include <stdint.h>
-#include <stddef.h>
 #include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 
 //
 // Include header files so the application doesn't have to.
@@ -342,7 +342,7 @@ struct OOSMOS_sStateMachineTag {
 extern void OOSMOS_EndProgram(int);
 
 //--------
-extern void OOSMOS_StateMachineDetach(const oosmos_sStateMachine * pStateMachine);
+extern void OOSMOS_StateMachineDetach(const oosmos_sStateMachine * pStateMachineToDetach);
 
 #define oosmos_StateMachineDetach(pObject, StateMachine) \
           OOSMOS_StateMachineDetach(&(pObject)->StateMachine)
@@ -450,7 +450,7 @@ typedef void (*oosmos_tOutOfMemory)(const char*, unsigned, const char*);
 #define OOSMOS_Allocate(List, Count, Type, Pointer, Elements, OutOfMemory) \
   {                                                                        \
     /*lint -e774 Suppress "if always evaluates to false" */                \
-    if (Count > (Elements - 1)) {                                          \
+    if ((Count) > ((Elements) - 1)) {                                          \
       oosmos_tOutOfMemory pOutOfMemory = OutOfMemory;                      \
                                                                            \
       if (pOutOfMemory != NULL) {                                          \
@@ -460,7 +460,7 @@ typedef void (*oosmos_tOutOfMemory)(const char*, unsigned, const char*);
       oosmos_FOREVER();                                                    \
     }                                                                      \
     else {                                                                 \
-      Pointer = &List[Count++];                                            \
+      (Pointer) = &(List)[(Count)++];                                            \
     }                                                                      \
   }
 
@@ -651,28 +651,28 @@ typedef struct {
 
 //--------
 #define oosmos_SubscriberListInit(Subscriber) \
-        OOSMOS_SubscriberListInit(Subscriber, sizeof(Subscriber)/sizeof(Subscriber[0]))
+        OOSMOS_SubscriberListInit(Subscriber, sizeof(Subscriber)/sizeof((Subscriber)[0]))
 extern void OOSMOS_SubscriberListInit(oosmos_sSubscriberList * pSubscriberList, size_t ListElements);
 //--------
 #define oosmos_SubscriberListNotify(Subscriber) \
-        OOSMOS_SubscriberListNotify(Subscriber, sizeof(Subscriber)/sizeof(Subscriber[0]))
+        OOSMOS_SubscriberListNotify(Subscriber, sizeof(Subscriber)/sizeof((Subscriber)[0]))
 extern void OOSMOS_SubscriberListNotify(const oosmos_sSubscriberList * pSubscriberList, size_t ListElements);
 //--------
 #define oosmos_SubscriberListNotifyWithArgs(Subscriber, Event) \
-        OOSMOS_SubscriberListNotifyWithArgs(Subscriber, &Event, sizeof(Event), sizeof(Subscriber)/sizeof(Subscriber[0]))
-extern void OOSMOS_SubscriberListNotifyWithArgs(const oosmos_sSubscriberList * pSubscriberList, void * pEvent, size_t EventSize, size_t ListElements);
+        OOSMOS_SubscriberListNotifyWithArgs(Subscriber, &(Event), sizeof(Event), sizeof(Subscriber)/sizeof((Subscriber)[0]))
+extern void OOSMOS_SubscriberListNotifyWithArgs(const oosmos_sSubscriberList * pSubscriberList, void * pEventArg, size_t EventSize, size_t ListElements);
 //--------
 #define oosmos_SubscriberListAdd(Subscriber, pNotifyQueue, EventCode, pContext) \
-        OOSMOS_SubscriberListAdd(Subscriber, sizeof(Subscriber)/sizeof(Subscriber[0]), pNotifyQueue, EventCode, pContext)
+        OOSMOS_SubscriberListAdd(Subscriber, sizeof(Subscriber)/sizeof((Subscriber)[0]), pNotifyQueue, EventCode, pContext)
 extern void OOSMOS_SubscriberListAdd(oosmos_sSubscriberList * pSubscriberList, size_t ListElements, oosmos_sQueue * pNotifyQueue, int EventCode, void * pContext);
 
 extern void oosmos_DelayUS(uint32_t US);
 extern void oosmos_DelayMS(uint32_t MS);
 extern void oosmos_DelaySeconds(uint32_t Seconds);
 
-extern void oosmos_TimeoutInMS(oosmos_sTimeout * pTimeout, uint32_t Milliseconds);
-extern void oosmos_TimeoutInUS(oosmos_sTimeout * pTimeout, uint32_t Microseconds);
-extern void oosmos_TimeoutInSeconds(oosmos_sTimeout * pTimeout, uint32_t Seconds);
+extern void oosmos_TimeoutInMS(oosmos_sTimeout * pTimeout, uint32_t TimeoutMS);
+extern void oosmos_TimeoutInUS(oosmos_sTimeout * pTimeout, uint32_t TimeoutUS);
+extern void oosmos_TimeoutInSeconds(oosmos_sTimeout * pTimeout, uint32_t TimeoutSeconds);
 extern bool oosmos_TimeoutHasExpired(const oosmos_sTimeout * pTimeout);
 
 //--------
@@ -680,9 +680,9 @@ extern void OOSMOS_QueueConstruct(oosmos_sQueue * pQueue, void * pQueueData, siz
 #define oosmos_QueueConstruct(pQueue, pQueueData) \
   OOSMOS_QueueConstruct((pQueue), (pQueueData),sizeof(pQueueData),sizeof((pQueueData)[0]));
 
-extern void oosmos_QueuePush(oosmos_sQueue * pQueue, const void * pElement, size_t ElementSize);
-extern bool oosmos_QueuePop(oosmos_sQueue * pQueue, void * pElement, size_t ElementSize);
-extern void oosmos_QueueSetBehaviorFunc(oosmos_sQueue * pQueue, oosmos_eQueueFullBehavior (*pFunc)(void *), void * pContext);
+extern void oosmos_QueuePush(oosmos_sQueue * pQueue, const void * pElement, size_t UserElementSize);
+extern bool oosmos_QueuePop(oosmos_sQueue * pQueue, void * pElement, size_t UserElementSize);
+extern void oosmos_QueueSetBehaviorFunc(oosmos_sQueue * pQueue, oosmos_eQueueFullBehavior (*pCallback)(void *), void * pContext);
 
 #define oosmos_GetCurrentEvent(pState) \
   ((const oosmos_sEvent *) OOSMOS_GetCurrentEvent(pState))
@@ -704,7 +704,7 @@ struct OOSMOS_sActiveObjectTag {
 
 extern void OOSMOS_ActiveObjectInit(void * pObject, oosmos_sActiveObject * pActiveObject, oosmos_tActiveObjectFunc pFunc);
 #define oosmos_ActiveObjectInit(pObject, pActiveObject, pFunc) \
-              OOSMOS_ActiveObjectInit(pObject, &(pObject)->pActiveObject,  (oosmos_tActiveObjectFunc) pFunc)
+              OOSMOS_ActiveObjectInit(pObject, &(pObject)->pActiveObject,  (oosmos_tActiveObjectFunc) (pFunc))
 
 //-------- Object Thread --------
 
@@ -723,7 +723,7 @@ struct OOSMOS_sObjectThreadTag {
 extern void OOSMOS_ObjectThreadInit(void * pObject, oosmos_sObjectThread * pObjectThread, oosmos_tObjectThreadFunc pFunc, bool bRunning);
 #define oosmos_ObjectThreadInit(pObject, pObjectThread, pFunc, Running) \
               /*lint -e747 suppress "Significant prototype coercion" */ \
-              OOSMOS_ObjectThreadInit(pObject, &(pObject)->pObjectThread,  (oosmos_tObjectThreadFunc) pFunc, Running)
+              OOSMOS_ObjectThreadInit(pObject, &(pObject)->pObjectThread,  (oosmos_tObjectThreadFunc) (pFunc), Running)
 
 extern void oosmos_ObjectThreadStart(oosmos_sObjectThread * pObjectThread);
 extern void oosmos_ObjectThreadStop(oosmos_sObjectThread * pObjectThread);
@@ -743,4 +743,4 @@ extern int32_t oosmos_AnalogMapFast(int32_t Value, int32_t InMin, int32_t InMax,
   }
 #endif
 
-#endif
+#endif // OOSMOS_H
