@@ -30,6 +30,8 @@
 
 **/nbproject/**
 
+**/*.pyc
+
 # ignore "populated" oosmos source files.
 
 Examples/**/oosmos.h
