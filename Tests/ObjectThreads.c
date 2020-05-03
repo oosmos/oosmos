@@ -34,7 +34,7 @@ static void ThreadAAA(test * pTest, oosmos_sState * pState)
     printf("Starting ThreadAAA\n");
 
     for (;;) {
-      printf("In Object Thread AAA, pTest = %p\n", pTest);
+      printf("In Object Thread AAA, pTest = %p\n", (void *) pTest);
       oosmos_ThreadDelayMS(500);
     }
   oosmos_ThreadEnd();
@@ -44,7 +44,7 @@ static void ThreadBBB(test * pTest, oosmos_sState * pState)
 {
   oosmos_ThreadBegin();
     for (;;) {
-      printf("In Object Thread BBB, pTest = %p\n", pTest);
+      printf("In Object Thread BBB, pTest = %p\n", (void *) pTest);
       oosmos_ThreadDelayMS(3000);
       oosmos_ObjectThreadRestart(&pTest->m_ObjectThreadAAA);
     }

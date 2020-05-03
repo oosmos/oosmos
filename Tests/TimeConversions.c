@@ -23,14 +23,15 @@
 #include "oosmos.h"
 #include <stdio.h>
 #include <stdint.h>
+#include <inttypes.h>
 
 #define TEST(Func, Arg, Value) \
   { \
     uint64_t Result; \
     /*lint -e778 Suppress 'Constant expression evaluates to 0 in operation /'*/ \
     Result = Func(Arg); \
-    printf("%s: %s Argument:%I64u Result:%I64u ExpectedValue:%I64u\n", \
-         Result == Value ? "SUCCESS" : "FAILURE", # Func, (Arg), (Result), (Value)); \
+    printf("%s: %s Argument:%" PRIu64 " Result:%" PRIu64 " ExpectedValue:%" PRIu64 "\n", \
+         Result == Value ? "SUCCESS" : "FAILURE", # Func, (uint64_t) (Arg), (Result), (uint64_t) (Value)); \
   }
 
 extern int main(void)

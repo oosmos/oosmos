@@ -30,4 +30,7 @@ if platform.system() == 'Windows':
   oosmos.cWindows.Compile(oosmos_dir, ['Poll.c',                    oosmos_c], '-Doosmos_ORTHO')
 else:
   oosmos_c  = oosmos_dir+r'/Source/oosmos.c'
-  oosmos.cLinux.Compile(oosmos_dir, 'ThreadDelayUS',      ['ThreadDelayUS.c',           oosmos_c])
+  oosmos.cLinux.Compile(oosmos_dir, 'ThreadDelayUS',      ['ThreadDelayUS.c',      oosmos_c])
+  oosmos.cLinux.Compile(oosmos_dir, 'ThreadDelaySeconds', ['ThreadDelaySeconds.c', oosmos_c])
+  oosmos.cLinux.Compile(oosmos_dir, 'ObjectThreads',      ['ObjectThreads.c',      oosmos_c])
+  oosmos.cLinux.Compile(oosmos_dir, 'TimeConversions',    ['TimeConversions.c',    oosmos_c], '-Doosmos_ORTHO')
