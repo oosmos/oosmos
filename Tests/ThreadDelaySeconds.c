@@ -21,8 +21,8 @@
 //
 
 #include "oosmos.h"
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
 
 typedef struct
 {
@@ -31,6 +31,8 @@ typedef struct
 
 static void Thread(test * pTest, oosmos_sState * pState)
 {
+  oosmos_UNUSED(pTest);
+
   oosmos_ThreadBegin();
     printf("Wait for 3 seconds...\n");
 

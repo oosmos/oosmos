@@ -29,8 +29,8 @@
 #include "accum.h"
 #include "oosmos.h"
 #include <stdbool.h>
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #if defined(accum_DEBUG)
   #include <stdio.h>
@@ -91,7 +91,7 @@ extern void accumReset(accum * pAccum)
   oosmos_POINTER_GUARD(pAccum);
 
   pAccum->m_TallyUS = 0;
-  pAccum->m_Previous = (uint32_t) oosmos_GetFreeRunningUS();
+  pAccum->m_Previous = oosmos_GetFreeRunningUS();
 
   #if defined(accum_DEBUG)
     (void) printf("Accum reset, Tally: %u\n", (uint32_t) pAccum->m_TallyUS);
@@ -125,7 +125,7 @@ extern void accumStart(accum * pAccum)
     return;
   }
 
-  pAccum->m_Previous = (uint32_t) oosmos_GetFreeRunningUS();
+  pAccum->m_Previous = oosmos_GetFreeRunningUS();
 
   #if defined(accum_DEBUG)
     if (!pAccum->m_Started) {

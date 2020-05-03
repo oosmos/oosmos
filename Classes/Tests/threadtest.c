@@ -23,9 +23,9 @@
 #include "oosmos.h"
 #include "prt.h"
 #include "threadtest.h"
-#include <stdlib.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 //
 // Adjust this in order to preallocate all 'threadtest' objects.
@@ -112,13 +112,14 @@ static void WaitCond_Thread(threadtest * pThreadTest, oosmos_sState * pState)
     prtFormatted("ThreadWaitCond...\n");
     oosmos_ThreadWaitCond(ConditionRandom(2));
     prtFormatted("ThreadWaitCond SUCCESS\n\n");
+    oosmos_UNUSED(pThreadTest);
   oosmos_ThreadEnd();
 }
 
 static void WaitCond_TimeoutMS_Thread(threadtest * pThreadTest, oosmos_sState * pState)
 {
   oosmos_ThreadBegin();
-    bool TimedOut;
+    bool TimedOut = false;
     pThreadTest->m_WC_Timeout_Successes = 0;
 
     prtFormatted("ThreadWaitCond_TimeoutMS...\n");
@@ -146,7 +147,7 @@ static void WaitEvent_Thread(threadtest * pThreadTest, oosmos_sState * pState)
 static void WaitEvent_TimeoutMS_Thread(threadtest * pThreadTest, oosmos_sState * pState)
 {
   oosmos_ThreadBegin();
-    bool TimedOut;
+    bool TimedOut = false;
     pThreadTest->m_WE_Timeout_Successes = 0;
 
     prtFormatted("ThreadWaitEvent_TimeoutMS...\n");

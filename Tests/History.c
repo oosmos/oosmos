@@ -20,12 +20,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include "btn.h"
 #include "oosmos.h"
 #include "pin.h"
-#include "btn.h"
+
 #include <stdbool.h>
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
 
 typedef struct testTag test;
 

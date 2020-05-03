@@ -185,10 +185,11 @@ extern int main(void)
   QueueEvent(pTest, evB);
   QueueEvent(pTest, evStop);
 
-  if (oosmos_IsInState(pTest, &pTest->Complete_State))
+  if (oosmos_IsInState(pTest, &pTest->Complete_State)) {
     printf("SUCCESS\n");
-  else
+  } else {
     printf("FAILURE\n");
+  }
 
   return 0;
 }

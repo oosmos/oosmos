@@ -46,7 +46,7 @@ struct clientTag
 
 static void ClientThread(client * pClient, oosmos_sState * pState, uint32_t IP_HostByteOrder)
 {
-  bool TimedOut;
+  bool TimedOut = 0;
 
   oosmos_ThreadBegin();
     oosmos_ThreadWaitCond_TimeoutMS(sockConnect(pClient->m_pSock, IP_HostByteOrder, pClient->m_Port), 2000, &TimedOut);
@@ -59,7 +59,7 @@ static void ClientThread(client * pClient, oosmos_sState * pState, uint32_t IP_H
     printf("%p: CONNECTED\n", (void *) pClient->m_pSock);
 
     for (;;) {
-      size_t BytesReceived;
+      size_t BytesReceived = 0;
 
       printf("%p: Sending...\n", (void *) pClient->m_pSock);
       oosmos_ThreadWaitCond(sockSend(pClient->m_pSock, "123456", sizeof("123456")));

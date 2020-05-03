@@ -20,10 +20,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "oosmos.h"
-#include "pin.h"
+
 #include "btn.h"
 #include "btnph.h"
+#include "oosmos.h"
+#include "pin.h"
 #include <stdbool.h>
 #include <stdio.h>
 

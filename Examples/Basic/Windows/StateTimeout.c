@@ -22,8 +22,8 @@
 
 #include "oosmos.h"
 #include <stdbool.h>
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
 
 typedef struct testTag test;
 

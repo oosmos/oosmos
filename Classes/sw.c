@@ -110,16 +110,13 @@ extern bool swIsClosed(const sw * pSwitch)
   if (pSwitch->m_State == Unknown_State) {
     return PhysicalSwitchState(pSwitch) == Closed_State;
   }
-  else {
-    return pSwitch->m_State == Closed_State;
-  }
+
+  return pSwitch->m_State == Closed_State;
 }
 
-extern void swRunStateMachine(void * pObject)
+extern void swRunStateMachine(sw * pSwitch)
 {
-  oosmos_POINTER_GUARD(pObject);
-
-  sw * pSwitch = (sw *) pObject;
+  oosmos_POINTER_GUARD(pSwitch);
 
   switch (pSwitch->m_State) {
     case Open_State: {

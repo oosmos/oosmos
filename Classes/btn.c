@@ -34,9 +34,9 @@
 
 //===================================
 
+#include "btn.h"
 #include "oosmos.h"
 #include "pin.h"
-#include "btn.h"
 #include <stdbool.h>
 #include <stddef.h>
 

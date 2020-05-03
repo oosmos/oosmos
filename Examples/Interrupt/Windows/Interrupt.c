@@ -22,8 +22,8 @@
 
 #include "oosmos.h"
 #include <stdbool.h>
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
 
 //
 // Demonstrates structure of how to react to interrupts using OOSMOS.
@@ -33,12 +33,10 @@ typedef struct uartTag uart;
 
 struct uartTag
 {
-  uint8_t              m_UartId;
-
-  oosmos_sQueue        m_ReceiveDataQueue;
-  uint8_t              m_ReceiveDataQueueData[10];
-
   oosmos_sActiveObject m_ActiveObject;
+  oosmos_sQueue        m_ReceiveDataQueue;
+  uint8_t              m_UartId;
+  uint8_t              m_ReceiveDataQueueData[10];
 };
 
 #define MAX_UARTS 5
@@ -49,7 +47,7 @@ static unsigned UartCount = 0;
 static void ReceiverStateMachine(void * pObject)
 {
   uart * pUART = (uart *) pObject;
-  uint8_t Byte;
+  uint8_t Byte = 0;
 
   //DisableInterrupt(pUART);
     const bool PopSuccess = oosmos_QueuePop(&pUART->m_ReceiveDataQueue, &Byte, sizeof(Byte));

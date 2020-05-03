@@ -32,20 +32,20 @@ static void Predict(reg * pReg, float Value)
 extern void regtestNew(void)
 {
   static const regSample Samples[] = {
-    { 2.0f, 3.0f },
-    { 3.0f, 6.7f },
-    { 4.0f, 7.0f },
-    { 5.0f, 8.0f },
-    { 6.0f, 9.0f },
+    { 2.0F, 3.0F },
+    { 3.0F, 6.7F },
+    { 4.0F, 7.0F },
+    { 5.0F, 8.0F },
+    { 6.0F, 9.0F },
   };
 
   reg * pReg = regNew();
 
   regSamples(pReg, Samples, sizeof(Samples)/sizeof(Samples[0]));
 
-  Predict(pReg, 5.0f);
-  Predict(pReg, 6.0f);
-  Predict(pReg, 7.0f);
-  Predict(pReg, 8.0f);
-  Predict(pReg, 9.0f);
+  Predict(pReg, 5.0F);
+  Predict(pReg, 6.0F);
+  Predict(pReg, 7.0F);
+  Predict(pReg, 8.0F);
+  Predict(pReg, 9.0F);
 }

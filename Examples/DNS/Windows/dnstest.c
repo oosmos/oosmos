@@ -46,8 +46,9 @@ static void Run(void * pObject)
 {
   dnstest * pDnsTest = (dnstest *) pObject;
 
-  if (pDnsTest->Done)
+  if (pDnsTest->Done) {
     return;
+  }
 
   printf("Checking %s...\n", pDnsTest->pDomain);
 
@@ -55,10 +56,11 @@ static void Run(void * pObject)
     for (unsigned Answer = 0; Answer < MAX_ANSWERS; Answer++) {
       const uint32_t IP = pDnsTest->IP[Answer];
 
-      if (IP == 0)
+      if (IP == 0) {
         break;
+      }
 
-      printf("%s[%u]: %u.%u.%u.%u\n", pDnsTest->pDomain, Answer, IP>>24 & 0xff, IP>>16 & 0xff, IP>>8 & 0xff, IP & 0xff);
+      printf("%s[%u]: %u.%u.%u.%u\n", pDnsTest->pDomain, Answer, IP >> 24U & 0xFFU, IP >> 16U & 0xFFU, IP >> 8U & 0xFFU, IP & 0xFFU);
     }
 
     ActiveInstances -= 1;

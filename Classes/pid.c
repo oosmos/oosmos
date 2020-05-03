@@ -20,10 +20,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "pid.h"
 #include "oosmos.h"
-#include <stdint.h>
+#include "pid.h"
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 
 struct pidTag {
@@ -43,7 +43,7 @@ struct pidTag {
 extern void pidSet_SetPoint(pid * pPID, float SetPoint)
 {
   pPID->m_SetPoint    = SetPoint;
-  pPID->m_SumOfErrors = 0.0f;
+  pPID->m_SumOfErrors = 0.0F;
 }
 
 extern void pidSet_Kp(pid * pPID, float Kp)
@@ -75,15 +75,15 @@ extern float pidAdjustOutput(pid * pPID, float Input)
   }
 
   const float P = Error * pPID->m_Kp;
-  float       I;
-  float       D;
+  float       I = 0.0F;
+  float       D = 0.0F;
 
-  uint32_t dtMS;
+  uint32_t dtMS = 0;
 
   if (pPID->m_bFirst) {
     pPID->m_SumOfErrors = Error;
-    I = 0.0f;
-    D = 0.0f;
+    I = 0.0F;
+    D = 0.0F;
     dtMS = 0;
     pPID->m_bFirst = false;
 
@@ -127,8 +127,8 @@ extern pid * pidNew(float Kp, float Ki, float Kd, float SetPoint)
   pPID->m_Kd = Kd;
 
   pPID->m_SetPoint       = SetPoint;
-  pPID->m_PreviousError  = 0.0f;
-  pPID->m_SumOfErrors    = 0.0f;
+  pPID->m_PreviousError  = 0.0F;
+  pPID->m_SumOfErrors    = 0.0F;
   pPID->m_PreviousTimeUS = 0;
   pPID->m_bFirst         = true;
 

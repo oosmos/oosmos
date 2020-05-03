@@ -20,11 +20,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "sock.h"
 #include "dns.h"
@@ -191,21 +191,21 @@ extern bool dnsQuery(dns * pDns, const char * pHost, uint32_t * pIP, unsigned Ma
 
   struct sockaddr_in SockAddr;
   socklen_t SockAddrSize = sizeof(SockAddr);
-  int Bytes;
+  int Bytes = 0;
 
   if (pDns->dnsQuery.bFirst) {
-    uint16_t ID;
-    uint16_t Flags; // Standard Query
-    uint16_t Questions;
-    uint16_t Answers;
-    uint16_t AuthorityRRs;
-    uint16_t AdditionalRRs;
-    char   * pQuestionName;
-    size_t NameSize;
-    tQuestionTail * pQuestionTail;
-    uint16_t Type;
-    uint16_t Class;
-    size_t QuerySize;
+    uint16_t ID = 0;
+    uint16_t Flags = 0; // Standard Query
+    uint16_t Questions = 0;
+    uint16_t Answers = 0;
+    uint16_t AuthorityRRs = 0;
+    uint16_t AdditionalRRs = 0;
+    char   * pQuestionName = NULL;
+    size_t NameSize = 0;
+    tQuestionTail * pQuestionTail = NULL;
+    uint16_t Type = 0;
+    uint16_t Class = 0;
+    size_t QuerySize = 0;
 
     const uint16_t DnsPort = 53;
 
@@ -217,28 +217,28 @@ extern bool dnsQuery(dns * pDns, const char * pHost, uint32_t * pIP, unsigned Ma
     tHeader * pHeader = (tHeader * ) Buffer;
 
     ID = TransactionID++;
-    pHeader->TransactionID[0] = (uint8_t) (ID >> 8);
+    pHeader->TransactionID[0] = (uint8_t) (ID >> 8U);
     pHeader->TransactionID[1] = (uint8_t) (ID);
 
     Flags = 0x0100; // Standard Query
-    pHeader->Flags[0] = (uint8_t) (Flags >> 8);
+    pHeader->Flags[0] = (uint8_t) (Flags >> 8U);
     pHeader->Flags[1] = (uint8_t) (Flags);
 
     Questions = 1;
-    pHeader->Questions[0] = (uint8_t) (Questions >> 8);
+    pHeader->Questions[0] = (uint8_t) (Questions >> 8U);
     pHeader->Questions[1] = (uint8_t) (Questions);
 
     Answers = 0;
     /*lint -e845 suppress "certain to be 0" */
-    pHeader->Answers[0] = (uint8_t) (Answers >> 8);
+    pHeader->Answers[0] = (uint8_t) (Answers >> 8U);
     pHeader->Answers[1] = (uint8_t) (Answers);
 
     AuthorityRRs = 0;
-    pHeader->AuthorityRRs[0] = (uint8_t) (AuthorityRRs >> 8);
+    pHeader->AuthorityRRs[0] = (uint8_t) (AuthorityRRs >> 8U);
     pHeader->AuthorityRRs[1] = (uint8_t) (AuthorityRRs);
 
     AdditionalRRs = 0;
-    pHeader->AdditionalRRs[0] = (uint8_t) (AdditionalRRs >> 8);
+    pHeader->AdditionalRRs[0] = (uint8_t) (AdditionalRRs >> 8U);
     pHeader->AdditionalRRs[1] = (uint8_t) (AdditionalRRs);
 
     pQuestionName = (char *) (pHeader + 1);
@@ -246,11 +246,11 @@ extern bool dnsQuery(dns * pDns, const char * pHost, uint32_t * pIP, unsigned Ma
 
     pQuestionTail = (tQuestionTail * ) (pQuestionName + NameSize);
     Type = 1;
-    pQuestionTail->Type[0] = (uint8_t) (Type >> 8);
+    pQuestionTail->Type[0] = (uint8_t) (Type >> 8U);
     pQuestionTail->Type[1] = (uint8_t) (Type);
 
     Class = 1;
-    pQuestionTail->Class[0] = (uint8_t) (Class >> 8);
+    pQuestionTail->Class[0] = (uint8_t) (Class >> 8U);
     pQuestionTail->Class[1] = (uint8_t) (Class);
 
     QuerySize = sizeof(tHeader) + NameSize + sizeof(tQuestionTail);
@@ -276,26 +276,27 @@ extern bool dnsQuery(dns * pDns, const char * pHost, uint32_t * pIP, unsigned Ma
   {
     const tHeader * pHeader = (tHeader *) Buffer;
 
-    const uint16_t Answers = (uint8_t) (pHeader->Answers[0] << 8) |
-                             (uint8_t) (pHeader->Answers[1]);
+    const uint16_t Answers = (uint16_t) (pHeader->Answers[0] << 8U) |
+                             (uint16_t) (pHeader->Answers[1]);
 
     const uint8_t * pQuery       = (const uint8_t *) (pHeader + 1);
     const size_t    QueryNameLen = strlen((const char *) pQuery);
 
     const tAnswer * pAnswer = (tAnswer *) (pQuery + (QueryNameLen + 1) + sizeof(tQuestionTail));
 
-    unsigned Count;
+    unsigned Count = 0;
 
     memset(pIP, 0, sizeof(*pIP) * MaxIPs);
 
     for (Count = 1; Count <= Answers; Count++) {
-      *pIP = pAnswer->Address[0] << 24 |
-             pAnswer->Address[1] << 16 |
-             pAnswer->Address[2] << 8  |
-             pAnswer->Address[3];
+      *pIP = ((uint32_t) pAnswer->Address[0]) << 24U |
+             ((uint32_t) pAnswer->Address[1]) << 16U |
+             ((uint32_t) pAnswer->Address[2]) << 8U  |
+             ((uint32_t) pAnswer->Address[3]);
 
-      if (Count == MaxIPs)
+      if (Count == MaxIPs) {
         break;
+      }
 
       pAnswer++;
       pIP++;

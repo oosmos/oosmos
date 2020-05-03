@@ -20,17 +20,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "oosmos.h"
 #include "control.h"
+
 #include "motor.h"
-#include "pump.h"
+#include "oosmos.h"
 #include "pin.h"
+#include "pump.h"
 #include "sw.h"
 #include <stdbool.h>
 #include <stdint.h>
-#include <stdlib.h>
 #include <stdio.h>
-
+#include <stdlib.h>
 
 //>>>EVENTS
 enum {

@@ -21,8 +21,8 @@
 //
 
 #include "oosmos.h"
-#include <stdio.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 //<<<EVENTS
 //>>>EVENTS
@@ -134,7 +134,7 @@ static test * testNew(void)
 
 extern int main(void)
 {
-  test * pTest = (test *) testNew();
+  test * pTest = testNew();
 
   for (;;) {
     oosmos_RunStateMachines();

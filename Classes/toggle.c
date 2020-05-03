@@ -27,11 +27,11 @@
 //===================================
 
 #include "oosmos.h"
-#include "toggle.h"
 #include "pin.h"
-#include <stdint.h>
-#include <stddef.h>
+#include "toggle.h"
 #include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 
 struct toggleTag
 {

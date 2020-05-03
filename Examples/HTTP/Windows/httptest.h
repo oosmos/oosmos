@@ -25,7 +25,7 @@
 
 typedef struct httptestTag httptest;
 
-extern httptest * httptestNew(const char * pHost, int Port, int ID);
+extern httptest * httptestNew(const char * pHost, unsigned Port, unsigned ID);
 extern void httptestDelete(httptest * pHttpTest);
 
 #endif

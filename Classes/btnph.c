@@ -38,9 +38,9 @@
 
 //===================================
 
+#include "btnph.h"
 #include "oosmos.h"
 #include "pin.h"
-#include "btnph.h"
 #include <stdbool.h>
 #include <stddef.h>
 
@@ -57,7 +57,7 @@ struct btnphTag
 
 static void Thread(const btnph * pButton, oosmos_sState * pState)
 {
-  bool TimedOut;
+  bool TimedOut = false;
 
   oosmos_POINTER_GUARD(pButton);
   oosmos_POINTER_GUARD(pState);

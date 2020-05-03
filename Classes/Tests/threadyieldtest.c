@@ -23,8 +23,8 @@
 #include "oosmos.h"
 #include "prt.h"
 #include "threadyieldtest.h"
-#include <stdlib.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 #ifndef MAX_THREAD
 #define MAX_THREAD 2

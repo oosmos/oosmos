@@ -22,12 +22,12 @@
 
 #include "oosmos.h"
 #include "sock.h"
+#include <ctype.h>
+#include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
-#include <stdint.h>
-#include <stdbool.h>
 
 //
 // The following preprocessor conditional is used to make the code
@@ -161,7 +161,8 @@ static bool CheckReceiveError(sock * pSock, recvsize_t BytesReceived)
     pSock->m_Closed = true;
     return true;
   }
-  else if (BytesReceived == 0) {
+
+  if (BytesReceived == 0) {
     oosmos_SubscriberListNotify(pSock->m_ClosedEvent);
     pSock->m_Closed = true;
     return true;
@@ -206,9 +207,12 @@ extern int sockGetLastError(void)
 
 extern uint32_t sockDotToIP_HostByteOrder(const char * pDot)
 {
-  unsigned int A, B, C, D;
+  unsigned A = 0;
+  unsigned B = 0;
+  unsigned C = 0;
+  unsigned D = 0;
   sscanf(pDot, "%u.%u.%u.%u", &A, &B, &C, &D);
-  return A << 24 | B << 16 | C << 8 | D;
+  return A << 24U | B << 16U | C << 8U | D;
 }
 
 extern bool sockIsIpAddress(const char * pString)
@@ -427,10 +431,10 @@ extern bool sockConnect(sock * pSock, uint32_t IP_HostByteOrder, unsigned Port)
   select((int) (largest_sock + 1), NULL, &fd_out, NULL, &tv);
   const int Writable = FD_ISSET(pSock->m_Socket, &fd_out);
 
-  char Code;
+  int Code = 0;
   socklen_t SizeofCode = sizeof(Code);
 
-  getsockopt(pSock->m_Socket, SOL_SOCKET, SO_ERROR, &Code, &SizeofCode);
+  getsockopt(pSock->m_Socket, SOL_SOCKET, SO_ERROR, (char *) &Code, &SizeofCode);
 
   if (Writable && Code == 0) {
     pSock->m_FirstConnect = true;

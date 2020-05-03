@@ -506,13 +506,13 @@ static void Enter(oosmos_sRegion * pRegion, const oosmos_sState * pLCA, oosmos_s
 
   #define MAX_STATE_NESTING 7
 
-  oosmos_sState * pState;
   oosmos_sState * pStates[MAX_STATE_NESTING];
   oosmos_sState ** ppStates = pStates;
 
   switch (pTarget->m_Type) {
     case OOSMOS_HistoryShallowType: {
       oosmos_sComposite * pParent  = (oosmos_sComposite *) pTarget->m_pParent;
+      oosmos_POINTER_GUARD(pParent);
       oosmos_sState     * pHistory = pParent->m_pHistoryState;
 
       pTarget = pHistory;
@@ -521,6 +521,7 @@ static void Enter(oosmos_sRegion * pRegion, const oosmos_sState * pLCA, oosmos_s
 
     case OOSMOS_HistoryDeepType: {
       oosmos_sComposite * pParent  = (oosmos_sComposite *) pTarget->m_pParent;
+      oosmos_POINTER_GUARD(pParent);
       oosmos_sState     * pHistory = pParent->m_pHistoryState;
 
       pTarget = pHistory;
@@ -548,12 +549,14 @@ static void Enter(oosmos_sRegion * pRegion, const oosmos_sState * pLCA, oosmos_s
   {
     *ppStates = NULL;
 
-    for (pState = pTarget; pState != pLCA; pState = pState->m_pParent) {
+    for (oosmos_sState * pState = pTarget; pState != pLCA; pState = pState->m_pParent) {
       oosmos_POINTER_GUARD(pState);
 
       *(++ppStates) = pState;
     }
   }
+
+  oosmos_sState * pState = NULL;
 
   while ((pState = *ppStates--) != NULL) {
     ThreadInit(pState);
@@ -796,7 +799,7 @@ extern void OOSMOS_OrthoRegionInit(const char * pName, oosmos_sOrthoRegion * pOr
   oosmos_POINTER_GUARD(pOrthoRegion);
   oosmos_POINTER_GUARD(pParent);
 
-  oosmos_sOrtho * pOrtho = (oosmos_sOrtho*) pParent;
+  oosmos_sOrtho * pOrtho = pParent;
 
   oosmos_sRegion * pRegion = &pOrthoRegion->m_Region;
   RegionInit(pName, pRegion, (oosmos_sState*) pParent, pDefault, pCode);

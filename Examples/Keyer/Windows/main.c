@@ -21,12 +21,12 @@
 //
 
 #include "oosmos.h"
-#include "pin.h"
 #include "keyer.h"
+#include "pin.h"
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 
 extern int main(void)
 {

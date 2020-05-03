@@ -20,9 +20,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <stdio.h>
-#include <stdint.h>
 #include "oosmos.h"
+#include <stdint.h>
+#include <stdio.h>
 
 #define ITERATIONS 25
 
@@ -37,7 +37,7 @@ static void TestAccurate(double Value, double InMin, double InMax, double OutMin
 
   printf("Value:%f, InMin:%f, InMax:%f, OutMin:%f, OutMax:%f, Result:%f\n", Value, InMin, InMax, OutMin, OutMax, Result);
 
-  const long IntResult = (long) (Result + .5f);
+  const long IntResult = (long) (Result + 0.5F);
   AccurateDistribution[IntResult]++;
 }
 
@@ -52,28 +52,28 @@ static void TestFast(int32_t Value, int32_t InMin, int32_t InMax, int32_t OutMin
 
 extern int main(void)
 {
-  const int32_t Min = 1;
-  const int32_t Max = 1000;
+  const uint32_t Min = 1;
+  const uint32_t Max = 1000;
 
   //
   // Test accurate implementation...
   //
-  for (unsigned I = Min; I <= Max; I++) {
+  for (uint32_t I = Min; I <= Max; I++) {
     TestAccurate((double) I, (double) Min, (double) Max, 1.0, 25.0);
   }
 
-  for (unsigned I = 1; I <= ITERATIONS; I++) {
+  for (uint32_t I = 1; I <= ITERATIONS; I++) {
     printf("%d\n", AccurateDistribution[I]);
   }
 
   //
   // Test fast implementation...
   //
-  for (int32_t I = Min; I <= Max; I++) {
+  for (uint32_t I = Min; I <= Max; I++) {
     TestFast(I, Min, Max, 1, 25);
   }
 
-  for (unsigned I = 1; I <= ITERATIONS; I++) {
+  for (uint32_t I = 1; I <= ITERATIONS; I++) {
     printf("%d\n", FastDistribution[I]);
   }
 

@@ -22,11 +22,11 @@
 
 #define MaxBuffer 100
 
-#include "prt.h"
 #include "oosmos.h"
+#include "prt.h"
 #include <stdarg.h>
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #if defined(ARDUINO)
   #include <stdbool.h>
@@ -37,7 +37,7 @@ extern void prtFormatted(const char * pFormat, ...)
 {
   char Buffer[MaxBuffer];
 
-  va_list ArgList; //lint -e438
+  va_list ArgList = NULL; //lint -e438
   va_start(ArgList, pFormat);
     (void) vsnprintf(Buffer, MaxBuffer, pFormat, ArgList);
   va_end(ArgList);

@@ -20,15 +20,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "oosmos.h"
-#include "httptest.h"
-#include "sock.h"
 #include "dns.h"
+#include "httptest.h"
+#include "oosmos.h"
+#include "sock.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 enum
 {
@@ -56,8 +56,8 @@ struct httptestTag
 
 static void Thread(httptest * pHttpTest, oosmos_sState * pState)
 {
-  size_t BytesReceived;
-  bool   TimedOut;
+  size_t BytesReceived = 0;
+  bool   TimedOut = false;
 
   oosmos_ThreadBegin();
     printf("%d: Getting IP from DNS lookup.\n", pHttpTest->m_ID);
@@ -120,9 +120,8 @@ static void Thread(httptest * pHttpTest, oosmos_sState * pState)
       );
     }
 
-
-    sscanf(pHttpTest->m_Buffer, "%d\r\n", &pHttpTest->Running.m_ContentLength);
-    printf("%d: Reading %d bytes...\n", pHttpTest->m_ID, pHttpTest->Running.m_ContentLength);
+    pHttpTest->Running.m_ContentLength = (size_t) strtoul(pHttpTest->m_Buffer, NULL, 10);
+    printf("%u: Reading %u bytes...\n", pHttpTest->m_ID, (unsigned) pHttpTest->Running.m_ContentLength);
 
     //
     // Receive body.
@@ -164,7 +163,7 @@ static bool Running_State_Code(void * pObject, oosmos_sState * pState, const oos
   return false;
 }
 
-extern httptest * httptestNew(const char * pHost, int Port, int ID)
+extern httptest * httptestNew(const char * pHost, unsigned Port, unsigned ID)
 {
   httptest * pHttpTest = (httptest *) malloc(sizeof(httptest));
 

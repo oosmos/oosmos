@@ -39,6 +39,6 @@ extern bool     accumHasReachedMS(accum * pAccum, uint64_t MS);
 extern bool     accumHasReachedSeconds(accum * pAccum, uint64_t Seconds);
 extern bool     accumHasReachedMinutes(accum * pAccum, uint64_t Minutes);
 extern bool     accumHasReachedHours(accum * pAccum, uint64_t Hours);
-extern bool     accumHasReachedDays(accum * pAccum, uint64_t Minutes);
+extern bool     accumHasReachedDays(accum * pAccum, uint64_t Days);
 
 #endif

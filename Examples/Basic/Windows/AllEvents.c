@@ -1,9 +1,9 @@
+#include "btn.h"
 #include "oosmos.h"
 #include "pin.h"
-#include "btn.h"
-#include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 
 typedef struct allTag all;
 

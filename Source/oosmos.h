@@ -381,7 +381,7 @@ extern void OOSMOS_OrthoInit(const char * pName, oosmos_sOrtho *pOrtho, oosmos_s
         OOSMOS_OrthoInit(OOSMOS_xstr(Ortho), &(pObject)->Ortho, (oosmos_sState *) &(pObject)->Parent, Code)
 //--------
 extern void OOSMOS_OrthoRegionInit(const char * pName, oosmos_sOrthoRegion * pOrthoRegion,
-                                   oosmos_sOrtho * pOrthoParent, oosmos_sState * pDefault, OOSMOS_tCode pHandler);
+                                   oosmos_sOrtho * pParent, oosmos_sState * pDefault, OOSMOS_tCode pCode);
 
 #define oosmos_OrthoRegionInit(pObject, OrthoRegion, Parent, Default, Code) \
         OOSMOS_OrthoRegionInit(OOSMOS_xstr(OrthoRegion), &(pObject)->OrthoRegion, &(pObject)->Parent, (oosmos_sState*) &(pObject)->Default, Code)

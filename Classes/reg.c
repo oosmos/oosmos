@@ -32,7 +32,7 @@ struct regTag
 
 static float MeanOfX(const regSample * pSamples, uint32_t Samples)
 {
-  float Sum = 0.0f;
+  float Sum = 0.0F;
 
   for (uint32_t SampleIndex = 0; SampleIndex < Samples; SampleIndex++) {
     Sum += pSamples[SampleIndex].X;
@@ -43,7 +43,7 @@ static float MeanOfX(const regSample * pSamples, uint32_t Samples)
 
 static float MeanOfY(const regSample * pSamples, uint32_t Samples)
 {
-  float Sum = 0.0f;
+  float Sum = 0.0F;
 
   for (uint32_t SampleIndex = 0; SampleIndex < Samples; SampleIndex++) {
     Sum += pSamples[SampleIndex].Y;
@@ -65,8 +65,8 @@ extern void regSamples(reg * pReg, const regSample * pSamples, uint32_t Samples)
   const float MeanX = MeanOfX(pSamples, Samples);
   const float MeanY = MeanOfY(pSamples, Samples);
 
-  float SumXY = 0.0f;
-  float SumXX = 0.0f;
+  float SumXY = 0.0F;
+  float SumXX = 0.0F;
 
   for (uint32_t SampleIndex = 0; SampleIndex < Samples; SampleIndex++) {
     const regSample * pSample = &pSamples[SampleIndex];
@@ -78,7 +78,7 @@ extern void regSamples(reg * pReg, const regSample * pSamples, uint32_t Samples)
     SumXX += XiMinusMeanX * XiMinusMeanX;
   }
 
-  oosmos_ASSERT(SumXX > 0.0f);
+  oosmos_ASSERT(SumXX > 0.0F);
 
   pReg->m_Slope     = SumXY / SumXX;
   pReg->m_Intercept = MeanY - pReg->m_Slope * MeanX;

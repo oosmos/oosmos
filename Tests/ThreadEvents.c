@@ -68,7 +68,7 @@ struct testTag
 
 static void A1Thread(oosmos_sState * pState)
 {
-  const sTestEvent * pTestEvent;
+  const sTestEvent * pTestEvent = NULL;
 
   oosmos_ThreadBegin();
     oosmos_ThreadWaitEvent(evTestEvent);

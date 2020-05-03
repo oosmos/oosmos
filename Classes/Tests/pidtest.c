@@ -20,11 +20,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include "oosmos.h"
 #include "pid.h"
 #include "pidtest.h"
-#include "oosmos.h"
-#include <stdlib.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 #define BASELINE 25
 
@@ -68,7 +68,7 @@ static void PidThread(pidtest * pPidTest, oosmos_sState * pState)
   //
   oosmos_ThreadBegin();
     for (;;) {
-      pPidTest->m_Sample = oosmos_Divide_Integral_Rounded(pPidTest->m_Output, 2);
+      pPidTest->m_Sample = oosmos_Divide_Integral_Rounded(pPidTest->m_Output, 2.0F);
       pPidTest->m_Output += pidAdjustOutput(pPidTest->m_pPID, pPidTest->m_Sample);
       oosmos_ThreadDelayMS(RandBetween(10, 15));
     }
@@ -163,8 +163,8 @@ extern pidtest * pidtestNew(void)
     oosmos_LeafInit(pPidTest, Running_State, ROOT, Running_State_Code);
 //<<<INIT
 
-  pPidTest->m_pPID = pidNew(1.0f, 0.0f, 0.0f, BASELINE);
-  pPidTest->m_Output = 0.0f;
+  pPidTest->m_pPID = pidNew(1.0F, 0.0F, 0.0F, BASELINE);
+  pPidTest->m_Output = 0.0F;
 
   #if defined(pid_DEBUG)
     oosmos_ObjectThreadInit(pPidTest, m_ObjectThread, TestThread, true);

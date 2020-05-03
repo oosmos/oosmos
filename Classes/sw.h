@@ -37,6 +37,6 @@ extern void swSubscribeCloseEvent(sw * pSwitch, oosmos_sQueue * pQueue, int Clos
 
 extern bool swIsOpen(const sw * pSwitch);
 extern bool swIsClosed(const sw * pSwitch);
-extern void swRunStateMachine(void * pSwitch);
+extern void swRunStateMachine(sw * pSwitch);
 
 #endif

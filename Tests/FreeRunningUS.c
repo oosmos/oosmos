@@ -1,6 +1,6 @@
 #include "oosmos.h"
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #define DELAY_MS 3000
 

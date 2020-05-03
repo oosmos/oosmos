@@ -123,10 +123,11 @@ extern int main(void)
   test * pTest = testNew();
   QueueEventRoutine(pTest, evTweak);
 
-  if (oosmos_IsInState(pTest, &pTest->Active_Region2_Outer_Inner_State))
+  if (oosmos_IsInState(pTest, &pTest->Active_Region2_Outer_Inner_State)) {
     printf("SUCCESS\n");
-  else
+  } else {
     printf("FAILURE\n");
+  }
 
   return 0;
 }

@@ -32,8 +32,8 @@ typedef struct btnphTag btnph;
 
 extern btnph * btnphNew(pin * pPin, uint32_t HoldTimeMS);
 
-extern void btnphSubscribeReleasedEvent(btnph * pSwitch, oosmos_sQueue * pQueue, int ReleasedEventCode, void * pContext);
-extern void btnphSubscribeHeldEvent    (btnph * pSwitch, oosmos_sQueue * pQueue, int HeldEventCode,     void * pContext);
-extern void btnphSubscribePressedEvent (btnph * pSwitch, oosmos_sQueue * pQueue, int PressedEventCode,  void * pContext);
+extern void btnphSubscribeReleasedEvent(btnph * pButton, oosmos_sQueue * pQueue, int ReleasedEventCode, void * pContext);
+extern void btnphSubscribeHeldEvent    (btnph * pButton, oosmos_sQueue * pQueue, int HeldEventCode,     void * pContext);
+extern void btnphSubscribePressedEvent (btnph * pButton, oosmos_sQueue * pQueue, int PressedEventCode,  void * pContext);
 
 #endif

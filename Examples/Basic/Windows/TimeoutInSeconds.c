@@ -21,8 +21,8 @@
 //
 
 #include "oosmos.h"
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
 
 static const uint32_t WaitTimeSeconds = 2;
 

@@ -20,12 +20,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <windows.h>
-
-#include "oosmos.h"
 #include "key.h"
-#include <stdio.h>
+#include "oosmos.h"
 #include <stdbool.h>
+#include <stdio.h>
+#include <windows.h>
 
 typedef enum {
   Up_State = 1,
@@ -60,7 +59,7 @@ static HANDLE hStdin;
 //
 static bool IsMyChar(key * pKey, eStates * pKeyState)
 {
-  DWORD            NumRead;
+  DWORD            NumRead = 0;
   INPUT_RECORD     irInBuf[128];
 
   if (PeekConsoleInput(hStdin, irInBuf, 128, &NumRead) && NumRead == 0) {
@@ -97,7 +96,7 @@ static bool IsMyChar(key * pKey, eStates * pKeyState)
 static void StateMachine(void * pObject)
 {
   key     * pKey = (key *) pObject;
-  eStates   KeyState;
+  eStates   KeyState = Up_State;
 
   switch (pKey->m_State) {
     case Up_State: {

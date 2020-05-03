@@ -79,7 +79,7 @@ static void RunStateMachine(void * pObject)
 
   pin * pPin = (pin *) pObject;
 
-  switch (pPin->m_State) {
+  switch ((eStates) pPin->m_State) {
     case On_State: {
       if (IsPhysicallyOff(pPin)) {
         pPin->m_State = (unsigned) ConfirmingOff_State;
@@ -395,8 +395,8 @@ extern bool pinIsOff(const pin * pPin)
     return pPin;
   }
 #elif defined(_MSC_VER)
-  #include <windows.h>
   #include <stdio.h>
+  #include <windows.h>
 
   static bool   pinFirst = true;
   static bool   KeyIsDown[0xFF];
@@ -406,7 +406,7 @@ extern bool pinIsOff(const pin * pPin)
   {
     oosmos_POINTER_GUARD(pPin);
 
-    DWORD         NumRead;
+    DWORD         NumRead = 0;
     INPUT_RECORD  InputRecord;
 
     while (PeekConsoleInput(hStdin, &InputRecord, 1, &NumRead) && NumRead > 0) {
