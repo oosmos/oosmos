@@ -53,7 +53,7 @@ struct pinTag
     GPIO_TypeDef* m_Port;
     uint16_t m_Pin;
   #elif defined(_MSC_VER)
-    char m_Key;
+    int m_Key;
   #else
     #error pin.c: Unsupported platform.
   #endif
@@ -412,7 +412,7 @@ extern bool pinIsOff(const pin * pPin)
     while (PeekConsoleInput(hStdin, &InputRecord, 1, &NumRead) && NumRead > 0) {
       if (InputRecord.EventType == KEY_EVENT) {
         const KEY_EVENT_RECORD KER  = InputRecord.Event.KeyEvent;
-        const CHAR             Char = KER.uChar.AsciiChar;
+        const int              Char = KER.uChar.AsciiChar;
 
         KeyIsDown[Char] = (KER.bKeyDown == TRUE);
       }

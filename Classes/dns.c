@@ -315,7 +315,7 @@ extern dns * dnsNew(void)
 
   Init();
 
-  if ((pDns->Socket=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
+  if ((pDns->Socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == 0) {
     exit(1);
   }
 

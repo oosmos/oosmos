@@ -44,7 +44,7 @@
 
   typedef int      socklen_t;
   typedef uint32_t sendsize_t;
-  typedef uint32_t recvsize_t;
+  typedef int      recvsize_t;
   #define IOCTL    ioctlsocket
   #define CLOSE    closesocket
 
