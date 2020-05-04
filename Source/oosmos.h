@@ -427,12 +427,7 @@ extern void OOSMOS_PushEventToStateMachine(const oosmos_sStateMachine * pStateMa
 #define oosmos_PushEventCode(pObject, EventCode) \
   OOSMOS_PushEventCodeToStateMachine(&((pObject)->ROOT), EventCode)
 
-#define OOSMOS_CompileTimeAssert(cond) \
-    typedef char OOSMOS_CompileTimeAssertArray[(cond) ? 1 : 0]
-
 #define oosmos_PushEvent(pObject, Event) \
-  /* Catch common error of passing &Event instead of Event. */ \
-  OOSMOS_CompileTimeAssert(sizeof(Event) != sizeof(void *)); \
   OOSMOS_PushEventToStateMachine(&((pObject)->ROOT), &(Event), sizeof(Event))
 //--------
 #if defined(oosmos_DEBUG)
