@@ -32,8 +32,8 @@
 #define matrixMAX_COLS 8
 #endif
 
-static const unsigned RowOnSettleTimeUS  = 50;
-static const unsigned RowOffSettleTimeUS = 50;
+static const unsigned RowOnSettleTimeMS  = 50;
+static const unsigned RowOffSettleTimeMS = 50;
 
 #include "oosmos.h"
 #include "matrix.h"
@@ -84,12 +84,12 @@ static void Thread(matrix * pMatrix, oosmos_sState * pState)
         }
 
         pinOn(pMatrix->m_pRowPins[pMatrix->m_CurrentRowIndex]);
-        oosmos_ThreadDelayMS(RowOnSettleTimeUS);
+        oosmos_ThreadDelayMS(RowOnSettleTimeMS);
 
         InterrogateColumns(pMatrix);
 
         pinOff(pMatrix->m_pRowPins[pMatrix->m_CurrentRowIndex]);
-        oosmos_ThreadDelayMS(RowOffSettleTimeUS);
+        oosmos_ThreadDelayMS(RowOffSettleTimeMS);
       }
     }
   oosmos_ThreadEnd();
