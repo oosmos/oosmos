@@ -63,8 +63,6 @@ extern sw * swNewDetached(pin * pPin)
   pSwitch->m_pPin  = pPin;
   pSwitch->m_State = Unknown_State;
 
-  oosmos_ActiveObjectInit(pSwitch, m_ActiveObject, swRunStateMachine);
-
   oosmos_SubscriberListInit(pSwitch->m_CloseEvent);
   oosmos_SubscriberListInit(pSwitch->m_OpenEvent);
 
@@ -74,6 +72,9 @@ extern sw * swNewDetached(pin * pPin)
 extern sw * swNew(pin * pPin)
 {
   sw * pSwitch = swNewDetached(pPin);
+
+  oosmos_ActiveObjectInit(pSwitch, m_ActiveObject, swRunStateMachine);
+
   return pSwitch;
 }
 
