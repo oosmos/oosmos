@@ -213,6 +213,10 @@ extern bool pinIsOff(const pin * pPin)
         pinMode(PinNumber, INPUT);
         break;
       }
+      case pinIn_Pullup: {
+        pinMode(PinNumber, INPUT_PULLUP);
+        break;
+      }
       case pinOut: {
         pinMode(PinNumber, OUTPUT);
         break;
