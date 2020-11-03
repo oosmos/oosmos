@@ -33,6 +33,7 @@ typedef enum
 {
   pinOut = 1,
   pinIn,
+  pinIn_Pullup,
   pinInOut
 } pin_eDirection;
 

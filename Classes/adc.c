@@ -51,7 +51,7 @@ struct adcTag
   extern adc * adcNew(unsigned PinNumber)
   {
     oosmos_Allocate(pADC, adc, adcMAX, NULL);
-    pinMode(PinNumber, OUTPUT);
+    pinMode(PinNumber, INPUT);
     pADC->m_PinNumber = PinNumber;
 
     return pADC;
