@@ -28,7 +28,7 @@ uint32_t prtArduinoBaudRate = 115200;
 
 static void SetupEncoderTest(int PinA, int PinB)
 {
-  pin * pPinA = pinNew_Debounce(PinA, pinIn, pinActiveLow, 2);
+  pin * pPinA = pinNew(PinA, pinIn, pinActiveLow);
   pin * pPinB = pinNew(PinB, pinIn, pinActiveLow);
 
   encodertestNew(pPinA, pPinB);

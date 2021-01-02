@@ -43,7 +43,7 @@ struct encodertestTag
   encoder * m_pEncoder;
 };
 
-static bool Idle_State_Code(void * pObject, oosmos_sRegion * pRegion, const oosmos_sEvent * pEvent)
+static bool Idle_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   encodertest * pExample = (encodertest *) pObject;
 
@@ -63,8 +63,8 @@ extern encodertest * encodertestNew(pin * pPinA, pin * pPinB)
 
   //                                    StateName     Parent
   //                     ======================================================
-  oosmos_StateMachineInit(pEncoderTest, StateMachine, NULL,         Idle_State);
-    oosmos_LeafInit      (pEncoderTest, Idle_State,   StateMachine, NULL      );
+  oosmos_StateMachineInit(pEncoderTest, StateMachine, NULL,         Idle_State     );
+    oosmos_LeafInit      (pEncoderTest, Idle_State,   StateMachine, Idle_State_Code);
 
   encoder * pEncoder = encoderNew(pPinA, pPinB);
   encoderSubscribeChangeEvent(pEncoder, oosmos_EventQueue(pEncoderTest), ChangeEvent, NULL);

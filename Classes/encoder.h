@@ -20,6 +20,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+
+//
+// reliable decoding of noisy encoders 
+// 
+// https://www.best-microcontroller-projects.com/rotary-encoder.html#Taming_Noisy_Rotary_Encoders
+// Copyright John Main - best-microcontroller-projects.com
+//
+
+
 #ifndef encoder_h
 #define encoder_h
 
