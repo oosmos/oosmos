@@ -82,6 +82,13 @@ def Main():
   Copy('Classes',       'h c', 'Examples/Encoder/Arduino/EncoderExample', 'h cpp', 'pin prt encoder')
   Copy('Classes/Tests', 'h c', 'Examples/Encoder/Arduino/EncoderExample', 'h cpp', 'encodertest', not IncludeOosmos)
 
+
+  #
+  #  AdcButtonPh
+  #
+  Copy('Classes',       'h c', 'Examples/AdcButtonPh/Arduino/AdcButtonPhExample', 'h cpp', 'prt adc adcbtnph')
+  Copy('Classes/Tests', 'h c', 'Examples/AdcButtonPh/Arduino/AdcButtonPhExample', 'h cpp', 'adcbtnphtest', not IncludeOosmos)
+
   #
   # Keyer
   #

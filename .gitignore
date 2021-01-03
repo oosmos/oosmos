@@ -56,6 +56,10 @@ Examples/**/encoder.h
 Examples/**/encoder.c
 Examples/**/encoder.cpp
 
+Examples/**/adcbtnph.h
+Examples/**/adcbtnph.c
+Examples/**/adcbtnph.cpp
+
 Examples/**/keyer.h
 Examples/**/keyer.c
 Examples/**/keyer.cpp
@@ -79,6 +83,10 @@ Examples/**/mcp4131.cpp
 Examples/**/pin.h
 Examples/**/pin.c
 Examples/**/pin.cpp
+
+Examples/**/adc.h
+Examples/**/adc.c
+Examples/**/adc.cpp
 
 Examples/**/prt.h
 Examples/**/prt.c
@@ -117,6 +125,10 @@ Examples/**/tok.cpp
 Examples/**/encodertest.h
 Examples/**/encodertest.c
 Examples/**/encodertest.cpp
+
+Examples/**/adcbtnphtest.h
+Examples/**/adcbtnphtest.c
+Examples/**/adcbtnphtest.cpp
 
 Examples/**/lcdtest.h
 Examples/**/lcdtest.c
