@@ -15,7 +15,7 @@ def Path(P: str) -> str:
 def Join(Array: list[str]) -> str:
 	return ' '.join(Array)
 
-def WalkDir(Dir: str, pFunc: Callable[[str, str], str], UserArg: str):
+def WalkDir(Dir: str, pFunc: Callable[[str, str], str], UserArg: str) -> None:
 	for RootDir, DirList, FileList in os.walk(Dir):
 		for File in FileList:
 			FullFilePath = os.path.join(RootDir, File)
@@ -25,7 +25,7 @@ def WalkDir(Dir: str, pFunc: Callable[[str, str], str], UserArg: str):
 			WalkDir(Dir, pFunc, UserArg)
 
 
-def Clean(Dir: str, ExtensionsArg: str):
+def Clean(Dir: str, ExtensionsArg: str) -> None:
 	Extensions = ExtensionsArg.split()
 
 	for SubDir, Dirs, Files in os.walk(Dir):
@@ -49,7 +49,7 @@ def Clean(Dir: str, ExtensionsArg: str):
 
 class cWindows:
 	@staticmethod
-	def Clean():
+	def Clean() -> None:
 		WildRemove('*.exp')
 		WildRemove('*.lib')
 		WildRemove('*.exe')
@@ -62,7 +62,7 @@ class cWindows:
 		WildRemove('*.bak')
 
 	@staticmethod
-	def Compile(oosmos_dir: str, FileArray: list[str], Options: str = ''):
+	def Compile(oosmos_dir: str, FileArray: list[str], Options: str = '') -> None:
 		print('Compiling...')
 
 		Files = ' '.join(FileArray)
@@ -92,7 +92,7 @@ class cWindows:
 
 class cLinux:
 	@staticmethod
-	def Compile(oosmos_dir: str, Target: str, FileArray: list[str], Options: str = ''):
+	def Compile(oosmos_dir: str, Target: str, FileArray: list[str], Options: str = '') -> None:
 		Files = ' '.join(FileArray)
 		print(f'Compiling {Target}...')
 
@@ -100,19 +100,19 @@ class cLinux:
 		Line = "gcc -I%s/Source -I%s -I%s/Tests -I. -std=c99 -Wall -Wno-overflow -Wno-unused-parameter -pedantic -Werror -Wshadow -flto -o %s -D_POSIX_C_SOURCE=199309 -D__linux__ -Doosmos_DEBUG -Doosmos_ORTHO %s " % (oosmos_dir, classes_dir, classes_dir, Target, Files) + Options
 		os.system(Line)
 
-def WildRemove(FilenamePattern: str):
+def WildRemove(FilenamePattern: str) -> None:
 	FileList = glob.glob(FilenamePattern)
 
 	for FileName in FileList:
 		os.remove(FileName)
 
-def MakeReadWrite(Filename: str):
+def MakeReadWrite(Filename: str) -> None:
 	os.chmod(Filename, 0o777)
 
-def MakeReadOnly(Filename: str):
+def MakeReadOnly(Filename: str) -> None:
 	os.chmod(Filename, 0o444)
 
-def CopyFileReadOnly(FromFile: str, ToFile: str):
+def CopyFileReadOnly(FromFile: str, ToFile: str) -> None:
 	if os.path.exists(ToFile):
 		MakeReadWrite(ToFile)
 
