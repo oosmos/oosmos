@@ -7,13 +7,15 @@ import subprocess
 import os
 import glob
 
-def Path(P):
+from collections.abc import Callable
+
+def Path(P: str) -> str:
   return os.path.normpath(P)
 
-def Join(Array):
+def Join(Array: list[str]) -> str:
   return ' '.join(Array)
 
-def WalkDir(Dir, pFunc, UserArg):
+def WalkDir(Dir: str, pFunc: Callable[[str, str], str], UserArg: str):
   for RootDir, DirList, FileList in os.walk(Dir):
     for File in FileList:
       FullFilePath = os.path.join(RootDir, File)
@@ -23,8 +25,8 @@ def WalkDir(Dir, pFunc, UserArg):
       WalkDir(Dir, pFunc, UserArg)
 
 
-def Clean(Dir, Extensions):
-  Extensions = Extensions.split()
+def Clean(Dir: str, ExtensionsArg: str):
+  Extensions = ExtensionsArg.split()
 
   for SubDir, Dirs, Files in os.walk(Dir):
     if 'dist' in Dirs:
@@ -60,7 +62,7 @@ class cWindows:
     WildRemove('*.bak')
 
   @staticmethod
-  def Compile(oosmos_dir, FileArray, Options = ''):
+  def Compile(oosmos_dir: str, FileArray: list[str], Options: str = ''):
     print('Compiling...')
 
     Files = ' '.join(FileArray)
@@ -72,24 +74,25 @@ class cWindows:
 
     try :
       p = subprocess.Popen(Line, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd = os.getcwd())
-    except e:
+    except:
       print("\n*** Unable to compile. Is Visual Studio installed?")
       sys.exit(16)
 
-    for Line in p.stdout:
-      Line = Line.rstrip()
+    if p.stdout is not None:
+      for Line in p.stdout:
+        Line = Line.rstrip()
 
-      if Line.startswith((b'reg', b'Generating Code...', b'Compiling...')):
-        continue
+        if Line.startswith((b'reg', b'Generating Code...', b'Compiling...')):
+          continue
 
-      if Line.endswith((b'.c', b'.cpp')):
-        continue
+        if Line.endswith((b'.c', b'.cpp')):
+          continue
 
-      print(Line.decode('utf-8'))
+        print(Line.decode('utf-8'))
 
 class cLinux:
   @staticmethod
-  def Compile(oosmos_dir, Target, FileArray, Options = ''):
+  def Compile(oosmos_dir: str, Target: str, FileArray: list[str], Options: str = ''):
     Files = ' '.join(FileArray)
     print('Compiling %s...' % (Target))
 
@@ -97,19 +100,19 @@ class cLinux:
     Line = "gcc -I%s/Source -I%s -I%s/Tests -I. -std=c99 -Wall -Wno-overflow -Wno-unused-parameter -pedantic -Werror -Wshadow -flto -o %s -D_POSIX_C_SOURCE=199309 -D__linux__ -Doosmos_DEBUG -Doosmos_ORTHO %s " % (oosmos_dir, classes_dir, classes_dir, Target, Files) + Options
     os.system(Line)
 
-def WildRemove(FilenamePattern):
+def WildRemove(FilenamePattern: str):
   FileList = glob.glob(FilenamePattern)
 
   for FileName in FileList:
     os.remove(FileName)
 
-def MakeReadWrite(Filename):
+def MakeReadWrite(Filename: str):
   os.chmod(Filename, 0o777)
 
-def MakeReadOnly(Filename):
+def MakeReadOnly(Filename: str):
   os.chmod(Filename, 0o444)
 
-def CopyFileReadOnly(FromFile, ToFile):
+def CopyFileReadOnly(FromFile: str, ToFile: str):
   if os.path.exists(ToFile):
     MakeReadWrite(ToFile)
 
