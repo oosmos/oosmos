@@ -94,7 +94,7 @@ class cLinux:
 	@staticmethod
 	def Compile(oosmos_dir: str, Target: str, FileArray: list[str], Options: str = ''):
 		Files = ' '.join(FileArray)
-		print('Compiling %s...' % (Target))
+		print(f'Compiling {Target}...')
 
 		classes_dir = os.path.normpath(oosmos_dir+'/Classes')
 		Line = "gcc -I%s/Source -I%s -I%s/Tests -I. -std=c99 -Wall -Wno-overflow -Wno-unused-parameter -pedantic -Werror -Wshadow -flto -o %s -D_POSIX_C_SOURCE=199309 -D__linux__ -Doosmos_DEBUG -Doosmos_ORTHO %s " % (oosmos_dir, classes_dir, classes_dir, Target, Files) + Options
