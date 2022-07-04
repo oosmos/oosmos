@@ -9,7 +9,6 @@
 **/*.pdb
 **/*.ilk
 **/*.suo
-**/*.sln
 **/*.exp
 **/*.lib
 **/*.opendb
