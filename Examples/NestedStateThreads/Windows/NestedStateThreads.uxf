@@ -4,8 +4,8 @@
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>50</x>
-      <y>130</y>
+      <x>40</x>
+      <y>120</y>
       <w>40</w>
       <h>140</h>
     </coordinates>
@@ -17,8 +17,8 @@ valign=top</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>60</x>
-      <y>100</y>
+      <x>50</x>
+      <y>90</y>
       <w>30</w>
       <h>50</h>
     </coordinates>
@@ -28,8 +28,8 @@ valign=top</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>60</x>
-      <y>90</y>
+      <x>50</x>
+      <y>80</y>
       <w>20</w>
       <h>20</h>
     </coordinates>
@@ -39,8 +39,8 @@ valign=top</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>80</x>
-      <y>150</y>
+      <x>70</x>
+      <y>140</y>
       <w>160</w>
       <h>40</h>
     </coordinates>
@@ -51,8 +51,8 @@ lt=-&gt;</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>240</x>
-      <y>180</y>
+      <x>230</x>
+      <y>170</y>
       <w>170</w>
       <h>70</h>
     </coordinates>
@@ -66,8 +66,8 @@ valign=top</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>80</x>
-      <y>190</y>
+      <x>70</x>
+      <y>180</y>
       <w>160</w>
       <h>40</h>
     </coordinates>
@@ -78,8 +78,8 @@ lt=-&gt;</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>30</x>
-      <y>60</y>
+      <x>20</x>
+      <y>50</y>
       <w>710</w>
       <h>230</h>
     </coordinates>
@@ -91,8 +91,8 @@ valign=top</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>30</x>
-      <y>330</y>
+      <x>20</x>
+      <y>320</y>
       <w>250</w>
       <h>70</h>
     </coordinates>
@@ -107,8 +107,8 @@ valign=top</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>220</x>
-      <y>280</y>
+      <x>210</x>
+      <y>270</y>
       <w>100</w>
       <h>70</h>
     </coordinates>
@@ -119,8 +119,8 @@ lt=-&gt;</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>60</x>
-      <y>30</y>
+      <x>50</x>
+      <y>20</y>
       <w>30</w>
       <h>50</h>
     </coordinates>
@@ -130,8 +130,8 @@ lt=-&gt;</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>60</x>
-      <y>20</y>
+      <x>50</x>
+      <y>10</y>
       <w>20</w>
       <h>20</h>
     </coordinates>
@@ -141,8 +141,8 @@ lt=-&gt;</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>220</x>
-      <y>90</y>
+      <x>210</x>
+      <y>80</y>
       <w>500</w>
       <h>180</h>
     </coordinates>
@@ -156,8 +156,8 @@ valign=top</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>530</x>
-      <y>180</y>
+      <x>520</x>
+      <y>170</y>
       <w>170</w>
       <h>70</h>
     </coordinates>
@@ -171,8 +171,8 @@ valign=top</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>400</x>
-      <y>180</y>
+      <x>390</x>
+      <y>170</y>
       <w>150</w>
       <h>40</h>
     </coordinates>
@@ -183,8 +183,8 @@ lt=-&gt;</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>400</x>
-      <y>210</y>
+      <x>390</x>
+      <y>200</y>
       <w>150</w>
       <h>40</h>
     </coordinates>
@@ -195,8 +195,8 @@ lt=-&gt;</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>280</x>
-      <y>150</y>
+      <x>270</x>
+      <y>140</y>
       <w>30</w>
       <h>50</h>
     </coordinates>
@@ -206,8 +206,8 @@ lt=-&gt;</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>280</x>
-      <y>140</y>
+      <x>270</x>
+      <y>130</y>
       <w>20</w>
       <h>20</h>
     </coordinates>
@@ -217,12 +217,12 @@ lt=-&gt;</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>60</x>
-      <y>260</y>
+      <x>50</x>
+      <y>250</y>
       <w>140</w>
       <h>90</h>
     </coordinates>
-    <panel_attributes>TIMEOUT(7 seconds)
+    <panel_attributes>TIMEOUT(15 seconds)
 lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
   </element>
