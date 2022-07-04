@@ -467,7 +467,7 @@ typedef void (*oosmos_tOutOfMemory)(const char*, unsigned, const char*);
   Type * Pointer;                                                                      \
                                                                                        \
   {                                                                                    \
-    static Type     OOSMOS_List[Elements];                                             \
+    static Type     OOSMOS_List[Elements] = { 0 };                                     \
     static unsigned OOSMOS_Count = 0;                                                  \
     OOSMOS_Allocate(OOSMOS_List, OOSMOS_Count, Type, Pointer, Elements, OutOfMemory);  \
   }
