@@ -506,7 +506,7 @@ static void Enter(oosmos_sRegion * pRegion, const oosmos_sState * pLCA, oosmos_s
 
   #define MAX_STATE_NESTING 7
 
-  oosmos_sState * pStates[MAX_STATE_NESTING];
+  oosmos_sState* pStates[MAX_STATE_NESTING] = { 0 };
   oosmos_sState ** ppStates = pStates;
 
   switch (pTarget->m_Type) {
