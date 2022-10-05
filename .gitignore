@@ -31,6 +31,8 @@
 
 **/*.pyc
 
+**/enc_temp_folder
+
 # ignore "populated" oosmos source files.
 
 Examples/**/oosmos.h

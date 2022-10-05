@@ -13,7 +13,7 @@
     <panel_attributes>B1
 --
 POLL:
-  A1Thread(pState); 
+  A1Thread(pTest, pState); 
 valign=top
 </panel_attributes>
     <additional_attributes/>

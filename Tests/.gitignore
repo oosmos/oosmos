@@ -2,3 +2,7 @@ ThreadDelayUS
 ThreadDelaySeconds
 TimeConversions
 ObjectThreads
+
+x64
+.vs
+
