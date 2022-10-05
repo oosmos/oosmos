@@ -15,6 +15,10 @@ def Path(P: str) -> str:
 def Join(Array: list[str]) -> str:
 	return ' '.join(Array)
 
+def RemoveDir(dir: str) -> None:
+	if os.path.exists(dir):
+		shutil.rmtree(dir)
+
 def WalkDir(Dir: str, pFunc: Callable[[str, str], str], UserArg: str) -> None:
 	for RootDir, DirList, FileList in os.walk(Dir):
 		for File in FileList:
@@ -60,6 +64,7 @@ class cWindows:
 		WildRemove('*.suo')
 		WildRemove('*.tds')
 		WildRemove('*.bak')
+		RemoveDir('x64')
 
 	@staticmethod
 	def Compile(oosmos_dir: str, FileArray: list[str], Options: str = '') -> None:

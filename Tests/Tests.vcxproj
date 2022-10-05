@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{0a8771f2-dd3c-4f50-95e6-6668ff2f6652}</ProjectGuid>
-    <RootNamespace>EventDemo</RootNamespace>
+    <ProjectGuid>{b6acc79d-abb5-40d4-b67a-d952a810fe3b}</ProjectGuid>
+    <RootNamespace>Tests</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -100,12 +100,12 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);oosmos_ORTHO;oosmos_DEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);oosmos_DEBUG;oosmos_ORTHO</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\..\Classes;..\..\..\Source</AdditionalIncludeDirectories>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>..\Source;..\Classes</AdditionalIncludeDirectories>
+      <DebugInformationFormat>None</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -129,21 +129,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\Classes\pin.c" />
-    <ClCompile Include="..\..\..\Classes\sw.c" />
-    <ClCompile Include="..\..\..\Source\oosmos.c" />
-    <ClCompile Include="control.c" />
-    <ClCompile Include="main.c" />
-    <ClCompile Include="motor.c" />
-    <ClCompile Include="pump.c" />
+    <ClCompile Include="..\Source\oosmos.c" />
+    <ClCompile Include="PublishSubscribe.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Classes\pin.h" />
-    <ClInclude Include="..\..\..\Classes\sw.h" />
-    <ClInclude Include="..\..\..\Source\oosmos.h" />
-    <ClInclude Include="control.h" />
-    <ClInclude Include="motor.h" />
-    <ClInclude Include="pump.h" />
+    <ClInclude Include="..\Source\oosmos.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
