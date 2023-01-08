@@ -1432,12 +1432,12 @@ extern void OOSMOS_EndProgram(int Code)
 
   extern void oosmos_DelayMS(uint32_t DelayMS)
   {
-    oosmos_DelayUS(Milliseconds * 1000);
+    oosmos_DelayUS(DelayMS * 1000);
   }
 
   extern void oosmos_DelaySeconds(uint32_t DelaySeconds)
   {
-    oosmos_DelayMS(Seconds * 1000);
+    oosmos_DelayMS(DelaySeconds * 1000);
   }
 
   extern void oosmos_ClockSpeedInMHz(uint32_t ClockSpeedInMHz)
