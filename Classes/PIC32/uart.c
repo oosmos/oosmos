@@ -245,9 +245,9 @@ extern uart * uartNew(const unsigned UartModule, const unsigned BaudRate)
   INTSetVectorPriority(INT_VECTOR_UART(PlibUartID), GetPriorityBits(Priority));
   INTSetVectorSubPriority(INT_VECTOR_UART(PlibUartID), INT_SUB_PRIORITY_LEVEL_0);
 
-  oosmos_QueueConstruct(&pUART->m_SendDataQueue, pUART->m_SendDataQueueData);
+  oosmos_QueueConstruct(&pUART->m_SendDataQueue, pUART->m_SendDataQueueData, sizeof(pUART->m_SendDataQueueData), sizeof(uint8_t));
 
-  oosmos_QueueConstruct(&pUART->m_ReceiveDataQueue, pUART->m_ReceiveDataQueueData);
+  oosmos_QueueConstruct(&pUART->m_ReceiveDataQueue, pUART->m_ReceiveDataQueueData, sizeof(pUART->m_ReceiveDataQueueData), sizeof(uint8_t));
   oosmos_SubscriberListInit(pUART->m_ReceivedByteEventSubscribers);
 
   oosmos_ActiveObjectInit(pUART, m_ActiveObject, RunStateMachine);

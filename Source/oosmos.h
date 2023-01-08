@@ -672,8 +672,8 @@ extern bool oosmos_TimeoutHasExpired(const oosmos_sTimeout * pTimeout);
 
 //--------
 extern void OOSMOS_QueueConstruct(oosmos_sQueue * pQueue, void * pQueueData, size_t QueueDataSize, size_t QueueElementSize);
-#define oosmos_QueueConstruct(pQueue, pQueueData) \
-  OOSMOS_QueueConstruct((pQueue), (pQueueData),sizeof(pQueueData),sizeof((pQueueData)[0]));
+#define oosmos_QueueConstruct(pQueue, pQueueData, QueueDataSize, QueueElementSize) \
+  OOSMOS_QueueConstruct((pQueue), (pQueueData), (QueueDataSize), (QueueElementSize));
 
 extern void oosmos_QueuePush(oosmos_sQueue * pQueue, const void * pElement, size_t UserElementSize);
 extern bool oosmos_QueuePop(oosmos_sQueue * pQueue, void * pElement, size_t UserElementSize);

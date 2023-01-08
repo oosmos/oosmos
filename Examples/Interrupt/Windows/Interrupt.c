@@ -82,7 +82,7 @@ extern uart * uartNew(unsigned UartId)
 
   pUART->m_UartId = (uint8_t) UartId;
 
-  oosmos_QueueConstruct(&pUART->m_ReceiveDataQueue, pUART->m_ReceiveDataQueueData);
+  oosmos_QueueConstruct(&pUART->m_ReceiveDataQueue, pUART->m_ReceiveDataQueueData, sizeof(pUART->m_ReceiveDataQueueData), sizeof(uint8_t));
   oosmos_ActiveObjectInit(pUART, m_ActiveObject, ReceiverStateMachine);
 
   return pUART;
