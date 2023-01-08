@@ -351,7 +351,7 @@ extern void OOSMOS_StateMachineInit(const char * pFileName, const char * pName, 
                  void * pCurrentEvent, size_t CurrentEventSize, void * pObject);
 
 #define oosmos_StateMachineInit(pObject, StateMachine, Parent, Default) \
-        oosmos_QueueConstruct(&(pObject)->m_EventQueue, (pObject)->m_EventQueueData) \
+        oosmos_QueueConstruct(&(pObject)->m_EventQueue, (pObject)->m_EventQueueData, sizeof((pObject)->m_EventQueueData), sizeof(((pObject)->m_EventQueueData)[0])) \
         OOSMOS_StateMachineInit(OOSMOS_FILE, OOSMOS_xstr(StateMachine), &(pObject)->StateMachine, (oosmos_sState*) &(pObject)->Default, &(pObject)->m_EventQueue,\
                  &(pObject)->m_CurrentEvent, sizeof((pObject)->m_EventQueueData[0]), (pObject))
 
