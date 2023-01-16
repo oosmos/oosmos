@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OrthoThreadEvents", "OrthoThreadEvents.vcxproj", "{1C102744-C1FA-4B1B-B6E8-968C5F512A5C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1C102744-C1FA-4B1B-B6E8-968C5F512A5C}.Debug|x64.ActiveCfg = Debug|x64
+		{1C102744-C1FA-4B1B-B6E8-968C5F512A5C}.Debug|x64.Build.0 = Debug|x64
+		{1C102744-C1FA-4B1B-B6E8-968C5F512A5C}.Debug|x86.ActiveCfg = Debug|Win32
+		{1C102744-C1FA-4B1B-B6E8-968C5F512A5C}.Debug|x86.Build.0 = Debug|Win32
+		{1C102744-C1FA-4B1B-B6E8-968C5F512A5C}.Release|x64.ActiveCfg = Release|x64
+		{1C102744-C1FA-4B1B-B6E8-968C5F512A5C}.Release|x64.Build.0 = Release|x64
+		{1C102744-C1FA-4B1B-B6E8-968C5F512A5C}.Release|x86.ActiveCfg = Release|Win32
+		{1C102744-C1FA-4B1B-B6E8-968C5F512A5C}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4AEF1BC4-4256-4F71-98F2-FE19609C3A0E}
+	EndGlobalSection
+EndGlobal
