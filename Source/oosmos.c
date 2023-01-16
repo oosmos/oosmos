@@ -1170,7 +1170,10 @@ extern void oosmos_QueuePush(oosmos_sQueue * pQueue, const void * pElement, size
   const size_t QueueElementSize = pQueue->m_QueueElementSize;
 
   if (UserElementSize > QueueElementSize) {
-    oosmos_DebugPrint("Bad queue size in push.\n");
+    #if oosmos_DEBUG
+        oosmos_DebugPrint("Bad queue size in push.\n");
+    #endif
+
     oosmos_FOREVER();
   }
 
@@ -1215,7 +1218,10 @@ extern bool oosmos_QueuePop(oosmos_sQueue * pQueue, void * pElement, size_t User
   const size_t QueueElementSize = pQueue->m_QueueElementSize;
 
   if (UserElementSize > QueueElementSize) {
-    oosmos_DebugPrint("Bad queue size in pop.\n");
+    #if oosmos_DEBUG
+        oosmos_DebugPrint("Bad queue size in pop.\n");
+    #endif
+
     oosmos_FOREVER();
   }
 
