@@ -23,6 +23,11 @@
 **/Obj/**
 **/*.dep
 
+**/.generated_files/**
+.vs
+*.tlog
+
+**/Debug/**
 
 **/build
 **/dist
