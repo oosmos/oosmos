@@ -520,7 +520,7 @@ extern bool OOSMOS_ThreadWaitCond(oosmos_sState * pState,
 extern bool OOSMOS_ThreadWaitCond_TimeoutMS(oosmos_sState * pState,
                         bool Condition, uint32_t TimeoutMS, bool * pTimeoutStatus);
 
-extern bool OOSMOS_ThreadWaitEvent(const oosmos_sState * pState,
+extern bool OOSMOS_ThreadWaitEvent(oosmos_sState * pState,
                         int WaitEventCode);
 
 extern bool OOSMOS_ThreadWaitEvent_TimeoutMS(oosmos_sState * pState,

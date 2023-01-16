@@ -57,12 +57,6 @@ static const oosmos_sEvent EventENTER    = { oosmos_ENTER,    NULL };
 static const oosmos_sEvent EventEXIT     = { oosmos_EXIT,     NULL };
 static const oosmos_sEvent EventCOMPLETE = { oosmos_COMPLETE, NULL };
 
-//
-// Special reserved event code used to mark an event as "spent" when handled so that
-// the event isn't incorrectly recognized in subsequent oosmos_ThreadWaitEvent_*
-// calls.
-//
-#define OOSMOS_EVENT_SPENT (-1)
 
 static bool IS_TIMEOUT_ACTIVE(const oosmos_sState * pState)
 {
@@ -1023,6 +1017,10 @@ extern void OOSMOS_RunStateMachine(oosmos_sStateMachine * pStateMachine)
       if (PropagateEvent(pRegion, pEvent)) {
         return;
       }
+
+      // Once the event code has been propagated, clear it to prevent oosmos_ThreadWaitEvent()
+      // calls from handling the message multiple times.
+      pEvent->m_Code = 0;
     }
   }
 
@@ -1302,39 +1300,51 @@ extern bool OOSMOS_ThreadWaitCond_TimeoutMS(oosmos_sState * pState, bool Conditi
   return false;
 }
 
-extern bool OOSMOS_ThreadWaitEvent(const oosmos_sState * pState, int WaitEventCode)
+extern bool OOSMOS_ThreadWaitEvent(oosmos_sState * pState, int WaitEventCode)
 {
   oosmos_POINTER_GUARD(pState);
 
+  if (pState->m_FirstEntry) {
+    pState->m_FirstEntry = false;
+    return false;
+  }
+
   oosmos_sEvent * pCurrentEvent = OOSMOS_GetCurrentEvent(pState);
 
-  if (pCurrentEvent->m_Code != OOSMOS_EVENT_SPENT && pCurrentEvent->m_Code == WaitEventCode) {
-    pCurrentEvent->m_Code = OOSMOS_EVENT_SPENT;
+  if (pCurrentEvent->m_Code == WaitEventCode) {
+    pState->m_FirstEntry = true;
     return true;
   }
 
   return false;
 }
 
-extern bool OOSMOS_ThreadWaitEvent_TimeoutMS(oosmos_sState * pState, int WaitEventCode, uint32_t TimeoutMS, bool * pTimedOut)
+extern bool OOSMOS_ThreadWaitEvent_TimeoutMS(oosmos_sState * pState, int WaitEventCode, uint32_t TimeoutMS, bool * pTimeoutStatus)
 {
-  oosmos_POINTER_GUARD(pState);
-  oosmos_POINTER_GUARD(pTimedOut);
+    oosmos_POINTER_GUARD(pState);
+    oosmos_POINTER_GUARD(pTimeoutStatus);
 
-  oosmos_sEvent * pCurrentEvent = OOSMOS_GetCurrentEvent(pState);
+    if (pState->m_FirstEntry) {
+        oosmos_TimeoutInMS(&pState->m_ThreadTimeout, TimeoutMS);
+        pState->m_FirstEntry = false;
+        return false;
+    }
 
-  if (pCurrentEvent->m_Code != OOSMOS_EVENT_SPENT && pCurrentEvent->m_Code == WaitEventCode) {
-    *pTimedOut = false;
-    pCurrentEvent->m_Code = OOSMOS_EVENT_SPENT;
-    return true;
-  }
+    oosmos_sEvent* pCurrentEvent = OOSMOS_GetCurrentEvent(pState);
 
-  if (OOSMOS_ThreadDelayMS(pState, TimeoutMS)) {
-    *pTimedOut = true;
-    return true;
-  }
+    if (pCurrentEvent->m_Code == WaitEventCode) {
+        *pTimeoutStatus = false;
+        pState->m_FirstEntry = true;
+        return true;
+    }
 
-  return false;
+    if (oosmos_TimeoutHasExpired(&pState->m_ThreadTimeout)) {
+        *pTimeoutStatus = true;
+        pState->m_FirstEntry = true;
+        return true;
+    }
+
+    return false;
 }
 
 extern double oosmos_AnalogMapAccurate(double Value, double InMin, double InMax, double OutMin, double OutMax)
