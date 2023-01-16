@@ -17,10 +17,14 @@ extern int main(void)
   //
   // Test within a practical tolerance.
   //
-  if (End - (Start + oosmos_MS2US(DELAY_MS)) <= 4000) {
-    printf("SUCCESS\n");
+  const uint32_t ElapsedMS = oosmos_US2MS_Truncated(End - Start);
+
+  printf("ElapsedMS: %u\n", ElapsedMS);
+
+  if (ElapsedMS >= 2000 && ElapsedMS <= 4000) {
+    printf("SUCCESS.  Within tolerance.\n");
   } else {
-    printf("FAILED\n");
+    printf("FAILED.  Outside tolerance.\n");
   }
 
   return 0;
