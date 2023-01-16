@@ -63,14 +63,14 @@ struct testTag
 //>>>DECL
   oosmos_sStateMachine(ROOT, uEvents, 3);
     oosmos_sComposite Running_State;
-      oosmos_sHistory Running_History1_State;
       oosmos_sComposite Running_A_State;
-        oosmos_sLeaf Running_A_AA_State;
         oosmos_sLeaf Running_A_AAA_State;
+        oosmos_sLeaf Running_A_AA_State;
+      oosmos_sHistory Running_History1_State;
       oosmos_sLeaf Running_History2_State;
       oosmos_sComposite Running_B_State;
-        oosmos_sLeaf Running_B_BBB_State;
         oosmos_sLeaf Running_B_BB_State;
+        oosmos_sLeaf Running_B_BBB_State;
       oosmos_sComposite Running_C_State;
         oosmos_sLeaf Running_C_CC_State;
         oosmos_sLeaf Running_C_CCC_State;
@@ -233,14 +233,14 @@ static test * testNew(void)
 //>>>INIT
   oosmos_StateMachineInit(pTest, ROOT, NULL, Running_State);
     oosmos_CompositeInit(pTest, Running_State, ROOT, Running_A_State, Running_State_Code);
-      oosmos_HistoryInit(pTest, Running_History1_State, Running_State, OOSMOS_HistoryShallowType);
       oosmos_CompositeInit(pTest, Running_A_State, Running_State, Running_A_AA_State, Running_A_State_Code);
-        oosmos_LeafInit(pTest, Running_A_AA_State, Running_A_State, Running_A_AA_State_Code);
         oosmos_LeafInit(pTest, Running_A_AAA_State, Running_A_State, NULL);
+        oosmos_LeafInit(pTest, Running_A_AA_State, Running_A_State, Running_A_AA_State_Code);
+      oosmos_HistoryInit(pTest, Running_History1_State, Running_State, OOSMOS_HistoryShallowType);
       oosmos_HistoryInit(pTest, Running_History2_State, Running_State, OOSMOS_HistoryDeepType);
       oosmos_CompositeInit(pTest, Running_B_State, Running_State, Running_B_BB_State, Running_B_State_Code);
-        oosmos_LeafInit(pTest, Running_B_BBB_State, Running_B_State, NULL);
         oosmos_LeafInit(pTest, Running_B_BB_State, Running_B_State, Running_B_BB_State_Code);
+        oosmos_LeafInit(pTest, Running_B_BBB_State, Running_B_State, NULL);
       oosmos_CompositeInit(pTest, Running_C_State, Running_State, Running_C_CC_State, Running_C_State_Code);
         oosmos_LeafInit(pTest, Running_C_CC_State, Running_C_State, Running_C_CC_State_Code);
         oosmos_LeafInit(pTest, Running_C_CCC_State, Running_C_State, NULL);
