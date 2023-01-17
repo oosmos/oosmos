@@ -385,7 +385,7 @@ static void StateInit(const char * pName, oosmos_sState * pState, oosmos_sState 
 
   RESET_TIMEOUT(pState);
 
-  #if defined(oosmos_DEBUG)
+  #if defined(oosmos_DEBUG) || defined(oosmos_STATE_NAME)
     pState->m_pName = pName;
   #else
     oosmos_UNUSED(pName);

@@ -268,7 +268,7 @@ struct OOSMOS_sStateTag {
   OOSMOS_tCode           m_pCode;
   oosmos_sStateMachine * m_pStateMachine;
 
-  #if defined(oosmos_DEBUG)
+  #if defined(oosmos_DEBUG) || defined(oosmos_STATE_NAME)
     const char *         m_pName;
   #endif
 
@@ -330,7 +330,7 @@ struct OOSMOS_sStateMachineTag {
 #define OOSMOS_xstr(s) OOSMOS_str(s)
 
 // To reduce footprint, only materialize these strings when compiling for debug.
-#if defined(oosmos_DEBUG)
+#if defined(oosmos_DEBUG) || defined(oosmos_STATE_NAME)
   #define OOSMOS_str(s) #s
   #define OOSMOS_FILE __FILE__
 #else
