@@ -111,6 +111,9 @@ struct OOSMOS_sQueueTag {
   #elif defined(ARDUINO) || defined(ENERGIA)
     #define oosmos_DebugPrint OOSMOS_ArduinoPrintf
     extern void OOSMOS_ArduinoPrintf(const char * pFormat, ...);
+  #elif defined(oosmos_DEBUG_FILE)
+    #define oosmos_DebugPrint OOSMOS_Write
+    extern void OOSMOS_Write(const char* pFormat, ...);
   #else
     #include <stdio.h>
     #define oosmos_DebugPrint printf
@@ -126,11 +129,11 @@ struct OOSMOS_sQueueTag {
 /*lint -e506 suppress "consant value boolean" */
 /*lint -e717 suppress "do { } while(0)" */
 #define oosmos_POINTER_GUARD(x) \
-        do {                     \
-          if ((x) == NULL) {     \
-            oosmos_FOREVER();    \
-          }                      \
-        } while (0)
+        do {                    \
+          if ((x) == NULL) {    \
+            oosmos_FOREVER();   \
+          }                     \
+        } while (0)             \
 
 #define oosmos_FOREVER() \
         for (;;) continue
@@ -138,10 +141,10 @@ struct OOSMOS_sQueueTag {
 /*lint -e506 suppress "consant value boolean" */
 /*lint -e717 suppress "do { } while(0)" */
 #define oosmos_ASSERT(Condition) \
-        do {                      \
-          if (!(Condition)) {     \
-            oosmos_FOREVER();     \
-          }                       \
+        do {                     \
+          if (!(Condition)) {    \
+            oosmos_FOREVER();    \
+          }                      \
         } while (0)
 
 typedef struct {

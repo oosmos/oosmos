@@ -249,7 +249,9 @@ static bool ProcessTimeouts(const oosmos_sRegion * pRegion)
           RESET_TIMEOUT(pState);
 
           #if defined(oosmos_DEBUG)
-            oosmos_DebugPrint("%s: EVENT TIMEOUT\n", GetFileName(pState));
+              if (pState->m_pStateMachine->m_Debug) {
+                  oosmos_DebugPrint("%s: In state %s, TIMEOUT Event\n", GetFileName(pState), pState->m_pName);
+              }
           #endif
 
           if (DeliverEvent(pState, &EventTIMEOUT)) {
@@ -1474,6 +1476,24 @@ extern void OOSMOS_EndProgram(int Code)
   }
 #elif defined(_WIN32)
   #include <windows.h>
+
+  extern void OOSMOS_DebugDummy(const char*, ...) { }
+
+  extern void OOSMOS_Write(const char* pFormat, ...)
+  {
+    #if defined(oosmos_DEBUG_FILE)
+      FILE* pFile = fopen(oosmos_DEBUG_FILE, "a");
+
+      if (pFile != NULL) {
+          va_list Args;
+          va_start(Args, pFormat);
+          vfprintf(pFile, pFormat, Args);
+          va_end(Args);
+
+          fclose(pFile);
+      }
+    #endif
+  }
 
   extern void oosmos_DelayUS(uint32_t US)
   {
