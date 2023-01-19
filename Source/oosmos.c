@@ -743,7 +743,6 @@ extern bool OOSMOS_TransitionAction(oosmos_sState * pFromState, oosmos_sState * 
   }
 
   Enter(pRegion, pLCA, pToState);
-  ThreadInit(pFromState);
   return true;
 }
 
