@@ -197,14 +197,6 @@ static bool PropagateEvent(const oosmos_sRegion * pRegion, const oosmos_sEvent *
 
   for (oosmos_sState * pState = pCurrent; pState != pRegion->m_Composite.m_State.m_pParent; pState = pState->m_pParent) {
     //
-    // If a Thread sequence has already completed, don't deliver the event, which
-    // would cause the sequence to be re-executed.
-    //
-    if (pEvent->m_Code == oosmos_POLL && pState->m_ThreadContext == OOSMOS_THREAD_CONTEXT_END) {
-      continue;
-    }
-
-    //
     // Deliver the event to the state machine.  If the return code is true, then
     // stop propagating the event, unless it's a POLL event, in which case we
     // want to unconditionally propagate the poll event up the hierarchy.
@@ -1476,7 +1468,7 @@ extern void OOSMOS_EndProgram(int Code)
 #elif defined(_WIN32)
   #include <windows.h>
 
-  extern void OOSMOS_DebugDummy(const char*, ...) { }
+  extern void OOSMOS_DebugDummy(const char* pFormat, ...) { }
 
   extern void OOSMOS_Write(const char* pFormat, ...)
   {
