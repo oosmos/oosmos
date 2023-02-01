@@ -70,10 +70,10 @@ struct motionTag
           oosmos_sLeaf Active_Region1_Limits_Choice1_State;
           oosmos_sLeaf Active_Region1_Limits_AtLowerLimit_State;
       oosmos_sOrthoRegion Active_Region2_State;
-        oosmos_sLeaf Active_Region2_Stopped_State;
         oosmos_sComposite Active_Region2_Moving_State;
           oosmos_sLeaf Active_Region2_Moving_Up_State;
           oosmos_sLeaf Active_Region2_Moving_Down_State;
+        oosmos_sLeaf Active_Region2_Stopped_State;
 //<<<DECL
 };
 
@@ -129,6 +129,19 @@ static bool Active_Region1_Limits_Choice1_State_Code(void * pObject, oosmos_sSta
   return false;
 }
 
+static bool Active_Region2_Moving_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
+{
+  motion * pMotion = (motion *) pObject;
+
+  switch (oosmos_EventCode(pEvent)) {
+    case evStopCommand: {
+      return oosmos_Transition(pMotion, pState, Active_Region2_Stopped_State);
+    }
+  }
+
+  return false;
+}
+
 static bool Active_Region2_Stopped_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   motion * pMotion = (motion *) pObject;
@@ -139,19 +152,6 @@ static bool Active_Region2_Stopped_State_Code(void * pObject, oosmos_sState * pS
     }
     case evDownCommand: {
       return oosmos_Transition(pMotion, pState, Active_Region2_Moving_Down_State);
-    }
-  }
-
-  return false;
-}
-
-static bool Active_Region2_Moving_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
-{
-  motion * pMotion = (motion *) pObject;
-
-  switch (oosmos_EventCode(pEvent)) {
-    case evStopCommand: {
-      return oosmos_Transition(pMotion, pState, Active_Region2_Stopped_State);
     }
   }
 
@@ -205,10 +205,10 @@ static motion * motionNew(void)
           oosmos_LeafInit(pMotion, Active_Region1_Limits_Choice1_State, Active_Region1_Limits_State, Active_Region1_Limits_Choice1_State_Code);
           oosmos_LeafInit(pMotion, Active_Region1_Limits_AtLowerLimit_State, Active_Region1_Limits_State, NULL);
       oosmos_OrthoRegionInit(pMotion, Active_Region2_State, Active_State, Active_Region2_Stopped_State, NULL);
-        oosmos_LeafInit(pMotion, Active_Region2_Stopped_State, Active_Region2_State, Active_Region2_Stopped_State_Code);
         oosmos_CompositeInit(pMotion, Active_Region2_Moving_State, Active_Region2_State, Active_Region2_Moving_Up_State, Active_Region2_Moving_State_Code);
           oosmos_LeafInit(pMotion, Active_Region2_Moving_Up_State, Active_Region2_Moving_State, Active_Region2_Moving_Up_State_Code);
           oosmos_LeafInit(pMotion, Active_Region2_Moving_Down_State, Active_Region2_Moving_State, Active_Region2_Moving_Down_State_Code);
+        oosmos_LeafInit(pMotion, Active_Region2_Stopped_State, Active_Region2_State, Active_Region2_Stopped_State_Code);
 
   oosmos_Debug(pMotion, OOSMOS_EventNames);
 //<<<INIT

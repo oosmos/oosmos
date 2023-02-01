@@ -14,6 +14,8 @@
 **/*.opendb
 **/*.VC.db
 **/settings
+**/vcxproj.user
+**/vcxproj.filters
 
 #
 # STM specific

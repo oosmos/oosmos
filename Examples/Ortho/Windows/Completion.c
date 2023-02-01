@@ -56,8 +56,8 @@ struct testTag
   oosmos_sStateMachine(ROOT, uEvents, 3);
     oosmos_sOrtho Ortho_State;
       oosmos_sOrthoRegion Ortho_Region1_State;
-        oosmos_sLeaf Ortho_Region1_Idle_State;
         oosmos_sLeaf Ortho_Region1_Moving_State;
+        oosmos_sLeaf Ortho_Region1_Idle_State;
         oosmos_sFinal Ortho_Region1_Final1_State;
       oosmos_sOrthoRegion Ortho_Region2_State;
         oosmos_sLeaf Ortho_Region2_Idle_State;
@@ -81,19 +81,6 @@ static bool Ortho_State_Code(void * pObject, oosmos_sState * pState, const oosmo
   return false;
 }
 
-static bool Ortho_Region1_Idle_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
-{
-  test * pTest = (test *) pObject;
-
-  switch (oosmos_EventCode(pEvent)) {
-    case evA: {
-      return oosmos_Transition(pTest, pState, Ortho_Region1_Moving_State);
-    }
-  }
-
-  return false;
-}
-
 static bool Ortho_Region1_Moving_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   test * pTest = (test *) pObject;
@@ -101,6 +88,19 @@ static bool Ortho_Region1_Moving_State_Code(void * pObject, oosmos_sState * pSta
   switch (oosmos_EventCode(pEvent)) {
     case evStop: {
       return oosmos_Transition(pTest, pState, Ortho_Region1_Final1_State);
+    }
+  }
+
+  return false;
+}
+
+static bool Ortho_Region1_Idle_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
+{
+  test * pTest = (test *) pObject;
+
+  switch (oosmos_EventCode(pEvent)) {
+    case evA: {
+      return oosmos_Transition(pTest, pState, Ortho_Region1_Moving_State);
     }
   }
 
@@ -156,8 +156,8 @@ static test * testNew(void)
   oosmos_StateMachineInit(pTest, ROOT, NULL, Ortho_State);
     oosmos_OrthoInit(pTest, Ortho_State, ROOT, Ortho_State_Code);
       oosmos_OrthoRegionInit(pTest, Ortho_Region1_State, Ortho_State, Ortho_Region1_Idle_State, NULL);
-        oosmos_LeafInit(pTest, Ortho_Region1_Idle_State, Ortho_Region1_State, Ortho_Region1_Idle_State_Code);
         oosmos_LeafInit(pTest, Ortho_Region1_Moving_State, Ortho_Region1_State, Ortho_Region1_Moving_State_Code);
+        oosmos_LeafInit(pTest, Ortho_Region1_Idle_State, Ortho_Region1_State, Ortho_Region1_Idle_State_Code);
         oosmos_FinalInit(pTest, Ortho_Region1_Final1_State, Ortho_Region1_State, NULL);
       oosmos_OrthoRegionInit(pTest, Ortho_Region2_State, Ortho_State, Ortho_Region2_Idle_State, NULL);
         oosmos_LeafInit(pTest, Ortho_Region2_Idle_State, Ortho_Region2_State, Ortho_Region2_Idle_State_Code);
