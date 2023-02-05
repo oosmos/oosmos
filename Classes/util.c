@@ -21,6 +21,7 @@
 //
 
 #include "util.h"
+#include "oosmos.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -28,8 +29,8 @@
 
 extern void utilHexDump(const void * pBuffer, const size_t TotalBytes)
 {
-  const uint8_t * pByte    = pBuffer;
-  const char    * pCurrent = pBuffer;
+  const uint8_t * pByte    = (const uint8_t *) pBuffer;
+  const char    * pCurrent = (const char    *) pBuffer;
 
   uint8_t    Dump[16 * 3 + 1];
   uint8_t    Ascii[16 + 1];
@@ -42,7 +43,7 @@ extern void utilHexDump(const void * pBuffer, const size_t TotalBytes)
   for (Bytes = 0; Bytes <= TotalBytes; pByte++, Bytes++) {
     if ((Bytes % 16) == 0 || Bytes == TotalBytes) {
       if (Bytes != 0) {
-        printf("%p: %s|%.16s|\n", pCurrent, Dump, Ascii);
+        oosmos_DebugPrint("%p: %s|%.16s|\n", pCurrent, Dump, Ascii);
         pCurrent += 16;
       }
 
