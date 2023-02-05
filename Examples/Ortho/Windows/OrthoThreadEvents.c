@@ -147,6 +147,6 @@ extern int main(void)
 
   for (;;) {
     oosmos_RunStateMachines();
-    oosmos_DelayMS(1);
+    oosmos_DelaySeconds(3);
   }
 }
