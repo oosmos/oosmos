@@ -162,28 +162,31 @@ static bool DeliverEvent(oosmos_sState * pState, const oosmos_sEvent * pEvent)
       if (pState->m_pStateMachine->m_Debug) {
           const oosmos_sStateMachine * pStateMachine = GetStateMachine(pState);
           const oosmos_sEvent        * pCurrentEvent = OOSMOS_GetCurrentEvent(pState);
+          const char                 * pFileName     = GetFileName(pStateMachine);
 
-          const int EventCode = pCurrentEvent->m_Code;
+          const int CurrentEventCode = pCurrentEvent->m_Code;
 
           if (pEvent->m_Code == oosmos_POLL) {
-              if (EventCode > 0) { // Any non-OOSMOS event code
+              if (CurrentEventCode > 0) { // Any non-OOSMOS event code
                   if (pStateMachine->m_pEventNameConverter != NULL) {
-                      oosmos_DebugPrint("%s: POLL state %s (%s [%d])\n", GetFileName(pStateMachine), pState->m_pName, pStateMachine->m_pEventNameConverter(EventCode), EventCode);
+                      const char * pEventName = pStateMachine->m_pEventNameConverter(CurrentEventCode);
+                      oosmos_DebugPrint("%s: POLL state %s (%s [%d])\n", pFileName, pState->m_pName, pEventName, CurrentEventCode);
                   }
                   else {
-                      oosmos_DebugPrint("%s: POLL state %s [%d]\n", GetFileName(pStateMachine), pState->m_pName, EventCode);
+                      oosmos_DebugPrint("%s: POLL state %s [%d]\n", pFileName, pState->m_pName, CurrentEventCode);
                   }
               } else {
-                  oosmos_DebugPrint("%s: POLL state %s\n", GetFileName(pStateMachine), pState->m_pName);
+                  oosmos_DebugPrint("%s: POLL state %s\n", pFileName, pState->m_pName);
               }
           }
           else {
-              if (EventCode > 0) { // Any non-OOSMOS event code
+              if (CurrentEventCode > 0) { // Any non-OOSMOS event code
                   if (pStateMachine->m_pEventNameConverter != NULL) {
-                      oosmos_DebugPrint("%s: EVENT %s (%s [%d])\n", GetFileName(pStateMachine), pState->m_pName, pStateMachine->m_pEventNameConverter(EventCode), EventCode);
+                      const char* pEventName = pStateMachine->m_pEventNameConverter(CurrentEventCode);
+                      oosmos_DebugPrint("%s: EVENT %s (%s [%d])\n", pFileName, pState->m_pName, pEventName, CurrentEventCode);
                   }
                   else {
-                      oosmos_DebugPrint("%s: EVENT %s [%d]\n", GetFileName(pState), pState->m_pName, EventCode);
+                      oosmos_DebugPrint("%s: EVENT %s [%d]\n", pFileName, pState->m_pName, CurrentEventCode);
                   }
               }
           }
