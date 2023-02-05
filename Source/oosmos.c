@@ -158,6 +158,38 @@ static bool DeliverEvent(oosmos_sState * pState, const oosmos_sEvent * pEvent)
     return false;
   }
 
+  #if defined(oosmos_DEBUG)
+      if (pState->m_pStateMachine->m_Debug) {
+          const oosmos_sStateMachine * pStateMachine = GetStateMachine(pState);
+          const oosmos_sEvent        * pCurrentEvent = OOSMOS_GetCurrentEvent(pState);
+
+          const int EventCode = pCurrentEvent->m_Code;
+
+          if (pEvent->m_Code == oosmos_POLL) {
+              if (EventCode > 0) { // Any non-OOSMOS event code
+                  if (pStateMachine->m_pEventNameConverter != NULL) {
+                      oosmos_DebugPrint("%s: POLL state %s (%s [%d])\n", GetFileName(pStateMachine), pState->m_pName, pStateMachine->m_pEventNameConverter(EventCode), EventCode);
+                  }
+                  else {
+                      oosmos_DebugPrint("%s: POLL state %s [%d]\n", GetFileName(pStateMachine), pState->m_pName, EventCode);
+                  }
+              } else {
+                  oosmos_DebugPrint("%s: POLL state %s\n", GetFileName(pStateMachine), pState->m_pName);
+              }
+          }
+          else {
+              if (EventCode > 0) { // Any non-OOSMOS event code
+                  if (pStateMachine->m_pEventNameConverter != NULL) {
+                      oosmos_DebugPrint("%s: EVENT %s (%s [%d])\n", GetFileName(pStateMachine), pState->m_pName, pStateMachine->m_pEventNameConverter(EventCode), EventCode);
+                  }
+                  else {
+                      oosmos_DebugPrint("%s: EVENT %s [%d]\n", GetFileName(pState), pState->m_pName, EventCode);
+                  }
+              }
+          }
+      }
+  #endif
+
   return pCode(pState->m_pStateMachine->m_pObject, pState, pEvent);
 }
 
@@ -900,7 +932,7 @@ extern void OOSMOS_SubscriberListInit(oosmos_sSubscriberList * pSubscriberList, 
   /*lint -e441 suppress "for clause irregularity: loop variable 'pSubscriber' not found in 2nd for expression" */
   for (; ListElements-- > 0; pSubscriberList++) {
     pSubscriberList->m_pNotifyQueue     = NULL;
-    pSubscriberList->m_Event.m_Code     = 0;
+    pSubscriberList->m_Event.m_Code     = oosmos_NOP;
     pSubscriberList->m_Event.m_pContext = NULL;
   }
 }
@@ -989,10 +1021,10 @@ extern void OOSMOS_RunStateMachine(oosmos_sStateMachine * pStateMachine)
           const int EventCode = pEvent->m_Code;
 
           if (pStateMachine->m_pEventNameConverter != NULL) {
-            oosmos_DebugPrint("%s: EVENT: %s (%d)\n", GetFileName(pStateMachine), (pStateMachine->m_pEventNameConverter)(EventCode), EventCode);
+            oosmos_DebugPrint("%s: EVENT RECEIVED: %s [%d]\n", GetFileName(pStateMachine), (pStateMachine->m_pEventNameConverter)(EventCode), EventCode);
           }
           else {
-            oosmos_DebugPrint("%s: EVENT: %d\n", GetFileName(pStateMachine), EventCode);
+            oosmos_DebugPrint("%s: EVENT RECEIVED: [%d]\n", GetFileName(pStateMachine), EventCode);
           }
         }
       #endif
@@ -1013,7 +1045,7 @@ extern void OOSMOS_RunStateMachine(oosmos_sStateMachine * pStateMachine)
 
       // Once the event code has been propagated, clear it to prevent oosmos_ThreadWaitEvent()
       // calls from handling the message multiple times.
-      pEvent->m_Code = 0;
+      pEvent->m_Code = oosmos_NOP;
     }
   }
 
@@ -1034,6 +1066,8 @@ extern void OOSMOS_RunStateMachine(oosmos_sStateMachine * pStateMachine)
 //
 extern void oosmos_RunStateMachines(void)
 {
+  oosmos_DebugPrint("==== oosmos_RunStateMachines() ====\n");
+
   for (oosmos_sStateMachine * pStateMachine = pStateMachineList; pStateMachine != NULL; ) {
     oosmos_sStateMachine * pNext = pStateMachine->m_pNext;
     OOSMOS_RunStateMachine(pStateMachine);

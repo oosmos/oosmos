@@ -479,6 +479,7 @@ typedef void (*oosmos_tOutOfMemory)(const char*, unsigned, const char*);
 
 #define oosmos_EventQueue(pObject) (&((pObject)->m_EventQueue))
 
+#define oosmos_NOP      ( 0)
 #define oosmos_ENTER    (-1)
 #define oosmos_EXIT     (-2)
 #define oosmos_POLL     (-3)
