@@ -447,6 +447,29 @@ extern bool pinIsOff(const pin * pPin)
     return pPin;
   }
 
+  extern pin* pinNew_Debounce(char Key, const pin_eLogic Logic, const uint8_t DebounceTimeMS)
+  {
+    oosmos_Allocate(pPin, pin, pinMAX, NULL);
+
+    pPin->m_Key = Key;
+    pPin->m_Logic = (unsigned)Logic;
+    pPin->m_State = (unsigned)Unknown_State;
+    pPin->m_DebounceTimeMS = DebounceTimeMS;
+
+    if (pinFirst) {
+      memset(KeyIsDown, false, sizeof(KeyIsDown));
+
+      hStdin = GetStdHandle(STD_INPUT_HANDLE);
+      pinFirst = false;
+    }
+
+    if (DebounceTimeMS > 0) {
+      oosmos_ActiveObjectInit(pPin, m_ActiveObject, RunStateMachine);
+    }
+    
+    return pPin;
+  }
+
   extern void pinOn(const pin * pPin)
   {
     #if defined(pin_DEBUG)
