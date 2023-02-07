@@ -1069,7 +1069,7 @@ extern void OOSMOS_RunStateMachine(oosmos_sStateMachine * pStateMachine)
 //
 extern void oosmos_RunStateMachines(void)
 {
-  oosmos_DebugPrint("==== oosmos_RunStateMachines() ====\n");
+  oosmos_DebugPrint("\n>>>> oosmos_RunStateMachines()\n");
 
   for (oosmos_sStateMachine * pStateMachine = pStateMachineList; pStateMachine != NULL; ) {
     oosmos_sStateMachine * pNext = pStateMachine->m_pNext;
@@ -1086,6 +1086,8 @@ extern void oosmos_RunStateMachines(void)
       pObjectThread->m_pFunc(pObjectThread->m_pObject, &pObjectThread->m_LeafState);
     }
   }
+
+  oosmos_DebugPrint("<<<< oosmos_RunStateMachines()\n");
 }
 
 extern void oosmos_TimeoutInSeconds(oosmos_sTimeout * pTimeout, uint32_t TimeoutSeconds)
