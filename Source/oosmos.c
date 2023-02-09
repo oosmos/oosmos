@@ -1011,6 +1011,12 @@ extern void OOSMOS_RunStateMachine(oosmos_sStateMachine * pStateMachine)
 
   if (!pStateMachine->m_IsStarted) {
     DefaultTransitions(&pStateMachine->m_Region, pStateMachine->m_Region.m_Composite.m_pDefault);
+
+    #if defined(oosmos_DEBUG_FILE)
+      remove(oosmos_DEBUG_FILE);
+    #endif
+
+
     pStateMachine->m_IsStarted = true;
   }
 
