@@ -48,6 +48,12 @@ static oosmos_sActiveObject * pActiveObjectList;
 static oosmos_sObjectThread * pObjectThreadList;
 
 //
+// Support for oosmos_TimestampMS().
+//
+static uint64_t RunningTimeUS;
+static uint64_t PreviousFreeRunningUS;
+
+//
 // Predefined events, pre-initialized for fast delivery.
 //
 static const oosmos_sEvent EventTIMEOUT  = { oosmos_TIMEOUT,  NULL };
@@ -57,6 +63,22 @@ static const oosmos_sEvent EventENTER    = { oosmos_ENTER,    NULL };
 static const oosmos_sEvent EventEXIT     = { oosmos_EXIT,     NULL };
 static const oosmos_sEvent EventCOMPLETE = { oosmos_COMPLETE, NULL };
 
+extern uint32_t oosmos_TimestampMS(void)
+{
+    uint64_t Now = oosmos_GetFreeRunningUS();
+
+    //
+    // Handle the wrap around.
+    //
+    if (Now < PreviousFreeRunningUS) {
+        Now += 0x100000000;
+    }
+
+    RunningTimeUS += (Now - PreviousFreeRunningUS);
+    PreviousFreeRunningUS = Now;
+
+    return RunningTimeUS / 1000;
+}
 
 static bool IS_TIMEOUT_ACTIVE(const oosmos_sState * pState)
 {
@@ -180,34 +202,34 @@ static bool DeliverEvent(oosmos_sState * pState, const oosmos_sEvent * pEvent)
                   if (CurrentEventCode > 0) { // Any non-OOSMOS event code
                       if (pStateMachine->m_pEventNameConverter != NULL) {
                           const char* pEventName = pStateMachine->m_pEventNameConverter(CurrentEventCode);
-                          oosmos_DebugPrint("%s: POLL state %s (%s [%d])\n", pFileName, pState->m_pName, pEventName, CurrentEventCode);
+                          oosmos_DebugPrint("%8.8u %s: POLL state %s (%s [%d])\n", oosmos_TimestampMS(), pFileName, pState->m_pName, pEventName, CurrentEventCode);
                       }
                       else {
-                          oosmos_DebugPrint("%s: POLL state %s [%d]\n", pFileName, pState->m_pName, CurrentEventCode);
+                          oosmos_DebugPrint("%8.8u %s: POLL state %s [%d]\n", oosmos_TimestampMS(), pFileName, pState->m_pName, CurrentEventCode);
                       }
                   }
                   else {
-                      oosmos_DebugPrint("%s: POLL state %s\n", pFileName, pState->m_pName);
+                      oosmos_DebugPrint("%8.8u %s: POLL state %s\n", oosmos_TimestampMS(), pFileName, pState->m_pName);
                   }
 
                   break;
               }
               case oosmos_TIMEOUT: {
-                  oosmos_DebugPrint("%s: TIMEOUT state %s\n", pFileName, pState->m_pName);
+                  oosmos_DebugPrint("%8.8u %s: TIMEOUT state %s\n", oosmos_TimestampMS(), pFileName, pState->m_pName);
                   break;
               }
               case oosmos_COMPLETE: {
-                  oosmos_DebugPrint("%s: COMPLETE state %s\n", GetFileName(pState), pState->m_pName);
+                  oosmos_DebugPrint("%8.8u %s: COMPLETE state %s\n", oosmos_TimestampMS(), GetFileName(pState), pState->m_pName);
                   break;
               }
               default: {
                   if (pEvent->m_Code > 0) { // Any non-OOSMOS event code
                       if (pStateMachine->m_pEventNameConverter != NULL) {
                           const char* pEventName = pStateMachine->m_pEventNameConverter(CurrentEventCode);
-                          oosmos_DebugPrint("%s: EVENT %s (%s [%d])\n", pFileName, pState->m_pName, pEventName, CurrentEventCode);
+                          oosmos_DebugPrint("%8.8u %s: EVENT %s (%s [%d])\n", oosmos_TimestampMS(), pFileName, pState->m_pName, pEventName, CurrentEventCode);
                       }
                       else {
-                          oosmos_DebugPrint("%s: EVENT %s [%d]\n", pFileName, pState->m_pName, CurrentEventCode);
+                          oosmos_DebugPrint("%8.8u %s: EVENT %s [%d]\n", oosmos_TimestampMS(), pFileName, pState->m_pName, CurrentEventCode);
                       }
                   }
               }
@@ -365,7 +387,7 @@ static void DefaultTransitions(oosmos_sRegion * pRegion, oosmos_sState * pState)
 
   #if defined(oosmos_DEBUG)
     if (pState->m_pStateMachine->m_Debug) {
-      oosmos_DebugPrint("%s: ==> %s\n", GetFileName(pState), pState->m_pName);
+      oosmos_DebugPrint("%8.8u %s: ==> %s\n", oosmos_TimestampMS(), GetFileName(pState), pState->m_pName);
     }
   #endif
 
@@ -415,7 +437,7 @@ static void DefaultTransitions(oosmos_sRegion * pRegion, oosmos_sState * pState)
 
     default: {
       #if defined(oosmos_DEBUG)
-        oosmos_DebugPrint("%s: Unhandled type %d in DefaultTransitions.\n", GetFileName(pState), pState->m_Type);
+        oosmos_DebugPrint("%8.8u %s: Unhandled type %d in DefaultTransitions.\n", oosmos_TimestampMS(), GetFileName(pState), pState->m_Type);
       #endif
       break;
     }
@@ -499,7 +521,7 @@ static void Complete(oosmos_sState * pState)
 
     default: {
       #if defined(oosmos_DEBUG)
-        oosmos_DebugPrint("%s: Unhandled type %d in Complete.\n", GetFileName(pState), pState->m_Type);
+        oosmos_DebugPrint("%8.8u %s: Unhandled type %d in Complete.\n" , oosmos_TimestampMS(),GetFileName(pState), pState->m_Type);
       #endif
       break;
     }
@@ -601,7 +623,7 @@ static void Enter(oosmos_sRegion * pRegion, const oosmos_sState * pLCA, oosmos_s
 
         #if defined(oosmos_DEBUG)
           if (pRegion->m_Composite.m_State.m_pStateMachine->m_Debug) {
-            oosmos_DebugPrint("%s: --> %s\n", GetFileName(pState), pState->m_pName);
+            oosmos_DebugPrint("%8.8u %s: --> %s\n", oosmos_TimestampMS(), GetFileName(pState), pState->m_pName);
           }
         #endif
 
@@ -629,7 +651,7 @@ static void Enter(oosmos_sRegion * pRegion, const oosmos_sState * pLCA, oosmos_s
 
       default: {
         #if defined(oosmos_DEBUG)
-          oosmos_DebugPrint("%s: Unhandled type %d in Enter().\n", GetFileName(pState), pTarget->m_Type);
+          oosmos_DebugPrint("%8.8u %s: Unhandled type %d in Enter().\n", oosmos_TimestampMS(), GetFileName(pState), pTarget->m_Type);
         #endif
         break;
       }
@@ -675,7 +697,7 @@ static void Enter(oosmos_sRegion * pRegion, const oosmos_sState * pLCA, oosmos_s
 
     default: {
       #if defined(oosmos_DEBUG)
-        oosmos_DebugPrint("%s: Unhandled type %d in Enter_ (2)\n", GetFileName(pState), pTarget->m_Type);
+        oosmos_DebugPrint("%8.8u %s: Unhandled type %d in Enter_ (2)\n", oosmos_TimestampMS(), GetFileName(pState), pTarget->m_Type);
       #endif
       break;
     }
@@ -711,7 +733,7 @@ static void Exit(const oosmos_sRegion * pRegion, const oosmos_sState * pLCA)
 
     #if defined(oosmos_DEBUG)
       if (pState->m_pStateMachine->m_Debug) {
-        oosmos_DebugPrint("%s:     %s -->\n", GetFileName(pState), pState->m_pName);
+        oosmos_DebugPrint("%8.8u %s:     %s -->\n", oosmos_TimestampMS(), GetFileName(pState), pState->m_pName);
       }
     #endif
 
@@ -1016,11 +1038,7 @@ extern void OOSMOS_RunStateMachine(oosmos_sStateMachine * pStateMachine)
 
   if (!pStateMachine->m_IsStarted) {
     DefaultTransitions(&pStateMachine->m_Region, pStateMachine->m_Region.m_Composite.m_pDefault);
-
-    #if defined(oosmos_DEBUG_FILE)
-      remove(oosmos_DEBUG_FILE);
-    #endif
-
+	
     pStateMachine->m_IsStarted = true;
   }
 
@@ -1034,10 +1052,10 @@ extern void OOSMOS_RunStateMachine(oosmos_sStateMachine * pStateMachine)
           const int EventCode = pEvent->m_Code;
 
           if (pStateMachine->m_pEventNameConverter != NULL) {
-            oosmos_DebugPrint("%s: EVENT RECEIVED: %s [%d]\n", GetFileName(pStateMachine), (pStateMachine->m_pEventNameConverter)(EventCode), EventCode);
+            oosmos_DebugPrint("%8.8u %s: EVENT RECEIVED: %s [%d]\n", oosmos_TimestampMS(), GetFileName(pStateMachine), (pStateMachine->m_pEventNameConverter)(EventCode), EventCode);
           }
           else {
-            oosmos_DebugPrint("%s: EVENT RECEIVED: [%d]\n", GetFileName(pStateMachine), EventCode);
+            oosmos_DebugPrint("%8.8u %s: EVENT RECEIVED: [%d]\n", oosmos_TimestampMS(), GetFileName(pStateMachine), EventCode);
           }
         }
       #endif
@@ -1080,7 +1098,19 @@ extern void OOSMOS_RunStateMachine(oosmos_sStateMachine * pStateMachine)
 //
 extern void oosmos_RunStateMachines(void)
 {
-  oosmos_DebugPrint("\n>>>> oosmos_RunStateMachines()\n");
+  #if defined(oosmos_DEBUG_FILE)
+    static bool IsStarted = false;
+
+    if (!IsStarted) {
+      remove(oosmos_DEBUG_FILE);
+
+      RunningTimeUS = 0;
+      PreviousFreeRunningUS = oosmos_GetFreeRunningUS();
+      IsStarted = true;
+    }
+  #endif
+
+  oosmos_DebugPrint("\n%8.8u >>>> oosmos_RunStateMachines()\n", oosmos_TimestampMS());
 
   for (oosmos_sStateMachine * pStateMachine = pStateMachineList; pStateMachine != NULL; ) {
     oosmos_sStateMachine * pNext = pStateMachine->m_pNext;
@@ -1098,7 +1128,7 @@ extern void oosmos_RunStateMachines(void)
     }
   }
 
-  oosmos_DebugPrint("<<<< oosmos_RunStateMachines()\n");
+  oosmos_DebugPrint("%8.8u <<<< oosmos_RunStateMachines()\n", oosmos_TimestampMS());
 }
 
 extern void oosmos_TimeoutInSeconds(oosmos_sTimeout * pTimeout, uint32_t TimeoutSeconds)
