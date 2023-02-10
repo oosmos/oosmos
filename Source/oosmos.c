@@ -1110,7 +1110,11 @@ extern void oosmos_RunStateMachines(void)
     }
   #endif
 
+#if defined(oosmos_DEBUG)
+  const uint32_t StartMS = oosmos_TimestampMS();
+
   oosmos_DebugPrint("\n%8.8u >>>> oosmos_RunStateMachines()\n", oosmos_TimestampMS());
+#endif
 
   for (oosmos_sStateMachine * pStateMachine = pStateMachineList; pStateMachine != NULL; ) {
     oosmos_sStateMachine * pNext = pStateMachine->m_pNext;
@@ -1128,7 +1132,11 @@ extern void oosmos_RunStateMachines(void)
     }
   }
 
-  oosmos_DebugPrint("%8.8u <<<< oosmos_RunStateMachines()\n", oosmos_TimestampMS());
+#if defined(oosmos_DEBUG)
+  const uint32_t EndMS = oosmos_TimestampMS();
+
+  oosmos_DebugPrint("%8.8u <<<< oosmos_RunStateMachines() - Elapsed %d MS.\n", EndMS, EndMS - StartMS);
+#endif
 }
 
 extern void oosmos_TimeoutInSeconds(oosmos_sTimeout * pTimeout, uint32_t TimeoutSeconds)
