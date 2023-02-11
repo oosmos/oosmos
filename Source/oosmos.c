@@ -77,7 +77,7 @@ extern uint32_t oosmos_TimestampMS(void)
     RunningTimeUS += (Now - PreviousFreeRunningUS);
     PreviousFreeRunningUS = Now;
 
-    return RunningTimeUS / 1000;
+    return (uint32_t) (RunningTimeUS / 1000);
 }
 
 static bool IS_TIMEOUT_ACTIVE(const oosmos_sState * pState)
@@ -95,7 +95,7 @@ static void RESET_TIMEOUT(oosmos_sState * pState)
   pState->m_Timeout.m_TimeoutUS = 0;
 }
 
-static oosmos_sRegion * GetRegion(oosmos_sState * pState)
+static oosmos_sRegion* GetStatesRegion(oosmos_sState* pState)
 {
   oosmos_sState * pCandidateState = NULL;
 
@@ -103,7 +103,7 @@ static oosmos_sRegion * GetRegion(oosmos_sState * pState)
     pCandidateState = pState;
 
     #if defined(oosmos_ORTHO)
-      if (pCandidateState->m_Type == OOSMOS_OrthoRegionType) {
+      if (pCandidateState->m_Type == OOSMOS_OrthoType) {
         /*lint -e826 suppress "Suspicious pointer-to-pointer conversion (area too small)" */
         /*lint -e740 suppress "Unusual pointer cast (incompatible indirect types)" */
         oosmos_sOrthoRegion * pOrthoRegion = (oosmos_sOrthoRegion *) pCandidateState;
@@ -125,6 +125,7 @@ static oosmos_sRegion * GetRegion(oosmos_sState * pState)
 
 static void SetStateMachine(oosmos_sState * pState)
 {
+  oosmos_POINTER_GUARD(pState);
   const oosmos_sState * pCandidateState = NULL;
   oosmos_sState* pWalkState = pState;
 
@@ -178,34 +179,27 @@ static bool DeliverEvent(oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   oosmos_POINTER_GUARD(pState);
 
-  const OOSMOS_tCode pCode = pState->m_pCode;
-
-  if (pCode == NULL) {
-    return false;
-  }
-
   #if defined(oosmos_DEBUG)
       if (pState->m_pStateMachine->m_Debug) {
-          const oosmos_sStateMachine* pStateMachine = GetStateMachine(pState);
-          const oosmos_sEvent* pCurrentEvent = OOSMOS_GetCurrentEvent(pState);
-          const char* pFileName = GetFileName(pStateMachine);
+          const oosmos_sStateMachine * pStateMachine = GetStateMachine(pState);
+          const char                 * pFileName     = GetFileName(pStateMachine);
 
-          const int CurrentEventCode = pCurrentEvent->m_Code;
           switch (pEvent->m_Code) {
               case oosmos_POLL: {
-                  const oosmos_sStateMachine* pStateMachine = GetStateMachine(pState);
                   const oosmos_sEvent* pCurrentEvent = OOSMOS_GetCurrentEvent(pState);
-                  const char* pFileName = GetFileName(pStateMachine);
 
-                  const int CurrentEventCode = pCurrentEvent->m_Code;
+                  if (pCurrentEvent != NULL) {
+                      const int CurrentEventCode = pCurrentEvent->m_Code;
 
-                  if (CurrentEventCode > 0) { // Any non-OOSMOS event code
-                      if (pStateMachine->m_pEventNameConverter != NULL) {
-                          const char* pEventName = pStateMachine->m_pEventNameConverter(CurrentEventCode);
-                          oosmos_DebugPrint("%8.8u %s: POLL state %s (%s [%d])\n", oosmos_TimestampMS(), pFileName, pState->m_pName, pEventName, CurrentEventCode);
-                      }
-                      else {
-                          oosmos_DebugPrint("%8.8u %s: POLL state %s [%d]\n", oosmos_TimestampMS(), pFileName, pState->m_pName, CurrentEventCode);
+                      if (CurrentEventCode > 0) { // Any non-OOSMOS event code
+
+                          if (pStateMachine->m_pEventNameConverter != NULL) {
+                              const char* pEventName = pStateMachine->m_pEventNameConverter(CurrentEventCode);
+                              oosmos_DebugPrint("%8.8u %s: POLL state %s (%s [%d])\n", oosmos_TimestampMS(), pFileName, pState->m_pName, pEventName, CurrentEventCode);
+                          }
+                          else {
+                              oosmos_DebugPrint("%8.8u %s: POLL state %s [%d]\n", oosmos_TimestampMS(), pFileName, pState->m_pName, CurrentEventCode);
+                          }
                       }
                   }
                   else {
@@ -219,11 +213,26 @@ static bool DeliverEvent(oosmos_sState * pState, const oosmos_sEvent * pEvent)
                   break;
               }
               case oosmos_COMPLETE: {
-                  oosmos_DebugPrint("%8.8u %s: COMPLETE state %s\n", oosmos_TimestampMS(), GetFileName(pState), pState->m_pName);
+                  oosmos_DebugPrint("%8.8u %s: COMPLETE state %s\n", oosmos_TimestampMS(), pFileName, pState->m_pName);
+                  break;
+              }
+              case oosmos_DEFAULT: {
+                  oosmos_DebugPrint("%8.8u %s: ==> %s\n", oosmos_TimestampMS(), pFileName, pState->m_pName);
+                  break;
+              }
+              case oosmos_ENTER: {
+                  oosmos_DebugPrint("%8.8u %s: --> %s\n", oosmos_TimestampMS(), pFileName, pState->m_pName);
+                  break;
+              }
+              case oosmos_EXIT: {
+                  oosmos_DebugPrint("%8.8u %s:     %s -->\n", oosmos_TimestampMS(), pFileName, pState->m_pName);
                   break;
               }
               default: {
                   if (pEvent->m_Code > 0) { // Any non-OOSMOS event code
+                      const oosmos_sEvent * pCurrentEvent    = OOSMOS_GetCurrentEvent(pState);
+                      const int             CurrentEventCode = pCurrentEvent->m_Code;
+
                       if (pStateMachine->m_pEventNameConverter != NULL) {
                           const char* pEventName = pStateMachine->m_pEventNameConverter(CurrentEventCode);
                           oosmos_DebugPrint("%8.8u %s: EVENT %s (%s [%d])\n", oosmos_TimestampMS(), pFileName, pState->m_pName, pEventName, CurrentEventCode);
@@ -237,6 +246,12 @@ static bool DeliverEvent(oosmos_sState * pState, const oosmos_sEvent * pEvent)
 
       }
   #endif
+
+  const OOSMOS_tCode pCode = pState->m_pCode;
+
+  if (pCode == NULL) {
+    return false;
+  }
 
   return pCode(pState->m_pStateMachine->m_pObject, pState, pEvent);
 }
@@ -276,14 +291,17 @@ static bool PropagateEvent(const oosmos_sRegion * pRegion, const oosmos_sEvent *
   #endif
 
   for (oosmos_sState * pState = pCurrent; pState != pRegion->m_Composite.m_State.m_pParent; pState = pState->m_pParent) {
+    oosmos_POINTER_GUARD(pState);
     //
     // Deliver the event to the state machine.  If the return code is true, then
     // stop propagating the event, unless it's a POLL event, in which case we
     // want to unconditionally propagate the poll event up the hierarchy.
     //
-    if (DeliverEvent(pState, pEvent) && pEvent->m_Code != oosmos_POLL) {
-      return true;
-    }
+      if (pState->m_pParent != NULL && pState->m_Type != OOSMOS_OrthoRegionType) {
+          if (DeliverEvent(pState, pEvent) && pEvent->m_Code != oosmos_POLL) {
+              return true;
+          }
+      }
   }
 
   return false;
@@ -385,14 +403,11 @@ static void DefaultTransitions(oosmos_sRegion * pRegion, oosmos_sState * pState)
   (void) DeliverEvent(pState, &EventDEFAULT);
   pRegion->m_pCurrent = pState;
 
-  #if defined(oosmos_DEBUG)
-    if (pState->m_pStateMachine->m_Debug) {
-      oosmos_DebugPrint("%8.8u %s: ==> %s\n", oosmos_TimestampMS(), GetFileName(pState), pState->m_pName);
-    }
-  #endif
-
   ThreadInit(pState);
-  (void) DeliverEvent(pState, &EventENTER);
+
+  if (pState->m_Type != OOSMOS_OrthoRegionType) {
+      (void)DeliverEvent(pState, &EventENTER);
+  }
 
   switch (pState->m_Type) {
     case OOSMOS_CompositeType: {
@@ -426,7 +441,7 @@ static void DefaultTransitions(oosmos_sRegion * pRegion, oosmos_sState * pState)
       //
       // Send a completion event to the leaf state, unless the state implements
       // the POLL event, in which case it is up to the writer of the state
-      // code to eventually do an oosmos_ThreadComplete().
+      // code to eventually do an oosmos_ThreadComplete() or oosmos_ThreadEnd().
       //
       if (!DeliverEvent(pState, &EventPOLL)) {
         (void) DeliverEvent(pState, &EventCOMPLETE);
@@ -621,12 +636,6 @@ static void Enter(oosmos_sRegion * pRegion, const oosmos_sState * pLCA, oosmos_s
       case OOSMOS_LeafType: {
         pRegion->m_pCurrent = pState;
 
-        #if defined(oosmos_DEBUG)
-          if (pRegion->m_Composite.m_State.m_pStateMachine->m_Debug) {
-            oosmos_DebugPrint("%8.8u %s: --> %s\n", oosmos_TimestampMS(), GetFileName(pState), pState->m_pName);
-          }
-        #endif
-
         (void) DeliverEvent(pState, &EventENTER);
 
         switch (pState->m_Type) {
@@ -731,15 +740,12 @@ static void Exit(const oosmos_sRegion * pRegion, const oosmos_sState * pLCA)
   for (oosmos_sState * pState = pCurrent; pState != pLCA; pState = pState->m_pParent) {
     RESET_TIMEOUT(pState);
 
-    #if defined(oosmos_DEBUG)
-      if (pState->m_pStateMachine->m_Debug) {
-        oosmos_DebugPrint("%8.8u %s:     %s -->\n", oosmos_TimestampMS(), GetFileName(pState), pState->m_pName);
-      }
-    #endif
-
     oosmos_sComposite * pParent = (oosmos_sComposite *) pState->m_pParent;
     pParent->m_pHistoryState = pState;
-    (void) DeliverEvent(pState, &EventEXIT);
+
+    if (pState->m_Type != OOSMOS_OrthoRegionType) {
+        (void)DeliverEvent(pState, &EventEXIT);
+    }
   }
 }
 
@@ -763,8 +769,8 @@ extern bool OOSMOS_TransitionAction(oosmos_sState * pFromState, oosmos_sState * 
   oosmos_POINTER_GUARD(pFromState);
   oosmos_POINTER_GUARD(pToState);
 
-  oosmos_sRegion * pRegion = GetRegion(pFromState);
-  oosmos_sState * pCurrentState = pRegion->m_pCurrent;
+  oosmos_sRegion * pFromRegion = GetStatesRegion(pFromState);
+  oosmos_sState * pCurrentState = pFromRegion->m_pCurrent;
 
   oosmos_sState * pLCA = GetLCA(pCurrentState, pToState);
 
@@ -772,31 +778,37 @@ extern bool OOSMOS_TransitionAction(oosmos_sState * pFromState, oosmos_sState * 
     pLCA = pLCA->m_pParent;
   }
 
-  for (oosmos_sState * pS = pToState; pS != NULL; pS = pS->m_pParent) {
-    /*lint -e826 suppress "Suspicious pointer-to-pointer conversion (area too small)" */
-    if (pS->m_Type == OOSMOS_StateMachineType) {
-      pRegion = (oosmos_sRegion *) pS;
-      break;
-    }
-
-    #if defined(oosmos_ORTHO)
-      if (pS->m_Type == OOSMOS_OrthoRegionType) {
-        /*lint -e826 suppress "Suspicious pointer-to-pointer conversion (area too small)" */
-        pRegion = (oosmos_sRegion *) pS;
-        break;
-      }
-    #endif
-  }
-
-  Exit(pRegion, pLCA);
-
-  pRegion->m_pCurrent = pLCA;
+  Exit(pFromRegion, pLCA);
 
   if (pActionCode != NULL) {
     pActionCode(pFromState->m_pStateMachine->m_pObject, pFromState, pEvent);
   }
 
-  Enter(pRegion, pLCA, pToState);
+  oosmos_sRegion* pToRegion = GetStatesRegion(pToState);
+  Enter(pToRegion, pLCA, pToState);
+
+  oosmos_sRegion* pLcaRegion = GetStatesRegion(pLCA);
+
+#if 0
+  for (oosmos_sState* pS = pToState; pS != NULL; pS = pS->m_pParent) {
+      /*lint -e826 suppress "Suspicious pointer-to-pointer conversion (area too small)" */
+      if (pS->m_Type == OOSMOS_StateMachineType) {
+          pLcaRegion = (oosmos_sRegion*)pS;
+          break;
+      }
+
+#if defined(oosmos_ORTHO)
+      if (pS->m_Type == OOSMOS_OrthoRegionType) {
+          /*lint -e826 suppress "Suspicious pointer-to-pointer conversion (area too small)" */
+          pLcaRegion = (oosmos_sRegion*)pS;
+          break;
+      }
+#endif
+  }
+#endif
+
+  pLcaRegion->m_pCurrent = pToRegion->m_pCurrent;
+
   return true;
 }
 
@@ -1038,7 +1050,7 @@ extern void OOSMOS_RunStateMachine(oosmos_sStateMachine * pStateMachine)
 
   if (!pStateMachine->m_IsStarted) {
     DefaultTransitions(&pStateMachine->m_Region, pStateMachine->m_Region.m_Composite.m_pDefault);
-	
+    
     pStateMachine->m_IsStarted = true;
   }
 
@@ -1098,17 +1110,17 @@ extern void OOSMOS_RunStateMachine(oosmos_sStateMachine * pStateMachine)
 //
 extern void oosmos_RunStateMachines(void)
 {
-  #if defined(oosmos_DEBUG_FILE)
-    static bool IsStarted = false;
+  static bool IsStarted = false;
 
-    if (!IsStarted) {
+  if (!IsStarted) {
+    #if defined(oosmos_DEBUG_FILE)
       remove(oosmos_DEBUG_FILE);
+    #endif
 
-      RunningTimeUS = 0;
-      PreviousFreeRunningUS = oosmos_GetFreeRunningUS();
-      IsStarted = true;
-    }
-  #endif
+    RunningTimeUS = 0;
+    PreviousFreeRunningUS = oosmos_GetFreeRunningUS();
+    IsStarted = true;
+  }
 
 #if defined(oosmos_DEBUG)
   const uint32_t StartMS = oosmos_TimestampMS();
@@ -1556,7 +1568,10 @@ extern void OOSMOS_EndProgram(int Code)
 #elif defined(_WIN32)
   #include <windows.h>
 
-  extern void OOSMOS_DebugDummy(const char* pFormat, ...) { }
+  extern void OOSMOS_DebugDummy(const char* pFormat, ...) 
+  {
+      oosmos_UNUSED(pFormat);
+  }
 
   extern void OOSMOS_Write(const char* pFormat, ...)
   {
@@ -1571,6 +1586,9 @@ extern void OOSMOS_EndProgram(int Code)
 
           fclose(pFile);
       }
+    #else
+      pFormat = pFormat;
+      oosmos_UNUSED(pFormat);
     #endif
   }
 
