@@ -95,23 +95,21 @@ static void RESET_TIMEOUT(oosmos_sState * pState)
   pState->m_Timeout.m_TimeoutUS = 0;
 }
 
-static oosmos_sRegion* GetStatesRegion(oosmos_sState* pState)
+static oosmos_sRegion * GetRegion(oosmos_sState * pState)
 {
   oosmos_sState * pCandidateState = NULL;
 
-  while (pState != NULL) {
+  for (; pState != NULL; pState = pState->m_pParent) {
     pCandidateState = pState;
 
     #if defined(oosmos_ORTHO)
-      if (pCandidateState->m_Type == OOSMOS_OrthoType) {
+      if (pCandidateState->m_Type == OOSMOS_OrthoRegionType) {
         /*lint -e826 suppress "Suspicious pointer-to-pointer conversion (area too small)" */
         /*lint -e740 suppress "Unusual pointer cast (incompatible indirect types)" */
         oosmos_sOrthoRegion * pOrthoRegion = (oosmos_sOrthoRegion *) pCandidateState;
         return &pOrthoRegion->m_Region;
       }
     #endif
-
-    pState = pState->m_pParent;
   }
 
   // If we reached the top, then, by design, we are at the State Machine object.
@@ -395,6 +393,97 @@ static bool IsInState(const oosmos_sRegion * pRegion, const oosmos_sState * pQue
   return false;
 }
 
+static void DefaultTransitionsRegionX(oosmos_sRegion* pRegion);
+
+static void DefaultTransitionsStateX(oosmos_sState * pDefault)
+{
+    switch (pDefault->m_Type) {
+
+#if 0 // Is a composite type even generated?
+        case OOSMOS_CompositeType: {
+            const oosmos_sComposite* pComposite = (oosmos_sComposite*)pDefault;
+            DefaultTransitionsX(pRegion, pComposite->m_pDefault);
+            break;
+        }
+
+#endif
+
+#if 0  // should never happen.
+        case OOSMOS_StateMachineRegionType: {
+            oosmos_sStateMachine* pStateMachine = (oosmos_sStateMachine*)pDefault;
+            DefaultTransitionsX(&pStateMachine->m_Region, pStateMachine->m_Region.m_Composite.m_pDefault);
+            break;
+        }
+#endif
+
+    #if defined(oosmos_ORTHO)
+        case OOSMOS_OrthoType: {
+            const oosmos_sOrtho* pOrtho = (oosmos_sOrtho*)pDefault;
+            oosmos_sOrthoRegion* pOrthoRegion = pOrtho->m_pFirstOrthoRegion;
+
+            (void)DeliverEvent(pDefault, &EventDEFAULT);
+            (void)DeliverEvent(pDefault, &EventENTER);
+
+            ThreadInit(pDefault);
+
+            for (; pOrthoRegion != NULL; pOrthoRegion = pOrthoRegion->m_pNextOrthoRegion) {
+                DefaultTransitionsRegionX(&pOrthoRegion->m_Region);
+            }
+
+            break;
+        }
+    #endif
+
+        case OOSMOS_LeafType: {
+            (void)DeliverEvent(pDefault, &EventDEFAULT);
+            (void)DeliverEvent(pDefault, &EventENTER);
+
+            ThreadInit(pDefault);
+            
+#if 0 // do this in a separate poll
+            // 
+            //
+            // This implements a NULL transition.
+            //
+            // Send a completion event to the leaf state, unless the state implements
+            // the POLL event, in which case it is up to the writer of the state
+            // code to eventually do an oosmos_ThreadComplete() or oosmos_ThreadEnd().
+            //
+            if (!DeliverEvent(pDefault, &EventPOLL)) {
+                (void)DeliverEvent(pDefault, &EventCOMPLETE);
+            }
+#endif
+
+            break;
+        }
+
+        default: {
+    #if defined(oosmos_DEBUG)
+            oosmos_DebugPrint("%8.8u %s: Unhandled default state type %d in DefaultTransitions.\n", oosmos_TimestampMS(), GetFileName(pDefault), pDefault->m_Type);
+    #endif
+            break;
+        }
+    }
+}
+
+static void DefaultTransitionsRegionX(oosmos_sRegion* pRegion)
+{
+    oosmos_POINTER_GUARD(pRegion);
+
+    switch (pRegion->m_Composite.m_State.m_Type) {
+        case OOSMOS_StateMachineRegionType:
+        case OOSMOS_OrthoRegionType: {
+            oosmos_sState* pDefault = pRegion->m_Composite.m_pDefault;
+            pRegion->m_pCurrent = pDefault;
+            DefaultTransitionsStateX(pDefault);
+            break;
+        }
+        default:
+            break;
+    }
+
+}
+
 static void DefaultTransitions(oosmos_sRegion * pRegion, oosmos_sState * pState)
 {
   oosmos_POINTER_GUARD(pRegion);
@@ -416,7 +505,7 @@ static void DefaultTransitions(oosmos_sRegion * pRegion, oosmos_sState * pState)
       break;
     }
 
-    case OOSMOS_StateMachineType: {
+    case OOSMOS_StateMachineRegionType: {
       oosmos_sStateMachine * pStateMachine = (oosmos_sStateMachine *) pState;
       DefaultTransitions(&pStateMachine->m_Region, pStateMachine->m_Region.m_Composite.m_pDefault);
       break;
@@ -530,7 +619,7 @@ static void Complete(oosmos_sState * pState)
     // A Final state can be a child of a state machine, not just
     // an ortho.  Do nothing.
     //
-    case OOSMOS_StateMachineType: {
+    case OOSMOS_StateMachineRegionType: {
       break;
     }
 
@@ -555,6 +644,10 @@ static oosmos_sState * GetLCA(oosmos_sState * pFrom, oosmos_sState * pTo)
   for (oosmos_sState * pFromPath = pFrom; pFromPath != NULL; pFromPath = pFromPath->m_pParent) {
     for (oosmos_sState * pToPath = pTo; pToPath != NULL; pToPath = pToPath->m_pParent) {
       if (pFromPath == pToPath) {
+        if (pTo == pFromPath) {
+            pFromPath = pFromPath->m_pParent;
+        }
+
         return pFromPath;
       }
     }
@@ -693,7 +786,7 @@ static void Enter(oosmos_sRegion * pRegion, const oosmos_sState * pLCA, oosmos_s
       }
     #endif
 
-    case OOSMOS_StateMachineType: {
+    case OOSMOS_StateMachineRegionType: {
       const oosmos_sStateMachine * pStateMachine = (oosmos_sStateMachine*) pTarget;
       DefaultTransitions(pRegion, pStateMachine->m_Region.m_Composite.m_pDefault);
       break;
@@ -712,6 +805,224 @@ static void Enter(oosmos_sRegion * pRegion, const oosmos_sState * pLCA, oosmos_s
     }
   }
 }
+
+
+static bool IsStateInRegionX(oosmos_sRegion * pRegion, const oosmos_sState* pState)
+{
+    for (oosmos_sState* pCandidateState = pState; pCandidateState != NULL; pCandidateState = pCandidateState->m_pParent) {
+        oosmos_POINTER_GUARD(pState);
+
+        if (pCandidateState == pRegion)
+            return true;
+    }
+
+    return false;
+}
+
+static void EnterX(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sState* pTarget)
+{
+    if (pTarget == pLCA)
+        return;
+
+    EnterX(pRegion, pLCA, pTarget->m_pParent);
+
+    oosmos_DebugPrint("Enter %s\n", pTarget->m_pName);
+
+#if defined(oosmos_ORTHO)
+    switch (pTarget->m_Type) {
+        case OOSMOS_OrthoType: {
+            const oosmos_sOrtho* pOrtho = (oosmos_sOrtho*)pTarget;
+            oosmos_sOrthoRegion* pOrthoRegion = pOrtho->m_pFirstOrthoRegion;
+
+            for (; pOrthoRegion != NULL; pOrthoRegion = pOrthoRegion->m_pNextOrthoRegion) {
+                if (IsStateInRegionX(pOrthoRegion, pTarget)) {
+                    EnterX(&pOrthoRegion->m_Region, pLCA, pOrtho);
+                }
+                else {
+                    DefaultTransitionsRegionX(&pOrthoRegion->m_Region);
+                }
+            }
+
+            break;
+        }
+        default: {
+            break;
+        }
+    }
+#endif
+
+    for (oosmos_sState* pState = pTarget; pState != pLCA; pState = pState->m_pParent) {
+        RESET_TIMEOUT(pState);
+
+        oosmos_sComposite* pParent = (oosmos_sComposite*)pState->m_pParent;
+        pParent->m_pHistoryState = pState;
+
+        if (pState->m_Type != OOSMOS_OrthoRegionType) {
+            (void)DeliverEvent(pState, &EventENTER);
+        }
+    }
+}
+
+
+static void Enter2(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sState* pTarget)
+{
+    oosmos_POINTER_GUARD(pRegion);
+    oosmos_POINTER_GUARD(pLCA);
+    oosmos_POINTER_GUARD(pTarget);
+
+#define MAX_STATE_NESTING 7
+
+    oosmos_sState* pStates[MAX_STATE_NESTING] = { 0 };
+    oosmos_sState** ppStates = pStates;
+
+    switch (pTarget->m_Type) {
+    case OOSMOS_HistoryShallowType: {
+        oosmos_sComposite* pParent = (oosmos_sComposite*)pTarget->m_pParent;
+        oosmos_POINTER_GUARD(pParent);
+        oosmos_sState* pHistory = pParent->m_pHistoryState;
+
+        pTarget = pHistory;
+        break;
+    }
+
+    case OOSMOS_HistoryDeepType: {
+        oosmos_sComposite* pParent = (oosmos_sComposite*)pTarget->m_pParent;
+        oosmos_POINTER_GUARD(pParent);
+        oosmos_sState* pHistory = pParent->m_pHistoryState;
+
+        pTarget = pHistory;
+
+        while (pTarget->m_Type == OOSMOS_CompositeType) {
+            pParent = (oosmos_sComposite*)pTarget;
+            pTarget = pParent->m_pHistoryState;
+        }
+
+        break;
+    }
+
+    default: {
+        break;
+    }
+    }
+
+    //
+    // We are passed the target state (pTarget) which could be nested within other states.  We need
+    // to invoke the oosmos_ENTER code for all states between the pTarget state and the pLCA, but in
+    // reverse order.  To do this, we store the states from pTarget (innermost) to pLCA (outermost)
+    // in an array; then, working backwards through the array, invoke the oosmos_ENTER on each
+    // state from pLCA to pTarget.
+    //
+    {
+        *ppStates = NULL;
+
+        for (oosmos_sState* pState = pTarget; pState != pLCA; pState = pState->m_pParent) {
+            oosmos_POINTER_GUARD(pState);
+
+            *(++ppStates) = pState;
+        }
+    }
+
+    oosmos_sState* pState = NULL;
+
+    while ((pState = *ppStates--) != NULL) {
+        ThreadInit(pState);
+
+        switch (pState->m_Type) {
+        case OOSMOS_CompositeType:
+        case OOSMOS_FinalType:
+#if defined(oosmos_ORTHO)
+        case OOSMOS_OrthoType: {
+            const oosmos_sOrtho* pOrtho = (oosmos_sOrtho*)pTarget;
+            oosmos_sOrthoRegion* pOrthoRegion = pOrtho->m_pFirstOrthoRegion;
+
+            for (; pOrthoRegion != NULL; pOrthoRegion = pOrthoRegion->m_pNextOrthoRegion) {
+                DefaultTransitions(&pOrthoRegion->m_Region, pOrthoRegion->m_Region.m_Composite.m_pDefault);
+            }
+
+            break;
+        }
+        case OOSMOS_OrthoRegionType:
+#endif
+        case OOSMOS_LeafType: {
+            pRegion->m_pCurrent = pState;
+
+            (void)DeliverEvent(pState, &EventENTER);
+
+            switch (pState->m_Type) {
+            case OOSMOS_LeafType: {
+                if (!DeliverEvent(pState, &EventPOLL)) {
+                    (void)DeliverEvent(pState, &EventCOMPLETE);
+                }
+
+                break;
+            }
+            case OOSMOS_FinalType: {
+                Complete(pState->m_pParent);
+                break;
+            }
+            default: {
+                break;
+            }
+            }
+
+            break;
+        }
+
+        default: {
+#if defined(oosmos_DEBUG)
+            oosmos_DebugPrint("%8.8u %s: Unhandled type %d in Enter().\n", oosmos_TimestampMS(), GetFileName(pState), pTarget->m_Type);
+#endif
+            break;
+        }
+        }
+    }
+
+    switch (pTarget->m_Type) {
+    case OOSMOS_CompositeType: {
+        const oosmos_sComposite* pComposite = (oosmos_sComposite*)pTarget;
+        DefaultTransitions(pRegion, pComposite->m_pDefault);
+        break;
+    }
+
+#if defined(oosmos_ORTHO)
+    case OOSMOS_OrthoRegionType: {
+        const oosmos_sOrthoRegion* pOrthoRegion = (oosmos_sOrthoRegion*)pTarget;
+        DefaultTransitions(pRegion, pOrthoRegion->m_Region.m_Composite.m_pDefault);
+        break;
+    }
+
+    case OOSMOS_OrthoType: {
+        const oosmos_sOrtho* pOrtho = (oosmos_sOrtho*)pTarget;
+        oosmos_sOrthoRegion* pOrthoRegion = pOrtho->m_pFirstOrthoRegion;
+
+        for (; pOrthoRegion != NULL; pOrthoRegion = pOrthoRegion->m_pNextOrthoRegion) {
+            DefaultTransitions(&pOrthoRegion->m_Region, pOrthoRegion->m_Region.m_Composite.m_pDefault);
+        }
+
+        break;
+    }
+#endif
+
+    case OOSMOS_StateMachineRegionType: {
+        const oosmos_sStateMachine* pStateMachine = (oosmos_sStateMachine*)pTarget;
+        DefaultTransitions(pRegion, pStateMachine->m_Region.m_Composite.m_pDefault);
+        break;
+    }
+
+    case OOSMOS_FinalType:
+    case OOSMOS_LeafType: {
+        break;
+    }
+
+    default: {
+#if defined(oosmos_DEBUG)
+        oosmos_DebugPrint("%8.8u %s: Unhandled type %d in Enter_ (2)\n", oosmos_TimestampMS(), GetFileName(pState), pTarget->m_Type);
+#endif
+        break;
+    }
+    }
+}
+
 
 static void Exit(const oosmos_sRegion * pRegion, const oosmos_sState * pLCA)
 {
@@ -769,45 +1080,18 @@ extern bool OOSMOS_TransitionAction(oosmos_sState * pFromState, oosmos_sState * 
   oosmos_POINTER_GUARD(pFromState);
   oosmos_POINTER_GUARD(pToState);
 
-  oosmos_sRegion * pFromRegion = GetStatesRegion(pFromState);
-  oosmos_sState * pCurrentState = pFromRegion->m_pCurrent;
+  oosmos_sState * pLCA = GetLCA(pFromState, pToState);
 
-  oosmos_sState * pLCA = GetLCA(pCurrentState, pToState);
-
-  if (pToState == pLCA) {
-    pLCA = pLCA->m_pParent;
-  }
-
-  Exit(pFromRegion, pLCA);
+  oosmos_sRegion* pLcaRegion = GetRegion(pLCA);
+  Exit(pLcaRegion, pLCA);
 
   if (pActionCode != NULL) {
     pActionCode(pFromState->m_pStateMachine->m_pObject, pFromState, pEvent);
   }
 
-  oosmos_sRegion* pToRegion = GetStatesRegion(pToState);
-  Enter(pToRegion, pLCA, pToState);
-
-  oosmos_sRegion* pLcaRegion = GetStatesRegion(pLCA);
-
-#if 0
-  for (oosmos_sState* pS = pToState; pS != NULL; pS = pS->m_pParent) {
-      /*lint -e826 suppress "Suspicious pointer-to-pointer conversion (area too small)" */
-      if (pS->m_Type == OOSMOS_StateMachineType) {
-          pLcaRegion = (oosmos_sRegion*)pS;
-          break;
-      }
-
-#if defined(oosmos_ORTHO)
-      if (pS->m_Type == OOSMOS_OrthoRegionType) {
-          /*lint -e826 suppress "Suspicious pointer-to-pointer conversion (area too small)" */
-          pLcaRegion = (oosmos_sRegion*)pS;
-          break;
-      }
-#endif
-  }
-#endif
-
-  pLcaRegion->m_pCurrent = pToRegion->m_pCurrent;
+  //oosmos_sRegion* pToRegion = GetRegion(pToState);
+  EnterX(pLcaRegion, pLCA, pToState);
+  //Enter(pLcaRegion, pLCA, pToState);
 
   return true;
 }
@@ -887,7 +1171,7 @@ extern void OOSMOS_StateMachineInit(const char * pFileName, const char * pName, 
 
   oosmos_sRegion * pRegion = &pStateMachine->m_Region;
   RegionInit(pName, pRegion, NULL, pDefault, NULL);
-  pRegion->m_Composite.m_State.m_Type = OOSMOS_StateMachineType;
+  pRegion->m_Composite.m_State.m_Type = OOSMOS_StateMachineRegionType;
 
   #if defined(oosmos_DEBUG)
     pStateMachine->m_Debug     = false;
@@ -1049,7 +1333,8 @@ extern void OOSMOS_RunStateMachine(oosmos_sStateMachine * pStateMachine)
   oosmos_sRegion * pRegion       = &pStateMachine->m_Region;
 
   if (!pStateMachine->m_IsStarted) {
-    DefaultTransitions(&pStateMachine->m_Region, pStateMachine->m_Region.m_Composite.m_pDefault);
+    //DefaultTransitions(&pStateMachine->m_Region, pStateMachine->m_Region.m_Composite.m_pDefault);
+    DefaultTransitionsRegionX(&pStateMachine->m_Region);
     
     pStateMachine->m_IsStarted = true;
   }
