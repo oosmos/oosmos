@@ -262,7 +262,7 @@ typedef enum {
     OOSMOS_OrthoRegionType,
   #endif
 
-  OOSMOS_StateMachineType
+  OOSMOS_StateMachineRegionType
 } OOSMOS_eTypes;
 
 struct OOSMOS_sStateTag {

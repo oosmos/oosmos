@@ -77,7 +77,7 @@ extern uint32_t oosmos_TimestampMS(void)
     RunningTimeUS += (Now - PreviousFreeRunningUS);
     PreviousFreeRunningUS = Now;
 
-    return RunningTimeUS / 1000;
+    return (uint32_t) (RunningTimeUS / 1000);
 }
 
 static bool IS_TIMEOUT_ACTIVE(const oosmos_sState * pState)
@@ -99,7 +99,7 @@ static oosmos_sRegion * GetRegion(oosmos_sState * pState)
 {
   oosmos_sState * pCandidateState = NULL;
 
-  while (pState != NULL) {
+  for (; pState != NULL; pState = pState->m_pParent) {
     pCandidateState = pState;
 
     #if defined(oosmos_ORTHO)
@@ -110,8 +110,6 @@ static oosmos_sRegion * GetRegion(oosmos_sState * pState)
         return &pOrthoRegion->m_Region;
       }
     #endif
-
-    pState = pState->m_pParent;
   }
 
   // If we reached the top, then, by design, we are at the State Machine object.
@@ -125,6 +123,7 @@ static oosmos_sRegion * GetRegion(oosmos_sState * pState)
 
 static void SetStateMachine(oosmos_sState * pState)
 {
+  oosmos_POINTER_GUARD(pState);
   const oosmos_sState * pCandidateState = NULL;
   oosmos_sState* pWalkState = pState;
 
@@ -178,34 +177,30 @@ static bool DeliverEvent(oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   oosmos_POINTER_GUARD(pState);
 
-  const OOSMOS_tCode pCode = pState->m_pCode;
-
-  if (pCode == NULL) {
-    return false;
-  }
-
   #if defined(oosmos_DEBUG)
       if (pState->m_pStateMachine->m_Debug) {
-          const oosmos_sStateMachine* pStateMachine = GetStateMachine(pState);
-          const oosmos_sEvent* pCurrentEvent = OOSMOS_GetCurrentEvent(pState);
-          const char* pFileName = GetFileName(pStateMachine);
+          const oosmos_sStateMachine * pStateMachine = GetStateMachine(pState);
+          const char                 * pFileName     = GetFileName(pStateMachine);
 
-          const int CurrentEventCode = pCurrentEvent->m_Code;
           switch (pEvent->m_Code) {
               case oosmos_POLL: {
-                  const oosmos_sStateMachine* pStateMachine = GetStateMachine(pState);
                   const oosmos_sEvent* pCurrentEvent = OOSMOS_GetCurrentEvent(pState);
-                  const char* pFileName = GetFileName(pStateMachine);
 
-                  const int CurrentEventCode = pCurrentEvent->m_Code;
+                  if (pCurrentEvent != NULL) {
+                      const int CurrentEventCode = pCurrentEvent->m_Code;
 
-                  if (CurrentEventCode > 0) { // Any non-OOSMOS event code
-                      if (pStateMachine->m_pEventNameConverter != NULL) {
-                          const char* pEventName = pStateMachine->m_pEventNameConverter(CurrentEventCode);
-                          oosmos_DebugPrint("%8.8u %s: POLL state %s (%s [%d])\n", oosmos_TimestampMS(), pFileName, pState->m_pName, pEventName, CurrentEventCode);
+                      if (CurrentEventCode > 0) { // Any non-OOSMOS event code
+
+                          if (pStateMachine->m_pEventNameConverter != NULL) {
+                              const char* pEventName = pStateMachine->m_pEventNameConverter(CurrentEventCode);
+                              oosmos_DebugPrint("%8.8u %s: POLL state %s (%s [%d])\n", oosmos_TimestampMS(), pFileName, pState->m_pName, pEventName, CurrentEventCode);
+                          }
+                          else {
+                              oosmos_DebugPrint("%8.8u %s: POLL state %s [%d]\n", oosmos_TimestampMS(), pFileName, pState->m_pName, CurrentEventCode);
+                          }
                       }
                       else {
-                          oosmos_DebugPrint("%8.8u %s: POLL state %s [%d]\n", oosmos_TimestampMS(), pFileName, pState->m_pName, CurrentEventCode);
+                          oosmos_DebugPrint("%8.8u %s: POLL state %s\n", oosmos_TimestampMS(), pFileName, pState->m_pName);
                       }
                   }
                   else {
@@ -219,11 +214,26 @@ static bool DeliverEvent(oosmos_sState * pState, const oosmos_sEvent * pEvent)
                   break;
               }
               case oosmos_COMPLETE: {
-                  oosmos_DebugPrint("%8.8u %s: COMPLETE state %s\n", oosmos_TimestampMS(), GetFileName(pState), pState->m_pName);
+                  oosmos_DebugPrint("%8.8u %s: COMPLETE state %s\n", oosmos_TimestampMS(), pFileName, pState->m_pName);
+                  break;
+              }
+              case oosmos_DEFAULT: {
+                  oosmos_DebugPrint("%8.8u %s: ==> %s\n", oosmos_TimestampMS(), pFileName, pState->m_pName);
+                  break;
+              }
+              case oosmos_ENTER: {
+                  oosmos_DebugPrint("%8.8u %s: --> %s\n", oosmos_TimestampMS(), pFileName, pState->m_pName);
+                  break;
+              }
+              case oosmos_EXIT: {
+                  oosmos_DebugPrint("%8.8u %s:     %s -->\n", oosmos_TimestampMS(), pFileName, pState->m_pName);
                   break;
               }
               default: {
                   if (pEvent->m_Code > 0) { // Any non-OOSMOS event code
+                      const oosmos_sEvent * pCurrentEvent    = OOSMOS_GetCurrentEvent(pState);
+                      const int             CurrentEventCode = pCurrentEvent->m_Code;
+
                       if (pStateMachine->m_pEventNameConverter != NULL) {
                           const char* pEventName = pStateMachine->m_pEventNameConverter(CurrentEventCode);
                           oosmos_DebugPrint("%8.8u %s: EVENT %s (%s [%d])\n", oosmos_TimestampMS(), pFileName, pState->m_pName, pEventName, CurrentEventCode);
@@ -237,6 +247,12 @@ static bool DeliverEvent(oosmos_sState * pState, const oosmos_sEvent * pEvent)
 
       }
   #endif
+
+  const OOSMOS_tCode pCode = pState->m_pCode;
+
+  if (pCode == NULL) {
+    return false;
+  }
 
   return pCode(pState->m_pStateMachine->m_pObject, pState, pEvent);
 }
@@ -276,14 +292,17 @@ static bool PropagateEvent(const oosmos_sRegion * pRegion, const oosmos_sEvent *
   #endif
 
   for (oosmos_sState * pState = pCurrent; pState != pRegion->m_Composite.m_State.m_pParent; pState = pState->m_pParent) {
+    oosmos_POINTER_GUARD(pState);
     //
     // Deliver the event to the state machine.  If the return code is true, then
     // stop propagating the event, unless it's a POLL event, in which case we
     // want to unconditionally propagate the poll event up the hierarchy.
     //
-    if (DeliverEvent(pState, pEvent) && pEvent->m_Code != oosmos_POLL) {
-      return true;
-    }
+      if (pState->m_pParent != NULL && pState->m_Type != OOSMOS_OrthoRegionType) {
+          if (DeliverEvent(pState, pEvent) && pEvent->m_Code != oosmos_POLL) {
+              return true;
+          }
+      }
   }
 
   return false;
@@ -385,14 +404,11 @@ static void DefaultTransitions(oosmos_sRegion * pRegion, oosmos_sState * pState)
   (void) DeliverEvent(pState, &EventDEFAULT);
   pRegion->m_pCurrent = pState;
 
-  #if defined(oosmos_DEBUG)
-    if (pState->m_pStateMachine->m_Debug) {
-      oosmos_DebugPrint("%8.8u %s: ==> %s\n", oosmos_TimestampMS(), GetFileName(pState), pState->m_pName);
-    }
-  #endif
-
   ThreadInit(pState);
-  (void) DeliverEvent(pState, &EventENTER);
+
+  if (pState->m_Type != OOSMOS_OrthoRegionType) {
+      (void)DeliverEvent(pState, &EventENTER);
+  }
 
   switch (pState->m_Type) {
     case OOSMOS_CompositeType: {
@@ -401,7 +417,7 @@ static void DefaultTransitions(oosmos_sRegion * pRegion, oosmos_sState * pState)
       break;
     }
 
-    case OOSMOS_StateMachineType: {
+    case OOSMOS_StateMachineRegionType: {
       oosmos_sStateMachine * pStateMachine = (oosmos_sStateMachine *) pState;
       DefaultTransitions(&pStateMachine->m_Region, pStateMachine->m_Region.m_Composite.m_pDefault);
       break;
@@ -426,7 +442,7 @@ static void DefaultTransitions(oosmos_sRegion * pRegion, oosmos_sState * pState)
       //
       // Send a completion event to the leaf state, unless the state implements
       // the POLL event, in which case it is up to the writer of the state
-      // code to eventually do an oosmos_ThreadComplete().
+      // code to eventually do an oosmos_ThreadComplete() or oosmos_ThreadEnd().
       //
       if (!DeliverEvent(pState, &EventPOLL)) {
         (void) DeliverEvent(pState, &EventCOMPLETE);
@@ -515,7 +531,7 @@ static void Complete(oosmos_sState * pState)
     // A Final state can be a child of a state machine, not just
     // an ortho.  Do nothing.
     //
-    case OOSMOS_StateMachineType: {
+    case OOSMOS_StateMachineRegionType: {
       break;
     }
 
@@ -540,6 +556,10 @@ static oosmos_sState * GetLCA(oosmos_sState * pFrom, oosmos_sState * pTo)
   for (oosmos_sState * pFromPath = pFrom; pFromPath != NULL; pFromPath = pFromPath->m_pParent) {
     for (oosmos_sState * pToPath = pTo; pToPath != NULL; pToPath = pToPath->m_pParent) {
       if (pFromPath == pToPath) {
+        if (pTo == pFromPath) {
+            pFromPath = pFromPath->m_pParent;
+        }
+
         return pFromPath;
       }
     }
@@ -548,161 +568,77 @@ static oosmos_sState * GetLCA(oosmos_sState * pFrom, oosmos_sState * pTo)
   return NULL;
 }
 
-static void Enter(oosmos_sRegion * pRegion, const oosmos_sState * pLCA, oosmos_sState * pTarget)
+
+static bool IsStateInRegionX(oosmos_sRegion * pRegion, const oosmos_sState* pState)
 {
-  oosmos_POINTER_GUARD(pRegion);
-  oosmos_POINTER_GUARD(pLCA);
-  oosmos_POINTER_GUARD(pTarget);
+    for (const oosmos_sState* pCandidateState = pState; pCandidateState != NULL; pCandidateState = pCandidateState->m_pParent) {
+        oosmos_POINTER_GUARD(pState);
 
-  #define MAX_STATE_NESTING 7
-
-  oosmos_sState* pStates[MAX_STATE_NESTING] = { 0 };
-  oosmos_sState ** ppStates = pStates;
-
-  switch (pTarget->m_Type) {
-    case OOSMOS_HistoryShallowType: {
-      oosmos_sComposite * pParent  = (oosmos_sComposite *) pTarget->m_pParent;
-      oosmos_POINTER_GUARD(pParent);
-      oosmos_sState     * pHistory = pParent->m_pHistoryState;
-
-      pTarget = pHistory;
-      break;
+        if (pCandidateState == &pRegion->m_Composite.m_State)
+            return true;
     }
 
-    case OOSMOS_HistoryDeepType: {
-      oosmos_sComposite * pParent  = (oosmos_sComposite *) pTarget->m_pParent;
-      oosmos_POINTER_GUARD(pParent);
-      oosmos_sState     * pHistory = pParent->m_pHistoryState;
-
-      pTarget = pHistory;
-
-      while (pTarget->m_Type == OOSMOS_CompositeType) {
-        pParent = (oosmos_sComposite *) pTarget;
-        pTarget = pParent->m_pHistoryState;
-      }
-
-      break;
-    }
-
-    default: {
-      break;
-    }
-  }
-
-  //
-  // We are passed the target state (pTarget) which could be nested within other states.  We need
-  // to invoke the oosmos_ENTER code for all states between the pTarget state and the pLCA, but in
-  // reverse order.  To do this, we store the states from pTarget (innermost) to pLCA (outermost)
-  // in an array; then, working backwards through the array, invoke the oosmos_ENTER on each
-  // state from pLCA to pTarget.
-  //
-  {
-    *ppStates = NULL;
-
-    for (oosmos_sState * pState = pTarget; pState != pLCA; pState = pState->m_pParent) {
-      oosmos_POINTER_GUARD(pState);
-
-      *(++ppStates) = pState;
-    }
-  }
-
-  oosmos_sState * pState = NULL;
-
-  while ((pState = *ppStates--) != NULL) {
-    ThreadInit(pState);
-
-    switch (pState->m_Type) {
-      case OOSMOS_CompositeType:
-      case OOSMOS_FinalType:
-        #if defined(oosmos_ORTHO)
-          case OOSMOS_OrthoType:
-          case OOSMOS_OrthoRegionType:
-        #endif
-      case OOSMOS_LeafType: {
-        pRegion->m_pCurrent = pState;
-
-        #if defined(oosmos_DEBUG)
-          if (pRegion->m_Composite.m_State.m_pStateMachine->m_Debug) {
-            oosmos_DebugPrint("%8.8u %s: --> %s\n", oosmos_TimestampMS(), GetFileName(pState), pState->m_pName);
-          }
-        #endif
-
-        (void) DeliverEvent(pState, &EventENTER);
-
-        switch (pState->m_Type) {
-          case OOSMOS_LeafType: {
-            if (!DeliverEvent(pState, &EventPOLL)) {
-              (void) DeliverEvent(pState, &EventCOMPLETE);
-            }
-
-            break;
-          }
-          case OOSMOS_FinalType: {
-            Complete(pState->m_pParent);
-            break;
-          }
-          default: {
-            break;
-          }
-        }
-
-        break;
-      }
-
-      default: {
-        #if defined(oosmos_DEBUG)
-          oosmos_DebugPrint("%8.8u %s: Unhandled type %d in Enter().\n", oosmos_TimestampMS(), GetFileName(pState), pTarget->m_Type);
-        #endif
-        break;
-      }
-    }
-  }
-
-  switch (pTarget->m_Type) {
-    case OOSMOS_CompositeType: {
-      const oosmos_sComposite * pComposite = (oosmos_sComposite*) pTarget;
-      DefaultTransitions(pRegion, pComposite->m_pDefault);
-      break;
-    }
-
-    #if defined(oosmos_ORTHO)
-      case OOSMOS_OrthoRegionType: {
-        const oosmos_sOrthoRegion * pOrthoRegion = (oosmos_sOrthoRegion *) pTarget;
-        DefaultTransitions(pRegion, pOrthoRegion->m_Region.m_Composite.m_pDefault);
-        break;
-      }
-
-      case OOSMOS_OrthoType: {
-        const oosmos_sOrtho * pOrtho = (oosmos_sOrtho *) pTarget;
-        oosmos_sOrthoRegion * pOrthoRegion = pOrtho->m_pFirstOrthoRegion;
-
-        for (; pOrthoRegion != NULL; pOrthoRegion = pOrthoRegion->m_pNextOrthoRegion) {
-          DefaultTransitions(&pOrthoRegion->m_Region, pOrthoRegion->m_Region.m_Composite.m_pDefault);
-        }
-
-        break;
-      }
-    #endif
-
-    case OOSMOS_StateMachineType: {
-      const oosmos_sStateMachine * pStateMachine = (oosmos_sStateMachine*) pTarget;
-      DefaultTransitions(pRegion, pStateMachine->m_Region.m_Composite.m_pDefault);
-      break;
-    }
-
-    case OOSMOS_FinalType:
-    case OOSMOS_LeafType: {
-      break;
-    }
-
-    default: {
-      #if defined(oosmos_DEBUG)
-        oosmos_DebugPrint("%8.8u %s: Unhandled type %d in Enter_ (2)\n", oosmos_TimestampMS(), GetFileName(pState), pTarget->m_Type);
-      #endif
-      break;
-    }
-  }
+    return false;
 }
+
+static void Enter(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sState* pToState, oosmos_sState * pStack)
+{
+    if (pStack == pLCA)
+        return;
+
+    // Recursion to reverse the order of the list.
+    Enter(pRegion, pLCA, pToState, pStack->m_pParent);                
+
+    switch (pStack->m_Type) {
+        case OOSMOS_CompositeType: {
+            oosmos_sComposite* pComposite = (oosmos_sComposite*)pStack;
+            pRegion->m_pCurrent = pStack;
+            (void)DeliverEvent(pStack, &EventENTER);
+            ThreadInit(pStack);
+            DefaultTransitions(pRegion, pComposite->m_pDefault);
+            break;
+        }
+
+        #if defined(oosmos_ORTHO)
+            case OOSMOS_OrthoType: {
+                pRegion = GetRegion(pStack);
+                pRegion->m_pCurrent = pStack;
+                (void) DeliverEvent(pStack, &EventENTER);
+                ThreadInit(pStack);
+
+                const oosmos_sOrtho* pOrtho       = (oosmos_sOrtho*) pStack;
+                oosmos_sOrthoRegion* pOrthoRegion = pOrtho->m_pFirstOrthoRegion;
+
+                for (; pOrthoRegion != NULL; pOrthoRegion = pOrthoRegion->m_pNextOrthoRegion) {
+                    if (!IsStateInRegionX(&pOrthoRegion->m_Region, pToState)) {
+                        DefaultTransitions(&pOrthoRegion->m_Region, pOrthoRegion->m_Region.m_Composite.m_pDefault);
+                    }
+                }
+
+                break;
+            }
+        #endif
+
+        case OOSMOS_OrthoRegionType:
+            break;
+
+
+        case OOSMOS_FinalType:
+        case OOSMOS_LeafType:
+            pRegion = GetRegion(pStack);
+            pRegion->m_pCurrent = pStack;
+            (void) DeliverEvent(pStack, &EventENTER);
+            ThreadInit(pStack);
+            //DefaultTransitionsRegionX(pRegion);
+            break;
+
+        default: {
+            pRegion = NULL;
+            break;
+        }
+    }
+}
+
 
 static void Exit(const oosmos_sRegion * pRegion, const oosmos_sState * pLCA)
 {
@@ -711,35 +647,26 @@ static void Exit(const oosmos_sRegion * pRegion, const oosmos_sState * pLCA)
   oosmos_sState * pCurrent = pRegion->m_pCurrent;
 
   #if defined(oosmos_ORTHO)
-    switch (pCurrent->m_Type) {
-      case OOSMOS_OrthoType: {
-        const oosmos_sOrtho * pOrtho = (oosmos_sOrtho *) pCurrent;
+    if (pCurrent->m_Type == OOSMOS_OrthoType) {
+        const oosmos_sOrtho * pOrtho       = (oosmos_sOrtho *) pCurrent;
         oosmos_sOrthoRegion * pOrthoRegion = pOrtho->m_pFirstOrthoRegion;
 
         for (; pOrthoRegion != NULL; pOrthoRegion = pOrthoRegion->m_pNextOrthoRegion) {
           Exit(&pOrthoRegion->m_Region, &pOrthoRegion->m_Region.m_Composite.m_State);
         }
-
-        break;
-      }
-      default: {
-        break;
-      }
     }
   #endif
 
   for (oosmos_sState * pState = pCurrent; pState != pLCA; pState = pState->m_pParent) {
     RESET_TIMEOUT(pState);
 
-    #if defined(oosmos_DEBUG)
-      if (pState->m_pStateMachine->m_Debug) {
-        oosmos_DebugPrint("%8.8u %s:     %s -->\n", oosmos_TimestampMS(), GetFileName(pState), pState->m_pName);
-      }
-    #endif
-
     oosmos_sComposite * pParent = (oosmos_sComposite *) pState->m_pParent;
     pParent->m_pHistoryState = pState;
-    (void) DeliverEvent(pState, &EventEXIT);
+
+    if (pState->m_Type != OOSMOS_OrthoRegionType) {
+        (void) DeliverEvent(pState, &EventEXIT);
+    }
+
   }
 }
 
@@ -763,40 +690,17 @@ extern bool OOSMOS_TransitionAction(oosmos_sState * pFromState, oosmos_sState * 
   oosmos_POINTER_GUARD(pFromState);
   oosmos_POINTER_GUARD(pToState);
 
-  oosmos_sRegion * pRegion = GetRegion(pFromState);
-  oosmos_sState * pCurrentState = pRegion->m_pCurrent;
+  oosmos_sState * pLCA = GetLCA(pFromState, pToState);
 
-  oosmos_sState * pLCA = GetLCA(pCurrentState, pToState);
-
-  if (pToState == pLCA) {
-    pLCA = pLCA->m_pParent;
-  }
-
-  for (oosmos_sState * pS = pToState; pS != NULL; pS = pS->m_pParent) {
-    /*lint -e826 suppress "Suspicious pointer-to-pointer conversion (area too small)" */
-    if (pS->m_Type == OOSMOS_StateMachineType) {
-      pRegion = (oosmos_sRegion *) pS;
-      break;
-    }
-
-    #if defined(oosmos_ORTHO)
-      if (pS->m_Type == OOSMOS_OrthoRegionType) {
-        /*lint -e826 suppress "Suspicious pointer-to-pointer conversion (area too small)" */
-        pRegion = (oosmos_sRegion *) pS;
-        break;
-      }
-    #endif
-  }
-
-  Exit(pRegion, pLCA);
-
-  pRegion->m_pCurrent = pLCA;
+  oosmos_sRegion* pLcaRegion = GetRegion(pLCA);
+  Exit(pLcaRegion, pLCA);
 
   if (pActionCode != NULL) {
     pActionCode(pFromState->m_pStateMachine->m_pObject, pFromState, pEvent);
   }
 
-  Enter(pRegion, pLCA, pToState);
+  Enter(pLcaRegion, pLCA, pToState, pToState);
+
   return true;
 }
 
@@ -875,7 +779,7 @@ extern void OOSMOS_StateMachineInit(const char * pFileName, const char * pName, 
 
   oosmos_sRegion * pRegion = &pStateMachine->m_Region;
   RegionInit(pName, pRegion, NULL, pDefault, NULL);
-  pRegion->m_Composite.m_State.m_Type = OOSMOS_StateMachineType;
+  pRegion->m_Composite.m_State.m_Type = OOSMOS_StateMachineRegionType;
 
   #if defined(oosmos_DEBUG)
     pStateMachine->m_Debug     = false;
@@ -1038,7 +942,7 @@ extern void OOSMOS_RunStateMachine(oosmos_sStateMachine * pStateMachine)
 
   if (!pStateMachine->m_IsStarted) {
     DefaultTransitions(&pStateMachine->m_Region, pStateMachine->m_Region.m_Composite.m_pDefault);
-	
+    
     pStateMachine->m_IsStarted = true;
   }
 
@@ -1098,17 +1002,17 @@ extern void OOSMOS_RunStateMachine(oosmos_sStateMachine * pStateMachine)
 //
 extern void oosmos_RunStateMachines(void)
 {
-  #if defined(oosmos_DEBUG_FILE)
-    static bool IsStarted = false;
+  static bool IsStarted = false;
 
-    if (!IsStarted) {
+  if (!IsStarted) {
+    #if defined(oosmos_DEBUG_FILE)
       remove(oosmos_DEBUG_FILE);
+    #endif
 
-      RunningTimeUS = 0;
-      PreviousFreeRunningUS = oosmos_GetFreeRunningUS();
-      IsStarted = true;
-    }
-  #endif
+    RunningTimeUS = 0;
+    PreviousFreeRunningUS = oosmos_GetFreeRunningUS();
+    IsStarted = true;
+  }
 
 #if defined(oosmos_DEBUG)
   const uint32_t StartMS = oosmos_TimestampMS();
@@ -1556,7 +1460,10 @@ extern void OOSMOS_EndProgram(int Code)
 #elif defined(_WIN32)
   #include <windows.h>
 
-  extern void OOSMOS_DebugDummy(const char* pFormat, ...) { }
+  extern void OOSMOS_DebugDummy(const char* pFormat, ...) 
+  {
+      oosmos_UNUSED(pFormat);
+  }
 
   extern void OOSMOS_Write(const char* pFormat, ...)
   {
@@ -1571,6 +1478,9 @@ extern void OOSMOS_EndProgram(int Code)
 
           fclose(pFile);
       }
+    #else
+      pFormat = pFormat;
+      oosmos_UNUSED(pFormat);
     #endif
   }
 

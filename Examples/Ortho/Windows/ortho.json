@@ -36,6 +36,15 @@
     "debug":        true
   },
   {
+    "enabled":      true,
+    "uxf_filename": "OrthoCrossTransition.uxf",
+    "filename":     "OrthoCrossTransition.c",
+    "type":         "ortho",
+    "object_ptr":   "pOrtho",
+    "queue_size":   0,
+    "debug":        true
+  },
+  {
     "enabled":       true,
     "thread_events": ["evTick"],
     "uxf_filename":  "OrthoThreadEvents.uxf",
