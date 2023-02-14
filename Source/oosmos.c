@@ -441,7 +441,6 @@ static void DefaultTransitionsStateX(oosmos_sState * pDefault)
 
             ThreadInit(pDefault);
             
-#if 0 // do this in a separate poll
             // 
             //
             // This implements a NULL transition.
@@ -453,7 +452,6 @@ static void DefaultTransitionsStateX(oosmos_sState * pDefault)
             if (!DeliverEvent(pDefault, &EventPOLL)) {
                 (void) DeliverEvent(pDefault, &EventCOMPLETE);
             }
-#endif
 
             break;
         }
@@ -829,6 +827,15 @@ static void EnterX(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sS
     EnterX(pRegion, pLCA, pToState, pStack->m_pParent);                
 
     switch (pStack->m_Type) {
+        case OOSMOS_CompositeType: {
+            oosmos_sComposite* pComposite = (oosmos_sComposite*)pStack;
+            pRegion->m_pCurrent = pStack;
+            (void)DeliverEvent(pStack, &EventENTER);
+            ThreadInit(pStack);
+            DefaultTransitionsStateX(pComposite->m_pDefault);
+            break;
+        }
+
         #if defined(oosmos_ORTHO)
             case OOSMOS_OrthoType: {
                 pRegion = GetRegion(pStack);
@@ -852,13 +859,14 @@ static void EnterX(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sS
         case OOSMOS_OrthoRegionType:
             break;
 
-        case OOSMOS_CompositeType:
+
         case OOSMOS_FinalType:
         case OOSMOS_LeafType:
             pRegion = GetRegion(pStack);
             pRegion->m_pCurrent = pStack;
             (void) DeliverEvent(pStack, &EventENTER);
             ThreadInit(pStack);
+            //DefaultTransitionsRegionX(pRegion);
             break;
 
         default: {
