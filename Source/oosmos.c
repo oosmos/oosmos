@@ -832,7 +832,7 @@ static void EnterX(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sS
             pRegion->m_pCurrent = pStack;
             (void)DeliverEvent(pStack, &EventENTER);
             ThreadInit(pStack);
-            DefaultTransitionsStateX(pComposite->m_pDefault);
+            DefaultTransitions(pRegion, pComposite->m_pDefault);
             break;
         }
 
@@ -848,7 +848,7 @@ static void EnterX(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sS
 
                 for (; pOrthoRegion != NULL; pOrthoRegion = pOrthoRegion->m_pNextOrthoRegion) {
                     if (!IsStateInRegionX(&pOrthoRegion->m_Region, pToState)) {
-                        DefaultTransitionsRegionX(&pOrthoRegion->m_Region);
+                        DefaultTransitions(&pOrthoRegion->m_Region, pOrthoRegion->m_Region.m_Composite.m_pDefault);
                     }
                 }
 
@@ -1340,8 +1340,7 @@ extern void OOSMOS_RunStateMachine(oosmos_sStateMachine * pStateMachine)
   oosmos_sRegion * pRegion       = &pStateMachine->m_Region;
 
   if (!pStateMachine->m_IsStarted) {
-    //DefaultTransitions(&pStateMachine->m_Region, pStateMachine->m_Region.m_Composite.m_pDefault);
-    DefaultTransitionsRegionX(&pStateMachine->m_Region);
+    DefaultTransitions(&pStateMachine->m_Region, pStateMachine->m_Region.m_Composite.m_pDefault);
     
     pStateMachine->m_IsStarted = true;
   }
