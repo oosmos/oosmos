@@ -819,46 +819,51 @@ static bool IsStateInRegionX(oosmos_sRegion * pRegion, const oosmos_sState* pSta
     return false;
 }
 
-static void EnterX(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sState* pTarget)
+static void EnterX(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sState* pToState, oosmos_sState * pStack)
 {
-    if (pTarget == pLCA)
+    if (pStack == pLCA)
         return;
 
-    EnterX(pRegion, pLCA, pTarget->m_pParent);
+    EnterX(pRegion, pLCA, pToState, pStack->m_pParent);                
 
-    oosmos_DebugPrint("Enter %s\n", pTarget->m_pName);
+    switch (pStack->m_Type) {
+        #if defined(oosmos_ORTHO)
+            case OOSMOS_OrthoType: {
+                pRegion = GetRegion(pStack);
+                pRegion->m_pCurrent = pStack;
+                (void) DeliverEvent(pStack, &EventENTER);
 
-#if defined(oosmos_ORTHO)
-    switch (pTarget->m_Type) {
-        case OOSMOS_OrthoType: {
-            const oosmos_sOrtho* pOrtho = (oosmos_sOrtho*)pTarget;
-            oosmos_sOrthoRegion* pOrthoRegion = pOrtho->m_pFirstOrthoRegion;
+                const oosmos_sOrtho* pOrtho       = (oosmos_sOrtho*) pStack;
+                oosmos_sOrthoRegion* pOrthoRegion = pOrtho->m_pFirstOrthoRegion;
 
-            for (; pOrthoRegion != NULL; pOrthoRegion = pOrthoRegion->m_pNextOrthoRegion) {
-                if (IsStateInRegionX(pOrthoRegion, pTarget)) {
-                    EnterX(&pOrthoRegion->m_Region, pLCA, pOrtho);
+                for (; pOrthoRegion != NULL; pOrthoRegion = pOrthoRegion->m_pNextOrthoRegion) {
+                    if (IsStateInRegionX(pOrthoRegion, pToState)) {
+                        //EnterX(&pOrthoRegion->m_Region, pLCA, pOrtho, pOrtho);
+                    }
+                    else {
+                        DefaultTransitionsRegionX(&pOrthoRegion->m_Region);
+                    }
                 }
-                else {
-                    DefaultTransitionsRegionX(&pOrthoRegion->m_Region);
-                }
+
+                break;
             }
+        #endif
 
+        case OOSMOS_OrthoRegionType:
+            //pRegion->m_pCurrent = pToState;
             break;
-        }
+
+        case OOSMOS_CompositeType:
+        case OOSMOS_FinalType:
+        case OOSMOS_LeafType:
+            pRegion = GetRegion(pStack);
+            pRegion->m_pCurrent = pStack;
+            (void) DeliverEvent(pStack, &EventENTER);
+            break;
+
         default: {
+            pRegion = NULL;
             break;
-        }
-    }
-#endif
-
-    for (oosmos_sState* pState = pTarget; pState != pLCA; pState = pState->m_pParent) {
-        RESET_TIMEOUT(pState);
-
-        oosmos_sComposite* pParent = (oosmos_sComposite*)pState->m_pParent;
-        pParent->m_pHistoryState = pState;
-
-        if (pState->m_Type != OOSMOS_OrthoRegionType) {
-            (void)DeliverEvent(pState, &EventENTER);
         }
     }
 }
@@ -1055,8 +1060,9 @@ static void Exit(const oosmos_sRegion * pRegion, const oosmos_sState * pLCA)
     pParent->m_pHistoryState = pState;
 
     if (pState->m_Type != OOSMOS_OrthoRegionType) {
-        (void)DeliverEvent(pState, &EventEXIT);
+        (void) DeliverEvent(pState, &EventEXIT);
     }
+
   }
 }
 
@@ -1090,7 +1096,7 @@ extern bool OOSMOS_TransitionAction(oosmos_sState * pFromState, oosmos_sState * 
   }
 
   //oosmos_sRegion* pToRegion = GetRegion(pToState);
-  EnterX(pLcaRegion, pLCA, pToState);
+  EnterX(pLcaRegion, pLCA, pToState, pToState);
   //Enter(pLcaRegion, pLCA, pToState);
 
   return true;
