@@ -199,6 +199,9 @@ static bool DeliverEvent(oosmos_sState * pState, const oosmos_sEvent * pEvent)
                               oosmos_DebugPrint("%8.8u %s: POLL state %s [%d]\n", oosmos_TimestampMS(), pFileName, pState->m_pName, CurrentEventCode);
                           }
                       }
+                      else {
+                          oosmos_DebugPrint("%8.8u %s: POLL state %s\n", oosmos_TimestampMS(), pFileName, pState->m_pName);
+                      }
                   }
                   else {
                       oosmos_DebugPrint("%8.8u %s: POLL state %s\n", oosmos_TimestampMS(), pFileName, pState->m_pName);
