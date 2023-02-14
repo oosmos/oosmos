@@ -834,6 +834,7 @@ static void EnterX(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sS
                 pRegion = GetRegion(pStack);
                 pRegion->m_pCurrent = pStack;
                 (void) DeliverEvent(pStack, &EventENTER);
+                ThreadInit(pStack);
 
                 const oosmos_sOrtho* pOrtho       = (oosmos_sOrtho*) pStack;
                 oosmos_sOrthoRegion* pOrthoRegion = pOrtho->m_pFirstOrthoRegion;
@@ -857,6 +858,7 @@ static void EnterX(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sS
             pRegion = GetRegion(pStack);
             pRegion->m_pCurrent = pStack;
             (void) DeliverEvent(pStack, &EventENTER);
+            ThreadInit(pStack);
             break;
 
         default: {
