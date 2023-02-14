@@ -5,7 +5,7 @@
     <id>UMLState</id>
     <coordinates>
       <x>60</x>
-      <y>230</y>
+      <y>290</y>
       <w>240</w>
       <h>60</h>
     </coordinates>
@@ -19,8 +19,8 @@ valign=top</panel_attributes>
     <coordinates>
       <x>60</x>
       <y>110</y>
-      <w>240</w>
-      <h>60</h>
+      <w>300</w>
+      <h>100</h>
     </coordinates>
     <panel_attributes>Idle
 --
@@ -33,7 +33,7 @@ valign=top</panel_attributes>
       <x>50</x>
       <y>40</y>
       <w>410</w>
-      <h>510</h>
+      <h>590</h>
     </coordinates>
     <panel_attributes>OuterLeft
 --
@@ -44,7 +44,7 @@ valign=top</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>40</x>
-      <y>170</y>
+      <y>220</y>
       <w>440</w>
       <h>30</h>
     </coordinates>
@@ -77,7 +77,7 @@ valign=top</panel_attributes>
     <id>UMLSpecialState</id>
     <coordinates>
       <x>70</x>
-      <y>190</y>
+      <y>250</y>
       <w>20</w>
       <h>20</h>
     </coordinates>
@@ -88,7 +88,7 @@ valign=top</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>70</x>
-      <y>200</y>
+      <y>260</y>
       <w>30</w>
       <h>50</h>
     </coordinates>
@@ -121,7 +121,7 @@ valign=top</panel_attributes>
     <id>UMLState</id>
     <coordinates>
       <x>60</x>
-      <y>350</y>
+      <y>430</y>
       <w>240</w>
       <h>40</h>
     </coordinates>
@@ -134,7 +134,7 @@ valign=top</panel_attributes>
     <id>UMLSpecialState</id>
     <coordinates>
       <x>70</x>
-      <y>310</y>
+      <y>390</y>
       <w>20</w>
       <h>20</h>
     </coordinates>
@@ -145,19 +145,19 @@ valign=top</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>70</x>
-      <y>320</y>
-      <w>170</w>
+      <y>400</y>
+      <w>30</w>
       <h>50</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
-/printf("default\n");</panel_attributes>
+</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;30.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
       <x>40</x>
-      <y>290</y>
+      <y>360</y>
       <w>440</w>
       <h>30</h>
     </coordinates>
@@ -168,7 +168,7 @@ valign=top</panel_attributes>
     <id>UMLState</id>
     <coordinates>
       <x>590</x>
-      <y>30</y>
+      <y>110</y>
       <w>270</w>
       <h>520</h>
     </coordinates>
@@ -181,7 +181,7 @@ valign=top</panel_attributes>
     <id>UMLState</id>
     <coordinates>
       <x>600</x>
-      <y>220</y>
+      <y>300</y>
       <w>240</w>
       <h>60</h>
     </coordinates>
@@ -194,7 +194,7 @@ valign=top</panel_attributes>
     <id>UMLState</id>
     <coordinates>
       <x>600</x>
-      <y>100</y>
+      <y>180</y>
       <w>240</w>
       <h>60</h>
     </coordinates>
@@ -207,7 +207,7 @@ valign=top</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>580</x>
-      <y>160</y>
+      <y>240</y>
       <w>300</w>
       <h>30</h>
     </coordinates>
@@ -218,7 +218,7 @@ valign=top</panel_attributes>
     <id>UMLSpecialState</id>
     <coordinates>
       <x>610</x>
-      <y>180</y>
+      <y>260</y>
       <w>20</w>
       <h>20</h>
     </coordinates>
@@ -229,7 +229,7 @@ valign=top</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>610</x>
-      <y>190</y>
+      <y>270</y>
       <w>30</w>
       <h>50</h>
     </coordinates>
@@ -240,7 +240,7 @@ valign=top</panel_attributes>
     <id>UMLSpecialState</id>
     <coordinates>
       <x>610</x>
-      <y>60</y>
+      <y>140</y>
       <w>20</w>
       <h>20</h>
     </coordinates>
@@ -251,7 +251,7 @@ valign=top</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>610</x>
-      <y>70</y>
+      <y>150</y>
       <w>30</w>
       <h>50</h>
     </coordinates>
@@ -262,7 +262,7 @@ valign=top</panel_attributes>
     <id>UMLState</id>
     <coordinates>
       <x>600</x>
-      <y>340</y>
+      <y>420</y>
       <w>240</w>
       <h>170</h>
     </coordinates>
@@ -275,7 +275,7 @@ valign=top</panel_attributes>
     <id>UMLSpecialState</id>
     <coordinates>
       <x>610</x>
-      <y>300</y>
+      <y>380</y>
       <w>20</w>
       <h>20</h>
     </coordinates>
@@ -286,7 +286,7 @@ valign=top</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>610</x>
-      <y>310</y>
+      <y>390</y>
       <w>30</w>
       <h>50</h>
     </coordinates>
@@ -297,7 +297,7 @@ valign=top</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>580</x>
-      <y>280</y>
+      <y>360</y>
       <w>300</w>
       <h>30</h>
     </coordinates>
@@ -308,7 +308,7 @@ valign=top</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>240</x>
-      <y>460</y>
+      <y>540</y>
       <w>380</w>
       <h>40</h>
     </coordinates>
@@ -332,7 +332,7 @@ TIMEOUT(2 sec)</panel_attributes>
     <id>UMLState</id>
     <coordinates>
       <x>60</x>
-      <y>420</y>
+      <y>500</y>
       <w>240</w>
       <h>110</h>
     </coordinates>
@@ -346,19 +346,19 @@ valign=top</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>150</x>
-      <y>520</y>
+      <y>600</y>
       <w>120</w>
-      <h>130</h>
+      <h>120</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 TIMEOUT(1 sec)</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;110.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;100.0</additional_attributes>
   </element>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
       <x>150</x>
-      <y>630</y>
+      <y>700</y>
       <w>20</w>
       <h>20</h>
     </coordinates>
@@ -369,12 +369,25 @@ TIMEOUT(1 sec)</panel_attributes>
     <id>UMLState</id>
     <coordinates>
       <x>80</x>
-      <y>460</y>
+      <y>540</y>
       <w>170</w>
       <h>50</h>
     </coordinates>
     <panel_attributes>// REQ: (SR28)
 SecondInner
+--
+valign=top</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>90</x>
+      <y>140</y>
+      <w>220</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>IdleInner
 --
 valign=top</panel_attributes>
     <additional_attributes/>

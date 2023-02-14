@@ -15,6 +15,16 @@ struct orthoTag
 {
 //>>>DECL
   oosmos_sStateMachineNoQueue(ROOT);
+    oosmos_sOrtho OuterLeft_State;
+      oosmos_sOrthoRegion OuterLeft_Region1_State;
+        oosmos_sComposite OuterLeft_Region1_Idle_State;
+          oosmos_sLeaf OuterLeft_Region1_Idle_IdleInner_State;
+      oosmos_sOrthoRegion OuterLeft_Region2_State;
+        oosmos_sLeaf OuterLeft_Region2_Idle_State;
+      oosmos_sOrthoRegion OuterLeft_Region3_State;
+        oosmos_sLeaf OuterLeft_Region3_Idle_State;
+        oosmos_sComposite OuterLeft_Region3_Second_State;
+          oosmos_sLeaf OuterLeft_Region3_Second_SecondInner_State;
     oosmos_sOrtho OuterRight_State;
       oosmos_sOrthoRegion OuterRight_Region1_State;
         oosmos_sLeaf OuterRight_Region1_Idle_State;
@@ -22,15 +32,6 @@ struct orthoTag
         oosmos_sLeaf OuterRight_Region2_Idle_State;
       oosmos_sOrthoRegion OuterRight_Region3_State;
         oosmos_sLeaf OuterRight_Region3_Idle_State;
-    oosmos_sOrtho OuterLeft_State;
-      oosmos_sOrthoRegion OuterLeft_Region1_State;
-        oosmos_sLeaf OuterLeft_Region1_Idle_State;
-      oosmos_sOrthoRegion OuterLeft_Region2_State;
-        oosmos_sLeaf OuterLeft_Region2_Idle_State;
-      oosmos_sOrthoRegion OuterLeft_Region3_State;
-        oosmos_sLeaf OuterLeft_Region3_Idle_State;
-        oosmos_sComposite OuterLeft_Region3_Second_State;
-          oosmos_sLeaf OuterLeft_Region3_Second_SecondInner_State;
     oosmos_sFinal Final1_State;
 //<<<DECL
 };
@@ -69,20 +70,6 @@ static bool OuterRight_Region3_Idle_State_Code(void * pObject, oosmos_sState * p
   return false;
 }
 
-static bool OuterLeft_Region3_Idle_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
-{
-  switch (oosmos_EventCode(pEvent)) {
-    case oosmos_DEFAULT: {
-      printf("default\n");
-      return true;
-    }
-  }
-
-  oosmos_UNUSED(pObject);
-  oosmos_UNUSED(pState);
-  return false;
-}
-
 // SR28
 static bool OuterLeft_Region3_Second_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
@@ -107,6 +94,16 @@ extern ortho * orthoNew(void)
 
 //>>>INIT
   oosmos_StateMachineInitNoQueue(pOrtho, ROOT, NULL, OuterLeft_State);
+    oosmos_OrthoInit(pOrtho, OuterLeft_State, ROOT, OuterLeft_State_Code);
+      oosmos_OrthoRegionInit(pOrtho, OuterLeft_Region1_State, OuterLeft_State, OuterLeft_Region1_Idle_State, NULL);
+        oosmos_CompositeInit(pOrtho, OuterLeft_Region1_Idle_State, OuterLeft_Region1_State, OuterLeft_Region1_Idle_IdleInner_State, NULL);
+          oosmos_LeafInit(pOrtho, OuterLeft_Region1_Idle_IdleInner_State, OuterLeft_Region1_Idle_State, NULL);
+      oosmos_OrthoRegionInit(pOrtho, OuterLeft_Region2_State, OuterLeft_State, OuterLeft_Region2_Idle_State, NULL);
+        oosmos_LeafInit(pOrtho, OuterLeft_Region2_Idle_State, OuterLeft_Region2_State, NULL);
+      oosmos_OrthoRegionInit(pOrtho, OuterLeft_Region3_State, OuterLeft_State, OuterLeft_Region3_Idle_State, NULL);
+        oosmos_LeafInit(pOrtho, OuterLeft_Region3_Idle_State, OuterLeft_Region3_State, NULL);
+        oosmos_CompositeInit(pOrtho, OuterLeft_Region3_Second_State, OuterLeft_Region3_State, OuterLeft_Region3_Second_SecondInner_State, OuterLeft_Region3_Second_State_Code);
+          oosmos_LeafInit(pOrtho, OuterLeft_Region3_Second_SecondInner_State, OuterLeft_Region3_Second_State, NULL);
     oosmos_OrthoInit(pOrtho, OuterRight_State, ROOT, NULL);
       oosmos_OrthoRegionInit(pOrtho, OuterRight_Region1_State, OuterRight_State, OuterRight_Region1_Idle_State, NULL);
         oosmos_LeafInit(pOrtho, OuterRight_Region1_Idle_State, OuterRight_Region1_State, NULL);
@@ -114,15 +111,6 @@ extern ortho * orthoNew(void)
         oosmos_LeafInit(pOrtho, OuterRight_Region2_Idle_State, OuterRight_Region2_State, NULL);
       oosmos_OrthoRegionInit(pOrtho, OuterRight_Region3_State, OuterRight_State, OuterRight_Region3_Idle_State, NULL);
         oosmos_LeafInit(pOrtho, OuterRight_Region3_Idle_State, OuterRight_Region3_State, OuterRight_Region3_Idle_State_Code);
-    oosmos_OrthoInit(pOrtho, OuterLeft_State, ROOT, OuterLeft_State_Code);
-      oosmos_OrthoRegionInit(pOrtho, OuterLeft_Region1_State, OuterLeft_State, OuterLeft_Region1_Idle_State, NULL);
-        oosmos_LeafInit(pOrtho, OuterLeft_Region1_Idle_State, OuterLeft_Region1_State, NULL);
-      oosmos_OrthoRegionInit(pOrtho, OuterLeft_Region2_State, OuterLeft_State, OuterLeft_Region2_Idle_State, NULL);
-        oosmos_LeafInit(pOrtho, OuterLeft_Region2_Idle_State, OuterLeft_Region2_State, NULL);
-      oosmos_OrthoRegionInit(pOrtho, OuterLeft_Region3_State, OuterLeft_State, OuterLeft_Region3_Idle_State, NULL);
-        oosmos_LeafInit(pOrtho, OuterLeft_Region3_Idle_State, OuterLeft_Region3_State, OuterLeft_Region3_Idle_State_Code);
-        oosmos_CompositeInit(pOrtho, OuterLeft_Region3_Second_State, OuterLeft_Region3_State, OuterLeft_Region3_Second_SecondInner_State, OuterLeft_Region3_Second_State_Code);
-          oosmos_LeafInit(pOrtho, OuterLeft_Region3_Second_SecondInner_State, OuterLeft_Region3_Second_State, NULL);
     oosmos_FinalInit(pOrtho, Final1_State, ROOT, NULL);
 
   oosmos_Debug(pOrtho, NULL);

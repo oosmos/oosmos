@@ -398,15 +398,13 @@ static void DefaultTransitionsRegionX(oosmos_sRegion* pRegion);
 static void DefaultTransitionsStateX(oosmos_sState * pDefault)
 {
     switch (pDefault->m_Type) {
-
-#if 0 // Is a composite type even generated?
         case OOSMOS_CompositeType: {
-            const oosmos_sComposite* pComposite = (oosmos_sComposite*)pDefault;
-            DefaultTransitionsX(pRegion, pComposite->m_pDefault);
+            oosmos_sComposite* pComposite = (oosmos_sComposite*) pDefault;
+            (void) DeliverEvent(&pComposite->m_State, &EventDEFAULT);
+            (void) DeliverEvent(&pComposite->m_State, &EventENTER);
+            DefaultTransitionsStateX(pComposite->m_pDefault);
             break;
         }
-
-#endif
 
 #if 0  // should never happen.
         case OOSMOS_StateMachineRegionType: {
@@ -421,8 +419,8 @@ static void DefaultTransitionsStateX(oosmos_sState * pDefault)
             const oosmos_sOrtho* pOrtho = (oosmos_sOrtho*)pDefault;
             oosmos_sOrthoRegion* pOrthoRegion = pOrtho->m_pFirstOrthoRegion;
 
-            (void)DeliverEvent(pDefault, &EventDEFAULT);
-            (void)DeliverEvent(pDefault, &EventENTER);
+            (void) DeliverEvent(pDefault, &EventDEFAULT);
+            (void) DeliverEvent(pDefault, &EventENTER);
 
             ThreadInit(pDefault);
 
@@ -435,8 +433,8 @@ static void DefaultTransitionsStateX(oosmos_sState * pDefault)
     #endif
 
         case OOSMOS_LeafType: {
-            (void)DeliverEvent(pDefault, &EventDEFAULT);
-            (void)DeliverEvent(pDefault, &EventENTER);
+            (void) DeliverEvent(pDefault, &EventDEFAULT);
+            (void) DeliverEvent(pDefault, &EventENTER);
 
             ThreadInit(pDefault);
             
@@ -450,7 +448,7 @@ static void DefaultTransitionsStateX(oosmos_sState * pDefault)
             // code to eventually do an oosmos_ThreadComplete() or oosmos_ThreadEnd().
             //
             if (!DeliverEvent(pDefault, &EventPOLL)) {
-                (void)DeliverEvent(pDefault, &EventCOMPLETE);
+                (void) DeliverEvent(pDefault, &EventCOMPLETE);
             }
 #endif
 
@@ -809,10 +807,10 @@ static void Enter(oosmos_sRegion * pRegion, const oosmos_sState * pLCA, oosmos_s
 
 static bool IsStateInRegionX(oosmos_sRegion * pRegion, const oosmos_sState* pState)
 {
-    for (oosmos_sState* pCandidateState = pState; pCandidateState != NULL; pCandidateState = pCandidateState->m_pParent) {
+    for (const oosmos_sState* pCandidateState = pState; pCandidateState != NULL; pCandidateState = pCandidateState->m_pParent) {
         oosmos_POINTER_GUARD(pState);
 
-        if (pCandidateState == pRegion)
+        if (pCandidateState == &pRegion->m_Composite.m_State)
             return true;
     }
 
@@ -824,6 +822,7 @@ static void EnterX(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sS
     if (pStack == pLCA)
         return;
 
+    // Recursion to reverse the order of the list.
     EnterX(pRegion, pLCA, pToState, pStack->m_pParent);                
 
     switch (pStack->m_Type) {
@@ -837,10 +836,7 @@ static void EnterX(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sS
                 oosmos_sOrthoRegion* pOrthoRegion = pOrtho->m_pFirstOrthoRegion;
 
                 for (; pOrthoRegion != NULL; pOrthoRegion = pOrthoRegion->m_pNextOrthoRegion) {
-                    if (IsStateInRegionX(pOrthoRegion, pToState)) {
-                        //EnterX(&pOrthoRegion->m_Region, pLCA, pOrtho, pOrtho);
-                    }
-                    else {
+                    if (!IsStateInRegionX(&pOrthoRegion->m_Region, pToState)) {
                         DefaultTransitionsRegionX(&pOrthoRegion->m_Region);
                     }
                 }
@@ -850,7 +846,6 @@ static void EnterX(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sS
         #endif
 
         case OOSMOS_OrthoRegionType:
-            //pRegion->m_pCurrent = pToState;
             break;
 
         case OOSMOS_CompositeType:
@@ -1036,20 +1031,13 @@ static void Exit(const oosmos_sRegion * pRegion, const oosmos_sState * pLCA)
   oosmos_sState * pCurrent = pRegion->m_pCurrent;
 
   #if defined(oosmos_ORTHO)
-    switch (pCurrent->m_Type) {
-      case OOSMOS_OrthoType: {
-        const oosmos_sOrtho * pOrtho = (oosmos_sOrtho *) pCurrent;
+    if (pCurrent->m_Type == OOSMOS_OrthoType) {
+        const oosmos_sOrtho * pOrtho       = (oosmos_sOrtho *) pCurrent;
         oosmos_sOrthoRegion * pOrthoRegion = pOrtho->m_pFirstOrthoRegion;
 
         for (; pOrthoRegion != NULL; pOrthoRegion = pOrthoRegion->m_pNextOrthoRegion) {
           Exit(&pOrthoRegion->m_Region, &pOrthoRegion->m_Region.m_Composite.m_State);
         }
-
-        break;
-      }
-      default: {
-        break;
-      }
     }
   #endif
 
