@@ -738,6 +738,9 @@ extern int32_t oosmos_AnalogMapFast(int32_t Value, int32_t InMin, int32_t InMax,
 #define oosmos_Min(a, b) (((a) < (b)) ? (a) : (b))
 #define oosmos_Max(a, b) (((a) > (b)) ? (a) : (b))
 
+
+extern uint32_t oosmos_TimestampMS(void);
+
 #if defined(__cplusplus)
   }
 #endif
