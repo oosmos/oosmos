@@ -295,14 +295,22 @@ static bool PropagateEvent(const oosmos_sRegion * pRegion, const oosmos_sEvent *
     oosmos_POINTER_GUARD(pState);
     //
     // Deliver the event to the state machine.  If the return code is true, then
-    // stop propagating the event, unless it's a POLL event, in which case we
+    // stop propagating the event unless it's a POLL event, in which case we
     // want to unconditionally propagate the poll event up the hierarchy.
     //
-      if (pState->m_pParent != NULL && pState->m_Type != OOSMOS_OrthoRegionType) {
-          if (DeliverEvent(pState, pEvent) && pEvent->m_Code != oosmos_POLL) {
-              return true;
-          }
-      }
+    if (pState->m_pParent != NULL) {
+        #if defined(oosmos_ORTHO)
+            if (pState->m_Type != OOSMOS_OrthoRegionType) {
+                if (DeliverEvent(pState, pEvent) && pEvent->m_Code != oosmos_POLL) {
+                    return true;
+                }
+            }
+        #else
+            if (DeliverEvent(pState, pEvent) && pEvent->m_Code != oosmos_POLL) {
+                return true;
+            }
+        #endif
+    }
   }
 
   return false;
@@ -406,9 +414,13 @@ static void DefaultTransitions(oosmos_sRegion * pRegion, oosmos_sState * pState)
 
   ThreadInit(pState);
 
-  if (pState->m_Type != OOSMOS_OrthoRegionType) {
-      (void)DeliverEvent(pState, &EventENTER);
-  }
+  #if defined(oosmos_ORTHO)
+    if (pState->m_Type != OOSMOS_OrthoRegionType) {
+        (void)DeliverEvent(pState, &EventENTER);
+    }
+  #else
+    (void) DeliverEvent(pState, &EventENTER);
+  #endif
 
   switch (pState->m_Type) {
     case OOSMOS_CompositeType: {
@@ -619,10 +631,6 @@ static void Enter(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sSt
             }
         #endif
 
-        case OOSMOS_OrthoRegionType:
-            break;
-
-
         case OOSMOS_FinalType:
         case OOSMOS_LeafType:
             pRegion = GetRegion(pStack);
@@ -632,8 +640,10 @@ static void Enter(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sSt
             //DefaultTransitionsRegionX(pRegion);
             break;
 
+        #if defined(oosmos_ORTHO)
+           case OOSMOS_OrthoRegionType:
+        #endif
         default: {
-            pRegion = NULL;
             break;
         }
     }
@@ -663,10 +673,13 @@ static void Exit(const oosmos_sRegion * pRegion, const oosmos_sState * pLCA)
     oosmos_sComposite * pParent = (oosmos_sComposite *) pState->m_pParent;
     pParent->m_pHistoryState = pState;
 
-    if (pState->m_Type != OOSMOS_OrthoRegionType) {
+    #if defined(oosmos_ORTH)
+      if (pState->m_Type != OOSMOS_OrthoRegionType) {
         (void) DeliverEvent(pState, &EventEXIT);
-    }
-
+      }
+    #else
+      (void)DeliverEvent(pState, &EventEXIT);
+    #endif
   }
 }
 
