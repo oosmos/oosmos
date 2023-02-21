@@ -593,13 +593,13 @@ static bool IsStateInRegionX(oosmos_sRegion * pRegion, const oosmos_sState* pSta
     return false;
 }
 
-static void Enter(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sState* pToState, oosmos_sState * pStack)
+static void Enter(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sState* pToState, oosmos_sState* pStack)
 {
     if (pStack == pLCA)
         return;
 
-    // Recursion to reverse the order of the list.
-    Enter(pRegion, pLCA, pToState, pStack->m_pParent);                
+    // Recurse to reverse the order of the list.
+    Enter(pRegion, pLCA, pToState, pStack->m_pParent);              
 
     switch (pStack->m_Type) {
         case OOSMOS_CompositeType: {
@@ -648,7 +648,6 @@ static void Enter(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sSt
         }
     }
 }
-
 
 static void Exit(const oosmos_sRegion * pRegion, const oosmos_sState * pLCA)
 {
@@ -706,10 +705,37 @@ extern bool OOSMOS_TransitionAction(oosmos_sState * pFromState, oosmos_sState * 
   oosmos_sState * pLCA = GetLCA(pFromState, pToState);
 
   oosmos_sRegion* pLcaRegion = GetRegion(pLCA);
+
   Exit(pLcaRegion, pLCA);
 
   if (pActionCode != NULL) {
     pActionCode(pFromState->m_pStateMachine->m_pObject, pFromState, pEvent);
+  }
+
+  switch (pToState->m_Type) {
+      case OOSMOS_HistoryShallowType: {
+          oosmos_sComposite* pComposite = (oosmos_sComposite*)pToState->m_pParent;
+          oosmos_POINTER_GUARD(pComposite);
+          pToState = pComposite->m_pHistoryState;
+          break;
+      }
+
+      case OOSMOS_HistoryDeepType: {
+          oosmos_sComposite* pComposite = (oosmos_sComposite*)pToState->m_pParent;
+          oosmos_POINTER_GUARD(pComposite);
+          pToState = pComposite->m_pHistoryState;
+
+          while (pToState->m_Type == OOSMOS_CompositeType) {
+              pComposite = (oosmos_sComposite*)pToState;
+              pToState = pComposite->m_pHistoryState;
+          }
+
+          break;
+      }
+
+      default: {
+          break;
+      }
   }
 
   Enter(pLcaRegion, pLCA, pToState, pToState);
