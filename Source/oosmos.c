@@ -779,6 +779,7 @@ extern bool OOSMOS_TransitionAction(oosmos_sState * pFromState, oosmos_sState * 
           oosmos_sComposite* pComposite = (oosmos_sComposite*)pToState->m_pParent;
           oosmos_POINTER_GUARD(pComposite);
           pToState = pComposite->m_pHistoryState;
+
           EnterDeepHistory(pLcaRegion, pToState);
           break;
       }
