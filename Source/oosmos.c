@@ -581,7 +581,7 @@ static oosmos_sState * GetLCA(oosmos_sState * pFrom, oosmos_sState * pTo)
 }
 
 
-static bool IsStateInRegionX(oosmos_sRegion * pRegion, const oosmos_sState* pState)
+static bool IsStateInRegion(oosmos_sRegion * pRegion, const oosmos_sState* pState)
 {
     for (const oosmos_sState* pCandidateState = pState; pCandidateState != NULL; pCandidateState = pCandidateState->m_pParent) {
         oosmos_POINTER_GUARD(pState);
@@ -593,13 +593,13 @@ static bool IsStateInRegionX(oosmos_sRegion * pRegion, const oosmos_sState* pSta
     return false;
 }
 
-static void Enter(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sState* pToState, oosmos_sState* pStack)
+static void Enter(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sState* pToState, oosmos_sState* pStack, bool ExecuteDefaults)
 {
     if (pStack == pLCA)
         return;
 
     // Recurse to reverse the order of the list.
-    Enter(pRegion, pLCA, pToState, pStack->m_pParent);              
+    Enter(pRegion, pLCA, pToState, pStack->m_pParent, ExecuteDefaults);              
 
     switch (pStack->m_Type) {
         case OOSMOS_CompositeType: {
@@ -607,7 +607,11 @@ static void Enter(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sSt
             pRegion->m_pCurrent = pStack;
             (void)DeliverEvent(pStack, &EventENTER);
             ThreadInit(pStack);
-            DefaultTransitions(pRegion, pComposite->m_pDefault);
+
+            if (ExecuteDefaults) {
+                DefaultTransitions(pRegion, pComposite->m_pDefault);
+            }
+            
             break;
         }
 
@@ -622,7 +626,7 @@ static void Enter(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sSt
                 oosmos_sOrthoRegion* pOrthoRegion = pOrtho->m_pFirstOrthoRegion;
 
                 for (; pOrthoRegion != NULL; pOrthoRegion = pOrthoRegion->m_pNextOrthoRegion) {
-                    if (!IsStateInRegionX(&pOrthoRegion->m_Region, pToState)) {
+                    if (!IsStateInRegion(&pOrthoRegion->m_Region, pToState)) {
                         DefaultTransitions(&pOrthoRegion->m_Region, pOrthoRegion->m_Region.m_Composite.m_pDefault);
                     }
                 }
@@ -637,7 +641,6 @@ static void Enter(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sSt
             pRegion->m_pCurrent = pStack;
             (void) DeliverEvent(pStack, &EventENTER);
             ThreadInit(pStack);
-            //DefaultTransitionsRegionX(pRegion);
             break;
 
         #if defined(oosmos_ORTHO)
@@ -712,11 +715,14 @@ extern bool OOSMOS_TransitionAction(oosmos_sState * pFromState, oosmos_sState * 
     pActionCode(pFromState->m_pStateMachine->m_pObject, pFromState, pEvent);
   }
 
+  bool ExecuteDefaults = true;
+
   switch (pToState->m_Type) {
       case OOSMOS_HistoryShallowType: {
           oosmos_sComposite* pComposite = (oosmos_sComposite*)pToState->m_pParent;
           oosmos_POINTER_GUARD(pComposite);
           pToState = pComposite->m_pHistoryState;
+          ExecuteDefaults = false;
           break;
       }
 
@@ -730,6 +736,7 @@ extern bool OOSMOS_TransitionAction(oosmos_sState * pFromState, oosmos_sState * 
               pToState = pComposite->m_pHistoryState;
           }
 
+          ExecuteDefaults = false;
           break;
       }
 
@@ -738,7 +745,7 @@ extern bool OOSMOS_TransitionAction(oosmos_sState * pFromState, oosmos_sState * 
       }
   }
 
-  Enter(pLcaRegion, pLCA, pToState, pToState);
+  Enter(pLcaRegion, pLCA, pToState, pToState, ExecuteDefaults);
 
   return true;
 }
