@@ -41,7 +41,7 @@ typedef enum {
 
 struct pinTag
 {
-  #if defined(ARDUINO) || defined(oosmos_RASPBERRY_PI)
+  #if defined(ARDUINO) || defined(oosmos_RASPBERRY_PI) || defined(_LINUX_)
     uint8_t m_PinNumber;
   #elif defined(__PIC32MX)
     IoPortId m_Port;
@@ -447,6 +447,7 @@ extern bool pinIsOff(const pin * pPin)
     return pPin;
   }
 
+  //dmb added
   extern pin* pinNew_Debounce(char Key, const pin_eLogic Logic, const uint8_t DebounceTimeMS)
   {
     oosmos_Allocate(pPin, pin, pinMAX, NULL);
@@ -466,7 +467,7 @@ extern bool pinIsOff(const pin * pPin)
     if (DebounceTimeMS > 0) {
       oosmos_ActiveObjectInit(pPin, m_ActiveObject, RunStateMachine);
     }
-    
+
     return pPin;
   }
 
@@ -489,6 +490,22 @@ extern bool pinIsOff(const pin * pPin)
   }
 
   void (*pin_pDummy)(void *) = RunStateMachine; // To satisfy compiler
+#elif defined(_LINUX_)
+  #warning TODO pin for LINUX not fully defined
+  static bool IsPhysicallyOn(const pin * pPin)
+  {
+	// TODO: implement
+    return false;
+  }
+
+  extern pin* pinNew_Debounce(char Key, const pin_eLogic Logic, const uint8_t DebounceTimeMS)
+  {
+    oosmos_Allocate(pPin, pin, pinMAX, NULL);
+
+	// TODO: need implementation
+
+    return pPin;
+  }
 #else
   #error pin.c: Unsupported platform.
 #endif
