@@ -491,11 +491,33 @@ extern bool pinIsOff(const pin * pPin)
 
   void (*pin_pDummy)(void *) = RunStateMachine; // To satisfy compiler
 #elif defined(_LINUX_)
-  #warning TODO pin for LINUX not fully defined
+  static bool   pinFirst = true;
+
   static bool IsPhysicallyOn(const pin * pPin)
   {
 	// TODO: implement
     return false;
+  }
+
+  extern pin * pinNew(char Key, pin_eDirection, const pin_eLogic Logic)
+  {
+    oosmos_Allocate(pPin, pin, pinMAX, NULL);
+
+#if 0
+    pPin->m_Key            = Key;
+    pPin->m_Logic          = (unsigned) Logic;
+    pPin->m_State          = (unsigned) Unknown_State;
+    pPin->m_DebounceTimeMS = 0;
+
+    if (pinFirst) {
+      //memset(KeyIsDown, false, sizeof(KeyIsDown));
+
+      //hStdin = GetStdHandle(STD_INPUT_HANDLE);
+      pinFirst = false;
+    }
+#endif
+
+    return pPin;
   }
 
   extern pin* pinNew_Debounce(char Key, const pin_eLogic Logic, const uint8_t DebounceTimeMS)
