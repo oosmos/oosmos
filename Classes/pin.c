@@ -428,7 +428,7 @@ extern bool pinIsOff(const pin * pPin)
     return pPin->m_Logic == ((unsigned) pinActiveHigh) ? IsDown : !IsDown;
   }
 
-  extern pin * pinNew(char Key, const pin_eLogic Logic)
+  extern pin * pinNew(char Key, pin_eDirection, const pin_eLogic Logic)
   {
     oosmos_Allocate(pPin, pin, pinMAX, NULL);
 
