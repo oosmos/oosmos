@@ -1,5 +1,5 @@
 //
-// OOSMOS btnph Class
+// OOSMOS btnph Class -- Button Press & Hold.
 //
 // Copyright (C) 2014-2020  OOSMOS, LLC
 //
