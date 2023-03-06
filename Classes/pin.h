@@ -64,8 +64,8 @@ extern bool pinIsOff(const pin * pPin);
   extern pin * pinNew(GPIO_TypeDef* Port, uint16_t Pin, const pin_eDirection Direction, const pin_eLogic Logic);
   extern pin * pinNew_Debounce(GPIO_TypeDef* Port, const uint16_t Bit, const pin_eDirection Direction, const pin_eLogic Logic, const uint8_t DebounceTimeMS);
 #elif defined(_MSC_VER)
-  extern pin * pinNew(char Key, pin_eDirection, pin_eLogic Logic);
-  extern pin*  pinNew_Debounce(char Key, const pin_eLogic Logic, const uint8_t DebounceTimeMS);
+  extern pin * pinNew_Key(char Key, pin_eLogic Logic);
+  extern pin*  pinNew_Key_Debounce(char Key, const pin_eLogic Logic, const uint8_t DebounceTimeMS);
 #elif defined(_LINUX_)
   extern pin* pinNew(char Key, pin_eDirection, pin_eLogic Logic);
   extern pin*  pinNew_Debounce(char Key, const pin_eLogic Logic, const uint8_t DebounceTimeMS);
