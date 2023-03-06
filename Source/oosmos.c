@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 //
 // The master list of all state machines created in the system.
@@ -160,6 +161,52 @@ static oosmos_sStateMachine* GetStateMachine(const oosmos_sState* pState)
     }
 
     return pFileName;
+  }
+
+  extern void oosmos_HexDump(const void * pBuffer, const size_t TotalBytes)
+  {
+    const uint8_t * pByte    = (const uint8_t *) pBuffer;
+    const char    * pCurrent = (const char    *) pBuffer;
+
+    uint8_t    Dump[16 * 3 + 1];
+    uint8_t    Ascii[16 + 1];
+
+    uint8_t  * pDump = Dump;
+    uint8_t  * pAscii = Ascii;
+
+    size_t     Bytes;
+
+    for (Bytes = 0; Bytes <= TotalBytes; pByte++, Bytes++) {
+      if ((Bytes % 16) == 0 || Bytes == TotalBytes) {
+        if (Bytes != 0) {
+          oosmos_DebugPrint("%p: %s|%.16s|\n", pCurrent, Dump, Ascii);
+          pCurrent += 16;
+        }
+
+        if (Bytes == TotalBytes) {
+          return;
+        }
+
+        pDump  = Dump;
+        pAscii = Ascii;
+
+        memset(Dump, ' ', sizeof(Dump)-1);
+        Dump[sizeof(Dump)-1] = 0;
+
+        memset(Ascii, ' ', sizeof(Ascii)-1);
+        Ascii[sizeof(Ascii)-1] = 0;
+      }
+
+      //
+      // This is a very fast, straight-through, binary-to-hex ASCII conversion.
+      //
+      const uint8_t Byte = *pByte;
+      *pDump++ = (uint8_t) "0123456789ABCDEF"[(Byte >>  4) & 0xF];
+      *pDump++ = (uint8_t) "0123456789ABCDEF"[(Byte      ) & 0xF];
+      *pDump++ = ' ';
+
+      *pAscii++ = isprint(Byte) ? Byte : '.';
+    }
   }
 #endif
 
@@ -599,7 +646,7 @@ static void Enter(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sSt
         return;
 
     // Recurse to reverse the order of the list.
-    Enter(pRegion, pLCA, pToState, pStack->m_pParent);              
+    Enter(pRegion, pLCA, pToState, pStack->m_pParent);
 
     switch (pStack->m_Type) {
         case OOSMOS_CompositeType: {
@@ -770,7 +817,7 @@ extern bool OOSMOS_TransitionAction(oosmos_sState * pFromState, oosmos_sState * 
           oosmos_sComposite* pComposite = (oosmos_sComposite*)pToState->m_pParent;
           oosmos_POINTER_GUARD(pComposite);
           pToState = pComposite->m_pHistoryState;
-          
+
           Enter(pLcaRegion, pLCA, pToState, pToState);
           break;
       }
@@ -1031,7 +1078,7 @@ extern void OOSMOS_RunStateMachine(oosmos_sStateMachine * pStateMachine)
 
   if (!pStateMachine->m_IsStarted) {
     DefaultTransitions(&pStateMachine->m_Region, pStateMachine->m_Region.m_Composite.m_pDefault);
-    
+
     pStateMachine->m_IsStarted = true;
   }
 
@@ -1549,7 +1596,7 @@ extern void OOSMOS_EndProgram(int Code)
 #elif defined(_WIN32)
   #include <windows.h>
 
-  extern void OOSMOS_DebugDummy(const char* pFormat, ...) 
+  extern void OOSMOS_DebugDummy(const char* pFormat, ...)
   {
       oosmos_UNUSED(pFormat);
   }

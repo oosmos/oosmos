@@ -438,6 +438,8 @@ extern void OOSMOS_PushEventToStateMachine(const oosmos_sStateMachine * pStateMa
     OOSMOS_Debug(&(pObject)->ROOT, pEventName)
 
   extern void OOSMOS_Debug(oosmos_sStateMachine * pStateMachine, const char * (*pEventName)(int));
+
+  extern void oosmos_HexDump(const void * pBuffer, const size_t TotalBytes);
 #else
   #define oosmos_Debug(pStateMachine, pEventName)
 #endif
@@ -737,7 +739,6 @@ extern int32_t oosmos_AnalogMapFast(int32_t Value, int32_t InMin, int32_t InMax,
 
 #define oosmos_Min(a, b) (((a) < (b)) ? (a) : (b))
 #define oosmos_Max(a, b) (((a) > (b)) ? (a) : (b))
-
 
 extern uint32_t oosmos_TimestampMS(void);
 
