@@ -447,7 +447,6 @@ extern bool pinIsOff(const pin * pPin)
     return pPin;
   }
 
-  //dmb added
   extern pin* pinNew_Debounce(char Key, const pin_eLogic Logic, const uint8_t DebounceTimeMS)
   {
     oosmos_Allocate(pPin, pin, pinMAX, NULL);
