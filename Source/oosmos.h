@@ -243,6 +243,7 @@ typedef struct OOSMOS_sStateMachineTag oosmos_sStateMachine;
 typedef struct OOSMOS_sOrthoTag        oosmos_sOrtho;
 typedef struct OOSMOS_sCompositeTag    oosmos_sComposite;
 typedef struct OOSMOS_sStateTag        oosmos_sLeaf;
+typedef struct OOSMOS_sStateTag        oosmos_sChoice;
 typedef struct OOSMOS_sOrthoRegionTag  oosmos_sOrthoRegion;
 typedef struct OOSMOS_sStateTag        oosmos_sFinal;
 typedef struct OOSMOS_sStateTag        oosmos_sHistory;
@@ -256,6 +257,7 @@ typedef enum {
   OOSMOS_FinalType,
   OOSMOS_HistoryShallowType,
   OOSMOS_HistoryDeepType,
+  OOSMOS_ChoiceType,
 
   #if defined(oosmos_ORTHO)
     OOSMOS_OrthoType,
@@ -370,6 +372,11 @@ extern void OOSMOS_LeafInit(const char * pName, oosmos_sState *pState, oosmos_sS
 
 #define oosmos_LeafInit(pObject, LeafState, Parent, Code) \
         OOSMOS_LeafInit(OOSMOS_xstr(LeafState), &(pObject)->LeafState, (oosmos_sState *) &(pObject)->Parent, Code)
+//--------
+extern void OOSMOS_ChoiceInit(const char* pName, oosmos_sState* pState, oosmos_sState* pParent, OOSMOS_tCode pCode);
+
+#define oosmos_ChoiceInit(pObject, LeafState, Parent, Code) \
+        OOSMOS_ChoiceInit(OOSMOS_xstr(LeafState), &(pObject)->LeafState, (oosmos_sState *) &(pObject)->Parent, Code)
 //--------
 extern void OOSMOS_HistoryInit(const char * pName, oosmos_sState *pState, oosmos_sState *pParent, OOSMOS_eTypes Type);
 

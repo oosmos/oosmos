@@ -510,6 +510,9 @@ static void DefaultTransitions(oosmos_sRegion * pRegion, oosmos_sState * pState)
       break;
     }
 
+    case OOSMOS_ChoiceType:
+        break;
+
     default: {
       #if defined(oosmos_DEBUG)
         oosmos_DebugPrint("%8.8u %s: Unhandled type %d in DefaultTransitions.\n", oosmos_TimestampMS(), GetFileName(pState), pState->m_Type);
@@ -593,6 +596,9 @@ static void Complete(oosmos_sState * pState)
     case OOSMOS_StateMachineRegionType: {
       break;
     }
+
+    case OOSMOS_ChoiceType:
+        break;
 
     default: {
       #if defined(oosmos_DEBUG)
@@ -686,6 +692,12 @@ static void Enter(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sSt
             ThreadInit(pStack);
             break;
 
+        case OOSMOS_ChoiceType:
+            pRegion = GetRegion(pStack);
+            pRegion->m_pCurrent = pStack;
+            (void)DeliverEvent(pStack, &EventENTER);
+            break;
+
         #if defined(oosmos_ORTHO)
            case OOSMOS_OrthoRegionType:
         #endif
@@ -736,6 +748,11 @@ static void EnterDeepHistory(oosmos_sRegion* pRegion, oosmos_sState* pToState)
             pRegion->m_pCurrent = pToState;
             (void)DeliverEvent(pToState, &EventENTER);
             ThreadInit(pToState);
+            break;
+
+        case OOSMOS_ChoiceType:
+            pRegion->m_pCurrent = pToState;
+            (void)DeliverEvent(pToState, &EventENTER);
             break;
 
         #if defined(oosmos_ORTHO)
@@ -851,6 +868,14 @@ extern void OOSMOS_LeafInit(const char * pName, oosmos_sState * pState, oosmos_s
 
   StateInit(pName, pState, pParent, pCode);
   pState->m_Type = OOSMOS_LeafType;
+}
+
+extern void OOSMOS_ChoiceInit(const char* pName, oosmos_sState* pState, oosmos_sState* pParent, OOSMOS_tCode pCode)
+{
+    oosmos_POINTER_GUARD(pState);
+
+    StateInit(pName, pState, pParent, pCode);
+    pState->m_Type = OOSMOS_ChoiceType;
 }
 
 extern void OOSMOS_HistoryInit(const char * pName, oosmos_sState * pState, oosmos_sState * pParent, OOSMOS_eTypes Type)
