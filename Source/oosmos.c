@@ -684,6 +684,17 @@ static void Enter(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sSt
             pRegion->m_pCurrent = pStack;
             (void) DeliverEvent(pStack, &EventENTER);
             ThreadInit(pStack);
+
+            //
+            // This implements a NULL transition.
+            //
+            // Send a completion event to the leaf state, unless the state implements
+            // the POLL event, in which case it is up to the writer of the state
+            // code to eventually do an oosmos_ThreadComplete() or oosmos_ThreadEnd().
+            //
+            if (!DeliverEvent(pStack, &EventPOLL)) {
+                (void)DeliverEvent(pStack, &EventCOMPLETE);
+            }
             break;
 
         #if defined(oosmos_ORTHO)
