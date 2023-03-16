@@ -1153,7 +1153,7 @@ extern void oosmos_RunStateMachines(void)
 
   if (!IsStarted) {
     #if defined(oosmos_DEBUG_FILE)
-      remove(oosmos_DEBUG_FILE);
+      //remove(OOSMOS_str(oosmos_DEBUG_FILE));
     #endif
 
     RunningTimeUS = 0;
@@ -1664,10 +1664,11 @@ extern void OOSMOS_EndProgram(int Code)
     return (uint32_t) US;
   }
 
-#elif defined(__linux__) || defined(__APPLE__)
+#elif defined(_LINUX_) || defined(__APPLE__)
   #include <sys/time.h>
   #include <stddef.h>
   #include <time.h>
+  #include <stdarg.h>
 
   #if _POSIX_C_SOURCE >= 199309L
     #include <time.h>   // for nanosleep
@@ -1686,6 +1687,26 @@ extern void OOSMOS_EndProgram(int Code)
       nanosleep(&ts, NULL);
     #else
       usleep(US);
+    #endif
+  }
+
+  extern void OOSMOS_Write(const char* pFormat, ...)
+  {
+    #if defined(oosmos_DEBUG_FILE)
+	  const char * pFilename = OOSMOS_xstr(oosmos_DEBUG_FILE);
+      FILE* pFile = fopen(OOSMOS_xstr(oosmos_DEBUG_FILE), "a");
+
+      if (pFile != NULL) {
+          va_list Args;
+          va_start(Args, pFormat);
+          vfprintf(pFile, pFormat, Args);
+          va_end(Args);
+
+          fclose(pFile);
+      }
+    #else
+      pFormat = pFormat;
+      oosmos_UNUSED(pFormat);
     #endif
   }
 
