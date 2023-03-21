@@ -335,7 +335,7 @@ struct OOSMOS_sStateMachineTag {
 // To reduce footprint, only materialize these strings when compiling for debug.
 #if defined(oosmos_DEBUG) || defined(oosmos_STATE_NAME)
   #define OOSMOS_str(s) #s
-  #define OOSMOS_FILE OOSMOS_xstr(__FILE__)
+  #define OOSMOS_FILE __FILE__
 #else
   #define OOSMOS_str(s) ""
   #define OOSMOS_FILE ""
