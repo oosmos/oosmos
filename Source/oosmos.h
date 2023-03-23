@@ -126,7 +126,7 @@ struct OOSMOS_sQueueTag {
 
 #define oosmos_UNUSED(x) (void)(x)
 
-/*lint -e506 suppress "consant value boolean" */
+/*lint -e506 suppress "constant value boolean" */
 /*lint -e717 suppress "do { } while(0)" */
 #define oosmos_POINTER_GUARD(x) \
         do {                    \
@@ -138,7 +138,7 @@ struct OOSMOS_sQueueTag {
 #define oosmos_FOREVER() \
         for (;;) continue
 
-/*lint -e506 suppress "consant value boolean" */
+/*lint -e506 suppress "constant value boolean" */
 /*lint -e717 suppress "do { } while(0)" */
 #define oosmos_ASSERT(Condition) \
         do {                     \
