@@ -66,9 +66,8 @@ extern bool pinIsOff(const pin * pPin);
 #elif defined(_MSC_VER)
   extern pin * pinNew_Key(char Key, pin_eLogic Logic);
   extern pin*  pinNew_Key_Debounce(char Key, const pin_eLogic Logic, const uint8_t DebounceTimeMS);
-#elif defined(_LINUX_)
-  extern pin* pinNew_Key(char Key, pin_eLogic Logic);
-  extern pin*  pinNew_Key_Debounce(char Key, const pin_eLogic Logic, const uint8_t DebounceTimeMS);
+#elif defined(_SYSFS_)
+  extern pin* pinNew(int pinNumber, pin_eDirection direction, pin_eLogic Logic);
 #else
   #error pin.h: Unsupported platform.
 #endif

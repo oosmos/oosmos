@@ -135,12 +135,12 @@ static void SetStateMachine(oosmos_sState * pState)
   pState->m_pStateMachine = (oosmos_sStateMachine *) pCandidateState;
 }
 
-static oosmos_sStateMachine* GetStateMachine(const oosmos_sState* pState)
-{
-  return pState->m_pStateMachine;
-}
-
 #if defined(oosmos_DEBUG)
+  static oosmos_sStateMachine* GetStateMachine(const oosmos_sState* pState)
+  {
+    return pState->m_pStateMachine;
+  }
+
   static const char * GetFileName(const void * pObject)
   {
     const oosmos_sStateMachine * pStateMachine = GetStateMachine((const oosmos_sState *) pObject);
@@ -1652,7 +1652,6 @@ extern void OOSMOS_EndProgram(int Code)
           fclose(pFile);
       }
     #else
-      pFormat = pFormat;
       oosmos_UNUSED(pFormat);
     #endif
   }
