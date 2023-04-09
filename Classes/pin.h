@@ -71,7 +71,7 @@ extern bool pinIsOff(const pin * pPin);
   extern pin * pinNew_Debounce(GPIO_TypeDef* Port, const uint16_t Bit, const pin_eDirection Direction, const pin_eLogic Logic, const uint8_t DebounceTimeMS);
 #endif
 
-#if defined(OOSMOS_PIN_KEY)
+#if defined(OOSMOS_PIN_KEY_WINDOWS) || defined(OOSMOS_PIN_KEY_LINUX)
   extern pin * pinNew_Key(char Key, pin_eLogic Logic);
   extern pin*  pinNew_Key_Debounce(char Key, const pin_eLogic Logic, const uint8_t DebounceTimeMS);
 #endif
@@ -82,6 +82,9 @@ extern bool pinIsOff(const pin * pPin);
 
 #if defined(OOSMOS_PIN_DUMMY)
   extern pin* pinNew_Dummy(void);
+#endif
+
+#if defined(OOSMOS_PIN_UM232H)
 #endif
 
 #endif

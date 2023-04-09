@@ -60,7 +60,7 @@ struct pinTag
     uint16_t m_Pin;
   #endif
 
-  #if defined(OOSMOS_PIN_KEY)
+  #if defined(OOSMOS_PIN_KEY_WINDOWS) || defined(OOSMOS_PIN_KEY_LINUX)
     int m_Key;
   #endif
 
@@ -658,4 +658,7 @@ extern bool pinIsOff(const pin * pPin)
 	 pPin->m_IsDummy = 1;
 	 return pPin;
   }
+#endif
+
+#if defined(OOSMOS_PIN_UM232H)
 #endif
