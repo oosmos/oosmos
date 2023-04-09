@@ -247,14 +247,15 @@ extern bool pinIsOff(const pin * pPin)
   static int gpio_export(int gpio_pin_number)
   {
       FILE *pFile = fopen("/sys/class/gpio/export", "w");
+
       if (pFile == NULL) {
           perror("Failed to open /sys/class/gpio/export");
           return -1;
       }
 
       char buffer[4];
-      int length = snprintf(buffer, sizeof(buffer), "%d", gpio_pin_number);
-      fwrite(buffer, sizeof(char), length, pFile);
+      const int length = snprintf(buffer, sizeof(buffer), "%d", gpio_pin_number);
+      fwrite(buffer, length, sizeof(char), pFile);
       fclose(pFile);
 
       return 0;
@@ -266,6 +267,7 @@ extern bool pinIsOff(const pin * pPin)
       snprintf(path, sizeof(path), "/sys/class/gpio/gpio%d/direction", gpio_pin_number);
 
       FILE *pFile = fopen(path, "w");
+
       if (pFile == NULL) {
           perror("Failed to open direction file");
           return -1;
@@ -283,13 +285,14 @@ extern bool pinIsOff(const pin * pPin)
       snprintf(path, sizeof(path), "/sys/class/gpio/gpio%d/value", gpio_pin_number);
 
       FILE *pFile = fopen(path, "r");
+
       if (pFile == NULL) {
           perror("Failed to open value file");
           return -1;
       }
 
       char value;
-      fread(&value, sizeof(char), 1, pFile);
+      fread(&value, 1, sizeof(char), pFile);
       fclose(pFile);
 
       return value - '0';
@@ -301,13 +304,14 @@ extern bool pinIsOff(const pin * pPin)
       snprintf(path, sizeof(path), "/sys/class/gpio/gpio%d/value", gpio_pin_number);
 
       FILE *pFile = fopen(path, "w");
+
       if (pFile == NULL) {
           perror("Failed to open value file");
           return -1;
       }
 
-      char str_value = value ? '1' : '0';
-      fwrite(&str_value, sizeof(char), 1, pFile);
+      const char str_value = value ? '1' : '0';
+      fwrite(&str_value, 1, sizeof(char), pFile);
       fclose(pFile);
 
       return 0;
@@ -337,11 +341,11 @@ extern bool pinIsOff(const pin * pPin)
     return pPin;
   }
 
-	static bool IsPhysicallyOn(const pin * pPin)
-	{
-	  const int PinValue = gpio_read(pPin->m_PinNumber);
-	  return PinValue == (pPin->m_Logic == pinActiveHigh ? 1 : 0);
-	}
+  static bool IsPhysicallyOn(const pin * pPin)
+  {
+    const int PinValue = gpio_read(pPin->m_PinNumber);
+    return PinValue == (pPin->m_Logic == pinActiveHigh ? 1 : 0);
+  }
 
   extern void pinOn(const pin * pPin)
   {
