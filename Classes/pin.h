@@ -49,27 +49,39 @@ extern void pinOff(const pin * pPin);
 extern bool pinIsOn(const pin * pPin);
 extern bool pinIsOff(const pin * pPin);
 
-#if defined(ARDUINO) || defined(oosmos_RASPBERRY_PI)
+#if defined(OOSMOS_PIN_ARDUINO) || defined(OOSMOS_PIN_WIRING)
   extern pin * pinNew(unsigned PinNumber, pin_eDirection, pin_eLogic Logic);
   extern pin * pinNew_Debounce(unsigned PinNumber, pin_eDirection, pin_eLogic Logic, uint8_t DebounceTimeMS);
   extern unsigned pinGetPinNumber(pin * pPin);
-#elif defined(__PIC32MX)
+#endif
+
+#if defined(OOSMOS_PIN_PIC32MX)
   extern pin * pinNew(IoPortId Port, unsigned Bit, pin_eDirection Direction, pin_eLogic Logic);
   extern pin * pinNew_Debounce(IoPortId Port, unsigned Bit, pin_eDirection, pin_eLogic Logic, uint8_t DebounceTimeMS);
-#elif defined(__MBED__)
+#endif
+
+#if defined(OOSMOS_PIN_MBED)
   extern pin * pinNew(PinName Pin, pin_eDirection, pin_eLogic Logic);
   extern pin * pinNew_Debounce(PinName Pin, pin_eDirection, pin_eLogic Logic, uint8_t DebounceTimeMS);
   extern unsigned pinGetPinName(pin * pPin);
-#elif defined(__IAR_SYSTEMS_ICC__)
+#endif
+
+#if defined(OOSMOS_PIN_IAR_SYSTEMS_ICC)
   extern pin * pinNew(GPIO_TypeDef* Port, uint16_t Pin, const pin_eDirection Direction, const pin_eLogic Logic);
   extern pin * pinNew_Debounce(GPIO_TypeDef* Port, const uint16_t Bit, const pin_eDirection Direction, const pin_eLogic Logic, const uint8_t DebounceTimeMS);
-#elif defined(_MSC_VER)
+#endif
+
+#if defined(OOSMOS_PIN_KEY)
   extern pin * pinNew_Key(char Key, pin_eLogic Logic);
   extern pin*  pinNew_Key_Debounce(char Key, const pin_eLogic Logic, const uint8_t DebounceTimeMS);
-#elif defined(_SYSFS_)
+#endif
+
+#if defined(OOSMOS_PIN_SYSFS)
   extern pin* pinNew(int pinNumber, pin_eDirection direction, pin_eLogic Logic);
-#else
-  #error pin.h: Unsupported platform.
+#endif
+
+#if defined(OOSMOS_PIN_DUMMY)
+  extern pin* pinNew_Dummy(void);
 #endif
 
 #endif
