@@ -1729,7 +1729,6 @@ extern void OOSMOS_EndProgram(int Code)
           fclose(pFile);
       }
     #else
-      pFormat = pFormat;
       oosmos_UNUSED(pFormat);
     #endif
   }
