@@ -261,7 +261,7 @@ extern bool pinIsOff(const pin * pPin)
   #include <stdio.h>
   #include <string.h>
 
-  static int gpio_export(int gpio_pin_number)
+  static int sysfs_export(int sysfs_pin_number)
   {
       FILE *pFile = fopen("/sys/class/gpio/export", "w");
 
@@ -271,17 +271,17 @@ extern bool pinIsOff(const pin * pPin)
       }
 
       char buffer[4];
-      const int length = snprintf(buffer, sizeof(buffer), "%d", gpio_pin_number);
+      const int length = snprintf(buffer, sizeof(buffer), "%d", sysfs_pin_number);
       fwrite(buffer, length, sizeof(char), pFile);
       fclose(pFile);
 
       return 0;
   }
 
-  static int gpio_set_direction(int gpio_pin_number, const char *direction)
+  static int sysfs_set_direction(int sysfs_pin_number, const char *direction)
   {
       char path[40];
-      snprintf(path, sizeof(path), "/sys/class/gpio/gpio%d/direction", gpio_pin_number);
+      snprintf(path, sizeof(path), "/sys/class/gpio/gpio%d/direction", sysfs_pin_number);
 
       FILE *pFile = fopen(path, "w");
 
@@ -296,10 +296,10 @@ extern bool pinIsOff(const pin * pPin)
       return 0;
   }
 
-  static int gpio_read(int gpio_pin_number)
+  static int sysfs_read(int sysfs_pin_number)
   {
       char path[40];
-      snprintf(path, sizeof(path), "/sys/class/gpio/gpio%d/value", gpio_pin_number);
+      snprintf(path, sizeof(path), "/sys/class/gpio/gpio%d/value", sysfs_pin_number);
 
       FILE *pFile = fopen(path, "r");
 
@@ -315,10 +315,10 @@ extern bool pinIsOff(const pin * pPin)
       return value - '0';
   }
 
-  static int gpio_write(int gpio_pin_number, int value)
+  static int sysfs_write(int sysfs_pin_number, int value)
   {
       char path[40];
-      snprintf(path, sizeof(path), "/sys/class/gpio/gpio%d/value", gpio_pin_number);
+      snprintf(path, sizeof(path), "/sys/class/gpio/gpio%d/value", sysfs_pin_number);
 
       FILE *pFile = fopen(path, "w");
 
@@ -343,17 +343,20 @@ extern bool pinIsOff(const pin * pPin)
     pPin->m_State          = (unsigned) Unknown_State;
     pPin->m_DebounceTimeMS = 0;
 
+    sysfs_export(PinNumber);
+
     const char * pDirection;
 
     if (direction == pinIn)
       pDirection = "in";
-    else if (direction == pinOut)
-      pDirection = "out";
-    else
+    else if (direction == pinOut) {
+	  // Set direction to out and the value to "off" in one operation. (See https://www.kernel.org/doc/Documentation/gpio/sysfs.txt)
+      pDirection = pPin->m_Logic == pinActiveHigh ? "low": "high";
+    }
+	else
       oosmos_FOREVER();
 
-    gpio_export(PinNumber);
-    gpio_set_direction(PinNumber, pDirection);
+    sysfs_set_direction(PinNumber, pDirection);
 
     #if defined(OOSMOS_PIN_DUMMY)
        pPin->m_IsDummy = 0;
@@ -364,7 +367,7 @@ extern bool pinIsOff(const pin * pPin)
 
   static bool IsPhysicallyOn(const pin * pPin)
   {
-    const int PinValue = gpio_read(pPin->m_PinNumber);
+    const int PinValue = sysfs_read(pPin->m_PinNumber);
     return PinValue == (pPin->m_Logic == pinActiveHigh ? 1 : 0);
   }
 
@@ -376,7 +379,7 @@ extern bool pinIsOff(const pin * pPin)
       }
     #endif
 
-    gpio_write(pPin->m_PinNumber, pPin->m_Logic == pinActiveHigh ? 1 : 0);
+    sysfs_write(pPin->m_PinNumber, pPin->m_Logic == pinActiveHigh ? 1 : 0);
   }
 
   extern void pinOff(const pin * pPin)
@@ -387,7 +390,7 @@ extern bool pinIsOff(const pin * pPin)
       }
     #endif
 
-    gpio_write(pPin->m_PinNumber, pPin->m_Logic == pinActiveHigh ? 0 : 1);
+    sysfs_write(pPin->m_PinNumber, pPin->m_Logic == pinActiveHigh ? 0 : 1);
   }
 #endif
 
