@@ -41,21 +41,27 @@ typedef enum {
 
 struct pinTag
 {
-  #if defined(ARDUINO) || defined(oosmos_RASPBERRY_PI) || defined(_LINUX_)
+  #if defined(OOSMOS_PIN_ARDUINO) || defined(OOSMOS_PIN_WIRING) || defined(OOSMOS_PIN_SYSFS)
     uint8_t m_PinNumber;
-  #elif defined(__PIC32MX)
+  #endif
+
+  #if defined(OOSMOS_PIN_PIC32MX)
     IoPortId m_Port;
     uint16_t m_Bit;
-  #elif defined(__MBED__)
+  #endif
+
+  #if defined(OOSMOS_PIN_MBED)
     uint8_t m_Pin[sizeof(DigitalOut)];
     PinName m_PinName;
-  #elif defined(__IAR_SYSTEMS_ICC__)
+  #endif
+
+  #if defined(OOSMOS_PIN_IAR_SYSTEMS_ICC)
     GPIO_TypeDef* m_Port;
     uint16_t m_Pin;
-  #elif defined(_MSC_VER)
+  #endif
+
+  #if defined(OOSMOS_PIN_KEY_WINDOWS) || defined(OOSMOS_PIN_KEY_LINUX)
     int m_Key;
-  #else
-    #error pin.c: Unsupported platform.
   #endif
 
   oosmos_sActiveObject m_ActiveObject;
@@ -64,6 +70,10 @@ struct pinTag
   unsigned             m_State:4;     // eStates
   unsigned             m_Logic:4;     // pin_eLogic
   unsigned             m_Direction:4; // pin_eDirection
+
+  #if defined(OOSMOS_PIN_DUMMY)
+	 unsigned m_IsDummy:1;
+  #endif
 };
 
 static bool IsPhysicallyOn(const pin * pPin);
@@ -142,6 +152,13 @@ extern bool pinIsOn(const pin * pPin)
 {
   oosmos_POINTER_GUARD(pPin);
 
+  #if defined(OOSMOS_PIN_DUMMY)
+    if (pPin->m_IsDummy) {
+      return false;
+    }
+  #endif
+
+
   if (pPin->m_DebounceTimeMS == 0) {
     return IsPhysicallyOn(pPin);
   }
@@ -154,7 +171,7 @@ extern bool pinIsOff(const pin * pPin)
   return !pinIsOn(pPin);
 }
 
-#if defined(ARDUINO) || defined(oosmos_RASPBERRY_PI)
+#if defined(OOSMOS_PIN_ARDUINO) || defined(OOSMOS_PIN_WIRING)
   static bool IsPhysicallyOn(const pin * pPin)
   {
     const unsigned PinValue = digitalRead(pPin->m_PinNumber);
@@ -190,7 +207,7 @@ extern bool pinIsOff(const pin * pPin)
 
   extern pin * pinNew(const unsigned PinNumber, const pin_eDirection Direction, const pin_eLogic Logic)
   {
-    #if defined(oosmos_RASPBERRY_PI)
+    #if defined(OOSMOS_PIN_WIRING)
       static bool WiringPi_Initialized = false;
 
       if (!WiringPi_Initialized) {
@@ -238,7 +255,146 @@ extern bool pinIsOff(const pin * pPin)
 
     return pPin;
   }
-#elif defined(__PIC32MX)
+#endif
+
+#if defined(OOSMOS_PIN_SYSFS)
+  #include <stdio.h>
+  #include <string.h>
+
+  static int sysfs_export(int sysfs_pin_number)
+  {
+      FILE *pFile = fopen("/sys/class/gpio/export", "w");
+
+      if (pFile == NULL) {
+          perror("Failed to open /sys/class/gpio/export");
+          return -1;
+      }
+
+      char buffer[4];
+      const int length = snprintf(buffer, sizeof(buffer), "%d", sysfs_pin_number);
+      fwrite(buffer, length, sizeof(char), pFile);
+      fclose(pFile);
+
+      return 0;
+  }
+
+  static int sysfs_set_direction(int sysfs_pin_number, const char *direction)
+  {
+      char path[40];
+      snprintf(path, sizeof(path), "/sys/class/gpio/gpio%d/direction", sysfs_pin_number);
+
+      FILE *pFile = fopen(path, "w");
+
+      if (pFile == NULL) {
+          perror("Failed to open direction file");
+          return -1;
+      }
+
+      fwrite(direction, strlen(direction), sizeof(char), pFile);
+      fclose(pFile);
+
+      return 0;
+  }
+
+  static int sysfs_read(int sysfs_pin_number)
+  {
+      char path[40];
+      snprintf(path, sizeof(path), "/sys/class/gpio/gpio%d/value", sysfs_pin_number);
+
+      FILE *pFile = fopen(path, "r");
+
+      if (pFile == NULL) {
+          perror("Failed to open value file");
+          return -1;
+      }
+
+      char value;
+      fread(&value, 1, sizeof(char), pFile);
+      fclose(pFile);
+
+      return value - '0';
+  }
+
+  static int sysfs_write(int sysfs_pin_number, int value)
+  {
+      char path[40];
+      snprintf(path, sizeof(path), "/sys/class/gpio/gpio%d/value", sysfs_pin_number);
+
+      FILE *pFile = fopen(path, "w");
+
+      if (pFile == NULL) {
+          perror("Failed to open value file");
+          return -1;
+      }
+
+      const char str_value = value ? '1' : '0';
+      fwrite(&str_value, 1, sizeof(char), pFile);
+      fclose(pFile);
+
+      return 0;
+  }
+
+  extern pin * pinNew(int PinNumber, pin_eDirection direction, const pin_eLogic Logic)
+  {
+    oosmos_Allocate(pPin, pin, pinMAX, NULL);
+
+    pPin->m_PinNumber      = PinNumber;
+    pPin->m_Logic          = (unsigned) Logic;
+    pPin->m_State          = (unsigned) Unknown_State;
+    pPin->m_DebounceTimeMS = 0;
+
+    sysfs_export(PinNumber);
+
+    const char * pDirection;
+
+    if (direction == pinIn)
+      pDirection = "in";
+    else if (direction == pinOut) {
+	  // Set direction to out and the value to "off" in one operation. (See https://www.kernel.org/doc/Documentation/gpio/sysfs.txt)
+      pDirection = pPin->m_Logic == pinActiveHigh ? "low": "high";
+    }
+	else
+      oosmos_FOREVER();
+
+    sysfs_set_direction(PinNumber, pDirection);
+
+    #if defined(OOSMOS_PIN_DUMMY)
+       pPin->m_IsDummy = 0;
+    #endif
+
+    return pPin;
+  }
+
+  static bool IsPhysicallyOn(const pin * pPin)
+  {
+    const int PinValue = sysfs_read(pPin->m_PinNumber);
+    return PinValue == (pPin->m_Logic == pinActiveHigh ? 1 : 0);
+  }
+
+  extern void pinOn(const pin * pPin)
+  {
+    #if defined(OOSMOS_PIN_DUMMY)
+      if (pPin->m_IsDummy) {
+    	  return;
+      }
+    #endif
+
+    sysfs_write(pPin->m_PinNumber, pPin->m_Logic == pinActiveHigh ? 1 : 0);
+  }
+
+  extern void pinOff(const pin * pPin)
+  {
+    #if defined(OOSMOS_PIN_DUMMY)
+      if (pPin->m_IsDummy) {
+	    return;
+      }
+    #endif
+
+    sysfs_write(pPin->m_PinNumber, pPin->m_Logic == pinActiveHigh ? 0 : 1);
+  }
+#endif
+
+#if defined(OOSMOS_PIN_PIC32MX)
   static bool IsPhysicallyOn(const pin * pPin)
   {
     const uint32_t PinValue = PORTReadBits(pPin->m_Port, pPin->m_Bit);
@@ -294,7 +450,9 @@ extern bool pinIsOff(const pin * pPin)
 
     return pPin;
   }
-#elif defined(__MBED__)
+#endif
+
+#if defined(OOSMOS_PIN_MBED)
   #include "mbed.h"
   #include <new>
 
@@ -348,7 +506,9 @@ extern bool pinIsOff(const pin * pPin)
   {
     return pPin->m_PinName;
   }
-#elif defined(__IAR_SYSTEMS_ICC__)
+#endif
+
+#if defined(OOSMOS_PIN_IAR_SYSTEMS_ICC)
   static bool IsPhysicallyOn(const pin * pPin)
   {
     oosmos_POINTER_GUARD(pPin);
@@ -398,7 +558,9 @@ extern bool pinIsOff(const pin * pPin)
 
     return pPin;
   }
-#elif defined(_MSC_VER)
+#endif
+
+#if defined(OOSMOS_PIN_KEY_WINDOWS)
   #include <stdio.h>
   #include <windows.h>
 
@@ -489,44 +651,17 @@ extern bool pinIsOff(const pin * pPin)
   }
 
   void (*pin_pDummy)(void *) = RunStateMachine; // To satisfy compiler
-#elif defined(_LINUX_)
-  static bool   pinFirst = true;
 
-  static bool IsPhysicallyOn(const pin * pPin)
-  {
-	// TODO: implement
-    return false;
-  }
-
-  extern pin * pinNew_Key(char Key, const pin_eLogic Logic)
-  {
-    oosmos_Allocate(pPin, pin, pinMAX, NULL);
-
-#if 0
-    pPin->m_Key            = Key;
-    pPin->m_Logic          = (unsigned) Logic;
-    pPin->m_State          = (unsigned) Unknown_State;
-    pPin->m_DebounceTimeMS = 0;
-
-    if (pinFirst) {
-      //memset(KeyIsDown, false, sizeof(KeyIsDown));
-
-      //hStdin = GetStdHandle(STD_INPUT_HANDLE);
-      pinFirst = false;
-    }
 #endif
 
-    return pPin;
-  }
-
-  extern pin* pinNew_Key_Debounce(char Key, const pin_eLogic Logic, const uint8_t DebounceTimeMS)
+#if defined(OOSMOS_PIN_DUMMY)
+  extern pin* pinNew_Dummy(void)
   {
-    oosmos_Allocate(pPin, pin, pinMAX, NULL);
-
-	// TODO: need implementation
-
-    return pPin;
+	 oosmos_Allocate(pPin, pin, pinMAX, NULL);
+	 pPin->m_IsDummy = 1;
+	 return pPin;
   }
-#else
-  #error pin.c: Unsupported platform.
+#endif
+
+#if defined(OOSMOS_PIN_UM232H)
 #endif

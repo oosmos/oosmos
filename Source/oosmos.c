@@ -135,12 +135,12 @@ static void SetStateMachine(oosmos_sState * pState)
   pState->m_pStateMachine = (oosmos_sStateMachine *) pCandidateState;
 }
 
-static oosmos_sStateMachine* GetStateMachine(const oosmos_sState* pState)
-{
-  return pState->m_pStateMachine;
-}
-
 #if defined(oosmos_DEBUG)
+  static oosmos_sStateMachine* GetStateMachine(const oosmos_sState* pState)
+  {
+    return pState->m_pStateMachine;
+  }
+
   static const char * GetFileName(const void * pObject)
   {
     const oosmos_sStateMachine * pStateMachine = GetStateMachine((const oosmos_sState *) pObject);
@@ -1178,8 +1178,7 @@ extern void oosmos_RunStateMachines(void)
 
   if (!IsStarted) {
     #if defined(oosmos_DEBUG_FILE)
-	  const char * pFilename = OOSMOS_xstr(oosmos_DEBUG_FILE);
-      remove(pFilename);
+      remove(oosmos_DEBUG_FILE);
     #endif
 
     RunningTimeUS = 0;
@@ -1328,7 +1327,7 @@ extern void oosmos_QueuePush(oosmos_sQueue * pQueue, const void * pElement, size
   const size_t QueueElementSize = pQueue->m_QueueElementSize;
 
   if (UserElementSize > QueueElementSize) {
-    #if oosmos_DEBUG
+    #if defined(oosmos_DEBUG)
         oosmos_DebugPrint("Bad queue size in push.\n");
     #endif
 
@@ -1376,7 +1375,7 @@ extern bool oosmos_QueuePop(oosmos_sQueue * pQueue, void * pElement, size_t User
   const size_t QueueElementSize = pQueue->m_QueueElementSize;
 
   if (UserElementSize > QueueElementSize) {
-    #if oosmos_DEBUG
+    #if defined(oosmos_DEBUG)
         oosmos_DebugPrint("Bad queue size in pop.\n");
     #endif
 
@@ -1652,7 +1651,6 @@ extern void OOSMOS_EndProgram(int Code)
           fclose(pFile);
       }
     #else
-      pFormat = pFormat;
       oosmos_UNUSED(pFormat);
     #endif
   }
@@ -1731,7 +1729,6 @@ extern void OOSMOS_EndProgram(int Code)
           fclose(pFile);
       }
     #else
-      pFormat = pFormat;
       oosmos_UNUSED(pFormat);
     #endif
   }
