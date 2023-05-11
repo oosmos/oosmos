@@ -85,6 +85,7 @@ extern bool pinIsOff(const pin * pPin);
 #endif
 
 #if defined(OOSMOS_PIN_UM232H)
+  extern pin* pinNew_UM232H(int pinNumber, pin_eDirection direction, pin_eLogic Logic);
 #endif
 
 #endif

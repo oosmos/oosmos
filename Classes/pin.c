@@ -1,7 +1,7 @@
 //
 // OOSMOS pin Class
 //
-// Copyright (C) 2014-2020  OOSMOS, LLC
+// Copyright (C) 2014-2023  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ typedef enum {
 
 struct pinTag
 {
-  #if defined(OOSMOS_PIN_ARDUINO) || defined(OOSMOS_PIN_WIRING) || defined(OOSMOS_PIN_SYSFS)
+  #if defined(OOSMOS_PIN_ARDUINO) || defined(OOSMOS_PIN_WIRING) || defined(OOSMOS_PIN_SYSFS) || defined(OOSMOS_PIN_UM232H)
     uint8_t m_PinNumber;
   #endif
 
@@ -664,4 +664,155 @@ extern bool pinIsOff(const pin * pPin)
 #endif
 
 #if defined(OOSMOS_PIN_UM232H)
+  #include <windows.h>
+  #include "ftd2xx.h"
+
+  static bool      UM232H_First = true;
+  static DWORD     UM232H_DeviceNumber = -1;
+  static UCHAR     UM232H_ModeMask  = 0b11111111; // A 0 bit means input, a 1 bit means output.
+  static UCHAR     UM232H_ValueMask = 0b00000000; // All low initially.
+  static FT_HANDLE UM232H_ftHandle;
+
+  static void FT_Init()
+  {
+      FT_STATUS ftStatus = FT_Rescan();
+
+      DWORD dwNumDevices = 0;
+
+      // Get the number of FTDI devices
+      ftStatus = FT_CreateDeviceInfoList(&dwNumDevices);
+
+      if (ftStatus != FT_OK) {
+          for (;;);
+      }
+
+      int UM232H_Devices = 0;
+
+      for (DWORD i = 0; i < dwNumDevices; i++) {
+          DWORD Flags;
+          DWORD ID;
+          DWORD Type;
+          DWORD LocId;
+          char SerialNumber[16] = { 0 };
+          char Description[64]  = { 0 };
+          FT_HANDLE Handle;
+
+          ftStatus = FT_GetDeviceInfoDetail(i, &Flags, &Type, &ID, &LocId, SerialNumber, Description, &Handle);
+
+          if (ftStatus != FT_OK) {
+              for (;;);
+          }
+
+          if (strncmp(Description, "UM232H", sizeof("UM232H")) == 0) {
+              UM232H_DeviceNumber = i;
+              UM232H_Devices += 1;
+          }
+      }
+
+      if (UM232H_Devices == 0) {
+          //printf("UM232H device not found.");
+          for (;;);
+      }
+
+      if (UM232H_Devices != 1) {
+          //printf("Only one UM232H device supported.");
+          for (;;);
+      }
+
+      ftStatus = FT_Open(UM232H_DeviceNumber, &UM232H_ftHandle);
+      if (ftStatus != FT_OK) {
+          for (;;);
+      }
+  }
+
+  static bool IsPhysicallyOn(const pin* pPin)
+  {
+      UCHAR PinNumber = pPin->m_PinNumber;
+
+      DWORD dwBytesRead = 0;
+      UCHAR data = 0;
+
+      FT_STATUS ftStatus = FT_Read(UM232H_ftHandle, &data, sizeof(char), &dwBytesRead);
+
+      if (ftStatus != FT_OK) {
+          for (;;);
+      }
+
+      if (dwBytesRead != sizeof(char))
+      {
+          for (;;);
+      }
+
+      const int PinValue = ((data >> PinNumber) & 1) == 1;
+      return PinValue == (pPin->m_Logic == pinActiveHigh ? 1 : 0);
+  }
+
+  static void WritePin(UCHAR PinNumber, int Value)
+  {
+      if (Value) {
+          UM232H_ValueMask = UM232H_ValueMask | (1 << PinNumber);  // Set the pin high
+      }
+      else {
+          UM232H_ValueMask = UM232H_ValueMask & ~(1 << PinNumber);  // Set the pin low but keep other pins as they were
+      }
+
+      DWORD BytesWritten = 0;
+
+      FT_STATUS ftStatus = FT_Write(UM232H_ftHandle, &UM232H_ValueMask, sizeof(char), &BytesWritten);
+      if (ftStatus != FT_OK) {
+          for (;;);
+      }
+
+      if (BytesWritten != sizeof(char)) {
+          for (;;);
+      }
+  }
+
+  extern pin* pinNew_UM232H(int PinNumber, pin_eDirection Direction, pin_eLogic Logic)
+  {
+      if (UM232H_First) {
+          FT_Init();
+          UM232H_First = false;
+      }
+
+      oosmos_Allocate(pPin, pin, pinMAX, NULL);
+
+      pPin->m_PinNumber = PinNumber;
+      pPin->m_Logic = (unsigned)Logic;
+      pPin->m_State = (unsigned)Unknown_State;
+      pPin->m_Direction = (unsigned)Direction;
+      pPin->m_DebounceTimeMS = 0;
+
+      if (Direction == pinIn) {
+          // Set pin as input (0), all others as they were.
+          UM232H_ModeMask = UM232H_ModeMask & ~(1 << PinNumber);
+      }
+      else if (Direction == pinOut) {
+          // Set pin as output (1), all others as they were.
+          UM232H_ModeMask = UM232H_ModeMask | (1 << PinNumber);
+      }
+      else {
+          for (;;);
+      }
+
+      FT_STATUS ftStatus = FT_SetBitMode(UM232H_ftHandle, UM232H_ModeMask, FT_BITMODE_ASYNC_BITBANG);
+
+      if (ftStatus != FT_OK) {
+          for (;;);
+      }
+
+      return pPin;
+  }
+
+  extern void pinOn(const pin* pPin)
+  {
+      const int Value = pPin->m_Logic == pinActiveHigh ? 1 : 0;
+      WritePin(pPin->m_PinNumber, Value);
+  }
+
+  extern void pinOff(const pin* pPin)
+  {
+      const int Value = pPin->m_Logic == pinActiveHigh ? 0 : 1;
+      WritePin(pPin->m_PinNumber, Value);
+  }
 #endif
