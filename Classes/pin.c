@@ -804,6 +804,19 @@ extern bool pinIsOff(const pin * pPin)
       return pPin;
   }
 
+  extern pin* pinNew_UM232H_Debounce(int PinNumber, pin_eDirection Direction, pin_eLogic Logic, const uint8_t DebounceTimeMS)
+  {
+      pin * pPin = pinNew_UM232H(PinNumber, Direction, Logic);
+
+      pPin->m_DebounceTimeMS = DebounceTimeMS;
+
+      if (DebounceTimeMS > 0) {
+          oosmos_ActiveObjectInit(pPin, m_ActiveObject, RunStateMachine);
+      }
+
+      return pPin;
+  }
+
   extern void pinOn(const pin* pPin)
   {
       const int Value = pPin->m_Logic == pinActiveHigh ? 1 : 0;
