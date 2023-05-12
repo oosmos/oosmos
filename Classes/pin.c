@@ -669,7 +669,7 @@ extern bool pinIsOff(const pin * pPin)
 
   static bool      UM232H_First = true;
   static DWORD     UM232H_DeviceNumber = -1;
-  static UCHAR     UM232H_ModeMask  = 0b11111111; // A 0 bit means input, a 1 bit means output.
+  static UCHAR     UM232H_ModeMask  = 0b00000000; // A 0 bit means input, a 1 bit means output.
   static UCHAR     UM232H_ValueMask = 0b00000000; // All low initially.
   static FT_HANDLE UM232H_ftHandle;
 
@@ -727,23 +727,16 @@ extern bool pinIsOff(const pin * pPin)
 
   static bool IsPhysicallyOn(const pin* pPin)
   {
-      UCHAR PinNumber = pPin->m_PinNumber;
-
-      DWORD dwBytesRead = 0;
       UCHAR data = 0;
-
-      FT_STATUS ftStatus = FT_Read(UM232H_ftHandle, &data, sizeof(char), &dwBytesRead);
+      FT_STATUS ftStatus = FT_GetBitMode(UM232H_ftHandle, &data);
 
       if (ftStatus != FT_OK) {
           for (;;);
       }
 
-      if (dwBytesRead != sizeof(char))
-      {
-          for (;;);
-      }
+      const UCHAR PinNumber = pPin->m_PinNumber;
+      const int   PinValue  = ((data >> PinNumber) & 1) == 1;
 
-      const int PinValue = ((data >> PinNumber) & 1) == 1;
       return PinValue == (pPin->m_Logic == pinActiveHigh ? 1 : 0);
   }
 
