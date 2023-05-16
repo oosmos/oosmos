@@ -446,7 +446,7 @@ extern void OOSMOS_PushEventToStateMachine(const oosmos_sStateMachine * pStateMa
 
   extern void OOSMOS_Debug(oosmos_sStateMachine * pStateMachine, const char * (*pEventName)(int));
 
-  extern void oosmos_HexDump(const void * pBuffer, const size_t TotalBytes);
+  extern void oosmos_HexDump(const void * pBuffer, size_t TotalBytes);
 #else
   #define oosmos_Debug(pStateMachine, pEventName)
 #endif
