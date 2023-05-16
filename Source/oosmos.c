@@ -168,42 +168,45 @@ static void SetStateMachine(oosmos_sState * pState)
     const uint8_t * pByte    = (const uint8_t *) pBuffer;
     const char    * pCurrent = (const char    *) pBuffer;
 
-    uint8_t    Dump[16 * 3 + 1];
-    uint8_t    Ascii[16 + 1];
+    uint8_t    HexBuffer[16 * 3 + 1];
+    uint8_t    AsciiBuffer[16 + 1];
 
-    uint8_t  * pDump = Dump;
-    uint8_t  * pAscii = Ascii;
+    memset(HexBuffer,   0, sizeof(HexBuffer));
+    memset(AsciiBuffer, 0, sizeof(AsciiBuffer));
 
-    size_t     Bytes;
+    uint8_t  * pHex   = HexBuffer;
+    uint8_t  * pAscii = AsciiBuffer;
 
-    for (Bytes = 0; Bytes <= TotalBytes; pByte++, Bytes++) {
-      if ((Bytes % 16) == 0 || Bytes == TotalBytes) {
-        if (Bytes != 0) {
-          oosmos_DebugPrint("%p: %s|%.16s|\n", pCurrent, Dump, Ascii);
+    size_t     ByteIndex;
+
+    for (ByteIndex = 0; ByteIndex <= TotalBytes; pByte++, ByteIndex++) {
+      if ((ByteIndex % 16) == 0 || ByteIndex == TotalBytes) {
+        if (ByteIndex != 0) {
+          oosmos_DebugPrint("%p: %s|%.16s|\n", pCurrent, HexBuffer, AsciiBuffer);
           pCurrent += 16;
         }
 
-        if (Bytes == TotalBytes) {
+        if (ByteIndex == TotalBytes) {
           return;
         }
 
-        pDump  = Dump;
-        pAscii = Ascii;
+        pHex   = HexBuffer;
+        pAscii = AsciiBuffer;
 
-        memset(Dump, ' ', sizeof(Dump)-1);
-        Dump[sizeof(Dump)-1] = 0;
+        memset(HexBuffer, ' ', sizeof(HexBuffer)-1);
+        HexBuffer[sizeof(HexBuffer)-1] = '\0';
 
-        memset(Ascii, ' ', sizeof(Ascii)-1);
-        Ascii[sizeof(Ascii)-1] = 0;
+        memset(AsciiBuffer, ' ', sizeof(AsciiBuffer)-1);
+        AsciiBuffer[sizeof(AsciiBuffer)-1] = '\0';
       }
 
       //
       // This is a very fast, straight-through, binary-to-hex ASCII conversion.
       //
       const uint8_t Byte = *pByte;
-      *pDump++ = (uint8_t) "0123456789ABCDEF"[(Byte >>  4) & 0xF];
-      *pDump++ = (uint8_t) "0123456789ABCDEF"[(Byte      ) & 0xF];
-      *pDump++ = ' ';
+      *pHex++ = (uint8_t) "0123456789ABCDEF"[(Byte >>  4) & 0xF];
+      *pHex++ = (uint8_t) "0123456789ABCDEF"[(Byte      ) & 0xF];
+      *pHex++ = ' ';
 
       *pAscii++ = isprint(Byte) ? Byte : '.';
     }
@@ -1442,16 +1445,16 @@ extern bool OOSMOS_ThreadWaitCond_TimeoutMS(oosmos_sState * pState, bool Conditi
   oosmos_POINTER_GUARD(pState);
   oosmos_POINTER_GUARD(pTimeoutStatus);
 
-  if (pState->m_FirstEntry) {
-    oosmos_TimeoutInMS(&pState->m_ThreadTimeout, TimeoutMS);
-    pState->m_FirstEntry = false;
-    return false;
-  }
-
   if (Condition) {
     *pTimeoutStatus = false;
     pState->m_FirstEntry = true;
     return true;
+  }
+
+  if (pState->m_FirstEntry) {
+      oosmos_TimeoutInMS(&pState->m_ThreadTimeout, TimeoutMS);
+      pState->m_FirstEntry = false;
+      return false;
   }
 
   if (oosmos_TimeoutHasExpired(&pState->m_ThreadTimeout)) {
@@ -1467,16 +1470,16 @@ extern bool OOSMOS_ThreadWaitEvent(oosmos_sState * pState, int WaitEventCode)
 {
   oosmos_POINTER_GUARD(pState);
 
-  if (pState->m_FirstEntry) {
-    pState->m_FirstEntry = false;
-    return false;
-  }
-
   oosmos_sEvent * pCurrentEvent = OOSMOS_GetCurrentEvent(pState);
 
   if (pCurrentEvent->m_Code == WaitEventCode) {
     pState->m_FirstEntry = true;
     return true;
+  }
+
+  if (pState->m_FirstEntry) {
+      pState->m_FirstEntry = false;
+      return false;
   }
 
   return false;
@@ -1487,18 +1490,18 @@ extern bool OOSMOS_ThreadWaitEvent_TimeoutMS(oosmos_sState * pState, int WaitEve
     oosmos_POINTER_GUARD(pState);
     oosmos_POINTER_GUARD(pTimeoutStatus);
 
-    if (pState->m_FirstEntry) {
-        oosmos_TimeoutInMS(&pState->m_ThreadTimeout, TimeoutMS);
-        pState->m_FirstEntry = false;
-        return false;
-    }
-
     oosmos_sEvent* pCurrentEvent = OOSMOS_GetCurrentEvent(pState);
 
     if (pCurrentEvent->m_Code == WaitEventCode) {
         *pTimeoutStatus = false;
         pState->m_FirstEntry = true;
         return true;
+    }
+
+    if (pState->m_FirstEntry) {
+        oosmos_TimeoutInMS(&pState->m_ThreadTimeout, TimeoutMS);
+        pState->m_FirstEntry = false;
+        return false;
     }
 
     if (oosmos_TimeoutHasExpired(&pState->m_ThreadTimeout)) {
