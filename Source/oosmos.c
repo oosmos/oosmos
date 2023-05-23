@@ -824,7 +824,10 @@ extern bool oosmos_ThreadComplete(oosmos_sState * pState)
 {
   oosmos_POINTER_GUARD(pState);
 
-  Complete(pState);
+  // Only announce completion if this is a state thread.
+  if (pState->m_pParent != NULL)
+      Complete(pState);
+  
   return true;
 }
 
