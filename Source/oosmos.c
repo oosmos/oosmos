@@ -824,7 +824,10 @@ extern bool oosmos_ThreadComplete(oosmos_sState * pState)
 {
   oosmos_POINTER_GUARD(pState);
 
-  Complete(pState);
+  // Only announce completion if this is a state thread.
+  if (pState->m_pParent != NULL)
+      Complete(pState);
+
   return true;
 }
 
@@ -1214,7 +1217,7 @@ extern void oosmos_RunStateMachines(void)
 #if defined(oosmos_DEBUG)
   const uint32_t EndMS = oosmos_TimestampMS();
 
-  oosmos_DebugPrint("%8.8u <<<< oosmos_RunStateMachines() - Elapsed %d MS.\n", EndMS, EndMS - StartMS);
+  oosmos_DebugPrint("%8.8u <<<< oosmos_RunStateMachines() - Elapsed %u MS.\n", EndMS, EndMS - StartMS);
 #endif
 }
 
