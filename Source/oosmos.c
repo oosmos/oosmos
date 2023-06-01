@@ -1184,7 +1184,8 @@ extern void oosmos_RunStateMachines(void)
 
   if (!IsStarted) {
     #if defined(oosmos_DEBUG_FILE)
-      remove(oosmos_DEBUG_FILE);
+	  const char * pFilename = OOSMOS_xstr(OOSMOS_DEBUG_FILE);
+      remove(pFilename);
     #endif
 
     RunningTimeUS = 0;
@@ -1733,6 +1734,9 @@ extern void OOSMOS_EndProgram(int Code)
           va_end(Args);
 
           fclose(pFile);
+      }
+      else {
+    	  printf("Unable to open file '%s'\n", pFilename);
       }
     #else
       oosmos_UNUSED(pFormat);
