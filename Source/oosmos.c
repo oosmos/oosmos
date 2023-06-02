@@ -1184,7 +1184,7 @@ extern void oosmos_RunStateMachines(void)
 
   if (!IsStarted) {
     #if defined(oosmos_DEBUG_FILE)
-	  const char * pFilename = OOSMOS_xstr(OOSMOS_DEBUG_FILE);
+      const char * pFilename = OOSMOS_xstr(OOSMOS_DEBUG_FILE);
       remove(pFilename);
     #endif
 
@@ -1647,7 +1647,8 @@ extern void OOSMOS_EndProgram(int Code)
   extern void OOSMOS_Write(const char* pFormat, ...)
   {
     #if defined(oosmos_DEBUG_FILE)
-      FILE* pFile = fopen(oosmos_DEBUG_FILE, "a");
+      const char * pFilename = OOSMOS_xstr(oosmos_DEBUG_FILE);
+      FILE* pFile = fopen(pFilename, "a");
 
       if (pFile != NULL) {
           va_list Args;
@@ -1724,7 +1725,7 @@ extern void OOSMOS_EndProgram(int Code)
   extern void OOSMOS_Write(const char* pFormat, ...)
   {
     #if defined(oosmos_DEBUG_FILE)
-	  const char * pFilename = OOSMOS_xstr(oosmos_DEBUG_FILE);
+      const char * pFilename = OOSMOS_xstr(oosmos_DEBUG_FILE);
       FILE* pFile = fopen(pFilename, "a");
 
       if (pFile != NULL) {
