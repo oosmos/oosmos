@@ -41,26 +41,26 @@ typedef enum {
 
 struct pinTag
 {
-  #if defined(OOSMOS_PIN_ARDUINO) || defined(OOSMOS_PIN_WIRING) || defined(OOSMOS_PIN_SYSFS) || defined(OOSMOS_PIN_UM232H)
+  #if defined(oosmos_PIN_ARDUINO) || defined(oosmos_PIN_WIRING) || defined(oosmos_PIN_SYSFS) || defined(oosmos_PIN_UM232H)
     uint8_t m_PinNumber;
   #endif
 
-  #if defined(OOSMOS_PIN_PIC32MX)
+  #if defined(oosmos_PIN_PIC32MX)
     IoPortId m_Port;
     uint16_t m_Bit;
   #endif
 
-  #if defined(OOSMOS_PIN_MBED)
+  #if defined(oosmos_PIN_MBED)
     uint8_t m_Pin[sizeof(DigitalOut)];
     PinName m_PinName;
   #endif
 
-  #if defined(OOSMOS_PIN_IAR_SYSTEMS_ICC)
+  #if defined(oosmos_PIN_IAR_SYSTEMS_ICC)
     GPIO_TypeDef* m_Port;
     uint16_t m_Pin;
   #endif
 
-  #if defined(OOSMOS_PIN_KEY_WINDOWS) || defined(OOSMOS_PIN_KEY_LINUX)
+  #if defined(oosmos_PIN_KEY_WINDOWS) || defined(oosmos_PIN_KEY_LINUX)
     int m_Key;
   #endif
 
@@ -71,7 +71,7 @@ struct pinTag
   unsigned             m_Logic:4;     // pin_eLogic
   unsigned             m_Direction:4; // pin_eDirection
 
-  #if defined(OOSMOS_PIN_DUMMY)
+  #if defined(oosmos_PIN_DUMMY)
 	 unsigned m_IsDummy:1;
   #endif
 };
@@ -152,7 +152,7 @@ extern bool pinIsOn(const pin * pPin)
 {
   oosmos_POINTER_GUARD(pPin);
 
-  #if defined(OOSMOS_PIN_DUMMY)
+  #if defined(oosmos_PIN_DUMMY)
     if (pPin->m_IsDummy) {
       return false;
     }
@@ -171,7 +171,7 @@ extern bool pinIsOff(const pin * pPin)
   return !pinIsOn(pPin);
 }
 
-#if defined(OOSMOS_PIN_ARDUINO) || defined(OOSMOS_PIN_WIRING)
+#if defined(oosmos_PIN_ARDUINO) || defined(oosmos_PIN_WIRING)
   static bool IsPhysicallyOn(const pin * pPin)
   {
     const unsigned PinValue = digitalRead(pPin->m_PinNumber);
@@ -207,7 +207,7 @@ extern bool pinIsOff(const pin * pPin)
 
   extern pin * pinNew(const unsigned PinNumber, const pin_eDirection Direction, const pin_eLogic Logic)
   {
-    #if defined(OOSMOS_PIN_WIRING)
+    #if defined(oosmos_PIN_WIRING)
       static bool WiringPi_Initialized = false;
 
       if (!WiringPi_Initialized) {
@@ -257,7 +257,7 @@ extern bool pinIsOff(const pin * pPin)
   }
 #endif
 
-#if defined(OOSMOS_PIN_SYSFS)
+#if defined(oosmos_PIN_SYSFS)
   #include <stdio.h>
   #include <string.h>
 
@@ -358,7 +358,7 @@ extern bool pinIsOff(const pin * pPin)
 
     sysfs_set_direction(PinNumber, pDirection);
 
-    #if defined(OOSMOS_PIN_DUMMY)
+    #if defined(oosmos_PIN_DUMMY)
        pPin->m_IsDummy = 0;
     #endif
 
@@ -373,7 +373,7 @@ extern bool pinIsOff(const pin * pPin)
 
   extern void pinOn(const pin * pPin)
   {
-    #if defined(OOSMOS_PIN_DUMMY)
+    #if defined(oosmos_PIN_DUMMY)
       if (pPin->m_IsDummy) {
     	  return;
       }
@@ -384,7 +384,7 @@ extern bool pinIsOff(const pin * pPin)
 
   extern void pinOff(const pin * pPin)
   {
-    #if defined(OOSMOS_PIN_DUMMY)
+    #if defined(oosmos_PIN_DUMMY)
       if (pPin->m_IsDummy) {
 	    return;
       }
@@ -394,7 +394,7 @@ extern bool pinIsOff(const pin * pPin)
   }
 #endif
 
-#if defined(OOSMOS_PIN_PIC32MX)
+#if defined(oosmos_PIN_PIC32MX)
   static bool IsPhysicallyOn(const pin * pPin)
   {
     const uint32_t PinValue = PORTReadBits(pPin->m_Port, pPin->m_Bit);
@@ -452,7 +452,7 @@ extern bool pinIsOff(const pin * pPin)
   }
 #endif
 
-#if defined(OOSMOS_PIN_MBED)
+#if defined(oosmos_PIN_MBED)
   #include "mbed.h"
   #include <new>
 
@@ -508,7 +508,7 @@ extern bool pinIsOff(const pin * pPin)
   }
 #endif
 
-#if defined(OOSMOS_PIN_IAR_SYSTEMS_ICC)
+#if defined(oosmos_PIN_IAR_SYSTEMS_ICC)
   static bool IsPhysicallyOn(const pin * pPin)
   {
     oosmos_POINTER_GUARD(pPin);
@@ -560,7 +560,7 @@ extern bool pinIsOff(const pin * pPin)
   }
 #endif
 
-#if defined(OOSMOS_PIN_KEY_WINDOWS)
+#if defined(oosmos_PIN_KEY_WINDOWS)
   #include <stdio.h>
   #include <windows.h>
 
@@ -654,7 +654,7 @@ extern bool pinIsOff(const pin * pPin)
 
 #endif
 
-#if defined(OOSMOS_PIN_DUMMY)
+#if defined(oosmos_PIN_DUMMY)
   extern pin* pinNew_Dummy(void)
   {
 	 oosmos_Allocate(pPin, pin, pinMAX, NULL);
@@ -663,7 +663,7 @@ extern bool pinIsOff(const pin * pPin)
   }
 #endif
 
-#if defined(OOSMOS_PIN_UM232H)
+#if defined(oosmos_PIN_UM232H)
   #include <windows.h>
   #include "ftd2xx.h"
 
