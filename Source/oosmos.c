@@ -1658,6 +1658,9 @@ extern void OOSMOS_EndProgram(int Code)
 
           fclose(pFile);
       }
+      else {
+          printf("Unable to open file '%s'\n", pFilename);
+      }
     #else
       oosmos_UNUSED(pFormat);
     #endif
