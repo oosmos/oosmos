@@ -1184,7 +1184,7 @@ extern void oosmos_RunStateMachines(void)
 
   if (!IsStarted) {
     #if defined(oosmos_DEBUG_FILE)
-      const char * pFilename = OOSMOS_xstr(OOSMOS_DEBUG_FILE);
+      const char * pFilename = OOSMOS_xstr(oosmos_DEBUG_FILE);
       remove(pFilename);
     #endif
 
