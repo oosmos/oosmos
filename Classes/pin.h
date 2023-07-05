@@ -43,50 +43,58 @@ typedef enum
   pinActiveHigh
 } pin_eLogic;
 
-extern void pinOn(const pin * pPin);
-extern void pinOff(const pin * pPin);
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
-extern bool pinIsOn(const pin * pPin);
-extern bool pinIsOff(const pin * pPin);
+	extern void pinOn(const pin* pPin);
+	extern void pinOff(const pin* pPin);
+
+	extern bool pinIsOn(const pin* pPin);
+	extern bool pinIsOff(const pin* pPin);
 
 #if defined(oosmos_PIN_ARDUINO) || defined(oosmos_PIN_WIRING)
-  extern pin * pinNew(unsigned PinNumber, pin_eDirection, pin_eLogic Logic);
-  extern pin * pinNew_Debounce(unsigned PinNumber, pin_eDirection, pin_eLogic Logic, uint8_t DebounceTimeMS);
-  extern unsigned pinGetPinNumber(pin * pPin);
+	extern pin* pinNew(unsigned PinNumber, pin_eDirection, pin_eLogic Logic);
+	extern pin* pinNew_Debounce(unsigned PinNumber, pin_eDirection, pin_eLogic Logic, uint8_t DebounceTimeMS);
+	extern unsigned pinGetPinNumber(pin* pPin);
 #endif
 
 #if defined(oosmos_PIN_PIC32MX)
-  extern pin * pinNew(IoPortId Port, unsigned Bit, pin_eDirection Direction, pin_eLogic Logic);
-  extern pin * pinNew_Debounce(IoPortId Port, unsigned Bit, pin_eDirection, pin_eLogic Logic, uint8_t DebounceTimeMS);
+	extern pin* pinNew(IoPortId Port, unsigned Bit, pin_eDirection Direction, pin_eLogic Logic);
+	extern pin* pinNew_Debounce(IoPortId Port, unsigned Bit, pin_eDirection, pin_eLogic Logic, uint8_t DebounceTimeMS);
 #endif
 
 #if defined(oosmos_PIN_MBED)
-  extern pin * pinNew(PinName Pin, pin_eDirection, pin_eLogic Logic);
-  extern pin * pinNew_Debounce(PinName Pin, pin_eDirection, pin_eLogic Logic, uint8_t DebounceTimeMS);
-  extern unsigned pinGetPinName(pin * pPin);
+	extern pin* pinNew(PinName Pin, pin_eDirection, pin_eLogic Logic);
+	extern pin* pinNew_Debounce(PinName Pin, pin_eDirection, pin_eLogic Logic, uint8_t DebounceTimeMS);
+	extern unsigned pinGetPinName(pin* pPin);
 #endif
 
 #if defined(oosmos_PIN_IAR_SYSTEMS_ICC)
-  extern pin * pinNew(GPIO_TypeDef* Port, uint16_t Pin, const pin_eDirection Direction, const pin_eLogic Logic);
-  extern pin * pinNew_Debounce(GPIO_TypeDef* Port, const uint16_t Bit, const pin_eDirection Direction, const pin_eLogic Logic, const uint8_t DebounceTimeMS);
+	extern pin* pinNew(GPIO_TypeDef* Port, uint16_t Pin, const pin_eDirection Direction, const pin_eLogic Logic);
+	extern pin* pinNew_Debounce(GPIO_TypeDef* Port, const uint16_t Bit, const pin_eDirection Direction, const pin_eLogic Logic, const uint8_t DebounceTimeMS);
 #endif
 
 #if defined(oosmos_PIN_KEY_WINDOWS) || defined(oosmos_PIN_KEY_LINUX)
-  extern pin * pinNew_Key(char Key, pin_eLogic Logic);
-  extern pin*  pinNew_Key_Debounce(char Key, const pin_eLogic Logic, const uint8_t DebounceTimeMS);
+	extern pin* pinNew_Key(char Key, pin_eLogic Logic);
+	extern pin* pinNew_Key_Debounce(char Key, const pin_eLogic Logic, const uint8_t DebounceTimeMS);
 #endif
 
 #if defined(oosmos_PIN_SYSFS)
-  extern pin* pinNew(int pinNumber, pin_eDirection direction, pin_eLogic Logic);
+	extern pin* pinNew(int pinNumber, pin_eDirection direction, pin_eLogic Logic);
 #endif
 
 #if defined(oosmos_PIN_DUMMY)
-  extern pin* pinNew_Dummy(void);
+	extern pin* pinNew_Dummy(void);
 #endif
 
 #if defined(oosmos_PIN_UM232H)
-  extern pin* pinNew_UM232H(int pinNumber, pin_eDirection direction, pin_eLogic Logic);
-  extern pin* pinNew_UM232H_Debounce(int PinNumber, pin_eDirection Direction, pin_eLogic Logic, const uint8_t DebounceTimeMS);
+	extern pin* pinNew_UM232H(int pinNumber, pin_eDirection direction, pin_eLogic Logic);
+	extern pin* pinNew_UM232H_Debounce(int PinNumber, pin_eDirection Direction, pin_eLogic Logic, const uint8_t DebounceTimeMS);
+#endif
+
+#if defined(__cplusplus)
+}
 #endif
 
 #endif

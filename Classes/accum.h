@@ -28,6 +28,10 @@
 
 typedef struct accumTag accum;
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 extern accum *  accumNew(void);
 extern void     accumStart(accum * pAccum);
 extern void     accumStop(accum * pAccum);
@@ -40,5 +44,9 @@ extern bool     accumHasReachedSeconds(accum * pAccum, uint64_t Seconds);
 extern bool     accumHasReachedMinutes(accum * pAccum, uint64_t Minutes);
 extern bool     accumHasReachedHours(accum * pAccum, uint64_t Hours);
 extern bool     accumHasReachedDays(accum * pAccum, uint64_t Days);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif

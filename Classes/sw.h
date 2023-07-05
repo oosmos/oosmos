@@ -29,14 +29,22 @@
 
 typedef struct swTag sw;
 
-extern sw * swNew(pin * pPin);
-extern sw * swNewDetached(pin * pPin);
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
-extern void swSubscribeOpenEvent(sw * pSwitch, oosmos_sQueue * pQueue, int OpenEventCode, void * pContext);
-extern void swSubscribeCloseEvent(sw * pSwitch, oosmos_sQueue * pQueue, int CloseEventCode, void * pContext);
+extern sw* swNew(pin* pPin);
+extern sw* swNewDetached(pin* pPin);
 
-extern bool swIsOpen(const sw * pSwitch);
-extern bool swIsClosed(const sw * pSwitch);
-extern void swRunStateMachine(sw * pSwitch);
+extern void swSubscribeOpenEvent(sw* pSwitch, oosmos_sQueue* pQueue, int OpenEventCode, void* pContext);
+extern void swSubscribeCloseEvent(sw* pSwitch, oosmos_sQueue* pQueue, int CloseEventCode, void* pContext);
+
+extern bool swIsOpen(const sw* pSwitch);
+extern bool swIsClosed(const sw* pSwitch);
+extern void swRunStateMachine(sw* pSwitch);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif
