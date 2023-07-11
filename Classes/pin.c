@@ -615,7 +615,7 @@ extern bool pinIsOff(const pin * pPin)
 
     pPin->m_Key = Key;
     pPin->m_Logic = (unsigned)Logic;
-    pPin->m_State = IsPhysicallyOn(pPin) ? On_State : Off_State;
+    pPin->m_State = (unsigned)IsPhysicallyOn(pPin) ? On_State : Off_State;
     pPin->m_DebounceTimeMS = DebounceTimeMS;
 
     if (pinFirst) {
@@ -772,7 +772,7 @@ extern bool pinIsOff(const pin * pPin)
 
       pPin->m_PinNumber = PinNumber;
       pPin->m_Logic = (unsigned)Logic;
-      pPin->m_State = IsPhysicallyOn(pPin) ? On_State : Off_State;
+      pPin->m_State = (unsigned)IsPhysicallyOn(pPin) ? On_State : Off_State;
       pPin->m_Direction = (unsigned)Direction;
       pPin->m_DebounceTimeMS = 0;
 
