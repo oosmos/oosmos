@@ -220,7 +220,7 @@ extern bool pinIsOff(const pin * pPin)
 
     pPin->m_PinNumber      = PinNumber;
     pPin->m_Logic          = (unsigned) Logic;
-    pPin->m_State          = (unsigned) Unknown_State;
+    pPin->m_State          = IsPhysicallyOn(pPin) ? On_State : Off_State;
     pPin->m_Direction      = (unsigned) Direction;
     pPin->m_DebounceTimeMS = 0;
 
@@ -340,7 +340,7 @@ extern bool pinIsOff(const pin * pPin)
 
     pPin->m_PinNumber      = PinNumber;
     pPin->m_Logic          = (unsigned) Logic;
-    pPin->m_State          = (unsigned) Unknown_State;
+    pPin->m_State          = IsPhysicallyOn(pPin) ? On_State : Off_State;
     pPin->m_DebounceTimeMS = 0;
 
     sysfs_export(PinNumber);
@@ -418,7 +418,7 @@ extern bool pinIsOff(const pin * pPin)
     pPin->m_Port           = Port;
     pPin->m_Bit            = Bit;
     pPin->m_Logic          = (unsigned) Logic;
-    pPin->m_State          = (unsigned) Unknown_State;
+    pPin->m_State          = IsPhysicallyOn(pPin) ? On_State : Off_State;
     pPin->m_Direction      = (unsigned) Direction;
     pPin->m_DebounceTimeMS = 0;
 
@@ -463,7 +463,7 @@ extern bool pinIsOff(const pin * pPin)
 
     pPin->m_PinName        = Pin;
     pPin->m_Logic          = (unsigned) Logic;
-    pPin->m_State          = (unsigned) Unknown_State;
+    pPin->m_State          = IsPhysicallyOn(pPin) ? On_State : Off_State;
     pPin->m_Direction      = (unsigned) Direction;
     pPin->m_DebounceTimeMS = 0;
 
@@ -538,7 +538,7 @@ extern bool pinIsOff(const pin * pPin)
     pPin->m_Port           = Port;
     pPin->m_Pin            = Pin;
     pPin->m_Logic          = (unsigned) Logic;
-    pPin->m_State          = (unsigned) Unknown_State;
+    pPin->m_State          = IsPhysicallyOn(pPin) ? On_State : Off_State;
     pPin->m_Direction      = (unsigned) Direction;
     pPin->m_DebounceTimeMS = 0;
 
@@ -596,7 +596,7 @@ extern bool pinIsOff(const pin * pPin)
 
     pPin->m_Key            = Key;
     pPin->m_Logic          = (unsigned) Logic;
-    pPin->m_State          = (unsigned) Unknown_State;
+    pPin->m_State          = IsPhysicallyOn(pPin) ? On_State : Off_State;
     pPin->m_DebounceTimeMS = 0;
 
     if (pinFirst) {
@@ -615,7 +615,7 @@ extern bool pinIsOff(const pin * pPin)
 
     pPin->m_Key = Key;
     pPin->m_Logic = (unsigned)Logic;
-    pPin->m_State = (unsigned)Unknown_State;
+    pPin->m_State = IsPhysicallyOn(pPin) ? On_State : Off_State;
     pPin->m_DebounceTimeMS = DebounceTimeMS;
 
     if (pinFirst) {
@@ -772,7 +772,7 @@ extern bool pinIsOff(const pin * pPin)
 
       pPin->m_PinNumber = PinNumber;
       pPin->m_Logic = (unsigned)Logic;
-      pPin->m_State = (unsigned)Unknown_State;
+      pPin->m_State = IsPhysicallyOn(pPin) ? On_State : Off_State;
       pPin->m_Direction = (unsigned)Direction;
       pPin->m_DebounceTimeMS = 0;
 
