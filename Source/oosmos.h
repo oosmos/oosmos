@@ -124,16 +124,20 @@ struct OOSMOS_sQueueTag {
   #define oosmos_DebugPrint 1 ? (void)0 : OOSMOS_DebugDummy
 #endif
 
-#define oosmos_UNUSED(x) (void)(x)
+#define oosmos_UNUSED(x) ((void)(x))
 
 /*lint -e506 suppress "constant value boolean" */
 /*lint -e717 suppress "do { } while(0)" */
-#define oosmos_POINTER_GUARD(x) \
-        do {                    \
-          if ((x) == NULL) {    \
-            oosmos_FOREVER();   \
-          }                     \
-        } while (0)             \
+#if defined(oosmos_ENABLE_POINTER_GUARDS)
+  #define oosmos_POINTER_GUARD(x) \
+        do {                      \
+          if ((x) == NULL) {      \
+            oosmos_FOREVER();     \
+          }                       \
+        } while (0)
+#else
+  #define oosmos_POINTER_GUARD(x) ((void)(0))
+#endif
 
 #define oosmos_FOREVER() \
         for (;;) continue
