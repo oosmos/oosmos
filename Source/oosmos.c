@@ -98,6 +98,8 @@ static void RESET_TIMEOUT(oosmos_sState * pState)
 
 static oosmos_sRegion * GetRegion(oosmos_sState * pState)
 {
+  oosmos_POINTER_GUARD(pState);
+
   oosmos_sState * pCandidateState = NULL;
 
   for (; pState != NULL; pState = pState->m_pParent) {
@@ -636,11 +638,13 @@ static oosmos_sState * GetLCA(oosmos_sState * pFrom, oosmos_sState * pTo)
   return NULL;
 }
 
-
-static bool IsStateInRegion(oosmos_sRegion * pRegion, const oosmos_sState* pState)
+static bool IsStateInRegion(const oosmos_sRegion * pRegion, const oosmos_sState* pState)
 {
+    oosmos_POINTER_GUARD(pRegion);
+    oosmos_POINTER_GUARD(pState);
+
     for (const oosmos_sState* pCandidateState = pState; pCandidateState != NULL; pCandidateState = pCandidateState->m_pParent) {
-        oosmos_POINTER_GUARD(pState);
+        oosmos_POINTER_GUARD(pCandidateState);
 
         if (pCandidateState == &pRegion->m_Composite.m_State)
             return true;
@@ -651,6 +655,11 @@ static bool IsStateInRegion(oosmos_sRegion * pRegion, const oosmos_sState* pStat
 
 static void Enter(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sState* pToState, oosmos_sState* pStack)
 {
+    oosmos_POINTER_GUARD(pRegion);
+    oosmos_POINTER_GUARD(pLCA);
+    oosmos_POINTER_GUARD(pToState);
+    oosmos_POINTER_GUARD(pStack);
+
     if (pStack == pLCA)
         return;
 
@@ -723,6 +732,9 @@ static void Enter(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sSt
 
 static void EnterDeepHistory(oosmos_sRegion* pRegion, oosmos_sState* pToState)
 {
+    oosmos_POINTER_GUARD(pRegion);
+    oosmos_POINTER_GUARD(pToState);
+
     switch (pToState->m_Type) {
         case OOSMOS_HistoryDeepType: {
             oosmos_sComposite* pComposite = (oosmos_sComposite*)pToState;
@@ -774,6 +786,7 @@ static void EnterDeepHistory(oosmos_sRegion* pRegion, oosmos_sState* pToState)
             // Intentional drop through to default.
         }
         #endif
+        /*lint -fallthrough */
         default: {
             break;
         }
