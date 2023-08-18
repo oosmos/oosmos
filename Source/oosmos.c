@@ -1490,6 +1490,7 @@ extern bool OOSMOS_ThreadWaitEvent(oosmos_sState * pState, int WaitEventCode)
   oosmos_sEvent * pCurrentEvent = OOSMOS_GetCurrentEvent(pState);
 
   if (pCurrentEvent->m_Code == WaitEventCode) {
+    pCurrentEvent->m_Code = oosmos_NOP;
     pState->m_FirstEntry = true;
     return true;
   }
@@ -1510,6 +1511,7 @@ extern bool OOSMOS_ThreadWaitEvent_TimeoutMS(oosmos_sState * pState, int WaitEve
     oosmos_sEvent* pCurrentEvent = OOSMOS_GetCurrentEvent(pState);
 
     if (pCurrentEvent->m_Code == WaitEventCode) {
+	    pCurrentEvent->m_Code = oosmos_NOP;
         *pTimeoutStatus = false;
         pState->m_FirstEntry = true;
         return true;
