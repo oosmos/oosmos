@@ -34,7 +34,8 @@ typedef struct
 } regSample;
 
 extern reg * regNew(void);
-extern void regSamples(reg * pReg, const regSample * pSamples, uint32_t Samples);
+extern void  regSamples(reg * pReg, const regSample * pSamples, uint32_t Samples);
 extern float regPredictY(const reg * pReg, float X);
+extern float regSlope(const reg * pReg);
 
 #endif

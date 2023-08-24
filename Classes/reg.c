@@ -88,3 +88,8 @@ extern float regPredictY(const reg * pReg, float X)
 {
   return pReg->m_Slope * X + pReg->m_Intercept;
 }
+
+extern float regSlope(const reg * pReg)
+{
+	return pReg->m_Slope;
+}
