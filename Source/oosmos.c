@@ -1462,16 +1462,15 @@ extern bool OOSMOS_ThreadWaitCond_TimeoutMS(oosmos_sState * pState, bool Conditi
   oosmos_POINTER_GUARD(pState);
   oosmos_POINTER_GUARD(pTimeoutStatus);
 
+  if (pState->m_FirstEntry) {
+      oosmos_TimeoutInMS(&pState->m_ThreadTimeout, TimeoutMS);
+      pState->m_FirstEntry = false;
+  }
+
   if (Condition) {
     *pTimeoutStatus = false;
     pState->m_FirstEntry = true;
     return true;
-  }
-
-  if (pState->m_FirstEntry) {
-      oosmos_TimeoutInMS(&pState->m_ThreadTimeout, TimeoutMS);
-      pState->m_FirstEntry = false;
-      return false;
   }
 
   if (oosmos_TimeoutHasExpired(&pState->m_ThreadTimeout)) {
@@ -1479,6 +1478,8 @@ extern bool OOSMOS_ThreadWaitCond_TimeoutMS(oosmos_sState * pState, bool Conditi
     pState->m_FirstEntry = true;
     return true;
   }
+
+  *pTimeoutStatus = false;
 
   return false;
 }
@@ -1508,6 +1509,11 @@ extern bool OOSMOS_ThreadWaitEvent_TimeoutMS(oosmos_sState * pState, int WaitEve
     oosmos_POINTER_GUARD(pState);
     oosmos_POINTER_GUARD(pTimeoutStatus);
 
+    if (pState->m_FirstEntry) {
+        oosmos_TimeoutInMS(&pState->m_ThreadTimeout, TimeoutMS);
+        pState->m_FirstEntry = false;
+    }
+
     oosmos_sEvent* pCurrentEvent = OOSMOS_GetCurrentEvent(pState);
 
     if (pCurrentEvent->m_Code == WaitEventCode) {
@@ -1517,17 +1523,13 @@ extern bool OOSMOS_ThreadWaitEvent_TimeoutMS(oosmos_sState * pState, int WaitEve
         return true;
     }
 
-    if (pState->m_FirstEntry) {
-        oosmos_TimeoutInMS(&pState->m_ThreadTimeout, TimeoutMS);
-        pState->m_FirstEntry = false;
-        return false;
-    }
-
     if (oosmos_TimeoutHasExpired(&pState->m_ThreadTimeout)) {
         *pTimeoutStatus = true;
         pState->m_FirstEntry = true;
         return true;
     }
+
+    *pTimeoutStatus = false;
 
     return false;
 }
