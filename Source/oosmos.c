@@ -853,7 +853,12 @@ extern bool OOSMOS_TransitionAction(oosmos_sState * pFromState, oosmos_sState * 
 
   oosmos_sRegion* pLcaRegion = GetRegion(pLCA);
 
-  Exit(pLcaRegion, pLCA);
+  // Note: If we transition from an outer state directly to a state inside an
+  // ortho, there will not yet be a current state in that region, so we have 
+  // no state(s) to exit.
+  if (pLcaRegion->m_pCurrent != NULL) {
+      Exit(pLcaRegion, pLCA);
+  }
 
   if (pActionCode != NULL) {
     pActionCode(pFromState->m_pStateMachine->m_pObject, pFromState, pEvent);
