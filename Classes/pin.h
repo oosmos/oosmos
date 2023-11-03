@@ -89,8 +89,8 @@ extern "C" {
 #endif
 
 #if defined(oosmos_PIN_UM232H)
-	extern pin* pinNew_UM232H(int pinNumber, pin_eDirection direction, pin_eLogic Logic);
-	extern pin* pinNew_UM232H_Debounce(int PinNumber, pin_eDirection Direction, pin_eLogic Logic, const uint8_t DebounceTimeMS);
+	extern pin* pinNew_UM232H(uint8_t pinNumber, pin_eDirection direction, pin_eLogic Logic);
+	extern pin* pinNew_UM232H_Debounce(uint8_t PinNumber, pin_eDirection Direction, pin_eLogic Logic, const uint8_t DebounceTimeMS);
 #endif
 
 #if defined(__cplusplus)

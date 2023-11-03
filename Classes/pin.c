@@ -668,7 +668,7 @@ extern bool pinIsOff(const pin * pPin)
   #include "ftd2xx.h"
 
   static bool      UM232H_First = true;
-  static DWORD     UM232H_DeviceNumber = -1;
+  static DWORD     UM232H_DeviceNumber = (DWORD) -1;
   static UCHAR     UM232H_ModeMask  = 0b00000000; // A 0 bit means input, a 1 bit means output.
   static UCHAR     UM232H_ValueMask = 0b00000000; // All low initially.
   static FT_HANDLE UM232H_ftHandle;
@@ -761,7 +761,7 @@ extern bool pinIsOff(const pin * pPin)
       }
   }
 
-  extern pin* pinNew_UM232H(int PinNumber, pin_eDirection Direction, pin_eLogic Logic)
+  extern pin* pinNew_UM232H(uint8_t PinNumber, pin_eDirection Direction, pin_eLogic Logic)
   {
       if (UM232H_First) {
           FT_Init();
@@ -797,7 +797,7 @@ extern bool pinIsOff(const pin * pPin)
       return pPin;
   }
 
-  extern pin* pinNew_UM232H_Debounce(int PinNumber, pin_eDirection Direction, pin_eLogic Logic, const uint8_t DebounceTimeMS)
+  extern pin* pinNew_UM232H_Debounce(uint8_t PinNumber, pin_eDirection Direction, pin_eLogic Logic, const uint8_t DebounceTimeMS)
   {
       pin * pPin = pinNew_UM232H(PinNumber, Direction, Logic);
 
