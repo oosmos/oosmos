@@ -67,7 +67,7 @@ struct motionTag
         oosmos_sComposite Active_Region1_Limits_State;
           oosmos_sLeaf Active_Region1_Limits_AtUpperLimit_State;
           oosmos_sLeaf Active_Region1_Limits_InBounds_State;
-          oosmos_sLeaf Active_Region1_Limits_Choice1_State;
+          oosmos_sChoice Active_Region1_Limits_Choice1_State;
           oosmos_sLeaf Active_Region1_Limits_AtLowerLimit_State;
       oosmos_sOrthoRegion Active_Region2_State;
         oosmos_sLeaf Active_Region2_Stopped_State;
@@ -202,7 +202,7 @@ static motion * motionNew(void)
         oosmos_CompositeInit(pMotion, Active_Region1_Limits_State, Active_Region1_State, Active_Region1_Limits_Choice1_State, Active_Region1_Limits_State_Code);
           oosmos_LeafInit(pMotion, Active_Region1_Limits_AtUpperLimit_State, Active_Region1_Limits_State, NULL);
           oosmos_LeafInit(pMotion, Active_Region1_Limits_InBounds_State, Active_Region1_Limits_State, NULL);
-          oosmos_LeafInit(pMotion, Active_Region1_Limits_Choice1_State, Active_Region1_Limits_State, Active_Region1_Limits_Choice1_State_Code);
+          oosmos_ChoiceInit(pMotion, Active_Region1_Limits_Choice1_State, Active_Region1_Limits_State, Active_Region1_Limits_Choice1_State_Code);
           oosmos_LeafInit(pMotion, Active_Region1_Limits_AtLowerLimit_State, Active_Region1_Limits_State, NULL);
       oosmos_OrthoRegionInit(pMotion, Active_Region2_State, Active_State, Active_Region2_Stopped_State, NULL);
         oosmos_LeafInit(pMotion, Active_Region2_Stopped_State, Active_Region2_State, Active_Region2_Stopped_State_Code);

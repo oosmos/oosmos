@@ -107,7 +107,7 @@ static bool Terminating_State_Code(void * pObject, oosmos_sState * pState, const
   switch (oosmos_EventCode(pEvent)) {
     case oosmos_ENTER: {
       printf("\nSUCCESS!\n");
-      oosmos_EndProgram(1);
+        oosmos_EndProgram(1);
       return true;
     }
   }

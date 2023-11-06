@@ -10,4 +10,4 @@ oosmos_c = oosmos_dir+r'\Source\oosmos.c'
 pin_c    = oosmos_dir+r'\Classes\pin.c'
 toggle_c = oosmos_dir+r'\Classes\toggle.c'
 
-oosmos.cWindows.Compile(oosmos_dir, ['main.c', oosmos_c, pin_c, toggle_c])
+oosmos.cWindows.Compile(oosmos_dir, ['main.c', oosmos_c, pin_c, toggle_c], "-Doosmos_PIN_KEY_WINDOWS")

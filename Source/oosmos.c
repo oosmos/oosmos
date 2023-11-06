@@ -696,7 +696,6 @@ static void Enter(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sSt
             }
         #endif
 
-        case OOSMOS_FinalType:
         case OOSMOS_LeafType:
             pRegion = GetRegion(pStack);
             pRegion->m_pCurrent = pStack;
@@ -713,6 +712,10 @@ static void Enter(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sSt
             if (!DeliverEvent(pStack, &EventPOLL)) {
                 (void)DeliverEvent(pStack, &EventCOMPLETE);
             }
+            break;
+
+        case OOSMOS_FinalType:
+            Complete(pStack->m_pParent);
             break;
 
         case OOSMOS_ChoiceType:

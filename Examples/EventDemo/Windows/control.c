@@ -79,8 +79,8 @@ struct controlTag
         oosmos_sLeaf Operational_Region1_Moving_State;
         oosmos_sLeaf Operational_Region1_Idle_State;
       oosmos_sOrthoRegion Operational_Region2_State;
-        oosmos_sLeaf Operational_Region2_Idle_State;
         oosmos_sLeaf Operational_Region2_Pumping_State;
+        oosmos_sLeaf Operational_Region2_Idle_State;
     oosmos_sLeaf StopPressed_State;
     oosmos_sLeaf Terminated_State;
 //<<<DECL
@@ -199,19 +199,6 @@ static bool Terminated_State_Code(void * pObject, oosmos_sState * pState, const 
   return false;
 }
 
-static bool Operational_Region2_Idle_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
-{
-  control * pControl = (control *) pObject;
-
-  switch (oosmos_EventCode(pEvent)) {
-    case evPumpPressed: {
-      return oosmos_Transition(pControl, pState, Operational_Region2_Pumping_State);
-    }
-  }
-
-  return false;
-}
-
 static bool Operational_Region2_Pumping_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   control * pControl = (control *) pObject;
@@ -232,6 +219,19 @@ static bool Operational_Region2_Pumping_State_Code(void * pObject, oosmos_sState
 
   return false;
 }
+
+static bool Operational_Region2_Idle_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
+{
+  control * pControl = (control *) pObject;
+
+  switch (oosmos_EventCode(pEvent)) {
+    case evPumpPressed: {
+      return oosmos_Transition(pControl, pState, Operational_Region2_Pumping_State);
+    }
+  }
+
+  return false;
+}
 //<<<CODE
 
 extern control * controlNew(void)
@@ -240,35 +240,35 @@ extern control * controlNew(void)
 
   oosmos_sQueue * const pControlEventQueue = &pControl->m_EventQueue;
 
-  pin * pStopPin   = pinNew('s', pinActiveHigh);
+  pin * pStopPin   = pinNew_Key('s', pinActiveHigh);
   sw * pStopSwitch = swNew(pStopPin);
   swSubscribeCloseEvent(pStopSwitch,    pControlEventQueue, evStopPressed, NULL);
   swSubscribeOpenEvent(pStopSwitch,     pControlEventQueue, evStopReleased, NULL);
 
-  pin * pMovePin   = pinNew('m', pinActiveHigh);
+  pin * pMovePin   = pinNew_Key('m', pinActiveHigh);
   sw * pMoveSwitch = swNew(pMovePin);
   swSubscribeCloseEvent(pMoveSwitch,    pControlEventQueue, evMovePressed, NULL);
 
-  pin * pQuitPin   = pinNew('q', pinActiveHigh);
+  pin * pQuitPin   = pinNew_Key('q', pinActiveHigh);
   sw * pQuitSwitch = swNew(pQuitPin);
   swSubscribeCloseEvent(pQuitSwitch,    pControlEventQueue, evQuitPressed, NULL);
 
-  pin * pPumpPin   = pinNew('p', pinActiveHigh);
+  pin * pPumpPin   = pinNew_Key('p', pinActiveHigh);
   sw * pPumpSwitch = swNew(pPumpPin);
   swSubscribeCloseEvent(pPumpSwitch,    pControlEventQueue, evPumpPressed, NULL);
 
-  pin * pOption1Pin   = pinNew('1', pinActiveHigh);
+  pin * pOption1Pin   = pinNew_Key('1', pinActiveHigh);
   sw * pOption1Switch = swNew(pOption1Pin);
   swSubscribeCloseEvent(pOption1Switch, pControlEventQueue, evOption1Pressed, NULL);
 
-  pin * pOption2Pin   = pinNew('2', pinActiveHigh);
+  pin * pOption2Pin   = pinNew_Key('2', pinActiveHigh);
   sw * pOption2Switch = swNew(pOption2Pin);
   swSubscribeCloseEvent(pOption2Switch, pControlEventQueue, evOption2Pressed, NULL);
 
-  pin * pUpPin   = pinNew('u', pinActiveHigh);
+  pin * pUpPin   = pinNew_Key('u', pinActiveHigh);
   sw * pUpSwitch = swNew(pUpPin);
 
-  pin * pDownPin   = pinNew('d', pinActiveHigh);
+  pin * pDownPin   = pinNew_Key('d', pinActiveHigh);
   sw * pDownSwitch = swNew(pDownPin);
 
   pControl->m_pMotor  = motorNew();
@@ -284,8 +284,8 @@ extern control * controlNew(void)
         oosmos_LeafInit(pControl, Operational_Region1_Moving_State, Operational_Region1_State, Operational_Region1_Moving_State_Code);
         oosmos_LeafInit(pControl, Operational_Region1_Idle_State, Operational_Region1_State, Operational_Region1_Idle_State_Code);
       oosmos_OrthoRegionInit(pControl, Operational_Region2_State, Operational_State, Operational_Region2_Idle_State, NULL);
-        oosmos_LeafInit(pControl, Operational_Region2_Idle_State, Operational_Region2_State, Operational_Region2_Idle_State_Code);
         oosmos_LeafInit(pControl, Operational_Region2_Pumping_State, Operational_Region2_State, Operational_Region2_Pumping_State_Code);
+        oosmos_LeafInit(pControl, Operational_Region2_Idle_State, Operational_Region2_State, Operational_Region2_Idle_State_Code);
     oosmos_LeafInit(pControl, StopPressed_State, ROOT, StopPressed_State_Code);
     oosmos_LeafInit(pControl, Terminated_State, ROOT, Terminated_State_Code);
 

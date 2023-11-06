@@ -325,7 +325,7 @@ static bool Running_Region1_Exiting_State_Code(void * pObject, oosmos_sState * p
   return false;
 }
 
-static void OOSMOS_Action1(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
+static void OOSMOS_Action_2e6a8ac5(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   threadtest * pThreadTest = (threadtest *) pObject;
 
@@ -342,7 +342,7 @@ static bool Running_Region2_Printing_State_Code(void * pObject, oosmos_sState * 
 
   switch (oosmos_EventCode(pEvent)) {
     case evPrint: {
-      return oosmos_TransitionAction(pThreadTest, pState, Running_Region2_Printing_State, pEvent, OOSMOS_Action1);
+      return oosmos_TransitionAction(pThreadTest, pState, Running_Region2_Printing_State, pEvent, OOSMOS_Action_2e6a8ac5);
     }
   }
 
