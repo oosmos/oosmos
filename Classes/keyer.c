@@ -33,8 +33,8 @@ struct keyerTag
   oosmos_sStateMachineNoQueue(ROOT);
     oosmos_sLeaf DahSound_State;
     oosmos_sLeaf Silent_State;
-    oosmos_sLeaf Choice2_State;
-    oosmos_sLeaf Choice1_State;
+    oosmos_sChoice Choice2_State;
+    oosmos_sChoice Choice1_State;
     oosmos_sLeaf DitSound_State;
 //<<<DECL
 
@@ -118,7 +118,7 @@ static bool DahSound_State_Code(void * pObject, oosmos_sState * pState, const oo
     }
     case oosmos_POLL: {
       CheckDitIsPressedPoll(pKeyer);
-      DahThread(pKeyer, pState);
+        DahThread(pKeyer, pState);
       return true;
     }
     case oosmos_COMPLETE: {
@@ -191,7 +191,7 @@ static bool DitSound_State_Code(void * pObject, oosmos_sState * pState, const oo
     }
     case oosmos_POLL: {
       CheckDahIsPressedPoll(pKeyer);
-      DitThread(pKeyer, pState);
+        DitThread(pKeyer, pState);
       return true;
     }
     case oosmos_COMPLETE: {
@@ -211,8 +211,8 @@ extern keyer * keyerNew(pin * pDahPin, pin * pDitPin, pin * pSpeakerPin, unsigne
   oosmos_StateMachineInitNoQueue(pKeyer, ROOT, NULL, Silent_State);
     oosmos_LeafInit(pKeyer, DahSound_State, ROOT, DahSound_State_Code);
     oosmos_LeafInit(pKeyer, Silent_State, ROOT, Silent_State_Code);
-    oosmos_LeafInit(pKeyer, Choice2_State, ROOT, Choice2_State_Code);
-    oosmos_LeafInit(pKeyer, Choice1_State, ROOT, Choice1_State_Code);
+    oosmos_ChoiceInit(pKeyer, Choice2_State, ROOT, Choice2_State_Code);
+    oosmos_ChoiceInit(pKeyer, Choice1_State, ROOT, Choice1_State_Code);
     oosmos_LeafInit(pKeyer, DitSound_State, ROOT, DitSound_State_Code);
 
   oosmos_Debug(pKeyer, NULL);

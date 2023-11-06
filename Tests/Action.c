@@ -48,7 +48,7 @@ struct testTag
 };
 
 //>>>CODE
-static void OOSMOS_Action1(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
+static void OOSMOS_Action_97af96b2(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   test * pTest = (test *) pObject;
 
@@ -70,12 +70,12 @@ static bool A_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sE
       return true;
     }
     case oosmos_DEFAULT: {
-      Count = 0;
-      printf("INITIAL\n");
+        Count = 0;
+        printf("INITIAL\n");
       return true;
     }
     case oosmos_COMPLETE: {
-      return oosmos_TransitionAction(pTest, pState, B_State, pEvent, OOSMOS_Action1);
+      return oosmos_TransitionAction(pTest, pState, B_State, pEvent, OOSMOS_Action_97af96b2);
     }
   }
 
@@ -138,7 +138,7 @@ static bool Exiting_State_Code(void * pObject, oosmos_sState * pState, const oos
   switch (oosmos_EventCode(pEvent)) {
     case oosmos_ENTER: {
       printf("%s\n", ActionCount == 2 ? "SUCCESS" : "FAILURE");
-      oosmos_EndProgram(1);
+        oosmos_EndProgram(1);
       return true;
     }
   }

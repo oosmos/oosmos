@@ -34,7 +34,7 @@ struct testTag
 //>>>DECL
   oosmos_sStateMachineNoQueue(ROOT);
     oosmos_sComposite A_State;
-      oosmos_sLeaf A_Choice1_State;
+      oosmos_sChoice A_Choice1_State;
       oosmos_sLeaf A_Left_State;
       oosmos_sLeaf A_Right_State;
       oosmos_sFinal A_Final1_State;
@@ -59,7 +59,7 @@ static bool A_State_Code(void * pObject, oosmos_sState * pState, const oosmos_sE
 
   switch (oosmos_EventCode(pEvent)) {
     case oosmos_DEFAULT: {
-      Default();
+        Default();
       return true;
     }
     case oosmos_COMPLETE: {
@@ -120,7 +120,7 @@ static test * testNew(void)
 //>>>INIT
   oosmos_StateMachineInitNoQueue(pTest, ROOT, NULL, A_State);
     oosmos_CompositeInit(pTest, A_State, ROOT, A_Choice1_State, A_State_Code);
-      oosmos_LeafInit(pTest, A_Choice1_State, A_State, A_Choice1_State_Code);
+      oosmos_ChoiceInit(pTest, A_Choice1_State, A_State, A_Choice1_State_Code);
       oosmos_LeafInit(pTest, A_Left_State, A_State, A_Left_State_Code);
       oosmos_LeafInit(pTest, A_Right_State, A_State, A_Right_State_Code);
       oosmos_FinalInit(pTest, A_Final1_State, A_State, NULL);

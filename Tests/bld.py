@@ -19,9 +19,9 @@ if platform.system() == 'Windows':
 
   oosmos.cWindows.Compile(oosmos_dir, ['ThreadDelayUS.c',           oosmos_c])
   oosmos.cWindows.Compile(oosmos_dir, ['ThreadDelaySeconds.c',      oosmos_c])
-  oosmos.cWindows.Compile(oosmos_dir, ['Buttons.c',                 oosmos_c, pin_c, btn_c, btnph_c], '-DbtnMaxButtons=4 -DbtnphMaxButtons=4')
+  oosmos.cWindows.Compile(oosmos_dir, ['Buttons.c',                 oosmos_c, pin_c, btn_c, btnph_c], '-DbtnMaxButtons=4 -DbtnphMaxButtons=4 -Doosmos_PIN_KEY_WINDOWS')
   oosmos.cWindows.Compile(oosmos_dir, ['ObjectThreads.c',           oosmos_c])
-  oosmos.cWindows.Compile(oosmos_dir, ['History.c',                 oosmos_c, pin_c, btn_c], '-DbtnMaxButtons=4')
+  oosmos.cWindows.Compile(oosmos_dir, ['History.c',                 oosmos_c, pin_c, btn_c], '-DbtnMaxButtons=4 -Doosmos_PIN_KEY_WINDOWS')
   oosmos.cWindows.Compile(oosmos_dir, ['TimeConversions.c',         oosmos_c], '-Doosmos_ORTHO')
   oosmos.cWindows.Compile(oosmos_dir, ['FreeRunningUS.c',           oosmos_c])
   oosmos.cWindows.Compile(oosmos_dir, ['ThreadComplete.c',          oosmos_c])

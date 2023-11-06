@@ -12,7 +12,7 @@ btn_c    = oosmos_dir+r'\Classes\btn.c'
 
 os.system(oosmos_dir + r'\Gen\gen.exe Basic.json')
 
-oosmos.cWindows.Compile(oosmos_dir, ['AllEvents.c', oosmos_c, pin_c, btn_c], '-DbtnMaxButtons=4')
+oosmos.cWindows.Compile(oosmos_dir, ['AllEvents.c', oosmos_c, pin_c, btn_c], '-DbtnMaxButtons=4 -Doosmos_PIN_KEY_WINDOWS')
 oosmos.cWindows.Compile(oosmos_dir, ['Final.c', oosmos_c])
 oosmos.cWindows.Compile(oosmos_dir, ['DelayMS.c', oosmos_c])
 oosmos.cWindows.Compile(oosmos_dir, ['DelaySeconds.c', oosmos_c])

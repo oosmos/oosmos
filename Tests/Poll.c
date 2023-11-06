@@ -270,7 +270,7 @@ static bool Done_State_Code(void * pObject, oosmos_sState * pState, const oosmos
   switch (oosmos_EventCode(pEvent)) {
     case oosmos_ENTER: {
       printf("SUCCESS!\nTerminating program.\n");
-      oosmos_EndProgram(1);
+        oosmos_EndProgram(1);
       return true;
     }
   }
