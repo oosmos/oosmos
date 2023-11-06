@@ -715,6 +715,8 @@ static void Enter(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sSt
             break;
 
         case OOSMOS_FinalType:
+            pRegion = GetRegion(pStack);
+            pRegion->m_pCurrent = pStack;
             Complete(pStack->m_pParent);
             break;
 
