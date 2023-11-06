@@ -257,17 +257,17 @@ extern int main(void)
 {
   test * pTest = testNew();
 
-  pin * p_s_Pin    = pinNew('s', pinActiveHigh);
+  pin * p_s_Pin    = pinNew_Key('s', pinActiveHigh);
   btn * p_s_Button = btnNew(p_s_Pin);
   btnSubscribePressedEvent(p_s_Button,  oosmos_EventQueue(pTest), ev_s_Pressed,  NULL);
   btnSubscribeReleasedEvent(p_s_Button, oosmos_EventQueue(pTest), ev_s_Released, NULL);
 
-  pin * p_d_Pin    = pinNew('d', pinActiveHigh);
+  pin * p_d_Pin    = pinNew_Key('d', pinActiveHigh);
   btn * p_d_Button = btnNew(p_d_Pin);
   btnSubscribePressedEvent(p_d_Button,  oosmos_EventQueue(pTest), ev_d_Pressed,  NULL);
   btnSubscribeReleasedEvent(p_d_Button, oosmos_EventQueue(pTest), ev_d_Released, NULL);
 
-  pin * p_q_Pin    = pinNew('q', pinActiveHigh);
+  pin * p_q_Pin    = pinNew_Key('q', pinActiveHigh);
   btn * p_q_Button = btnNew(p_q_Pin);
   btnSubscribePressedEvent(p_q_Button,  oosmos_EventQueue(pTest), ev_q_Pressed,  NULL);
 

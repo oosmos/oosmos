@@ -15,4 +15,4 @@ INCLUDE = os.path.normpath(oosmos_dir+r'\Classes\Windows')
 
 os.system(oosmos_dir + r'\Gen\gen.exe EventDemo.json')
 
-oosmos.cWindows.Compile(oosmos_dir, ['main.c','control.c',pin_c,key_c,sw_c,'motor.c','pump.c',oosmos_c], '-Doosmos_ORTHO -I'+INCLUDE)
+oosmos.cWindows.Compile(oosmos_dir, ['main.c','control.c',pin_c,key_c,sw_c,'motor.c','pump.c',oosmos_c], '-Doosmos_PIN_KEY_WINDOWS -Doosmos_ORTHO -I'+INCLUDE)

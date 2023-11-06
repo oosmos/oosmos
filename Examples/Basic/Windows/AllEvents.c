@@ -71,7 +71,7 @@ static bool Running_State_Code(void * pObject, oosmos_sState * pState, const oos
   return false;
 }
 
-static void OOSMOS_Action1(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
+static void OOSMOS_Action_76d4a682(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   action('a');
 
@@ -80,7 +80,7 @@ static void OOSMOS_Action1(void * pObject, oosmos_sState * pState, const oosmos_
   oosmos_UNUSED(pEvent);
 }
 
-static void OOSMOS_Action2(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
+static void OOSMOS_Action_942f7ccc(void * pObject, oosmos_sState * pState, const oosmos_sEvent * pEvent)
 {
   action('g');
 
@@ -95,7 +95,7 @@ static bool Running_A_State_Code(void * pObject, oosmos_sState * pState, const o
 
   switch (oosmos_EventCode(pEvent)) {
     case oosmos_DEFAULT: {
-      printf("DEFAULT\n");
+        printf("DEFAULT\n");
       return true;
     }
     case ev_e_Pressed: {
@@ -114,11 +114,11 @@ static bool Running_A_State_Code(void * pObject, oosmos_sState * pState, const o
       return oosmos_Transition(pAll, pState, Running_B_State);
     }
     case ev_a_Pressed: {
-      return oosmos_TransitionAction(pAll, pState, Running_B_State, pEvent, OOSMOS_Action1);
+      return oosmos_TransitionAction(pAll, pState, Running_B_State, pEvent, OOSMOS_Action_76d4a682);
     }
     case ev_g_Pressed: {
       if (Guard(pAll)) {
-        return oosmos_TransitionAction(pAll, pState, Running_B_State, pEvent, OOSMOS_Action2);
+        return oosmos_TransitionAction(pAll, pState, Running_B_State, pEvent, OOSMOS_Action_942f7ccc);
       }
       return true;
     }
@@ -145,7 +145,7 @@ static bool Terminating_State_Code(void * pObject, oosmos_sState * pState, const
   switch (oosmos_EventCode(pEvent)) {
     case oosmos_ENTER: {
       printf("Exiting...\n");
-      oosmos_EndProgram(1);
+        oosmos_EndProgram(1);
       return true;
     }
   }
@@ -170,19 +170,19 @@ extern all * allNew(void)
   oosmos_Debug(pAll, OOSMOS_EventNames);
 //<<<INIT
 
-  pin * p_e_Pin    = pinNew('e', pinActiveHigh);
+  pin * p_e_Pin    = pinNew_Key('e', pinActiveHigh);
   btn * p_e_Button = btnNew(p_e_Pin);
   btnSubscribePressedEvent(p_e_Button,  oosmos_EventQueue(pAll), ev_e_Pressed,  NULL);
 
-  pin * p_a_Pin    = pinNew('a', pinActiveHigh);
+  pin * p_a_Pin    = pinNew_Key('a', pinActiveHigh);
   btn * p_a_Button = btnNew(p_a_Pin);
   btnSubscribePressedEvent(p_a_Button,  oosmos_EventQueue(pAll), ev_a_Pressed,  NULL);
 
-  pin * p_g_Pin    = pinNew('g', pinActiveHigh);
+  pin * p_g_Pin    = pinNew_Key('g', pinActiveHigh);
   btn * p_g_Button = btnNew(p_g_Pin);
   btnSubscribePressedEvent(p_g_Button,  oosmos_EventQueue(pAll), ev_g_Pressed,  NULL);
 
-  pin * p_q_Pin    = pinNew('q', pinActiveHigh);
+  pin * p_q_Pin    = pinNew_Key('q', pinActiveHigh);
   btn * p_q_Button = btnNew(p_q_Pin);
   btnSubscribePressedEvent(p_q_Button,  oosmos_EventQueue(pAll), ev_q_Pressed,  NULL);
 

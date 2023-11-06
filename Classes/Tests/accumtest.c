@@ -37,7 +37,7 @@ static bool Waiting_State_Code(void * pObject, oosmos_sState * pState, const oos
       return true;
     }
     case oosmos_DEFAULT: {
-      accumStart(pAccumTest->m_pAccum);
+        accumStart(pAccumTest->m_pAccum);
       return true;
     }
     case oosmos_POLL: {

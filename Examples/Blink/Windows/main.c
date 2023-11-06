@@ -26,7 +26,7 @@
 
 extern int main(void)
 {
-  pin * pLED = pinNew('.', pinActiveHigh);
+  pin * pLED = pinNew_Key('.', pinActiveHigh);
   toggleNew(pLED, 200, 2000);
 
   for (;;) {
