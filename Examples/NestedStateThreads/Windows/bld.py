@@ -12,4 +12,4 @@ btn_c    = oosmos_dir+r'\Classes\btn.c'
 
 os.system(oosmos_dir + r'\Gen\gen.exe NestedStateThreads.json')
 
-oosmos.cWindows.Compile(oosmos_dir, ['NestedStateThreads.c', oosmos_c, pin_c, btn_c], '-DbtnMaxButtons=3')
+oosmos.cWindows.Compile(oosmos_dir, ['NestedStateThreads.c', oosmos_c, pin_c, btn_c], '-Doosmos_PIN_KEY_WINDOWS -DbtnMaxButtons=3')

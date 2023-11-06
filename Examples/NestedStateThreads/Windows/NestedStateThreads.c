@@ -189,7 +189,7 @@ static bool Done_State_Code(void * pObject, oosmos_sState * pState, const oosmos
   switch (oosmos_EventCode(pEvent)) {
     case oosmos_ENTER: {
       printf("Terminating.\n");
-      oosmos_EndProgram(1);
+        oosmos_EndProgram(1);
       return true;
     }
   }
@@ -223,17 +223,17 @@ extern int main(void)
 {
   test * pTest = testNew();
 
-  pin * p_r_Pin    = pinNew('r', pinActiveHigh);
+  pin * p_r_Pin    = pinNew_Key('r', pinActiveHigh);
   btn * p_r_Button = btnNew(p_r_Pin);
   btnSubscribePressedEvent(p_r_Button,  oosmos_EventQueue(pTest), ev_r_Pressed,  NULL);
   btnSubscribeReleasedEvent(p_r_Button, oosmos_EventQueue(pTest), ev_r_Released, NULL);
 
-  pin * p_b_Pin    = pinNew('b', pinActiveHigh);
+  pin * p_b_Pin    = pinNew_Key('b', pinActiveHigh);
   btn * p_b_Button = btnNew(p_b_Pin);
   btnSubscribePressedEvent(p_b_Button,  oosmos_EventQueue(pTest), ev_b_Pressed,  NULL);
   btnSubscribeReleasedEvent(p_b_Button, oosmos_EventQueue(pTest), ev_b_Released, NULL);
 
-  pin * p_q_Pin    = pinNew('q', pinActiveHigh);
+  pin * p_q_Pin    = pinNew_Key('q', pinActiveHigh);
   btn * p_q_Button = btnNew(p_q_Pin);
   btnSubscribePressedEvent(p_q_Button,  oosmos_EventQueue(pTest), ev_q_Pressed,  NULL);
 
