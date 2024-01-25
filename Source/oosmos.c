@@ -353,12 +353,15 @@ static bool PropagateEvent(const oosmos_sRegion * pRegion, const oosmos_sEvent *
     if (pState->m_pParent != NULL) {
         #if defined(oosmos_ORTHO)
             if (pState->m_Type != OOSMOS_OrthoRegionType) {
-                if (DeliverEvent(pState, pEvent) && pEvent->m_Code != oosmos_POLL) {
-                    return true;
+                if (DeliverEvent(pState, pEvent)) {
+                    if (pRegion->m_pCurrent != pState)
+                        return true;
+                    else
+                        return true;
                 }
-            }
+        }
         #else
-            if (DeliverEvent(pState, pEvent) && pEvent->m_Code != oosmos_POLL) {
+            if (DeliverEvent(pState, pEvent) && pRegion->m_pCurrent != pState) {
                 return true;
             }
         #endif
