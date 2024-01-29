@@ -220,7 +220,7 @@ static void ThreadInit(oosmos_sState * pState)
   oosmos_POINTER_GUARD(pState);
 
   pState->m_ThreadContext             = OOSMOS_THREAD_CONTEXT_BEGIN;
-  pState->m_FirstEntry                = true;
+  pState->m_ThreadFirstEntry          = true;
   pState->m_ThreadTimeout.m_StartUS   = 0;
   pState->m_ThreadTimeout.m_TimeoutUS = 0;
 }
@@ -309,6 +309,18 @@ static bool DeliverEvent(oosmos_sState * pState, const oosmos_sEvent * pEvent)
   return pCode(pState->m_pStateMachine->m_pObject, pState, pEvent);
 }
 
+static void DeliverEnterEvent(oosmos_sState* pState)
+{
+    (void) DeliverEvent(pState, &EventENTER);
+    pState->m_Active = true;
+}
+
+static void DeliverExitEvent(oosmos_sState* pState)
+{
+    (void) DeliverEvent(pState, &EventEXIT);
+    pState->m_Active = false;
+}
+
 //
 // Deliver an event to all regions recursively.  Within each orthogonal region, deliver the
 // event to the current state and then up through all parent states.
@@ -346,20 +358,29 @@ static bool PropagateEvent(const oosmos_sRegion * pRegion, const oosmos_sEvent *
   for (oosmos_sState * pState = pCurrent; pState != pRegion->m_Composite.m_State.m_pParent; pState = pState->m_pParent) {
     oosmos_POINTER_GUARD(pState);
     //
-    // Deliver the event to the state machine.  If the return code is true, then
-    // stop propagating the event unless it's a POLL event, in which case we
-    // want to unconditionally propagate the poll event up the hierarchy.
+    // Deliver the event to the state machine.  If the return code is true, it
+    // merely means that there was generated code that got executed. Note that 
+    // we don't know if any code was generated for the event that we deliver.
+    // 
+    // Then, if some code was executed, we check to see if the state is still
+    // active.  If it is no longer active, it means that the DeliverEvent()
+    // caused a state transition away from this state, so we have no business
+    // continuing to deliver messages of any kind to the state. 
     //
     if (pState->m_pParent != NULL) {
         #if defined(oosmos_ORTHO)
             if (pState->m_Type != OOSMOS_OrthoRegionType) {
-                if (DeliverEvent(pState, pEvent) && pEvent->m_Code != oosmos_POLL) {
-                    return true;
+                if (DeliverEvent(pState, pEvent)) {
+                    if (!pState->m_Active) {
+                        return true;
+                    }
                 }
             }
         #else
-            if (DeliverEvent(pState, pEvent) && pEvent->m_Code != oosmos_POLL) {
-                return true;
+            if (DeliverEvent(pState, pEvent)) {
+                if (!pState->m_Active) {
+                    return true;
+                }
             }
         #endif
     }
@@ -468,10 +489,10 @@ static void DefaultTransitions(oosmos_sRegion * pRegion, oosmos_sState * pState)
 
   #if defined(oosmos_ORTHO)
     if (pState->m_Type != OOSMOS_OrthoRegionType) {
-        (void)DeliverEvent(pState, &EventENTER);
+        DeliverEnterEvent(pState);
     }
   #else
-    (void) DeliverEvent(pState, &EventENTER);
+    DeliverEnterEvent(pState);
   #endif
 
   switch (pState->m_Type) {
@@ -670,7 +691,7 @@ static void Enter(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sSt
         case OOSMOS_CompositeType: {
             oosmos_sComposite* pComposite = (oosmos_sComposite*)pStack;
             pRegion->m_pCurrent = pStack;
-            (void)DeliverEvent(pStack, &EventENTER);
+            DeliverEnterEvent(pStack);
             ThreadInit(pStack);
             DefaultTransitions(pRegion, pComposite->m_pDefault);
             break;
@@ -680,7 +701,7 @@ static void Enter(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sSt
             case OOSMOS_OrthoType: {
                 pRegion = GetRegion(pStack);
                 pRegion->m_pCurrent = pStack;
-                (void) DeliverEvent(pStack, &EventENTER);
+                DeliverEnterEvent(pStack);
                 ThreadInit(pStack);
 
                 const oosmos_sOrtho* pOrtho       = (oosmos_sOrtho*) pStack;
@@ -699,7 +720,7 @@ static void Enter(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sSt
         case OOSMOS_LeafType:
             pRegion = GetRegion(pStack);
             pRegion->m_pCurrent = pStack;
-            (void) DeliverEvent(pStack, &EventENTER);
+            DeliverEnterEvent(pStack);
             ThreadInit(pStack);
 
             //
@@ -723,7 +744,7 @@ static void Enter(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sSt
         case OOSMOS_ChoiceType:
             pRegion = GetRegion(pStack);
             pRegion->m_pCurrent = pStack;
-            (void)DeliverEvent(pStack, &EventENTER);
+            DeliverEnterEvent(pStack);
             break;
 
         #if defined(oosmos_ORTHO)
@@ -750,7 +771,7 @@ static void EnterDeepHistory(oosmos_sRegion* pRegion, oosmos_sState* pToState)
         case OOSMOS_CompositeType: {
             oosmos_sComposite* pComposite = (oosmos_sComposite*)pToState;
             pRegion->m_pCurrent = pToState;
-            (void)DeliverEvent(pToState, &EventENTER);
+            DeliverEnterEvent(pToState);
             ThreadInit(pToState);
             EnterDeepHistory(pRegion, pComposite->m_pHistoryState);
             break;
@@ -760,7 +781,7 @@ static void EnterDeepHistory(oosmos_sRegion* pRegion, oosmos_sState* pToState)
         case OOSMOS_OrthoType: {
             pRegion = GetRegion(pToState);
             pRegion->m_pCurrent = pToState;
-            (void)DeliverEvent(pToState, &EventENTER);
+            DeliverEnterEvent(pToState);
             ThreadInit(pToState);
 
             const oosmos_sOrtho* pOrtho = (oosmos_sOrtho*)pToState;
@@ -777,13 +798,13 @@ static void EnterDeepHistory(oosmos_sRegion* pRegion, oosmos_sState* pToState)
         case OOSMOS_FinalType:
         case OOSMOS_LeafType:
             pRegion->m_pCurrent = pToState;
-            (void)DeliverEvent(pToState, &EventENTER);
+            DeliverEnterEvent(pToState);
             ThreadInit(pToState);
             break;
 
         case OOSMOS_ChoiceType:
             pRegion->m_pCurrent = pToState;
-            (void)DeliverEvent(pToState, &EventENTER);
+            DeliverEnterEvent(pToState);
             break;
 
         #if defined(oosmos_ORTHO)
@@ -823,10 +844,10 @@ static void Exit(const oosmos_sRegion * pRegion, const oosmos_sState * pLCA)
 
     #if defined(oosmos_ORTH)
       if (pState->m_Type != OOSMOS_OrthoRegionType) {
-        (void) DeliverEvent(pState, &EventEXIT);
+        DeliverExitEvent(pState);
       }
     #else
-      (void)DeliverEvent(pState, &EventEXIT);
+      DeliverExitEvent(pState);
     #endif
   }
 }
@@ -859,7 +880,7 @@ extern bool OOSMOS_TransitionAction(oosmos_sState * pFromState, oosmos_sState * 
   oosmos_sRegion* pLcaRegion = GetRegion(pLCA);
 
   // Note: If we transition from an outer state directly to a state inside an
-  // ortho, there will not yet be a current state in that region, so we have 
+  // ortho, there will not yet be a current state in that region, so we have
   // no state(s) to exit.
   if (pLcaRegion->m_pCurrent != NULL) {
       Exit(pLcaRegion, pLCA);
@@ -1430,12 +1451,12 @@ extern bool OOSMOS_ThreadYield(oosmos_sState * pState)
 {
   oosmos_POINTER_GUARD(pState);
 
-  if (pState->m_FirstEntry) {
-    pState->m_FirstEntry = false;
+  if (pState->m_ThreadFirstEntry) {
+    pState->m_ThreadFirstEntry = false;
     return false;
   }
 
-  pState->m_FirstEntry = true;
+  pState->m_ThreadFirstEntry = true;
   return true;
 }
 
@@ -1443,14 +1464,14 @@ extern bool OOSMOS_ThreadDelayUS(oosmos_sState * pState, uint32_t US)
 {
   oosmos_POINTER_GUARD(pState);
 
-  if (pState->m_FirstEntry) {
+  if (pState->m_ThreadFirstEntry) {
     oosmos_TimeoutInUS(&pState->m_ThreadTimeout, US);
-    pState->m_FirstEntry = false;
+    pState->m_ThreadFirstEntry = false;
     return false;
   }
 
   if (oosmos_TimeoutHasExpired(&pState->m_ThreadTimeout)) {
-    pState->m_FirstEntry = true;
+    pState->m_ThreadFirstEntry = true;
     return true;
   }
 
@@ -1472,20 +1493,20 @@ extern bool OOSMOS_ThreadWaitCond_TimeoutMS(oosmos_sState * pState, bool Conditi
   oosmos_POINTER_GUARD(pState);
   oosmos_POINTER_GUARD(pTimeoutStatus);
 
-  if (pState->m_FirstEntry) {
+  if (pState->m_ThreadFirstEntry) {
       oosmos_TimeoutInMS(&pState->m_ThreadTimeout, TimeoutMS);
-      pState->m_FirstEntry = false;
+      pState->m_ThreadFirstEntry = false;
   }
 
   if (Condition) {
     *pTimeoutStatus = false;
-    pState->m_FirstEntry = true;
+    pState->m_ThreadFirstEntry = true;
     return true;
   }
 
   if (oosmos_TimeoutHasExpired(&pState->m_ThreadTimeout)) {
     *pTimeoutStatus = true;
-    pState->m_FirstEntry = true;
+    pState->m_ThreadFirstEntry = true;
     return true;
   }
 
@@ -1502,12 +1523,12 @@ extern bool OOSMOS_ThreadWaitEvent(oosmos_sState * pState, int WaitEventCode)
 
   if (pCurrentEvent->m_Code == WaitEventCode) {
     pCurrentEvent->m_Code = oosmos_NOP;
-    pState->m_FirstEntry = true;
+    pState->m_ThreadFirstEntry = true;
     return true;
   }
 
-  if (pState->m_FirstEntry) {
-      pState->m_FirstEntry = false;
+  if (pState->m_ThreadFirstEntry) {
+      pState->m_ThreadFirstEntry = false;
       return false;
   }
 
@@ -1519,9 +1540,9 @@ extern bool OOSMOS_ThreadWaitEvent_TimeoutMS(oosmos_sState * pState, int WaitEve
     oosmos_POINTER_GUARD(pState);
     oosmos_POINTER_GUARD(pTimeoutStatus);
 
-    if (pState->m_FirstEntry) {
+    if (pState->m_ThreadFirstEntry) {
         oosmos_TimeoutInMS(&pState->m_ThreadTimeout, TimeoutMS);
-        pState->m_FirstEntry = false;
+        pState->m_ThreadFirstEntry = false;
     }
 
     oosmos_sEvent* pCurrentEvent = OOSMOS_GetCurrentEvent(pState);
@@ -1529,13 +1550,13 @@ extern bool OOSMOS_ThreadWaitEvent_TimeoutMS(oosmos_sState * pState, int WaitEve
     if (pCurrentEvent->m_Code == WaitEventCode) {
 	    pCurrentEvent->m_Code = oosmos_NOP;
         *pTimeoutStatus = false;
-        pState->m_FirstEntry = true;
+        pState->m_ThreadFirstEntry = true;
         return true;
     }
 
     if (oosmos_TimeoutHasExpired(&pState->m_ThreadTimeout)) {
         *pTimeoutStatus = true;
-        pState->m_FirstEntry = true;
+        pState->m_ThreadFirstEntry = true;
         return true;
     }
 
