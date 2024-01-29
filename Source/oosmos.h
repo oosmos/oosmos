@@ -292,7 +292,12 @@ struct OOSMOS_sStateTag {
   //
   // Will be true upon first entry to a thread function.
   //
-  unsigned m_FirstEntry:1;
+  unsigned m_ThreadFirstEntry : 1;
+
+  //
+  // Indicates when a state has been entered but not yet exited.
+  //
+  unsigned m_Active : 1;
 };
 
 struct OOSMOS_sCompositeTag {
