@@ -896,9 +896,11 @@ extern bool OOSMOS_TransitionAction(oosmos_sState * pFromState, oosmos_sState * 
           oosmos_POINTER_GUARD(pComposite);
           pToState = pComposite->m_pHistoryState;
 
+#if defined(oosmos_DEBUG)
           oosmos_DebugPrint("%8.8u %s: SHALLOW HISTORY: -> %s]\n", oosmos_TimestampMS(), GetFileName(pToState->m_pStateMachine), pToState->m_pName);
+#endif
 
-          Enter(pLcaRegion, pComposite, pToState, pToState);
+          Enter(pLcaRegion, pToState->m_pParent, pToState, pToState);
           break;
       }
 
