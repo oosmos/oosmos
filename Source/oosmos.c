@@ -892,15 +892,22 @@ extern bool OOSMOS_TransitionAction(oosmos_sState * pFromState, oosmos_sState * 
 
   switch (pToState->m_Type) {
       case OOSMOS_HistoryShallowType: {
-          oosmos_sComposite* pComposite = (oosmos_sComposite*)pToState->m_pParent;
+          //
+          // pToState is the history state. Redirect pToState to the actual remembered history state.
+		  //
+          oosmos_sState* pParentOfTo = pToState->m_pParent;
+          oosmos_sComposite* pComposite = (oosmos_sComposite*) pParentOfTo;
           oosmos_POINTER_GUARD(pComposite);
           pToState = pComposite->m_pHistoryState;
 
+          // Need to special-case the delivery of an Enter event to the enclosing state.
+          DeliverEnterEvent(pParentOfTo);
+
 #if defined(oosmos_DEBUG)
-          oosmos_DebugPrint("%8.8u %s: SHALLOW HISTORY: -> %s]\n", oosmos_TimestampMS(), GetFileName(pToState->m_pStateMachine), pToState->m_pName);
+          oosmos_DebugPrint("%8.8u %s: SHALLOW HISTORY:\n", oosmos_TimestampMS(), GetFileName(pToState->m_pStateMachine));
 #endif
 
-          Enter(pLcaRegion, pToState->m_pParent, pToState, pToState);
+          Enter(pLcaRegion, pParentOfTo, pToState, pToState);
           break;
       }
 
