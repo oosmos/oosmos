@@ -892,11 +892,13 @@ extern bool OOSMOS_TransitionAction(oosmos_sState * pFromState, oosmos_sState * 
 
   switch (pToState->m_Type) {
       case OOSMOS_HistoryShallowType: {
-          oosmos_sComposite* pComposite = (oosmos_sComposite*)pToState->m_pParent;
+          oosmos_sComposite* pToStateParent = (oosmos_sComposite*)pToState->m_pParent;
           oosmos_POINTER_GUARD(pComposite);
           pToState = pComposite->m_pHistoryState;
 
-          Enter(pLcaRegion, pLCA, pToState, pToState);
+          oosmos_DebugPrint("%8.8u %s: SHALLOW HISTORY: -> %s]\n", oosmos_TimestampMS(), GetFileName(pToState->m_pStateMachine), pToState->m_pName);
+
+          Enter(pLcaRegion, pToStateParent, pToState, pToState);
           break;
       }
 
