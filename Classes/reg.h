@@ -1,7 +1,7 @@
 //
 // OOSMOS reg Class
 //
-// Copyright (C) 2014-2020  OOSMOS, LLC
+// Copyright (C) 2014-2024  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -27,15 +27,19 @@
 
 typedef struct regTag reg;
 
-typedef struct
-{
-  float X;
-  float Y;
+typedef struct {
+    float X;
+    float Y;
 } regSample;
 
-extern reg * regNew(void);
-extern void  regSamples(reg * pReg, const regSample * pSamples, uint32_t Samples);
-extern float regPredictY(const reg * pReg, float X);
-extern float regSlope(const reg * pReg);
+extern reg*   regNew(regSample* sampleBuffer, size_t bufferSize);
+extern void   regPushSample(reg* pReg, const regSample* pSample);
+extern size_t regGetSampleCount(reg* pReg);
+extern void   regCalculateRegression(reg* pReg);
+extern void   regClearSamples(reg * pReg);
+extern float  regPredictY(const reg* pReg, float X);
+extern float  regSlope(const reg* pReg);
 
 #endif
+
+
