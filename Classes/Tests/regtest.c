@@ -31,17 +31,25 @@ static void Predict(reg * pReg, float Value)
 
 extern void regtestNew(void)
 {
-  static const regSample Samples[] = {
+  static regSample Samples[] = {
     { 2.0F, 3.0F },
     { 3.0F, 6.7F },
     { 4.0F, 7.0F },
     { 5.0F, 8.0F },
     { 6.0F, 9.0F },
   };
+  
+  const size_t numSamples = sizeof(Samples)/sizeof(Samples[0]);
 
-  reg * pReg = regNew();
+  reg *pReg = regNew(Samples, numSamples);
 
-  regSamples(pReg, Samples, sizeof(Samples)/sizeof(Samples[0]));
+
+
+  for (size_t i = 0; i < numSamples; ++i) {
+    regPushSample(pReg, &Samples[i]);
+  }
+
+  regCalculateRegression(pReg);
 
   Predict(pReg, 5.0F);
   Predict(pReg, 6.0F);
