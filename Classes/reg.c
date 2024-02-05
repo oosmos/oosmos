@@ -1,7 +1,7 @@
 //
-// OOSMOS reg Class
+// OOSMOS reg Class - Linear regression
 //
-// Copyright (C) 2014-2020  OOSMOS, LLC
+// Copyright (C) 2014-2024  OOSMOS, LLC
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -23,73 +23,113 @@
 #include "reg.h"
 #include "oosmos.h"
 #include <stdint.h>
+#include <string.h>
 
-struct regTag
+#ifndef regMax
+#define regMax 1
+#endif
+
+struct regTag 
 {
-  float m_Intercept;
-  float m_Slope;
+    float      m_Intercept;
+    float      m_Slope;
+
+    regSample* m_SampleFIFO;
+    size_t     m_SampleCount;
+    size_t     m_MaxSamples;
+    size_t     m_StartIndex;
 };
 
-static float MeanOfX(const regSample * pSamples, uint32_t Samples)
+extern reg* regNew(regSample* sampleBuffer, size_t bufferSize) 
 {
-  float Sum = 0.0F;
+    oosmos_Allocate(pReg, reg, regMax, NULL);
 
-  for (uint32_t SampleIndex = 0; SampleIndex < Samples; SampleIndex++) {
-    Sum += pSamples[SampleIndex].X;
-  }
-
-  return Sum / Samples;
+    pReg->m_SampleFIFO = sampleBuffer;
+    pReg->m_MaxSamples = bufferSize;
+    pReg->m_SampleCount = 0;
+    pReg->m_StartIndex = 0;
+    return pReg;
 }
 
-static float MeanOfY(const regSample * pSamples, uint32_t Samples)
+extern void regPushSample(reg* pReg, const regSample* pSample) 
 {
-  float Sum = 0.0F;
+    const size_t InsertIndex = (pReg->m_StartIndex + pReg->m_SampleCount) % pReg->m_MaxSamples;
 
-  for (uint32_t SampleIndex = 0; SampleIndex < Samples; SampleIndex++) {
-    Sum += pSamples[SampleIndex].Y;
-  }
+    pReg->m_SampleFIFO[InsertIndex] = *pSample;
 
-  return Sum / Samples;
+    if (pReg->m_SampleCount < pReg->m_MaxSamples) {
+        pReg->m_SampleCount++;
+    }
+    else {
+        pReg->m_StartIndex = (pReg->m_StartIndex + 1) % pReg->m_MaxSamples;
+    }
 }
 
-extern reg * regNew(void)
+static float MeanOfX(const reg* pReg) 
 {
-  static reg Reg[1];
-  reg * pReg = &Reg[0];
+    float sum = 0.0F;
 
-  return pReg;
+    for (size_t i = 0; i < pReg->m_SampleCount; i++) {
+        size_t index = (pReg->m_StartIndex + i) % pReg->m_MaxSamples;
+        sum += pReg->m_SampleFIFO[index].X;
+    }
+
+    return sum / pReg->m_SampleCount;
 }
 
-extern void regSamples(reg * pReg, const regSample * pSamples, uint32_t Samples)
+static float MeanOfY(const reg* pReg) 
 {
-  const float MeanX = MeanOfX(pSamples, Samples);
-  const float MeanY = MeanOfY(pSamples, Samples);
+    float sum = 0.0F;
 
-  float SumXY = 0.0F;
-  float SumXX = 0.0F;
+    for (size_t i = 0; i < pReg->m_SampleCount; i++) {
+        size_t index = (pReg->m_StartIndex + i) % pReg->m_MaxSamples;
+        sum += pReg->m_SampleFIFO[index].Y;
+    }
 
-  for (uint32_t SampleIndex = 0; SampleIndex < Samples; SampleIndex++) {
-    const regSample * pSample = &pSamples[SampleIndex];
-
-    const float XiMinusMeanX = pSample->X - MeanX;
-    const float YiMinusMeanY = pSample->Y - MeanY;
-
-    SumXY += XiMinusMeanX * YiMinusMeanY;
-    SumXX += XiMinusMeanX * XiMinusMeanX;
-  }
-
-  oosmos_ASSERT(SumXX > 0.0F);
-
-  pReg->m_Slope     = SumXY / SumXX;
-  pReg->m_Intercept = MeanY - pReg->m_Slope * MeanX;
+    return sum / pReg->m_SampleCount;
 }
 
-extern float regPredictY(const reg * pReg, float X)
+extern void regCalculateRegression(reg* pReg) 
 {
-  return pReg->m_Slope * X + pReg->m_Intercept;
+    const float meanX = MeanOfX(pReg);
+    const float meanY = MeanOfY(pReg);
+
+    float sumXY = 0.0F;
+    float sumXX = 0.0F;
+
+    for (size_t i = 0; i < pReg->m_SampleCount; i++) {
+        size_t index = (pReg->m_StartIndex + i) % pReg->m_MaxSamples;
+        const regSample* pSample = &pReg->m_SampleFIFO[index];
+
+        const float xiMinusMeanX = pSample->X - meanX;
+        const float yiMinusMeanY = pSample->Y - meanY;
+
+        sumXY += xiMinusMeanX * yiMinusMeanY;
+        sumXX += xiMinusMeanX * xiMinusMeanX;
+    }
+
+    oosmos_ASSERT(sumXX > 0.0F);
+
+    pReg->m_Slope     = sumXY / sumXX;
+    pReg->m_Intercept = meanY - pReg->m_Slope * meanX;
 }
 
-extern float regSlope(const reg * pReg)
+extern float regPredictY(const reg* pReg, float X) 
 {
-	return pReg->m_Slope;
+    return pReg->m_Slope * X + pReg->m_Intercept;
+}
+
+extern float regSlope(const reg* pReg) 
+{
+    return pReg->m_Slope;
+}
+
+extern size_t regGetSampleCount(const reg* pReg)
+{
+    return pReg->m_SampleCount;
+}
+
+extern void regClearSamples(reg* pReg)
+{
+    pReg->m_SampleCount = 0;
 }
