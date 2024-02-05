@@ -23,7 +23,7 @@
 #ifndef reg_h
 #define reg_h
 
-#include <stdint.h>
+#include <stddef.h>
 
 typedef struct regTag reg;
 
