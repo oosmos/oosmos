@@ -693,7 +693,11 @@ static void Enter(oosmos_sRegion* pRegion, const oosmos_sState* pLCA, oosmos_sSt
             pRegion->m_pCurrent = pStack;
             DeliverEnterEvent(pStack);
             ThreadInit(pStack);
-            DefaultTransitions(pRegion, pComposite->m_pDefault);
+
+            if (pToState == pStack) {
+                DefaultTransitions(pRegion, pComposite->m_pDefault);
+            }
+
             break;
         }
 
