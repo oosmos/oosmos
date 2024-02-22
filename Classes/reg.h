@@ -28,21 +28,21 @@
 typedef struct regTag reg;
 
 typedef struct {
-    float X;
-    float Y;
+    double X;
+    double Y;
 } regSample;
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
-extern reg*   regNew(regSample* sampleBuffer, size_t bufferSize);
-extern void   regPushSample(reg* pReg, const regSample* pSample);
-extern size_t regGetSampleCount(const reg* pReg);
-extern void   regCalculateRegression(reg* pReg);
-extern void   regClearSamples(reg * pReg);
-extern float  regPredictY(const reg* pReg, float X);
-extern float  regSlope(const reg* pReg);
+extern reg*    regNew(regSample* sampleBuffer, size_t bufferSize);
+extern void    regPushSample(reg* pReg, double X, double Y);
+extern size_t  regGetSampleCount(const reg* pReg);
+extern void    regCalculateRegression(reg* pReg);
+extern void    regClearSamples(reg * pReg);
+extern double  regPredictY(const reg* pReg, double X);
+extern double  regSlope(const reg* pReg);
 
 #if defined(__cplusplus)
 }

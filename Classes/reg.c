@@ -31,8 +31,8 @@
 
 struct regTag 
 {
-    float      m_Intercept;
-    float      m_Slope;
+    double     m_Intercept;
+    double     m_Slope;
 
     regSample* m_SampleFIFO;
     size_t     m_SampleCount;
@@ -51,11 +51,12 @@ extern reg* regNew(regSample* sampleBuffer, size_t bufferSize)
     return pReg;
 }
 
-extern void regPushSample(reg* pReg, const regSample* pSample) 
+extern void regPushSample(reg* pReg, const double X, const double Y) 
 {
     const size_t InsertIndex = (pReg->m_StartIndex + pReg->m_SampleCount) % pReg->m_MaxSamples;
 
-    pReg->m_SampleFIFO[InsertIndex] = *pSample;
+    pReg->m_SampleFIFO[InsertIndex].X = X;
+    pReg->m_SampleFIFO[InsertIndex].Y = Y;
 
     if (pReg->m_SampleCount < pReg->m_MaxSamples) {
         pReg->m_SampleCount++;
@@ -65,9 +66,9 @@ extern void regPushSample(reg* pReg, const regSample* pSample)
     }
 }
 
-static float MeanOfX(const reg* pReg) 
+static double MeanOfX(const reg* pReg) 
 {
-    float sum = 0.0F;
+    double sum = 0.0;
 
     for (size_t i = 0; i < pReg->m_SampleCount; i++) {
         size_t index = (pReg->m_StartIndex + i) % pReg->m_MaxSamples;
@@ -77,9 +78,9 @@ static float MeanOfX(const reg* pReg)
     return sum / pReg->m_SampleCount;
 }
 
-static float MeanOfY(const reg* pReg) 
+static double MeanOfY(const reg* pReg) 
 {
-    float sum = 0.0F;
+    double sum = 0.0;
 
     for (size_t i = 0; i < pReg->m_SampleCount; i++) {
         size_t index = (pReg->m_StartIndex + i) % pReg->m_MaxSamples;
@@ -91,35 +92,35 @@ static float MeanOfY(const reg* pReg)
 
 extern void regCalculateRegression(reg* pReg) 
 {
-    const float meanX = MeanOfX(pReg);
-    const float meanY = MeanOfY(pReg);
+    const double meanX = MeanOfX(pReg);
+    const double meanY = MeanOfY(pReg);
 
-    float sumXY = 0.0F;
-    float sumXX = 0.0F;
+    double sumXY = 0.0;
+    double sumXX = 0.0;
 
     for (size_t i = 0; i < pReg->m_SampleCount; i++) {
         size_t index = (pReg->m_StartIndex + i) % pReg->m_MaxSamples;
         const regSample* pSample = &pReg->m_SampleFIFO[index];
 
-        const float xiMinusMeanX = pSample->X - meanX;
-        const float yiMinusMeanY = pSample->Y - meanY;
+        const double xiMinusMeanX = pSample->X - meanX;
+        const double yiMinusMeanY = pSample->Y - meanY;
 
         sumXY += xiMinusMeanX * yiMinusMeanY;
         sumXX += xiMinusMeanX * xiMinusMeanX;
     }
 
-    oosmos_ASSERT(sumXX > 0.0F);
+    oosmos_ASSERT(sumXX > 0.0);
 
     pReg->m_Slope     = sumXY / sumXX;
     pReg->m_Intercept = meanY - pReg->m_Slope * meanX;
 }
 
-extern float regPredictY(const reg* pReg, float X) 
+extern double regPredictY(const reg* pReg, double X) 
 {
     return pReg->m_Slope * X + pReg->m_Intercept;
 }
 
-extern float regSlope(const reg* pReg) 
+extern double regSlope(const reg* pReg) 
 {
     return pReg->m_Slope;
 }
