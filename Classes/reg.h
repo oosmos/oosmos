@@ -43,6 +43,7 @@ extern void    regCalculateRegression(reg* pReg);
 extern void    regClearSamples(reg * pReg);
 extern float   regPredictY(const reg* pReg, float X);
 extern float   regSlope(const reg* pReg);
+extern void    regIterateSamples(const reg* pReg, void (*pCallback)(const size_t Index, const regSample* pSample));
 
 #if defined(__cplusplus)
 }

@@ -134,3 +134,12 @@ extern void regClearSamples(reg* pReg)
 {
     pReg->m_SampleCount = 0;
 }
+
+extern void regIterateSamples(const reg* pReg, void (*pCallback)(const size_t SampleNumber, const regSample* pSample))
+{
+    for (size_t i = 0; i < pReg->m_SampleCount; i++) {
+        const size_t index = (pReg->m_StartIndex + i) % pReg->m_MaxSamples;
+        pCallback(i +1 , &pReg->m_SampleFIFO[index]);
+    }
+}
+
