@@ -40,12 +40,12 @@ struct regTag
     size_t     m_StartIndex;
 };
 
-extern reg* regNew(regSample* sampleBuffer, size_t bufferSize) 
+extern reg* regNew(regSample* sampleBuffer, size_t Samples) 
 {
     oosmos_Allocate(pReg, reg, regMax, NULL);
 
     pReg->m_SampleFIFO = sampleBuffer;
-    pReg->m_MaxSamples = bufferSize;
+    pReg->m_MaxSamples = Samples;
     pReg->m_SampleCount = 0;
     pReg->m_StartIndex = 0;
     return pReg;

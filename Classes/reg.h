@@ -36,7 +36,7 @@ typedef struct {
 extern "C" {
 #endif
 
-extern reg*    regNew(regSample* sampleBuffer, size_t bufferSize);
+extern reg*    regNew(regSample* sampleBuffer, size_t Samples);
 extern void    regPushSample(reg* pReg, double X, double Y);
 extern size_t  regGetSampleCount(const reg* pReg);
 extern void    regCalculateRegression(reg* pReg);
