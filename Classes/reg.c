@@ -29,7 +29,7 @@
 #define regMax 1
 #endif
 
-struct regTag 
+struct regTag
 {
     float      m_Intercept;
     float      m_Slope;
@@ -40,22 +40,23 @@ struct regTag
     size_t     m_StartIndex;
 };
 
-extern reg* regNew(regSample* sampleBuffer, size_t bufferSize) 
+extern reg* regNew(regSample* sampleBuffer, size_t MaxSamples)
 {
     oosmos_Allocate(pReg, reg, regMax, NULL);
 
     pReg->m_SampleFIFO = sampleBuffer;
-    pReg->m_MaxSamples = bufferSize;
+    pReg->m_MaxSamples = MaxSamples;
     pReg->m_SampleCount = 0;
     pReg->m_StartIndex = 0;
     return pReg;
 }
 
-extern void regPushSample(reg* pReg, const regSample* pSample) 
+extern void regPushSample(reg* pReg, const float X, const float Y)
 {
     const size_t InsertIndex = (pReg->m_StartIndex + pReg->m_SampleCount) % pReg->m_MaxSamples;
 
-    pReg->m_SampleFIFO[InsertIndex] = *pSample;
+    pReg->m_SampleFIFO[InsertIndex].X = X;
+    pReg->m_SampleFIFO[InsertIndex].Y = Y;
 
     if (pReg->m_SampleCount < pReg->m_MaxSamples) {
         pReg->m_SampleCount++;
@@ -65,9 +66,9 @@ extern void regPushSample(reg* pReg, const regSample* pSample)
     }
 }
 
-static float MeanOfX(const reg* pReg) 
+static float MeanOfX(const reg* pReg)
 {
-    float sum = 0.0F;
+    float sum = 0.0f;
 
     for (size_t i = 0; i < pReg->m_SampleCount; i++) {
         size_t index = (pReg->m_StartIndex + i) % pReg->m_MaxSamples;
@@ -77,9 +78,9 @@ static float MeanOfX(const reg* pReg)
     return sum / pReg->m_SampleCount;
 }
 
-static float MeanOfY(const reg* pReg) 
+static float MeanOfY(const reg* pReg)
 {
-    float sum = 0.0F;
+    float sum = 0.0f;
 
     for (size_t i = 0; i < pReg->m_SampleCount; i++) {
         size_t index = (pReg->m_StartIndex + i) % pReg->m_MaxSamples;
@@ -89,13 +90,13 @@ static float MeanOfY(const reg* pReg)
     return sum / pReg->m_SampleCount;
 }
 
-extern void regCalculateRegression(reg* pReg) 
+extern void regCalculateRegression(reg* pReg)
 {
     const float meanX = MeanOfX(pReg);
     const float meanY = MeanOfY(pReg);
 
-    float sumXY = 0.0F;
-    float sumXX = 0.0F;
+    float sumXY = 0.0f;
+    float sumXX = 0.0f;
 
     for (size_t i = 0; i < pReg->m_SampleCount; i++) {
         size_t index = (pReg->m_StartIndex + i) % pReg->m_MaxSamples;
@@ -108,18 +109,18 @@ extern void regCalculateRegression(reg* pReg)
         sumXX += xiMinusMeanX * xiMinusMeanX;
     }
 
-    oosmos_ASSERT(sumXX > 0.0F);
+    oosmos_ASSERT(sumXX > 0.0f);
 
     pReg->m_Slope     = sumXY / sumXX;
     pReg->m_Intercept = meanY - pReg->m_Slope * meanX;
 }
 
-extern float regPredictY(const reg* pReg, float X) 
+extern float regPredictY(const reg* pReg, float X)
 {
     return pReg->m_Slope * X + pReg->m_Intercept;
 }
 
-extern float regSlope(const reg* pReg) 
+extern float regSlope(const reg* pReg)
 {
     return pReg->m_Slope;
 }
@@ -133,3 +134,12 @@ extern void regClearSamples(reg* pReg)
 {
     pReg->m_SampleCount = 0;
 }
+
+extern void regIterateSamples(const reg* pReg, void (*pCallback)(const size_t SampleNumber, const regSample* pSample))
+{
+    for (size_t i = 0; i < pReg->m_SampleCount; i++) {
+        const size_t index = (pReg->m_StartIndex + i) % pReg->m_MaxSamples;
+        pCallback(i +1 , &pReg->m_SampleFIFO[index]);
+    }
+}
+
