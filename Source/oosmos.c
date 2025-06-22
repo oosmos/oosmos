@@ -846,7 +846,7 @@ static void Exit(const oosmos_sRegion * pRegion, const oosmos_sState * pLCA)
     oosmos_sComposite * pParent = (oosmos_sComposite *) pState->m_pParent;
     pParent->m_pHistoryState = pState;
 
-    #if defined(oosmos_ORTH)
+    #if defined(oosmos_ORTHO)
       if (pState->m_Type != OOSMOS_OrthoRegionType) {
         DeliverExitEvent(pState);
       }
@@ -903,6 +903,11 @@ extern bool OOSMOS_TransitionAction(oosmos_sState * pFromState, oosmos_sState * 
           oosmos_sComposite* pComposite = (oosmos_sComposite*) pParentOfTo;
           oosmos_POINTER_GUARD(pComposite);
           pToState = pComposite->m_pHistoryState;
+          
+          // If no history state is set, use the default state
+          if (pToState == NULL) {
+            pToState = pComposite->m_pDefault;
+          }
 
           // Need to special-case the delivery of an Enter event to the enclosing state.
           DeliverEnterEvent(pParentOfTo);
@@ -919,6 +924,11 @@ extern bool OOSMOS_TransitionAction(oosmos_sState * pFromState, oosmos_sState * 
           oosmos_sComposite* pComposite = (oosmos_sComposite*)pToState->m_pParent;
           oosmos_POINTER_GUARD(pComposite);
           pToState = pComposite->m_pHistoryState;
+          
+          // If no history state is set, use the default state
+          if (pToState == NULL) {
+            pToState = pComposite->m_pDefault;
+          }
 
           EnterDeepHistory(pLcaRegion, pToState);
           break;
