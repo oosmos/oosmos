@@ -52,7 +52,7 @@ static oosmos_sObjectThread * pObjectThreadList;
 // Support for oosmos_TimestampMS().
 //
 static uint64_t RunningTimeUS;
-static uint64_t PreviousFreeRunningUS;
+static uint32_t PreviousFreeRunningUS;
 
 //
 // Predefined events, pre-initialized for fast delivery.
@@ -64,18 +64,11 @@ static const oosmos_sEvent EventENTER    = { oosmos_ENTER,    NULL };
 static const oosmos_sEvent EventEXIT     = { oosmos_EXIT,     NULL };
 static const oosmos_sEvent EventCOMPLETE = { oosmos_COMPLETE, NULL };
 
-extern uint32_t oosmos_TimestampMS(void)
+extern uint32_t oosmos_GetFreeRunningUS(void)
 {
-    uint64_t Now = oosmos_GetFreeRunningUS();
+    uint32_t Now = oosmos_GetFreeRunningUS();
 
-    //
-    // Handle the wrap around.
-    //
-    if (Now < PreviousFreeRunningUS) {
-        Now += 0x100000000;
-    }
-
-    RunningTimeUS += (Now - PreviousFreeRunningUS);
+    RunningTimeUS += (uint64_t)(Now - PreviousFreeRunningUS);
     PreviousFreeRunningUS = Now;
 
     return (uint32_t) (RunningTimeUS / 1000);
@@ -359,13 +352,13 @@ static bool PropagateEvent(const oosmos_sRegion * pRegion, const oosmos_sEvent *
     oosmos_POINTER_GUARD(pState);
     //
     // Deliver the event to the state machine.  If the return code is true, it
-    // merely means that there was generated code that got executed. Note that 
+    // merely means that there was generated code that got executed. Note that
     // we don't know if any code was generated for the event that we deliver.
-    // 
+    //
     // Then, if some code was executed, we check to see if the state is still
     // active.  If it is no longer active, it means that the DeliverEvent()
     // caused a state transition away from this state, so we have no business
-    // continuing to deliver messages of any kind to the state. 
+    // continuing to deliver messages of any kind to the state.
     //
     if (pState->m_pParent != NULL) {
         #if defined(oosmos_ORTHO)
@@ -903,7 +896,7 @@ extern bool OOSMOS_TransitionAction(oosmos_sState * pFromState, oosmos_sState * 
           oosmos_sComposite* pComposite = (oosmos_sComposite*) pParentOfTo;
           oosmos_POINTER_GUARD(pComposite);
           pToState = pComposite->m_pHistoryState;
-          
+
           // If no history state is set, use the default state
           if (pToState == NULL) {
             pToState = pComposite->m_pDefault;
@@ -924,7 +917,7 @@ extern bool OOSMOS_TransitionAction(oosmos_sState * pFromState, oosmos_sState * 
           oosmos_sComposite* pComposite = (oosmos_sComposite*)pToState->m_pParent;
           oosmos_POINTER_GUARD(pComposite);
           pToState = pComposite->m_pHistoryState;
-          
+
           // If no history state is set, use the default state
           if (pToState == NULL) {
             pToState = pComposite->m_pDefault;
@@ -1429,16 +1422,19 @@ extern void oosmos_QueuePush(oosmos_sQueue * pQueue, const void * pElement, size
 
     if (Behavior == oosmos_QueueFull_TossOld) {
       // Pop...
-      {
-        if (pQueue->m_pHead == pQueue->m_pEnd) {
-          pQueue->m_pHead = pQueue->m_pQueueData;
-        }
-
-        pQueue->m_pHead = ((char *) pQueue->m_pHead) + QueueElementSize;
-        pQueue->m_ByteCount -= QueueElementSize;
+      if (pQueue->m_pHead == pQueue->m_pEnd) {
+        pQueue->m_pHead = pQueue->m_pQueueData;
       }
+      pQueue->m_pHead = ((char *) pQueue->m_pHead) + QueueElementSize;
+      pQueue->m_ByteCount -= QueueElementSize;
 
-      oosmos_QueuePush(pQueue, pElement, UserElementSize);
+      // Push (non-recursive)
+      if (pQueue->m_pTail == pQueue->m_pEnd) {
+        pQueue->m_pTail = pQueue->m_pQueueData;
+      }
+      (void) memcpy(pQueue->m_pTail, pElement, UserElementSize);
+      pQueue->m_pTail = ((char *) pQueue->m_pTail) + QueueElementSize;
+      pQueue->m_ByteCount += QueueElementSize;
     }
   }
 }
@@ -1597,7 +1593,7 @@ extern double oosmos_AnalogMapAccurate(double Value, double InMin, double InMax,
 
 extern int32_t oosmos_AnalogMapFast(int32_t Value, int32_t InMin, int32_t InMax, int32_t OutMin, int32_t OutMax)
 {
-  return oosmos_Min((Value - InMin) * ((OutMax+1) - OutMin) / ((InMax+1) - InMin) + OutMin, OutMax);
+  return oosmos_Min((Value - InMin) * (OutMax - OutMin) / (InMax - InMin) + OutMin, OutMax);
 }
 
 extern void OOSMOS_EndProgram(int Code)
