@@ -4,62 +4,70 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-OOSMOS (Object-Oriented State Machine Operating System) is a framework for building hierarchical state machines in embedded C. It bridges visual UML design and production code through automatic code generation from UMLet diagrams.
+OOSMOS (Object-Oriented State Machine Operating System) is a framework for building hierarchical state machines in embedded C. It bridges visual UML design and production code through automatic code generation from UMLet diagrams. The core framework is compact (~2,600 lines across two files) yet powers complex embedded systems through hierarchical state machines, event-driven architecture, and built-in threading capabilities.
 
 ## Common Development Commands
 
 ### Building Components
 
-**Classes (Core Classes):**
+**Classes library:**
 ```bash
 cd Classes
 python bld.py
 ```
 
-**Tests:**
+**All tests (Linux):**
 ```bash
 cd Tests
 python bld.py
 ```
 
-**Examples (Platform-specific):**
+**Individual test (Linux):**
 ```bash
-# Windows examples
-cd Examples/Basic/Windows
+cd Tests
+gcc -I../Source -I../Classes -I../Classes/Tests -I. -std=c99 -Wall -Wno-overflow -Wno-unused-parameter -pedantic -Werror -Wshadow -flto -o TestName -D_POSIX_C_SOURCE=199309 -D__linux__ -Doosmos_DEBUG -Doosmos_ORTHO TestName.c ../Source/oosmos.c
+./TestName
+```
+
+**Example projects:**
+```bash
+# Linux
+cd Examples/Basic/Linux
 python bld.py
 
-# Linux examples  
-cd Examples/Basic/Linux
+# Windows
+cd Examples/Basic/Windows
 python bld.py
 ```
 
 ### Code Generation
 
-**Generate state machine code from UXF files:**
+Generate C code from UML state machine diagrams (UXF files):
 ```bash
-# From Classes directory
+# From Classes directory (with classes.json)
 ..\Gen\gen.exe classes.json
 
-# From specific example directory
+# From test directory (with tests.json)
+..\Gen\gen.exe tests.json
+
+# From example directory (with basic.json)
 ..\..\..\Gen\gen.exe basic.json
 ```
 
 ### Cleaning Build Artifacts
 
-**Global clean (removes all generated files):**
 ```bash
+# Global clean (repository root)
 python clean.py
-```
 
-**Platform-specific clean:**
-```bash
+# Platform-specific clean
 cd Examples/Basic/Windows
 python clean.py
 ```
 
 ### Initial Setup
 
-**Populate example directories after cloning:**
+After cloning, populate example directories:
 ```bash
 python populate.py
 ```
@@ -70,9 +78,9 @@ python populate.py
 
 The framework consists of three main components:
 
-1. **Core Engine** (`Source/oosmos.h`, `Source/oosmos.c`): The state machine runtime engine (~1700 lines)
-2. **Code Generator** (`Gen/gen.exe`): Converts UXF diagrams to C code  
-3. **Class Library** (`Classes/`): Hardware abstraction and utility classes
+1. **Core Engine** (`Source/oosmos.h` ~765 lines, `Source/oosmos.c` ~1896 lines): The state machine runtime engine. Provides macros and functions for hierarchical state machines, event queuing, timing, and threading primitives.
+2. **Code Generator** (`Gen/gen.exe`): Converts UML state diagrams (UXF files) to C code with special markers for custom logic integration
+3. **Class Library** (`Classes/`): Hardware abstractions and utilities built on the core engine (pin, btn, sw, matrix, keyer, socket, DNS, etc.)
 
 ### State Machine Object Structure
 
@@ -191,13 +199,20 @@ case oosmos_POLL:
 
 ## Build System Details
 
-The build system uses Python scripts (`oosmos.py`) that provide:
+The build system uses Python scripts for cross-platform compilation:
 
-- **`oosmos.cWindows.Compile()`**: Windows compilation with Visual Studio
-- **`oosmos.cLinux.Compile()`**: Linux compilation with GCC
-- Automatic include path setup for Source/ and Classes/ directories
-- Debug builds with symbol information enabled
-- Warning configuration optimized for embedded development
+**`oosmos.py`** provides compiler abstractions:
+- **`oosmos.cWindows.Compile(oosmos_dir, FileArray, Options)`**: Compiles with Visual Studio (cl.exe), auto-generates code, sets up includes
+- **`oosmos.cLinux.Compile(oosmos_dir, Target, FileArray, Options)`**: Compiles with GCC, auto-generates code, sets up includes
+
+**Key compiler flags:**
+- **Windows**: `-I` paths for Source/ and Classes/, `-Doosmos_DEBUG`, `-Doosmos_ORTHO` (for orthogonal regions), `-D_CRT_SECURE_NO_WARNINGS`
+- **Linux**: `-std=c99 -Wall -Werror -Wshadow -flto`, `-D_POSIX_C_SOURCE=199309 -D__linux__ -Doosmos_DEBUG -Doosmos_ORTHO`
+
+**Build process in each `bld.py`:**
+1. Run code generator: `gen.exe <config>.json` (Windows-specific)
+2. Call `oosmos.cWindows.Compile()` or `oosmos.cLinux.Compile()`
+3. Compiler outputs executable in current directory
 
 ## File Organization
 
@@ -211,8 +226,25 @@ The build system uses Python scripts (`oosmos.py`) that provide:
 
 ## Important Notes
 
-- Always run `populate.py` after cloning to set up example directories
-- Never modify code between `//>>>` and `//<<<` markers - it will be overwritten
-- Use provided Python build scripts rather than direct compiler invocation
-- State machines must be registered with `oosmos_RunStateMachines()` main loop
-- All timing uses microsecond precision - use conversion macros for other units
+**Initialization & Setup:**
+- Always run `python populate.py` after cloning to set up embedded platform example directories
+
+**Code Generation Workflow:**
+- Never modify code between `//>>>` and `//<<<` markers - code generator will overwrite these sections
+- Code generator configuration is specified in JSON files (classes.json, tests.json, basic.json, etc.)
+- Generated code includes event enums and state handler functions with these markers
+
+**Building:**
+- Use provided `bld.py` Python scripts rather than direct compiler invocation
+- Scripts automatically run code generator and set up compiler includes/flags
+- Use `clean.py` to remove generated files before re-generating
+
+**State Machine Integration:**
+- State machines must be instantiated with `*New()` functions
+- Register instances with the main event loop using `oosmos_RunStateMachines()`
+- Event queues are per-object, sized via queue_size in JSON config
+
+**Timing:**
+- All timing in OOSMOS uses microsecond precision internally
+- Use provided conversion macros: `oosmos_MS(1000)`, `oosmos_SEC(1)`, etc.
+- Polling-based state machines use `oosmos_POLL` event for continuous operation
