@@ -1079,14 +1079,14 @@ extern bool oosmos_StateTimeoutMS(oosmos_sState * pState, uint32_t TimeoutInMS)
 {
   oosmos_POINTER_GUARD(pState);
 
-  return oosmos_StateTimeoutUS(pState, TimeoutInMS * 1000);
+  return oosmos_StateTimeoutUS(pState, (uint32_t)((uint64_t)TimeoutInMS * 1000));
 }
 
 extern bool oosmos_StateTimeoutSeconds(oosmos_sState * pState, uint32_t TimeoutInSeconds)
 {
   oosmos_POINTER_GUARD(pState);
 
-  return oosmos_StateTimeoutMS(pState, TimeoutInSeconds * 1000);
+  return oosmos_StateTimeoutMS(pState, (uint32_t)((uint64_t)TimeoutInSeconds * 1000));
 }
 
 extern void OOSMOS_PushEventCodeToStateMachine(const oosmos_sStateMachine * pStateMachine, int EventCode)
@@ -1656,7 +1656,7 @@ extern void OOSMOS_EndProgram(int Code)
 
       va_list Args;
       va_start(Args, pFormat);
-        vsprintf(Buffer, pFormat, Args);
+        vsnprintf(Buffer, sizeof(Buffer), pFormat, Args);
       va_end(Args);
 
       Serial.print(Buffer);
@@ -1761,16 +1761,11 @@ extern void OOSMOS_EndProgram(int Code)
 
   extern uint32_t oosmos_GetFreeRunningUS(void)
   {
-    SYSTEMTIME st;
-    GetSystemTime(&st);
-
-    uint64_t MS = 0;
-    MS += st.wMilliseconds;
-    MS += st.wSecond * 1000ULL;
-    MS += st.wMinute * 60000ULL;
-    MS += st.wHour   * 3600000ULL;
-
-    const uint64_t US = MS * 1000;
+    // GetTickCount64() returns milliseconds since system boot.
+    // More reliable than SYSTEMTIME and doesn't reset daily.
+    // Provides ~1-15ms resolution depending on system configuration.
+    const uint64_t MS = GetTickCount64();
+    const uint64_t US = MS * 1000ULL;
 
     return (uint32_t) US;
   }
