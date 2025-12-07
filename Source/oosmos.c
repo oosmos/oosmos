@@ -52,7 +52,7 @@ static oosmos_sObjectThread * pObjectThreadList;
 // Support for oosmos_TimestampMS().
 //
 static uint64_t RunningTimeUS;
-static uint32_t PreviousFreeRunningUS;
+static uint64_t PreviousFreeRunningUS;
 
 //
 // Predefined events, pre-initialized for fast delivery.
@@ -64,11 +64,18 @@ static const oosmos_sEvent EventENTER    = { oosmos_ENTER,    NULL };
 static const oosmos_sEvent EventEXIT     = { oosmos_EXIT,     NULL };
 static const oosmos_sEvent EventCOMPLETE = { oosmos_COMPLETE, NULL };
 
-extern uint32_t oosmos_GetFreeRunningUS(void)
+extern uint32_t oosmos_TimestampMS(void)
 {
-    uint32_t Now = oosmos_GetFreeRunningUS();
+    uint64_t Now = oosmos_GetFreeRunningUS();
 
-    RunningTimeUS += (uint64_t)(Now - PreviousFreeRunningUS);
+    //
+    // Handle the wrap around.
+    //
+    if (Now < PreviousFreeRunningUS) {
+        Now += 0x100000000;
+    }
+
+    RunningTimeUS += (Now - PreviousFreeRunningUS);
     PreviousFreeRunningUS = Now;
 
     return (uint32_t) (RunningTimeUS / 1000);
@@ -1593,7 +1600,7 @@ extern double oosmos_AnalogMapAccurate(double Value, double InMin, double InMax,
 
 extern int32_t oosmos_AnalogMapFast(int32_t Value, int32_t InMin, int32_t InMax, int32_t OutMin, int32_t OutMax)
 {
-  return oosmos_Min((Value - InMin) * (OutMax - OutMin) / (InMax - InMin) + OutMin, OutMax);
+  return oosmos_Min((Value - InMin) * ((OutMax+1) - OutMin) / ((InMax+1) - InMin) + OutMin, OutMax);
 }
 
 extern void OOSMOS_EndProgram(int Code)
